@@ -1,0 +1,16 @@
+name: 'cleanup_workspace'
+description: 'Deletes files and cleans up the docker environment'
+runs:
+  using: "composite"
+  steps:
+    - name: Cleanup workspace
+      run: |
+        ls -la ./
+        rm -rf ./* || true
+        rm -rf ./.??* || true
+        ls -la ./
+
+    - name: Cleanup Docker
+      run: |
+        c=$(docker ps -q) && [[ $c ]] && docker kill $c
+        docker system prune --force

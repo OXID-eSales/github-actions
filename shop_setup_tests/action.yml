@@ -1,0 +1,104 @@
+name: 'shop_setup_tests'
+description: 'Executes shop setup tests'
+inputs:
+  php:
+    required: true
+    description: 'Version of PHP for this instance'
+  mysql:
+    required: true
+    description: 'Version of MySQL for this instance'
+  is_enterprise:
+    required: false
+    default: true
+outputs:
+runs:
+  using: "composite"
+  steps:
+    - name: Add environment variables
+      if: is_enterprise == true
+      run: |
+        EXEC_PHP="docker-compose exec -T php"
+        echo "EXEC_PHP=$EXEC_PHP" >> $GITHUB_ENV
+        TEST_YAML="vendor/oxid-esales/oxideshop-ee/Tests/codeception.yml"
+        echo "TEST_YAML=$TEST_YAML" >> $GITHUB_ENV
+        PHPUNIT_LOGFILE="codeception_PHP${{ input.php }}_MYSQL${{ input.mysql }}_phpunit_log.txt"
+        echo "PHPUNIT_LOGFILE=$PHPUNIT_LOGFILE" >> $GITHUB_ENV
+        CODECEPTION_OUTPUT_PATH="source/vendor/oxid-esales/oxideshop-ee/Tests/Codeception/_output"
+        echo "CODECEPTION_OUTPUT_PATH=$CODECEPTION_OUTPUT_PATH" >> $GITHUB_ENV
+
+    - name: Add environment variables
+      if: is_enterprise == false
+      run: |
+        EXEC_PHP="docker-compose exec -T php"
+        echo "EXEC_PHP=$EXEC_PHP" >> $GITHUB_ENV
+        TEST_YAML="tests/codeception.yml"
+        echo "TEST_YAML=$UNIT_FOLDER" >> $GITHUB_ENV
+        PHPUNIT_LOGFILE="shop_setup_PHP${{ input.php }}_MYSQL${{ input.mysql }}_phpunit_log.txt"
+        echo "PHPUNIT_LOGFILE=$PHPUNIT_LOGFILE" >> $GITHUB_ENV
+        CODECEPTION_OUTPUT_PATH="source/tests/Codeception/_output"
+        echo "CODECEPTION_OUTPUT_PATH=$CODECEPTION_OUTPUT_PATH" >> $GITHUB_ENV
+
+     - name: Build Codeception
+        if: is_enterprise == true
+        run: |
+          $EXEC_PHP php vendor/bin/codecept build \
+          -c vendor/oxid-esales/oxideshop-ee/Tests/codeception.yml
+
+      - name: Run Codeception tests (ee)
+        if: is_enterprise == true
+        # why do we use run in ee and exec in ce?
+        run: |
+          docker-compose run -T \
+            -e SELENIUM_SERVER_HOST=selenium \
+            -e BROWSER_NAME=chrome \
+            -e DB_NAME=setup_test \
+            -e DB_USERNAME=root \
+            -e DB_PASSWORD=root \
+            -e DB_HOST=mysql \
+            -e DB_PORT=3306 \
+            -e SHOP_URL=http://localhost.local/ \
+            -e SHOP_SOURCE_PATH=/var/www/source/ \
+            php \
+             php vendor/bin/codecept run acceptanceSetup \
+            -c $TEST_YAML \
+          --ext DotReporter \
+          | tee $PHPUNIT_LOGFILE 2>&1 || true
+          if grep -q -Ei 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH' $PHPUNIT_LOGFILE; then exit 1; fi
+
+      - name: Run Codeception tests (ce)
+        if: is_enterprise == false
+        run: |
+          docker-compose exec -T \
+            -e SELENIUM_SERVER_HOST=selenium \
+            -e BROWSER_NAME=chrome \
+            -e DB_NAME=setup_test \
+            -e DB_USERNAME=root \
+            -e DB_PASSWORD=root \
+            -e DB_HOST=mysql \
+            -e DB_PORT=3306 \
+            -e SHOP_URL=http://localhost.local/ \
+            -e SHOP_SOURCE_PATH=/var/www/source/ \
+            php vendor/bin/codecept run acceptanceSetup \
+              -c $TEST_YAML \
+              --ext DotReporter \
+              --skip-group flow_theme \
+              | tee PHPUNIT_LOGFILE 2>&1 || true
+          if grep -q -Ei 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH' PHPUNIT_LOGFILE; then exit 1; fi
+
+      - name: Upload PHPUnit Log
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: phpunit-logs
+          path: ${{ env.PHPUNIT_LOGFILE }}
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload Codeception Artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: shop_setup-artifacts-PHP${{ inputs.php }}-MYSQL${{ inputs.mysql }}
+          path: ${{ env.CODECEPTION_OUTPUT_PATH }}/*
+          if-no-files-found: ignore
+          retention-days: 7

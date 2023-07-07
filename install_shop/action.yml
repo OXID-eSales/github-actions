@@ -1,0 +1,122 @@
+name: 'prepare_shop'
+description: 'Prepares the shop and creates a cache for it'
+inputs:
+  git_enterprise_ref:
+    description: 'Branch to check out for the enterprise repos'
+    required: true
+  github_sha:
+    required: true
+    description: 'github.sha is used in generating the cache id'
+  github_run_number:
+    required: true
+    description: 'github.run_number and github.run_attempts are used in generating the cache id (tbd)'
+  github_run_attempt:
+    required: true
+    description: 'github.run_number and github.run_attempts are used in generating the cache id (tbd)'
+  php:
+    required: true
+    description: 'Version of PHP for this instance'
+  mysql:
+    required: true
+    description: 'Version of MySQL for this instance'
+  is_enterprise:
+    required: false
+    default: true
+  cache_endpoint:
+    description: 'secrets.CACHE_ENDPOINT for actions-cache'
+    required: false
+  cache_access_key:
+    description: 'secrets.CACHE_ACCESS_KEY for actions-cache'
+    required: false
+  cache_secret_key:
+    description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
+    required: false
+outputs:
+runs:
+  using: "composite"
+  steps:
+    - name: Cleanup
+      uses: OXID-eSales/github-actions/cleanup_workspace@v1
+
+    - name: Add environment variables
+      run: |
+        EXEC_PHP="docker-compose exec -T php"
+        echo "EXEC_PHP=$EXEC_PHP" >> $GITHUB_ENV
+
+    - name: Load current installation from cache
+      if: inputs.is_enterprise == true
+      uses: tespkg/actions-cache@v1
+      with:
+        path: |
+          ./*
+        key: prepared-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
+        restore-keys: |
+          prepared-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
+        endpoint: ${{ inputs.cache_endpoint }}
+        accessKey: ${{ inputs.cache_access_key }}
+        secretKey: ${{ inputs.cache_secret_key }}
+        bucket: oxideshop-ee
+
+    - name: Load prepared shop from cache
+      if: inputs.is_enterprise == false
+      uses: actions/cache@v3
+      with:
+        path: |
+          ./*
+        key: preparedShop-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
+        restore-keys: |
+          preparedShop-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
+          preparedShop-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
+
+    - name: Start containers
+      run: |
+        make up
+        sleep 2
+
+    - name: Run Install Shop
+      run: |
+        $EXEC_PHP bin/oe-console oe:setup:shop \
+          --db-host mysql \
+          --db-port 3306 \
+          --db-name example \
+          --db-user root \
+          --db-password root \
+          --shop-url http://localhost.local \
+          --shop-directory /var/www/source \
+          --compile-directory /var/www/source/tmp
+
+    - name: Activate shop's theme
+      if: inputs.is_enterprise == true
+      run: |
+        $EXEC_PHP bin/oe-console oe:theme:activate apex
+
+    - name: Stop containers
+      if: always()
+      run: |
+        docker-compose down
+        sleep 2
+
+    - name: Cache current ee installation
+      uses: tespkg/actions-cache@v1
+      with:
+        path: |
+          ./*
+        key: oxid-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
+      endpoint: ${{ inputs.cache_endpoint }}
+      accessKey: ${{ inputs.cache_access_key }}
+      secretKey: ${{ inputs.cache_secret_key }}
+        bucket: oxideshop-ee
+
+      - name: Cache current installation
+        uses: actions/cache@v3
+        with:
+          path: |
+            ./*
+          key: shopInstallation-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
+
+      # why here if we do it at start?
+      #- name: Cleanup Docker
+      #  if: always()
+      #  run: |
+      #    c=$(docker ps -q) && [[ $c ]] && docker kill $c
+      #    docker system prune --force
