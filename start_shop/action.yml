@@ -3,7 +3,7 @@ description: 'Fetches a shop from cache and starts it'
 inputs:
   git_enterprise_ref:
     description: 'Branch to check out for the enterprise repos'
-    required: true
+    required: false
   github_sha:
     required: false
     description: 'github.sha is used in generating the cache id'

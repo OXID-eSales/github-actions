@@ -1,5 +1,5 @@
-name: 'prepare_shop'
-description: 'Prepares the shop and creates a cache for it'
+name: 'install_shop'
+description: 'Fetches the prepared shop from cache and installs it'
 inputs:
   git_enterprise_ref:
     description: 'Branch to check out for the enterprise repos'
@@ -35,43 +35,10 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Cleanup
-      uses: OXID-eSales/github-actions/cleanup_workspace@v1
-
     - name: Add environment variables
       run: |
         EXEC_PHP="docker-compose exec -T php"
         echo "EXEC_PHP=$EXEC_PHP" >> $GITHUB_ENV
-
-    - name: Load current installation from cache
-      if: inputs.is_enterprise == true
-      uses: tespkg/actions-cache@v1
-      with:
-        path: |
-          ./*
-        key: prepared-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
-        restore-keys: |
-          prepared-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
-        endpoint: ${{ inputs.cache_endpoint }}
-        accessKey: ${{ inputs.cache_access_key }}
-        secretKey: ${{ inputs.cache_secret_key }}
-        bucket: oxideshop-ee
-
-    - name: Load prepared shop from cache
-      if: inputs.is_enterprise == false
-      uses: actions/cache@v3
-      with:
-        path: |
-          ./*
-        key: preparedShop-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
-        restore-keys: |
-          preparedShop-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
-          preparedShop-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
-
-    - name: Start containers
-      run: |
-        make up
-        sleep 2
 
     - name: Run Install Shop
       run: |

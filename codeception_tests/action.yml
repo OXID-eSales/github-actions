@@ -81,6 +81,9 @@ runs:
           if-no-files-found: error
           retention-days: 7
 
+      - name: Ensure that tests have been run
+        run: if [ ! -s shop_setup_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_phpunit_log.txt ]; then echo "PHPUnit log file is empty! Seems like no tests have been run!" && exit 1; fi
+
       - name: Upload Codeception Artifacts
         if: always()
         uses: actions/upload-artifact@v3

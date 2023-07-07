@@ -44,7 +44,7 @@ URL for the oxidshop_ce repository
 **git_shop_ref:** *required*, *no default*  
 Branch, tag or hash of the commit to check out
 
-**git_enterprise_ref:** *required*, *no default*  
+**git_enterprise_ref:** *not required*, *no default*  
 Branch to check out for the enterprise repos
 
 **github_event_name:** *not required*, *default:* ${{ github.event_name }}  
@@ -90,6 +90,41 @@ secrets.CACHE_SECRET_KEY  for actions-cache
 #### Outputs:
 **cached_name**  
 Name of the cached shop setup
+
+### start_shop
+Fetches a shop from cache and starts it
+
+#### Inputs:
+**git_enterprise_ref:** *not required*, *no default*  
+Branch to check out for the enterprise repos
+
+**github_sha:** *not required*, *default:*  ${{ github.sha }}  
+github.sha is used in generating the cache id
+
+**github_run_number:** *not required*, *default:*  ${{ github.run_number }}  
+github.run_number and github.run_attempts are used in generating the cache id (tbd)
+
+**github_run_attempt:** *not required*, *default:*  ${{ github.run_attempt }}  
+github.run_number and github.run_attempts are used in generating the cache id (tbd)'
+
+**php:** *not required*, *default:*  ${{ matrix.php }}  
+Version of PHP for this instance
+
+**mysql:** *not required*, *default:*  ${{ matrix.mysql }}  
+Version of MySQL for this instance
+
+**is_enterprise:** *not required*, *default:*  false  
+This action can be used on the community edition (ce) and enterprise edition (ee) of the shop. On top of setting this to true, a few extra variables/secrets must
+be provided for using the action on ee.
+
+**cache_endpoint:** *not required*, *default:* ${{ secrets.CACHE_ENDPOINT }}  
+secrets.CACHE_ENDPOINT for actions-cache
+
+**cache_access_key:** *not required*, *default:* ${{ secrets.CACHE_ACCESS_KEY }}  
+secrets.CACHE_ACCESS_KEY for actions-cache
+
+**cache_secret_key:** *not required*, *default:* ${{ secrets.CACHE_SECRET_KEY }}  
+secrets.CACHE_SECRET_KEY  for actions-cache
 
 ### install_shop
 Fetches a shop from cache and starts it

@@ -12,7 +12,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-  - name: Install APEX theme
+  - name: Install themes
         run: |
           for THEME in ${{ inputs.themes }}
           docker-compose exec -T php composer require "${THEME}" ${{ inputs.options }}
