@@ -1,0 +1,53 @@
+name: 'unit_tests'
+description: 'Executes unit tests in a running shop'
+inputs:
+  php:
+    required: false
+    description: 'Version of PHP for this instance'
+    default: ${{ matrix.php }}
+  mysql:
+    required: false
+    description: 'Version of MySQL for this instance'
+    default: ${{ matrix.mysql }}
+  is_enterprise:
+    required: false
+    description: 'This action can be used on the community edition (ce) and enterprise edition (ee) of the shop. On top of setting this to true, a few extra variables/secrets must be provided for using the action on ee.'
+    default: false
+outputs:
+runs:
+  using: "composite"
+  steps:
+    - name: Add environment variables
+      if: is_enterprise == true
+      run: |
+        EXEC_PHP="docker-compose exec -T php"
+        echo "EXEC_PHP=$EXEC_PHP" >> $GITHUB_ENV
+        UNIT_FOLDER="vendor/oxid-esales/oxideshop-ee/Tests/Unit"
+        echo "UNIT_FOLDER=$UNIT_FOLDER" >> $GITHUB_ENV
+        PHPUNIT_LOGFILE="unit_PHP${{ input.php }}_MYSQL${{ input.mysql }}_phpunit_log.txt"
+        echo "PHPUNIT_LOGFILE=$PHPUNIT_LOGFILE" >> $GITHUB_ENV
+
+    - name: Add environment variables
+      if: is_enterprise == false
+      run: |
+        EXEC_PHP="docker-compose exec -T php"
+        echo "EXEC_PHP=$EXEC_PHP" >> $GITHUB_ENV
+        UNIT_FOLDER="tests/Unit"
+        echo "UNIT_FOLDER=$UNIT_FOLDER" >> $GITHUB_ENV
+        PHPUNIT_LOGFILE="unit_PHP${{ input.php }}_MYSQL${{ input.mysql }}_phpunit_log.txt"
+        echo "PHPUNIT_LOGFILE=$PHPUNIT_LOGFILE" >> $GITHUB_ENV
+
+    # warum haben wir in ee "php vendor/bin/phpunit" und in ce nur "vendor/bin/phpunit"
+    - name: Run PHPUnit Unit tests
+      run: |
+        $EXEC_PHP php vendor/bin/phpunit -c phpunit.xml $UNIT_FOLDER | tee $PHPUNIT_LOGFILE 2>&1 || true
+        if grep -q -Ei 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error' $PHPUNIT_LOGFILE; then exit 1; fi
+
+    - name: Upload PHPUnit Log
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: phpunit-logs
+        path: ${{ env.PHPUNIT_LOGFILE }}
+        if-no-files-found: error
+        retention-days: 7
