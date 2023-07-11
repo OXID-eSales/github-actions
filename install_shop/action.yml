@@ -44,7 +44,8 @@ inputs:
 outputs:
   cached_name:
     type: string
-    description: 'Name of the cached shop setup'
+    description: 'Name of the cached shop installation'
+    value: ${{ steps.output.cached_name }}
 runs:
   using: "composite"
   steps:
@@ -52,6 +53,18 @@ runs:
       run: |
         EXEC_PHP="docker-compose exec -T php"
         echo "EXEC_PHP=$EXEC_PHP" >> $GITHUB_ENV
+
+    - name: Set cache name (ee)
+      if: inputs.is_enterprise == true
+      run: |
+        CACHED_NAME="oxid-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}"
+        echo "CACHED_NAME=$CACHED_NAME" >> $GITHUB_ENV
+
+    - name: Set cache name (ce)
+      if: inputs.is_enterprise == false
+      run: |
+        CACHED_NAME="shopInstallation-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}"
+        echo "CACHED_NAME=$CACHED_NAME" >> $GITHUB_ENV
 
     - name: Run Install Shop
       run: |
@@ -76,30 +89,27 @@ runs:
         docker-compose down
         sleep 2
 
-    - name: Cache current ee installation
+    - name: Cache current installation (ee)
       if: inputs.is_enterprise == true
       uses: tespkg/actions-cache@v1
       with:
         path: |
           ./*
-        key: oxid-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
+        key: ${{ env.CACHED_NAME }}
       endpoint: ${{ inputs.cache_endpoint }}
       accessKey: ${{ inputs.cache_access_key }}
       secretKey: ${{ inputs.cache_secret_key }}
         bucket: oxideshop-ee
 
-      - name: Cache current installation
+      - name: Cache current installation (ce)
         if: inputs.is_enterprise == false
         uses: actions/cache@v3
         with:
           path: |
             ./*
-          key: shopInstallation-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
+          key: ${{ env.CACHED_NAME }}
 
-    - name: Set Output (ee)
+    - name: Set Output
+      id: output
       if: inputs.is_enterprise == true
-      run: echo "::set-output name=cached_name::$(echo oxid-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }})"
-
-    - name: Set Output (ce)
-      if: inputs.is_enterprise == false
-      run: echo "::set-output name=cached_name::$(echo shopInstallation-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }})"
+      run: echo "::set-output name=cached_name::$CACHED_NAME"
