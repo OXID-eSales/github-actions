@@ -2,9 +2,11 @@ name: 'install_themes'
 description: 'Installs oxidshop themes'
 inputs:
   themes:
+    type: string
     description: 'Space separated list of themes to install'
     required: true
   options:
+    type: string
     description: 'Options to pass along to composer'
     required: false
     default: '--with-all-dependencies'

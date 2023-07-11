@@ -2,14 +2,17 @@ name: 'unit_tests'
 description: 'Executes unit tests in a running shop'
 inputs:
   php:
+    type: string
     required: false
     description: 'Version of PHP for this instance'
     default: ${{ matrix.php }}
   mysql:
+    type: string
     required: false
     description: 'Version of MySQL for this instance'
     default: ${{ matrix.mysql }}
   is_enterprise:
+    type: boolean
     required: false
     description: 'This action can be used on the community edition (ce) and enterprise edition (ee) of the shop. On top of setting this to true, a few extra variables/secrets must be provided for using the action on ee.'
     default: false

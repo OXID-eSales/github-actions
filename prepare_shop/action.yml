@@ -2,78 +2,97 @@ name: 'prepare_shop'
 description: 'Prepares the shop and creates a cache for it'
 inputs:
   git_sdk_url:
+    type: string
     description: 'URL for the docker-eshop sdk repo to clone'
     required: false
     default: 'https://github.com/OXID-eSales/docker-eshop-sdk.git'
   git_sdk_ref:
+    type: string
     description: 'Branch, tag or hash of the commit to check out'
     required: false
     default: 'master'
   git_shop_url:
+    type: string
     description: 'URL for the oxidshop_ce repository'
     required: false
     default: 'https://github.com/OXID-eSales/oxideshop_ce.git'
   git_shop_ref:
+    type: string
     description: 'Branch, tag or hash of the commit to check out'
     required: true
     default: ${{ github.ref_name }}
   git_enterprise_ref:
+    type: string
     description: 'Branch to check out for the enterprise repos'
     required: false
   github_event_name:
+    type: string
     description: 'Name of the github event (github.event_name), used to handle pull requests'
     required: false
     default: ${{ github.event_name }}
   github_event_number:
+    type: number
     description: 'Number of the github event (github.event_number), used to handle pull requests'
     required: false
     default: ${{ github.event_number }}
   github_base_ref:
+    type: string
     description: 'Base reference (github.base_ref) for testing the github pull request'
     required: false
     default: ${{ github.base_ref }}
   github_sha:
+    type: string
     required: false
     description: 'github.sha is used in generating the cache id'
     default: ${{ github.sha }}
   github_run_number:
+    type: number
     required: false
     description: 'github.run_number and github.run_attempts are used in generating the cache id (tbd)'
     default: ${{ github.run_number }}
   github_run_attempt:
+    type: number
     required: false
     description: 'github.run_number and github.run_attempts are used in generating the cache id (tbd)'
     default: ${{ github.run_attempt }}
   php:
+    type: string
     required: false
     description: 'Version of PHP for this instance'
     default: ${{ matrix.php }}
   mysql:
+    type: string
     required: false
     description: 'Version of MySQL for this instance'
     default: ${{ matrix.mysql }}
   is_enterprise:
+    type: boolean
     required: false
     description: 'This action can be used on the community edition (ce) and enterprise edition (ee) of the shop. On top of setting this to true, a few extra variables/secrets must be provided for using the action on ee.'
     default: false
   enterprise_github_token:
-  required: false
+    type: string
+    required: false
     description: 'OAuth token to access enterprise repos'
     default: ''
   cache_endpoint:
+    type: string
     description: 'secrets.CACHE_ENDPOINT for actions-cache'
     required: false
     default: ${{ secrets.CACHE_ENDPOINT }}
   cache_access_key:
+    type: string
     description: 'secrets.CACHE_ACCESS_KEY for actions-cache'
     required: false
     default: ${{ secrets.CACHE_ACCESS_KEY }}
   cache_secret_key:
+    type: string
     description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
     required: false
     default: ${{ secrets.CACHE_SECRET_KEY }}
 outputs:
   cached_name:
+    type: string
     description: 'Name of the cached shop setup'
 runs:
   using: "composite"
