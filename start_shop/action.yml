@@ -2,41 +2,51 @@ name: 'start_shop'
 description: 'Fetches a shop from cache and starts it'
 inputs:
   git_enterprise_ref:
+    type: string
     description: 'Branch to check out for the enterprise repos'
     required: false
   github_sha:
+    type: string
     required: false
     description: 'github.sha is used in generating the cache id'
     default: ${{ github.sha }}
   github_run_number:
+    type: number
     required: false
     description: 'github.run_number and github.run_attempts are used in generating the cache id (tbd)'
     default: ${{ github.run_number }}
   github_run_attempt:
+    type: number
     required: false
     description: 'github.run_number and github.run_attempts are used in generating the cache id (tbd)'
     default: ${{ github.run_attempt }}
   php:
+    type: string
     required: false
     description: 'Version of PHP for this instance'
     default: ${{ matrix.php }}
   mysql:
+    type: string
     required: false
     description: 'Version of MySQL for this instance'
     default: ${{ matrix.mysql }}
   is_enterprise:
+    type: boolean
     required: false
     description: 'This action can be used on the community edition (ce) and enterprise edition (ee) of the shop. On top of setting this to true, a few extra variables/secrets must be provided for using the action on ee.'
     default: false
   cache_endpoint:
+    type: string
     description: 'secrets.CACHE_ENDPOINT for actions-cache'
     required: false
     default: ${{ secrets.CACHE_ENDPOINT }}
   cache_access_key:
+    type: string
     description: 'secrets.CACHE_ACCESS_KEY for actions-cache'
     required: false
     default: ${{ secrets.CACHE_ACCESS_KEY }}
   cache_secret_key:
+    type: string
     description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
     required: false
     default: ${{ secrets.CACHE_SECRET_KEY }}

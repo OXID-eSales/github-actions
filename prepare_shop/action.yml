@@ -2,84 +2,113 @@ name: 'prepare_shop'
 description: 'Prepares the shop and creates a cache for it'
 inputs:
   git_sdk_url:
+    type: string
     description: 'URL for the docker-eshop sdk repo to clone'
     required: false
     default: 'https://github.com/OXID-eSales/docker-eshop-sdk.git'
   git_sdk_ref:
+    type: string
     description: 'Branch, tag or hash of the commit to check out'
     required: false
     default: 'master'
   git_shop_url:
+    type: string
     description: 'URL for the oxidshop_ce repository'
     required: false
     default: 'https://github.com/OXID-eSales/oxideshop_ce.git'
   git_shop_ref:
+    type: string
     description: 'Branch, tag or hash of the commit to check out'
     required: true
     default: ${{ github.ref_name }}
   git_enterprise_ref:
+    type: string
     description: 'Branch to check out for the enterprise repos'
     required: false
   github_event_name:
+    type: string
     description: 'Name of the github event (github.event_name), used to handle pull requests'
     required: false
     default: ${{ github.event_name }}
   github_event_number:
+    type: number
     description: 'Number of the github event (github.event_number), used to handle pull requests'
     required: false
     default: ${{ github.event_number }}
   github_base_ref:
+    type: string
     description: 'Base reference (github.base_ref) for testing the github pull request'
     required: false
     default: ${{ github.base_ref }}
   github_sha:
+    type: string
     required: false
     description: 'github.sha is used in generating the cache id'
     default: ${{ github.sha }}
   github_run_number:
+    type: number
     required: false
     description: 'github.run_number and github.run_attempts are used in generating the cache id (tbd)'
     default: ${{ github.run_number }}
   github_run_attempt:
+    type: number
     required: false
     description: 'github.run_number and github.run_attempts are used in generating the cache id (tbd)'
     default: ${{ github.run_attempt }}
   php:
+    type: string
     required: false
     description: 'Version of PHP for this instance'
     default: ${{ matrix.php }}
   mysql:
+    type: string
     required: false
     description: 'Version of MySQL for this instance'
     default: ${{ matrix.mysql }}
   is_enterprise:
+    type: boolean
     required: false
     description: 'This action can be used on the community edition (ce) and enterprise edition (ee) of the shop. On top of setting this to true, a few extra variables/secrets must be provided for using the action on ee.'
     default: false
   enterprise_github_token:
-  required: false
+    type: string
+    required: false
     description: 'OAuth token to access enterprise repos'
     default: ''
   cache_endpoint:
+    type: string
     description: 'secrets.CACHE_ENDPOINT for actions-cache'
     required: false
     default: ${{ secrets.CACHE_ENDPOINT }}
   cache_access_key:
+    type: string
     description: 'secrets.CACHE_ACCESS_KEY for actions-cache'
     required: false
     default: ${{ secrets.CACHE_ACCESS_KEY }}
   cache_secret_key:
+    type: string
     description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
     required: false
     default: ${{ secrets.CACHE_SECRET_KEY }}
 outputs:
   cached_name:
+    type: string
     description: 'Name of the cached shop setup'
+    value: ${{ steps.output.cached_name }}
 runs:
   using: "composite"
   steps:
-    - name: Cleanup
-      uses: OXID-eSales/github-actions/cleanup_workspace@v1
+    - name: Set cache name (ee)
+      if: inputs.is_enterprise == true
+      run: |
+        CACHED_NAME="prepared-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}"
+        echo "CACHED_NAME=$CACHED_NAME" >> $GITHUB_ENV
+
+    - name: Set cache name (ce)
+      if: inputs.is_enterprise == false
+      run: |
+        CACHED_NAME="preparedShop-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}"
+        echo "CACHED_NAME=$CACHED_NAME" >> $GITHUB_ENV
 
     - name: Clone testing environment master
       run: git clone --depth 1 ${{ inputs.git_sdk_url }} --branch ${{ inputs.git_sdk_ref }} --single-branch .
@@ -95,16 +124,14 @@ runs:
         git -C source fetch origin refs/pull/${{ inputs.github_event_number }}/head:pr_${{ inputs.github_event_number }}
         git -C source checkout pr_${{ github_event_number }}
 
-    # ToDo: Does it make sense to actually use php and mysql for naming this cached object? So far, PHP and MYSQL were not relevant
-    # Recommendation: Use only ${{ inputs.github_sha }}
-    # And why do we run composer update and setup config_inc after caching? I would have put this cache at the very end (same place as the caching for ee)
+    # why do we run composer update and setup config_inc after caching? I would have put this cache at the very end (same place as the caching for ee)
     - name: Cache current ce shop installation
+      if: inputs.is_enterprise == false
       uses: actions/cache@v3
       with:
         path: |
           ./*
-        key: preparedShop-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
-        #key: preparedShop-${{ inputs.github_sha }}
+        key: ${{ env.CACHED_NAME }}
 
     - name: Prepare container configuration
       run: |
@@ -159,7 +186,7 @@ runs:
       with:
         path: |
           ./*
-        key: prepared-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
+        key: ${{ env.CACHED_NAME }}
         endpoint: ${{ inputs.cache_endpoint }}
         accessKey: ${{ inputs.cache_access_key }}
         secretKey: ${{ inputs.cache_secret_key }}
@@ -178,10 +205,5 @@ runs:
         docker system prune --force
 
     - name: Set Output (ee)
-      if: inputs.is_enterprise == true
-      run: echo "::set-output name=cached_name::$(echo prepared-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }})"
-
-    - name: Set Output (ce)
-      if: inputs.is_enterprise == false
-      run: echo "::set-output name=cached_name::$(echo preparedShop-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }})"
-      #run: echo "::set-output name=cached_name::$(echo preparedShop-${{ inputs.github_sha }})"
+      id: output
+      run: echo "::set-output name=cached_name::$CACHED_NAME"

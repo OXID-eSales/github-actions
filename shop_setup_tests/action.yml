@@ -2,12 +2,15 @@ name: 'shop_setup_tests'
 description: 'Executes shop setup tests'
 inputs:
   php:
+    type: string
     required: true
     description: 'Version of PHP for this instance'
   mysql:
+    type: string
     required: true
     description: 'Version of MySQL for this instance'
   is_enterprise:
+    type: boolean
     required: false
     default: true
 outputs:
