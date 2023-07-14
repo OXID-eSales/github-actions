@@ -53,7 +53,7 @@ inputs:
 outputs:
   installed_shop:
     description: 'Name of the cached shop installation'
-    value: ${{ steps.output.outputs.installed_shop }}
+    value: ${{ steps.init.outputs.installed_shop }}
 runs:
   using: "composite"
   steps:
