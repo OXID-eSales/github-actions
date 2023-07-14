@@ -4,13 +4,23 @@ runs:
   using: "composite"
   steps:
     - name: Cleanup workspace
+      shell: bash
       run: |
         ls -la ./
         rm -rf ./* || true
         rm -rf ./.??* || true
         ls -la ./
 
-    - name: Cleanup Docker
+    - name: Kill docker containers
+      if: env.ACT == false
+      shell: bash
       run: |
-        c=$(docker ps -q) && [[ $c ]] && docker kill $c
-        docker system prune --force
+        docker ps -a
+        for c in $(docker ps -q); do
+          echo "Killing container $c"
+          docker kill $c
+        done
+
+    - name: Cleanup Docker
+      shell: bash
+      run: docker system prune --force

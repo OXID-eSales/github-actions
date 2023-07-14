@@ -13,95 +13,144 @@ inputs:
     type: boolean
     required: false
     default: true
-outputs:
 runs:
   using: "composite"
   steps:
-    - name: Add environment variables
-      if: is_enterprise == true
+    - name: Add environment variables (ee)
+      if: ${{ inputs.is_enterprise == 'true' }}
+      shell: bash
       run: |
-        EXEC_PHP="docker-compose exec -T php"
-        echo "EXEC_PHP=$EXEC_PHP" >> $GITHUB_ENV
-        TEST_YAML="vendor/oxid-esales/oxideshop-ee/Tests/codeception.yml"
-        echo "TEST_YAML=$TEST_YAML" >> $GITHUB_ENV
-        PHPUNIT_LOGFILE="codeception_PHP${{ input.php }}_MYSQL${{ input.mysql }}_phpunit_log.txt"
-        echo "PHPUNIT_LOGFILE=$PHPUNIT_LOGFILE" >> $GITHUB_ENV
-        CODECEPTION_OUTPUT_PATH="source/vendor/oxid-esales/oxideshop-ee/Tests/Codeception/_output"
-        echo "CODECEPTION_OUTPUT_PATH=$CODECEPTION_OUTPUT_PATH" >> $GITHUB_ENV
+        cat >> $GITHUB_ENV <<EOF
+        EXEC_PHP=docker-compose exec -T php
+        TEST_YAML=vendor/oxid-esales/oxideshop-ee/Tests/codeception.yml
+        PHPUNIT_LOGFILE=codeception_PHP${{ inputs.php }}_MYSQL${{ inputs.mysql }}_phpunit_log.txt
+        CODECEPTION_OUTPUT_PATH=source/vendor/oxid-esales/oxideshop-ee/Tests/Codeception/_output
+        EOF
+        cat $GITHUB_ENV
 
-    - name: Add environment variables
-      if: is_enterprise == false
+    - name: Add environment variables (ce)
+      if: ${{ inputs.is_enterprise == 'false' }}
+      shell: bash
       run: |
-        EXEC_PHP="docker-compose exec -T php"
-        echo "EXEC_PHP=$EXEC_PHP" >> $GITHUB_ENV
-        TEST_YAML="tests/codeception.yml"
-        echo "TEST_YAML=$UNIT_FOLDER" >> $GITHUB_ENV
-        PHPUNIT_LOGFILE="shop_setup_PHP${{ input.php }}_MYSQL${{ input.mysql }}_phpunit_log.txt"
-        echo "PHPUNIT_LOGFILE=$PHPUNIT_LOGFILE" >> $GITHUB_ENV
-        CODECEPTION_OUTPUT_PATH="source/tests/Codeception/_output"
-        echo "CODECEPTION_OUTPUT_PATH=$CODECEPTION_OUTPUT_PATH" >> $GITHUB_ENV
+        cat >> $GITHUB_ENV <<EOF
+        EXEC_PHP=docker-compose exec -T php
+        TEST_YAML=tests/codeception.yml
+        PHPUNIT_LOGFILE=shop_setup_PHP${{ inputs.php }}_MYSQL${{ inputs.mysql }}_phpunit_log.txt
+        CODECEPTION_OUTPUT_PATH=source/tests/Codeception/_output
+        EOF
+        cat $GITHUB_ENV
 
-     - name: Build Codeception
-        if: is_enterprise == true
-        run: |
-          $EXEC_PHP php vendor/bin/codecept build \
-          -c vendor/oxid-esales/oxideshop-ee/Tests/codeception.yml
+    - name: Load prepared shop from cache (ee)
+      if: ${{ inputs.is_enterprise == 'true' }}
+      uses: tespkg/actions-cache@v1
+      with:
+        path: |
+          ./*
+        key: prepared-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
+        restore-keys: |
+          prepared-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
+        endpoint: ${{ inputs.cache_endpoint }}
+        accessKey: ${{ inputs.cache_access_key }}
+        secretKey: ${{ inputs.cache_secret_key }}
+        bucket: oxideshop-ee
 
-      - name: Run Codeception tests (ee)
-        if: is_enterprise == true
-        # why do we use run in ee and exec in ce?
-        run: |
-          docker-compose run -T \
-            -e SELENIUM_SERVER_HOST=selenium \
-            -e BROWSER_NAME=chrome \
-            -e DB_NAME=setup_test \
-            -e DB_USERNAME=root \
-            -e DB_PASSWORD=root \
-            -e DB_HOST=mysql \
-            -e DB_PORT=3306 \
-            -e SHOP_URL=http://localhost.local/ \
-            -e SHOP_SOURCE_PATH=/var/www/source/ \
-            php \
-             php vendor/bin/codecept run acceptanceSetup \
-            -c $TEST_YAML \
-          --ext DotReporter \
-          | tee $PHPUNIT_LOGFILE 2>&1 || true
-          if grep -q -Ei 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH' $PHPUNIT_LOGFILE; then exit 1; fi
+    - name: Load prepared shop from cache (ce)
+      if: ${{ inputs.is_enterprise == 'false' }}
+      uses: actions/cache@v3
+      with:
+        fail-on-cache-miss: true
+        path: |
+          ./*
+        key: preparedShop-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
+        restore-keys: |
+          preparedShop-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
+          preparedShop-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
+          
+    - name: Start containers
+      shell: bash
+      run: |
+        make up
+        sleep 2
 
-      - name: Run Codeception tests (ce)
-        if: is_enterprise == false
-        run: |
-          docker-compose exec -T \
-            -e SELENIUM_SERVER_HOST=selenium \
-            -e BROWSER_NAME=chrome \
-            -e DB_NAME=setup_test \
-            -e DB_USERNAME=root \
-            -e DB_PASSWORD=root \
-            -e DB_HOST=mysql \
-            -e DB_PORT=3306 \
-            -e SHOP_URL=http://localhost.local/ \
-            -e SHOP_SOURCE_PATH=/var/www/source/ \
+    - name: Install APEX theme
+      if: ${{ inputs.is_enterprise == 'false' }}
+      shell: bash
+      run: |
+        docker-compose exec -T php composer require oxid-esales/apex-theme --with-all-dependencies
+
+    - name: Install admin theme
+      if: ${{ inputs.is_enterprise == 'false' }}
+      shell: bash
+      run: |
+        docker-compose exec -T php composer require oxid-esales/twig-admin-theme
+
+
+    - name: Build Codeception (ee)
+      if: ${{ inputs.is_enterprise == 'true' }}
+      shell: bash
+      run: |
+        $EXEC_PHP php vendor/bin/codecept build \
+        -c vendor/oxid-esales/oxideshop-ee/Tests/codeception.yml
+
+    - name: Run Codeception tests (ee)
+      if: ${{ inputs.is_enterprise == 'true' }}
+      shell: bash
+      # why do we use run in ee and exec in ce?
+      run: |
+        docker-compose run -T \
+          -e SELENIUM_SERVER_HOST=selenium \
+          -e BROWSER_NAME=chrome \
+          -e DB_NAME=setup_test \
+          -e DB_USERNAME=root \
+          -e DB_PASSWORD=root \
+          -e DB_HOST=mysql \
+          -e DB_PORT=3306 \
+          -e SHOP_URL=http://localhost.local/ \
+          -e SHOP_SOURCE_PATH=/var/www/source/ \
+          php \
             php vendor/bin/codecept run acceptanceSetup \
-              -c $TEST_YAML \
-              --ext DotReporter \
-              --skip-group flow_theme \
-              | tee PHPUNIT_LOGFILE 2>&1 || true
-          if grep -q -Ei 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH' PHPUNIT_LOGFILE; then exit 1; fi
+          -c $TEST_YAML \
+        --ext DotReporter \
+        | tee $PHPUNIT_LOGFILE 2>&1 || true
+        if grep -q -Ei 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH' $PHPUNIT_LOGFILE; then exit 1; fi
 
-      - name: Upload PHPUnit Log
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: phpunit-logs
-          path: ${{ env.PHPUNIT_LOGFILE }}
-          if-no-files-found: error
-          retention-days: 7
+    - name: Run Codeception tests (ce)
+      if: ${{ inputs.is_enterprise == 'false' }}
+      shell: bash
+      run: |
+        docker-compose exec -T \
+          -e SELENIUM_SERVER_HOST=selenium \
+          -e BROWSER_NAME=chrome \
+          -e DB_NAME=setup_test \
+          -e DB_USERNAME=root \
+          -e DB_PASSWORD=root \
+          -e DB_HOST=mysql \
+          -e DB_PORT=3306 \
+          -e SHOP_URL=http://localhost.local/ \
+          -e SHOP_SOURCE_PATH=/var/www/source/ \
+          php vendor/bin/codecept run acceptanceSetup \
+            -c $TEST_YAML \
+            --ext DotReporter \
+            --skip-group flow_theme \
+            | tee $PHPUNIT_LOGFILE 2>&1 || true
+        if grep -q -Ei 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH' $PHPUNIT_LOGFILE; then
+          exit 1
+        fi
 
-      - name: Upload Codeception Artifacts
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: shop_setup-artifacts-PHP${{ inputs.php }}-MYSQL${{ inputs.mysql }}
-          path: ${{ env.CODECEPTION_OUTPUT_PATH }}/*
-          if-no-files-found: ignore
-          retention-days: 7
+    - name: Upload PHPUnit Log
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: phpunit-logs
+        path: ${{ env.PHPUNIT_LOGFILE }}
+        if-no-files-found: error
+        retention-days: 7
+
+    - name: Upload Codeception Artifacts
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: shop_setup-artifacts-PHP${{ inputs.php }}-MYSQL${{ inputs.mysql }}
+        path: ${{ env.CODECEPTION_OUTPUT_PATH }}/*
+        if-no-files-found: ignore
+        retention-days: 7

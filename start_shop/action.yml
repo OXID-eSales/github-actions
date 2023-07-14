@@ -11,15 +11,15 @@ inputs:
     description: 'github.sha is used in generating the cache id'
     default: ${{ github.sha }}
   github_run_number:
-    type: number
+    type: string
     required: false
     description: 'github.run_number and github.run_attempts are used in generating the cache id (tbd)'
-    default: ${{ github.run_number }}
+    default: '0'
   github_run_attempt:
-    type: number
+    type: string
     required: false
     description: 'github.run_number and github.run_attempts are used in generating the cache id (tbd)'
-    default: ${{ github.run_attempt }}
+    default: '0'
   php:
     type: string
     required: false
@@ -32,34 +32,34 @@ inputs:
     default: ${{ matrix.mysql }}
   is_enterprise:
     type: boolean
-    required: false
+    required: false 
     description: 'This action can be used on the community edition (ce) and enterprise edition (ee) of the shop. On top of setting this to true, a few extra variables/secrets must be provided for using the action on ee.'
     default: false
   cache_endpoint:
     type: string
     description: 'secrets.CACHE_ENDPOINT for actions-cache'
     required: false
-    default: ${{ secrets.CACHE_ENDPOINT }}
+    default: ''
   cache_access_key:
     type: string
     description: 'secrets.CACHE_ACCESS_KEY for actions-cache'
     required: false
-    default: ${{ secrets.CACHE_ACCESS_KEY }}
+    default: ''
   cache_secret_key:
     type: string
     description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
     required: false
-    default: ${{ secrets.CACHE_SECRET_KEY }}
+    default: ''
 runs:
   using: "composite"
   steps:
     - name: Load current installation from cache (ee)
-      if: inputs.is_enterprise == true
+      if: ${{ inputs.is_enterprise == 'true' }}
       uses: tespkg/actions-cache@v1
       with:
         path: |
           ./*
-        key: ooxid-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
+        key: oxid-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
         restore-keys: |
           oxid-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
         endpoint: ${{ inputs.cache_endpoint }}
@@ -68,9 +68,10 @@ runs:
         bucket: oxideshop-ee
 
     - name: Load current installation from cache
-      if: inputs.is_enterprise == false
+      if: ${{ inputs.is_enterprise == 'false' }}
       uses: actions/cache@v3
       with:
+        fail-on-cache-miss: true
         path: |
           ./*
         key: shopInstallation-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
@@ -78,8 +79,9 @@ runs:
           shopInstallation-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
           shopInstallation-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
 
-      - name: Start containers
-        run: |
-          make up
-          sleep 2
+    - name: Start containers
+      shell: bash
+      run: |
+        make up
+        sleep 2
 
