@@ -1,0 +1,71 @@
+name: 'phpunit'
+description: 'Executes phpunit in a running container'
+inputs:
+  container:
+    type: string
+    required: false
+    description: 'Name of the container to run the test in'
+    default: 'php'
+  configuration:
+    type: string
+    required: false
+    description: 'Name of the configuration file'
+    default: 'phpunit.xml'
+  test:
+    type: string
+    required: false
+    description: 'Name of the test or folder to run'
+    default: 'tests/Unit'
+  additional_options:
+    type: string
+    required: false
+    description: 'Optional: Additional options to pass to phpunit'
+    default: ''
+  logfile:
+    type: string
+    required: false
+    description: 'Name of the output logfile'
+    default: 'phpunit_log.txt'
+  logfile_artifact:
+    type: string
+    required: false
+    description: 'Name of the output logfile'
+    default: 'phpunit-logs'
+  failure_pattern:
+    type: string
+    required: false
+    description: 'Grep pattern which indicate that the test failed'
+    default: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error'
+runs:
+  using: "composite"
+  steps:
+    - name: Run PHPUnit Unit tests
+      shell: bash
+      run: |
+        docker-compose exec -T ${{ inputs.container }} \
+          php vendor/bin/phpunit \
+            -c "${{ inputs.configuration }}" \
+            ${{ inputs.additional_options }} \
+            "${{ inputs.test }}" \
+          | tee "${{ inputs.logfile }}"" 2>&1 || true
+
+    - name: Upload PHPUnit Log
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ inputs.logfile_artifact }}
+        path: ${{ inputs.logfile }}
+        if-no-files-found: error
+        retention-days: 7
+
+    - name: Check results
+      shell: bash
+      run: |
+        if grep -q -Ei '${{ inputs.failure_pattern}}' "${{ inputs.logfile }}""; then
+          cat <<EOF
+        *******************************************************************************
+        phpunit test ${{ inputs.test }} failed
+        *******************************************************************************
+        EOF
+          exit 1
+        fi
