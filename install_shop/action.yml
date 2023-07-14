@@ -95,16 +95,7 @@ runs:
         docker-compose down
         sleep 2
 
-    # - name: Cache current installation (ce)
-    #   if: ${{ inputs.is_enterprise == 'false' }}
-    #   uses: actions/cache@v3
-    #   with:
-    #     path: |
-    #       ./*
-    #     key: ${{ env.CACHED_NAME }}
-
-    - name: Cache current installation (ee)
-      if: ${{ inputs.is_enterprise == 'true' }}
+    - name: Cache current installation
       uses: tespkg/actions-cache@v1
       with:
         path: |
