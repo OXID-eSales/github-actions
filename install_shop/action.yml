@@ -1,9 +1,9 @@
 name: 'install_shop'
 description: 'Fetches the prepared shop from cache and installs it'
 inputs:
-  prepared_shop:
+  cached_shop:
     type: string
-    description: 'Name of the cached object from prepare_shop'
+    description: 'Name of the cached object from prepare_shop or install_shop'
     required: true
   git_enterprise_ref:
     type: string
@@ -72,57 +72,6 @@ runs:
         EOF
         echo "installed_shop=$CACHED_NAME" >> $GITHUB_OUTPUT
         cat $GITHUB_ENV
-
-    - name: Load prepared shop from cache
-      id: load_prepared_shop
-      uses: tespkg/actions-cache@v1
-      with:
-        path: |
-          ./*
-        key: ${{ inputs.prepared_shop }}
-        restore-keys: |
-          ${{ inputs.prepared_shop }}
-        endpoint: ${{ inputs.cache_endpoint }}
-        accessKey: ${{ inputs.cache_access_key }}
-        secretKey: ${{ inputs.cache_secret_key }}
-        bucket: oxideshop-ee
-
-    - name: Confirm successful restore
-      shell: bash
-      run: |
-        if [ "${{ steps.load_prepared_shop.outputs.cache-hit }}" != "true" ]; then
-          echo "Failed to load ${{ inputs.prepared_shop }} from cache"
-          exit 1
-        fi
-
-    # - name: Load prepared shop from cache (ce)
-    #   if: ${{ inputs.is_enterprise == 'false' }}
-    #   uses: actions/cache@v3
-    #   with:
-    #     fail-on-cache-miss: true
-    #     path: |
-    #       ./*
-    #     key: preparedShop-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
-    #     restore-keys: |
-    #       preparedShop-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
-    #       preparedShop-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
-          
-    - name: Start containers
-      shell: bash
-      run: |
-        make up
-        sleep 2
-
-    - name: Output docker logs if make up failed
-      if: failure()
-      shell: bash
-      run: |
-        cat docker-compose.yml
-        docker-compose logs --tail=200
-        for c in $(docker ps -aq); do
-          echo "*** Logs for $c ***"
-          docker logs -n 200 $c
-        done
 
     - name: Run Install Shop
       shell: bash

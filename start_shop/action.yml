@@ -1,9 +1,9 @@
 name: 'start_shop'
 description: 'Fetches a shop from cache and starts it'
 inputs:
-  installed_shop:
+  cached_shop:
     type: string
-    description: 'Name of the cached object from install_shop'
+    description: 'Name of the cached object from prepare_shop/install_shop'
     required: true
   git_enterprise_ref:
     type: string
@@ -57,19 +57,19 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Load installed shop from cache
-          id: load_installed_shop
-          uses: tespkg/actions-cache@v1
-          with:
-            path: |
-              ./*
-            key: ${{ inputs.installed_shop }}
-            restore-keys: |
-              ${{ inputs.installed_shop }}
-            endpoint: ${{ inputs.cache_endpoint }}
-            accessKey: ${{ inputs.cache_access_key }}
-            secretKey: ${{ inputs.cache_secret_key }}
-            bucket: oxideshop-ee
+    - name: Load cached shop from cache
+      id: load_installed_shop
+      uses: tespkg/actions-cache@v1
+      with:
+        path: |
+          ./*
+        key: ${{ inputs.cached_shop }}
+        restore-keys: |
+          ${{ inputs.cached_shop }}
+        endpoint: ${{ inputs.cache_endpoint }}
+        accessKey: ${{ inputs.cache_access_key }}
+        secretKey: ${{ inputs.cache_secret_key }}
+        bucket: oxideshop-ee
 
     - name: Confirm successful restore
       shell: bash
