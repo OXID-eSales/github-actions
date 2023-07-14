@@ -1,6 +1,10 @@
 name: 'install_shop'
 description: 'Fetches the prepared shop from cache and installs it'
 inputs:
+  prepared_shop:
+    type: string
+    description: 'Name of the cached object from prepare_shop'
+    required: true
   git_enterprise_ref:
     type: string
     description: 'Branch to check out for the enterprise repos'
@@ -53,57 +57,72 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Add environment variables
+    - name: Initialize
+      id: init
       shell: bash
       run: |
-        EXEC_PHP="docker-compose exec -T php"
-        echo "EXEC_PHP=$EXEC_PHP" | tee -a $GITHUB_ENV
+        if [ "${{ inputs.is_enterprise}}" == "true" ]; then
+          CACHED_NAME="shopInstallation-ee-${{ inputs.git_enterprise_ref }}-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}"
+        else
+          CACHED_NAME="shopInstallation-ce-${{ inputs.git_shop_ref }}-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}"
+        fi
+        cat >> $GITHUB_ENV <<EOF
+        CACHED_NAME=$CACHED_NAME
+        EXEC_PHP=docker-compose exec -T php
+        EOF
+        echo "installed_shop=$CACHED_NAME" >> $GITHUB_OUTPUT
+        cat $GITHUB_ENV
 
-    - name: Set cache name (ee)
-      if: ${{ inputs.is_enterprise == 'true' }}
-      shell: bash
-      run: |
-        CACHED_NAME="oxid-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}"
-        echo "CACHED_NAME=$CACHED_NAME" | tee -a $GITHUB_ENV
-
-    - name: Set cache name (ce)
-      if: ${{ inputs.is_enterprise == 'false' }}
-      shell: bash
-      run: |
-        CACHED_NAME="shopInstallation-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}"
-        echo "CACHED_NAME=$CACHED_NAME" | tee -a $GITHUB_ENV
-
-    - name: Load prepared shop from cache (ee)
-      if: ${{ inputs.is_enterprise == 'true' }}
+    - name: Load prepared shop from cache
+      id: load_prepared_shop
       uses: tespkg/actions-cache@v1
       with:
         path: |
           ./*
-        key: prepared-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
+        key: ${{ inputs.prepared_shop }}
         restore-keys: |
-          prepared-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
+          ${{ inputs.prepared_shop }}
         endpoint: ${{ inputs.cache_endpoint }}
         accessKey: ${{ inputs.cache_access_key }}
         secretKey: ${{ inputs.cache_secret_key }}
         bucket: oxideshop-ee
 
-    - name: Load prepared shop from cache (ce)
-      if: ${{ inputs.is_enterprise == 'false' }}
-      uses: actions/cache@v3
-      with:
-        fail-on-cache-miss: true
-        path: |
-          ./*
-        key: preparedShop-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
-        restore-keys: |
-          preparedShop-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
-          preparedShop-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
+  - name: Confirm successful restore
+    shell: bash
+    run: |
+      if [ "${{ steps.load_prepared_shop.outputs.cache-hit }}" != "true" ]; then
+        echo "Failed to load ${{ inputs.prepared_shop }} from cache"
+        exit 1
+      fi
+
+    # - name: Load prepared shop from cache (ce)
+    #   if: ${{ inputs.is_enterprise == 'false' }}
+    #   uses: actions/cache@v3
+    #   with:
+    #     fail-on-cache-miss: true
+    #     path: |
+    #       ./*
+    #     key: preparedShop-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
+    #     restore-keys: |
+    #       preparedShop-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
+    #       preparedShop-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
           
     - name: Start containers
       shell: bash
       run: |
         make up
         sleep 2
+
+    - name: Output docker logs if make up failed
+      if: failure()
+      shell: bash
+      run: |
+        cat docker-compose.yml
+        docker-compose logs --tail=200
+        for c in $(docker ps -aq); do
+          echo "*** Logs for $c ***"
+          docker logs -n 200 $c
+        done
 
     - name: Run Install Shop
       shell: bash
@@ -131,6 +150,14 @@ runs:
         docker-compose down
         sleep 2
 
+    # - name: Cache current installation (ce)
+    #   if: ${{ inputs.is_enterprise == 'false' }}
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: |
+    #       ./*
+    #     key: ${{ env.CACHED_NAME }}
+
     - name: Cache current installation (ee)
       if: ${{ inputs.is_enterprise == 'true' }}
       uses: tespkg/actions-cache@v1
@@ -142,16 +169,3 @@ runs:
         accessKey: ${{ inputs.cache_access_key }}
         secretKey: ${{ inputs.cache_secret_key }}
         bucket: oxideshop-ee
-
-    - name: Cache current installation (ce)
-      if: ${{ inputs.is_enterprise == 'false' }}
-      uses: actions/cache@v3
-      with:
-        path: |
-          ./*
-        key: ${{ env.CACHED_NAME }}
-
-    - name: Set Output
-      id: output
-      shell: bash
-      run: echo "installed_shop=$CACHED_NAME" >> $GITHUB_OUTPUT

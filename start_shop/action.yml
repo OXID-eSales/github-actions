@@ -1,6 +1,10 @@
 name: 'start_shop'
 description: 'Fetches a shop from cache and starts it'
 inputs:
+  installed_shop:
+    type: string
+    description: 'Name of the cached object from install_shop'
+    required: true
   git_enterprise_ref:
     type: string
     description: 'Branch to check out for the enterprise repos'
@@ -53,31 +57,39 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Load current installation from cache (ee)
-      if: ${{ inputs.is_enterprise == 'true' }}
-      uses: tespkg/actions-cache@v1
-      with:
-        path: |
-          ./*
-        key: oxid-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
-        restore-keys: |
-          oxid-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
-        endpoint: ${{ inputs.cache_endpoint }}
-        accessKey: ${{ inputs.cache_access_key }}
-        secretKey: ${{ inputs.cache_secret_key }}
-        bucket: oxideshop-ee
+    - name: Load installed shop from cache
+          id: load_installed_shop
+          uses: tespkg/actions-cache@v1
+          with:
+            path: |
+              ./*
+            key: ${{ inputs.installed_shop }}
+            restore-keys: |
+              ${{ inputs.installed_shop }}
+            endpoint: ${{ inputs.cache_endpoint }}
+            accessKey: ${{ inputs.cache_access_key }}
+            secretKey: ${{ inputs.cache_secret_key }}
+            bucket: oxideshop-ee
 
-    - name: Load current installation from cache
-      if: ${{ inputs.is_enterprise == 'false' }}
-      uses: actions/cache@v3
-      with:
-        fail-on-cache-miss: true
-        path: |
-          ./*
-        key: shopInstallation-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
-        restore-keys: |
-          shopInstallation-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
-          shopInstallation-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
+      - name: Confirm successful restore
+        shell: bash
+        run: |
+          if [ "${{ steps.load_installed_shop.outputs.cache-hit }}" != "true" ]; then
+            echo "Failed to load ${{ inputs.installed_shop }} from cache"
+            exit 1
+          fi
+
+    # - name: Load current installation from cache
+    #   if: ${{ inputs.is_enterprise == 'false' }}
+    #   uses: actions/cache@v3
+    #   with:
+    #     fail-on-cache-miss: true
+    #     path: |
+    #       ./*
+    #     key: shopInstallation-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
+    #     restore-keys: |
+    #       shopInstallation-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
+    #       shopInstallation-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
 
     - name: Start containers
       shell: bash
@@ -85,3 +97,13 @@ runs:
         make up
         sleep 2
 
+    - name: Output docker logs if make up failed
+      if: failure()
+      shell: bash
+      run: |
+        cat docker-compose.yml
+        docker-compose logs --tail=200
+        for c in $(docker ps -aq); do
+          echo "*** Logs for $c ***"
+          docker logs -n 200 $c
+        done

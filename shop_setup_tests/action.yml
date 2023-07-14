@@ -1,6 +1,10 @@
 name: 'shop_setup_tests'
 description: 'Executes shop setup tests'
 inputs:
+  prepared_shop:
+    type: string
+    description: 'Name of the cached object from prepare_shop'
+    required: true
   php:
     type: string
     required: true
@@ -16,61 +20,25 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Add environment variables (ee)
-      if: ${{ inputs.is_enterprise == 'true' }}
+    - name: Initialize
       shell: bash
       run: |
-        cat >> $GITHUB_ENV <<EOF
+        if [ "${{ inputs.is_enterprise}}" == "true" ]; then
+          cat >> $GITHUB_ENV <<EOF
         EXEC_PHP=docker-compose exec -T php
         TEST_YAML=vendor/oxid-esales/oxideshop-ee/Tests/codeception.yml
         PHPUNIT_LOGFILE=codeception_PHP${{ inputs.php }}_MYSQL${{ inputs.mysql }}_phpunit_log.txt
         CODECEPTION_OUTPUT_PATH=source/vendor/oxid-esales/oxideshop-ee/Tests/Codeception/_output
         EOF
-        cat $GITHUB_ENV
-
-    - name: Add environment variables (ce)
-      if: ${{ inputs.is_enterprise == 'false' }}
-      shell: bash
-      run: |
-        cat >> $GITHUB_ENV <<EOF
+        else
+          cat >> $GITHUB_ENV <<EOF
         EXEC_PHP=docker-compose exec -T php
         TEST_YAML=tests/codeception.yml
         PHPUNIT_LOGFILE=shop_setup_PHP${{ inputs.php }}_MYSQL${{ inputs.mysql }}_phpunit_log.txt
         CODECEPTION_OUTPUT_PATH=source/tests/Codeception/_output
         EOF
+        fi
         cat $GITHUB_ENV
-
-    - name: Load prepared shop from cache (ee)
-      if: ${{ inputs.is_enterprise == 'true' }}
-      uses: tespkg/actions-cache@v1
-      with:
-        path: |
-          ./*
-        key: prepared-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
-        restore-keys: |
-          prepared-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
-        endpoint: ${{ inputs.cache_endpoint }}
-        accessKey: ${{ inputs.cache_access_key }}
-        secretKey: ${{ inputs.cache_secret_key }}
-        bucket: oxideshop-ee
-
-    - name: Load prepared shop from cache (ce)
-      if: ${{ inputs.is_enterprise == 'false' }}
-      uses: actions/cache@v3
-      with:
-        fail-on-cache-miss: true
-        path: |
-          ./*
-        key: preparedShop-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
-        restore-keys: |
-          preparedShop-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
-          preparedShop-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
-          
-    - name: Start containers
-      shell: bash
-      run: |
-        make up
-        sleep 2
 
     - name: Install APEX theme
       if: ${{ inputs.is_enterprise == 'false' }}
