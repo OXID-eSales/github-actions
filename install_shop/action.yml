@@ -9,6 +9,10 @@ inputs:
     type: string
     description: 'Branch to check out for the enterprise repos'
     required: false
+  git_shop_ref:
+    type: string
+    description: 'Branch, tag or hash of the commit to check out'
+    required: false
   github_sha:
     type: string
     required: true
@@ -66,12 +70,8 @@ runs:
         else
           CACHED_NAME="shopInstallation-ce-${{ inputs.git_shop_ref }}-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}"
         fi
-        cat >> $GITHUB_ENV <<EOF
-        CACHED_NAME=$CACHED_NAME
-        EXEC_PHP=docker-compose exec -T php
-        EOF
-        echo "installed_shop=$CACHED_NAME" >> $GITHUB_OUTPUT
-        cat $GITHUB_ENV
+        echo "installed_shop=$CACHED_NAME" | tee -a $GITHUB_OUTPUT
+        echo "EXEC_PHP=docker-compose exec -T php" | tee -a $GITHUB_ENV
 
     - name: Run Install Shop
       shell: bash
@@ -113,7 +113,7 @@ runs:
       with:
         path: |
           ./*
-        key: ${{ env.CACHED_NAME }}
+        key: ${{ steps.init.outputs.installed_shop }}
         endpoint: ${{ inputs.cache_endpoint }}
         accessKey: ${{ inputs.cache_access_key }}
         secretKey: ${{ inputs.cache_secret_key }}

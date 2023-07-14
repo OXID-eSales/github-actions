@@ -106,12 +106,8 @@ runs:
         else
           CACHED_NAME="preparedShop-ce-${{ inputs.git_shop_ref }}-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}"
         fi
-        cat >> $GITHUB_ENV <<EOF
-        CACHED_NAME=$CACHED_NAME
-        EXEC_PHP=docker-compose exec -T php
-        EOF
-        echo "prepared_shop=$CACHED_NAME" >> $GITHUB_OUTPUT
-        cat $GITHUB_ENV
+        echo "prepared_shop=$CACHED_NAME" | tee -a $GITHUB_OUTPUT
+        echo "EXEC_PHP=docker-compose exec -T php" | tee -a $GITHUB_ENV
 
     - name: Clone testing environment master
       shell: bash
@@ -205,7 +201,7 @@ runs:
       with:
         path: |
           ./*
-        key: ${{ env.CACHED_NAME }}
+        key: ${{ steps.init.outputs.prepared_shop }}
         endpoint: ${{ inputs.cache_endpoint }}
         accessKey: ${{ inputs.cache_access_key }}
         secretKey: ${{ inputs.cache_secret_key }}

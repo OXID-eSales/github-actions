@@ -5,40 +5,6 @@ inputs:
     type: string
     description: 'Name of the cached object from prepare_shop/install_shop'
     required: true
-  git_enterprise_ref:
-    type: string
-    description: 'Branch to check out for the enterprise repos'
-    required: false
-  github_sha:
-    type: string
-    required: false
-    description: 'github.sha is used in generating the cache id'
-    default: ${{ github.sha }}
-  github_run_number:
-    type: string
-    required: false
-    description: 'github.run_number and github.run_attempts are used in generating the cache id (tbd)'
-    default: '0'
-  github_run_attempt:
-    type: string
-    required: false
-    description: 'github.run_number and github.run_attempts are used in generating the cache id (tbd)'
-    default: '0'
-  php:
-    type: string
-    required: false
-    description: 'Version of PHP for this instance'
-    default: ${{ matrix.php }}
-  mysql:
-    type: string
-    required: false
-    description: 'Version of MySQL for this instance'
-    default: ${{ matrix.mysql }}
-  is_enterprise:
-    type: boolean
-    required: false 
-    description: 'This action can be used on the community edition (ce) and enterprise edition (ee) of the shop. On top of setting this to true, a few extra variables/secrets must be provided for using the action on ee.'
-    default: false
   cache_endpoint:
     type: string
     description: 'secrets.CACHE_ENDPOINT for actions-cache'
@@ -78,18 +44,6 @@ runs:
           echo "Failed to load ${{ inputs.installed_shop }} from cache"
           exit 1
         fi
-
-    # - name: Load current installation from cache
-    #   if: ${{ inputs.is_enterprise == 'false' }}
-    #   uses: actions/cache@v3
-    #   with:
-    #     fail-on-cache-miss: true
-    #     path: |
-    #       ./*
-    #     key: shopInstallation-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
-    #     restore-keys: |
-    #       shopInstallation-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
-    #       shopInstallation-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
 
     - name: Start containers
       shell: bash
