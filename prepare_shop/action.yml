@@ -228,4 +228,4 @@ runs:
     - name: Set Output
       id: output
       shell: bash
-      run: echo "prepared_shop=$CACHED_NAME" >>$GITHUB_OUTPUT
+      run: echo "prepared_shop=$CACHED_NAME" | tee -a $GITHUB_OUTPUT
