@@ -93,7 +93,7 @@ inputs:
 outputs:
   prepared_shop:
     description: 'Name of the cached shop setup'
-    value: ${{ steps.output.prepared_shop }}
+    value: ${{ steps.output.outputs.prepared_shop }}
 runs:
   using: "composite"
   steps:
