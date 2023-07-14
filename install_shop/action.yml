@@ -1,10 +1,6 @@
 name: 'install_shop'
 description: 'Fetches the prepared shop from cache and installs it'
 inputs:
-  cached_shop:
-    type: string
-    description: 'Name of the cached object from prepare_shop or install_shop'
-    required: true
   git_enterprise_ref:
     type: string
     description: 'Branch to check out for the enterprise repos'
