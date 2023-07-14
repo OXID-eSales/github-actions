@@ -87,13 +87,13 @@ runs:
         secretKey: ${{ inputs.cache_secret_key }}
         bucket: oxideshop-ee
 
-  - name: Confirm successful restore
-    shell: bash
-    run: |
-      if [ "${{ steps.load_prepared_shop.outputs.cache-hit }}" != "true" ]; then
-        echo "Failed to load ${{ inputs.prepared_shop }} from cache"
-        exit 1
-      fi
+    - name: Confirm successful restore
+      shell: bash
+      run: |
+        if [ "${{ steps.load_prepared_shop.outputs.cache-hit }}" != "true" ]; then
+          echo "Failed to load ${{ inputs.prepared_shop }} from cache"
+          exit 1
+        fi
 
     # - name: Load prepared shop from cache (ce)
     #   if: ${{ inputs.is_enterprise == 'false' }}
