@@ -47,7 +47,7 @@ runs:
             -c "${{ inputs.configuration }}" \
             ${{ inputs.additional_options }} \
             "${{ inputs.test }}" \
-          | tee "${{ inputs.logfile }}"" 2>&1 || true
+          | tee "${{ inputs.logfile }}" 2>&1 || true
 
     - name: Upload PHPUnit Log
       if: always()
@@ -61,7 +61,7 @@ runs:
     - name: Check results
       shell: bash
       run: |
-        if grep -q -Ei '${{ inputs.failure_pattern}}' "${{ inputs.logfile }}""; then
+        if grep -q -Ei '${{ inputs.failure_pattern}}' "${{ inputs.logfile }}"; then
           cat <<EOF
         *******************************************************************************
         phpunit test ${{ inputs.test }} failed
