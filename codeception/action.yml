@@ -91,12 +91,9 @@ runs:
       shell: bash
       run: |
         docker-compose exec -T \
-          -e SELENIUM_SERVER_HOST=selenium \
-          -e BROWSER_NAME=chrome \
-          -e THEME_ID=apex \
           ${{ inputs. container_options }} \
            ${{ inputs.container }} \
-           php vendor/bin/codecept run ${{ inputs.suite }} ${{ inputs.test }} \
+           vendor/bin/codecept run ${{ inputs.suite }} ${{ inputs.test }} \
             -c ${{ inputs.configuration }} \
             --ext DotReporter \
             -${{ inputs.additional_options }} \
