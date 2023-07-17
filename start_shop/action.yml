@@ -1,40 +1,10 @@
 name: 'start_shop'
 description: 'Fetches a shop from cache and starts it'
 inputs:
-  git_enterprise_ref:
+  cached_shop:
     type: string
-    description: 'Branch to check out for the enterprise repos'
-    required: false
-  github_sha:
-    type: string
-    required: false
-    description: 'github.sha is used in generating the cache id'
-    default: ${{ github.sha }}
-  github_run_number:
-    type: string
-    required: false
-    description: 'github.run_number and github.run_attempts are used in generating the cache id (tbd)'
-    default: '0'
-  github_run_attempt:
-    type: string
-    required: false
-    description: 'github.run_number and github.run_attempts are used in generating the cache id (tbd)'
-    default: '0'
-  php:
-    type: string
-    required: false
-    description: 'Version of PHP for this instance'
-    default: ${{ matrix.php }}
-  mysql:
-    type: string
-    required: false
-    description: 'Version of MySQL for this instance'
-    default: ${{ matrix.mysql }}
-  is_enterprise:
-    type: boolean
-    required: false 
-    description: 'This action can be used on the community edition (ce) and enterprise edition (ee) of the shop. On top of setting this to true, a few extra variables/secrets must be provided for using the action on ee.'
-    default: false
+    description: 'Name of the cached object from prepare_shop/install_shop'
+    required: true
   cache_endpoint:
     type: string
     description: 'secrets.CACHE_ENDPOINT for actions-cache'
@@ -53,31 +23,27 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Load current installation from cache (ee)
-      if: ${{ inputs.is_enterprise == 'true' }}
+    - name: Load cached shop from cache
+      id: load_installed_shop
       uses: tespkg/actions-cache@v1
       with:
         path: |
           ./*
-        key: oxid-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
+        key: ${{ inputs.cached_shop }}
         restore-keys: |
-          oxid-eshop-${{ inputs.git_enterprise_ref }}-matrix-full-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
+          ${{ inputs.cached_shop }}
         endpoint: ${{ inputs.cache_endpoint }}
         accessKey: ${{ inputs.cache_access_key }}
         secretKey: ${{ inputs.cache_secret_key }}
         bucket: oxideshop-ee
 
-    - name: Load current installation from cache
-      if: ${{ inputs.is_enterprise == 'false' }}
-      uses: actions/cache@v3
-      with:
-        fail-on-cache-miss: true
-        path: |
-          ./*
-        key: shopInstallation-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
-        restore-keys: |
-          shopInstallation-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}
-          shopInstallation-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}
+    - name: Confirm successful restore
+      shell: bash
+      run: |
+        if [ "${{ steps.load_installed_shop.outputs.cache-hit }}" != "true" ]; then
+          echo "Failed to load ${{ inputs.installed_shop }} from cache"
+          exit 1
+        fi
 
     - name: Start containers
       shell: bash
@@ -85,3 +51,13 @@ runs:
         make up
         sleep 2
 
+    - name: Output docker logs if make up failed
+      if: failure()
+      shell: bash
+      run: |
+        cat docker-compose.yml
+        docker-compose logs --tail=200
+        for c in $(docker ps -aq); do
+          echo "*** Logs for $c ***"
+          docker logs -n 200 $c
+        done

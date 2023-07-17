@@ -88,34 +88,15 @@ secrets.CACHE_ACCESS_KEY for actions-cache
 secrets.CACHE_SECRET_KEY  for actions-cache
 
 #### Outputs:
-**cached_name**  
+**prepared_shop**  
 Name of the cached shop setup
 
 ### start_shop
 Fetches a shop from cache and starts it
 
 #### Inputs:
-**git_enterprise_ref:** *not required*, *no default*  
-Branch to check out for the enterprise repos
-
-**github_sha:** *not required*, *default:*  ${{ github.sha }}  
-github.sha is used in generating the cache id
-
-**github_run_number:** *not required*, *default:*  ${{ github.run_number }}  
-github.run_number and github.run_attempts are used in generating the cache id (tbd)
-
-**github_run_attempt:** *not required*, *default:*  ${{ github.run_attempt }}  
-github.run_number and github.run_attempts are used in generating the cache id (tbd)'
-
-**php:** *not required*, *default:*  ${{ matrix.php }}  
-Version of PHP for this instance
-
-**mysql:** *not required*, *default:*  ${{ matrix.mysql }}  
-Version of MySQL for this instance
-
-**is_enterprise:** *not required*, *default:*  false  
-This action can be used on the community edition (ce) and enterprise edition (ee) of the shop. On top of setting this to true, a few extra variables/secrets must
-be provided for using the action on ee.
+**cached_shop:** *required*, *no default*  
+Name of the cached object from prepare_shop/install_shop
 
 **cache_endpoint:** *not required*, *default:* ${{ secrets.CACHE_ENDPOINT }}  
 secrets.CACHE_ENDPOINT for actions-cache
@@ -131,10 +112,13 @@ Fetches a shop from cache and starts it
 
 #### Inputs:
 
-**git_enterprise_ref:** *required*, *no default*  
+**git_enterprise_ref:** *not required*, *no default*  
 Branch to check out for the enterprise repos
 
-**github_sha:** *not required*, *default:*  ${{ github.sha }}  
+**git_shop_ref:** *not required*, *no default*  
+Branch to check out for the enterprise repos
+
+**github_sha:** *required*, *default:*  ${{ github.sha }}  
 github.sha is used in generating the cache id
 
 **github_run_number:** *not required*, *default:*  ${{ github.run_number }}  
@@ -143,10 +127,10 @@ github.run_number and github.run_attempts are used in generating the cache id (t
 **github_run_attempt:** *not required*, *default:*  ${{ github.run_attempt }}  
 github.run_number and github.run_attempts are used in generating the cache id (tbd)'
 
-**php:** *not required*, *default:*  ${{ matrix.php }}  
+**php:** * required*, *default:*  ${{ matrix.php }}  
 Version of PHP for this instance
 
-**mysql:** *not required*, *default:*  ${{ matrix.mysql }}  
+**mysql:** *required*, *default:*  ${{ matrix.mysql }}  
 Version of MySQL for this instance
 
 **is_enterprise:** *not required*, *default:*  false  
@@ -163,44 +147,40 @@ secrets.CACHE_ACCESS_KEY for actions-cache
 secrets.CACHE_SECRET_KEY  for actions-cache
 
 #### Outputs:
-none
+**installed_shop**  
+Name of the cached shop setup
 
 ## Test actions
 These actions execute various tests on the previously installed shops
 
-### unit_tests
-Executes unit tests in a running shop
+### phpunit
+Executes phpunit tests in a running container
 
 #### Inputs:
-**php:** *not required*, *default:*  ${{ matrix.php }}  
-Version of PHP for this instance
+**container:** *not required*, *default:*  php  
+Name of the container to run the test in
 
-**mysql:** *not required*, *default:*  ${{ matrix.mysql }}  
-Version of MySQL for this instance
+**configuration:** *not required*, *default:*  phpunit.xml  
+Name of the configuration file
 
-**is_enterprise:** *not required*, *default:*  false  
-This action can be used on the community edition (ce) and enterprise edition (ee) of the shop. On top of setting this to true, a few extra variables/secrets must
-be provided for using the action on ee.
+**test:** *not required*, *default:*  tests/Unit  
+Name of the test or folder to run
+
+**additional_options:** *not required*, *default:*  ''  
+Optional: Additional options to pass to phpunit. Example: "--bootstrap bootstrap.xml"
+
+**logfile:** *not required*, *default:*  phpunit_log.txt  
+Name of the output logfile
+
+**logfile_artifact:** *not required*, *default:*  phpunit_logs  
+Github run artifact to put the logfile in
+
+**failure_pattern:** *not required*, *default:*  'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error'  
+Grep pattern which indicate that the test failed
 
 #### Outputs:
 none
 
-### integration_tests
-Executes integration tests in a running shop
-
-#### Inputs:
-**php:** *not required*, *default:*  ${{ matrix.php }}  
-Version of PHP for this instance
-
-**mysql:** *not required*, *default:*  ${{ matrix.mysql }}  
-Version of MySQL for this instance
-
-**is_enterprise:** *not required*, *default:*  false  
-This action can be used on the community edition (ce) and enterprise edition (ee) of the shop. On top of setting this to true, a few extra variables/secrets must
-be provided for using the action on ee.
-
-#### Outputs:
-none
 
 ### codeception_tests
 
