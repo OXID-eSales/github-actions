@@ -96,7 +96,7 @@ runs:
            vendor/bin/codecept run ${{ inputs.suite }} ${{ inputs.test }} \
             -c ${{ inputs.configuration }} \
             --ext DotReporter \
-            -${{ inputs.additional_options }} \
+            ${{ inputs.additional_options }} \
             | tee ${{ inputs.logfile }} 2>&1 || true
 
     - name: Upload Codeception Log
