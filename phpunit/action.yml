@@ -29,7 +29,7 @@ inputs:
   logfile_artifact:
     type: string
     required: false
-    description: 'Name of the output logfile'
+    description: 'Github run artifact to put the logfile in'
     default: 'phpunit-logs'
   failure_pattern:
     type: string

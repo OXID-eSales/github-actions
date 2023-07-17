@@ -34,7 +34,7 @@ inputs:
   is_enterprise:
     type: boolean
     required: false
-    default: true
+    default: false
   cache_endpoint:
     type: string
     description: 'secrets.CACHE_ENDPOINT for actions-cache'
