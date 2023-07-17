@@ -131,7 +131,7 @@ runs:
         if grep -q -Ei '${{ inputs.failure_pattern}}' "${{ inputs.logfile }}"; then
           cat <<EOF
         *******************************************************************************
-        phpunit test ${{ inputs.test }} failed
+        codeception test ${{ inputs.test }} failed
         *******************************************************************************
         EOF
           exit 1
