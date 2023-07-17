@@ -151,6 +151,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
+          logout: false
 
   prepare_shop:
     strategy:
@@ -388,3 +389,26 @@ jobs:
           logfile: shop_setup_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_phpunit_log.txt
           output_folder: 'source/vendor/oxid-esales/oxideshop-ee/Tests/Codeception/_output'
           output_artifact: shop_setup-artifacts
+
+  finish:
+    matrix:
+      php: ${{ fromJSON(inputs.php) }}
+      mysql: ${{ fromJSON(inputs.mysql) }}
+    fail-fast: false
+    needs:
+      - prepare_shop
+      - install_shop
+      - unit_tests
+      - integration_tests
+      - codeception_tests
+      - shop_setup_tests
+    runs-on: ${{ inputs.runs_on }}
+    steps:
+      - name: 'Cleanup (post)'
+        uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
+
+      - name: 'Docker logout'
+        shell: bash
+        run: |
+          docker logout
+          
