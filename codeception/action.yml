@@ -61,19 +61,6 @@ inputs:
     required: false
     description: 'Grep pattern which indicate that the test failed'
     default: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH'
-
-  php:
-    type: string
-    required: true
-    description: 'Version of PHP for this instance'
-  mysql:
-    type: string
-    required: true
-    description: 'Version of MySQL for this instance'
-  is_enterprise:
-    type: boolean
-    required: false
-    default: true
 runs:
   using: "composite"
   steps:
