@@ -88,7 +88,6 @@ runs:
           -c ${{ inputs.configuration }}
 
     - name: Run Codeception tests
-      if: ${{ inputs.is_enterprise == 'false' }}
       shell: bash
       run: |
         docker-compose exec -T \
@@ -116,8 +115,8 @@ runs:
       if: always()
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ inputs.codeception_artifacts }}
-        path: ${{ inputs.codeception_folder }}/*
+        name: ${{ inputs.output_artifacts }}
+        path: ${{ inputs.output_folder }}/*
         if-no-files-found: ignore
         retention-days: 7
 
