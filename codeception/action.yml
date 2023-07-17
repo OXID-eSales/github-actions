@@ -99,7 +99,7 @@ runs:
       if: always()
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ inputs.output_artifacts }}
+        name: ${{ inputs.output_artifact }}
         path: ${{ inputs.output_folder }}/*
         if-no-files-found: ignore
         retention-days: 7
