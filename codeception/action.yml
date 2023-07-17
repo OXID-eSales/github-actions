@@ -1,0 +1,142 @@
+name: 'codeception'
+description: 'Executes codeception tests in a running shop'
+inputs:
+  container:
+    type: string
+    required: false
+    description: 'Name of the container to run the test in'
+    default: 'php'
+  container_options:
+    type: string
+    required: false
+    description: 'Additional options to pass into the container'
+    default: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex'
+  configuration:
+    type: string
+    required: false
+    description: 'Name of the configuration file'
+    default: 'tests/codeception.yml'
+  build:
+    type: boolean
+    required: false
+    description: 'Whether to run the build step before running codeception or not'
+    default: false
+  suite:
+    type: string
+    required: false
+    description: 'Name of the suite to run'
+    default: 'acceptance,acceptanceAdmin'
+  test:
+    type: string
+    required: false
+    description: 'Name of the test to run'
+    default: ''
+  additional_options:
+    type: string
+    required: false
+    description: 'Optional: Additional options to pass to codeception'
+    default: ''
+  logfile:
+    type: string
+    required: false
+    description: 'Name of the output logfile'
+    default: 'phpunit_log.txt'
+  logfile_artifact:
+    type: string
+    required: false
+    description: 'Github run artifact to put the logfile in'
+    default: 'phpunit-logs'
+  output_folder:
+    type: string
+    required: false
+    description: 'Folder where codeception creates its output'
+    default: 'source/tests/Codeception/_output'
+  output_artifact:
+    type: string
+    required: false
+    description: 'Github run artifact for the codeception output'
+    default: 'codeception-artifacts'
+  failure_pattern:
+    type: string
+    required: false
+    description: 'Grep pattern which indicate that the test failed'
+    default: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH'
+
+  php:
+    type: string
+    required: true
+    description: 'Version of PHP for this instance'
+  mysql:
+    type: string
+    required: true
+    description: 'Version of MySQL for this instance'
+  is_enterprise:
+    type: boolean
+    required: false
+    default: true
+runs:
+  using: "composite"
+  steps:
+    - name: Build Codeception
+      if: ${{ inputs.build == 'true' }}
+      shell: bash
+      run: |
+        docker-compose exec -T
+          ${{ inputs. container_options }} \
+          ${{ inputs.container }} \
+          php vendor/bin/codecept build \
+          -c ${{ inputs.configuration }}
+
+    - name: Run Codeception tests
+      if: ${{ inputs.is_enterprise == 'false' }}
+      shell: bash
+      run: |
+        docker-compose exec -T \
+          -e SELENIUM_SERVER_HOST=selenium \
+          -e BROWSER_NAME=chrome \
+          -e THEME_ID=apex \
+          ${{ inputs. container_options }} \
+           ${{ inputs.container }} \
+           php vendor/bin/codecept run ${{ inputs.suite }} ${{ inputs.test }} \
+            -c ${{ inputs.configuration }} \
+            --ext DotReporter \
+            -${{ inputs.additional_options }} \
+            | tee ${{ inputs.logfile }} 2>&1 || true
+
+    - name: Upload Codeception Log
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ inputs.logfile_artifact }}
+        path: ${{ inputs.logfile }}
+        if-no-files-found: error
+        retention-days: 7
+
+    - name: Upload Codeception Artifacts
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ inputs.codeception_artifacts }}
+        path: ${{ inputs.codeception_folder }}/*
+        if-no-files-found: ignore
+        retention-days: 7
+
+    - name: Check results
+      shell: bash
+      run: |
+        if [ ! -s "${{ inputs.logfile }}" ]; then
+          cat <<EOF
+        *******************************************************************************
+        Log file is empty! Seems like no tests have been run!
+        *******************************************************************************
+        EOF
+          exit 1
+        fi
+        if grep -q -Ei '${{ inputs.failure_pattern}}' "${{ inputs.logfile }}"; then
+          cat <<EOF
+        *******************************************************************************
+        phpunit test ${{ inputs.test }} failed
+        *******************************************************************************
+        EOF
+          exit 1
+        fi

@@ -181,6 +181,47 @@ Grep pattern which indicate that the test failed
 #### Outputs:
 none
 
+### codeception
+
+#### Inputs:
+**container:** *not required*, *default:*  php  
+Name of the container to run the test in
+
+**container_options:** *not required*, *default:*  -e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex  
+Additional options to pass into the container
+
+**configuration:** *not required*, *default:*  tests/codeception.yml  
+Name of the configuration file
+
+**build:** *not required*, *default:*  false  
+Run codecept build before running the tests
+
+**suite:** *not required*, *default:*  acceptance,acceptanceAdmin  
+Name of the codeceptioun test suite to run
+
+**test:** *not required*, *default:*  ''  
+Name of a specific test to run
+
+**additional_options:** *not required*, *default:*  ''  
+Optional: Additional options to pass to codeception. Example: "--skip-group flow_theme"
+
+**logfile:** *not required*, *default:*  phpunit_log.txt  
+Name of the output logfile
+
+**logfile_artifact:** *not required*, *default:*  phpunit_logs  
+Github run artifact to put the logfile in
+
+**output_folder:** *not required*, *default:*  source/tests/Codeception/_output  
+Folder where codeception creates its output
+
+**output_artifact:** *not required*, *default:*  codeception-artifacts    
+Github run artifact to put the logfile in
+
+**failure_pattern:** *not required*, *default:*  'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH'  
+Grep pattern which indicate that the test failed
+
+#### Outputs:
+none
 
 ### codeception_tests
 
