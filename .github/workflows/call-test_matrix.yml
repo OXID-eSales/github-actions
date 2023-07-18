@@ -391,10 +391,11 @@ jobs:
           output_artifact: shop_setup-artifacts
 
   finish:
-    matrix:
-      php: ${{ fromJSON(inputs.php) }}
-      mysql: ${{ fromJSON(inputs.mysql) }}
-    fail-fast: false
+    strategy:
+      matrix:
+        php: ${{ fromJSON(inputs.php) }}
+        mysql: ${{ fromJSON(inputs.mysql) }}
+      fail-fast: false
     needs:
       - prepare_shop
       - install_shop
