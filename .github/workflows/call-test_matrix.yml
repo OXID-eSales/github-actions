@@ -391,6 +391,7 @@ jobs:
           output_artifact: shop_setup-artifacts
 
   finish:
+    if: ${{ always() }}
     strategy:
       matrix:
         php: ${{ fromJSON(inputs.php) }}
