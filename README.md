@@ -1,4 +1,23 @@
-# github workflows
+# Overview
+This repository contains re-usable workflows and actions for the OXID-eSales repositories.
+
+## Workflows
+- call-test_matrix: Full test matrix for oxidshop_ce and oxidshop_ee.
+
+## Actions
+- Auxiliary actions
+    - cleanup_workspace: Empties the current folder, stops all docker containers and prunes docker.
+    - install_themes: Installs one or more themes using the composer inside the PHP container
+- Setup actions
+    - prepare_shop: Prepares the shop and creates a cache for it.
+    - start_shop: Fetches a shop from cache and starts it
+    - install_shop: Installs a shop with a given pvp/MySQL combination and caches the installed shop.
+- Test actions
+    - phpunit: Executes phpunit tests in a running container
+    - codeception: Executes codeception tests in a running container and uploads the logs and outputs as artifacts.
+
+# Workflows
+
 Reusable github workflow code used in the OXID eShop github workflows.
 
 ## call-test_matrix
@@ -82,7 +101,7 @@ Used for the local s3 cache when running on a private runner
 **enterprise_github_token:**  
 OAuth token to access enterprise repos when building the enterprise edition
 
-# github actions
+# Actions
 Reusable github actions code used in the OXID eShop github workflows.
 
 ## Auxiliary actions
@@ -113,7 +132,7 @@ none
 ## Setup actions
 
 ### prepare_shop
-Prepares the shop and creates a cache for it. This uses actions/cache@v3 for the community edition (ce)  and tespkg/actions-cache@v1 for the enterprise edition (ee).
+Prepares the shop and creates a cache for it.
 
 #### Inputs:
 **git_sdk_url:** *not required*, *default:* 'https://github.com/OXID-eSales/docker-eshop-sdk.git'  
@@ -192,7 +211,7 @@ secrets.CACHE_ACCESS_KEY for actions-cache
 secrets.CACHE_SECRET_KEY  for actions-cache
 
 ### install_shop
-Fetches a shop from cache and starts it
+Installs a shop with a given pvp/MySQL combination and caches the installed shop.
 
 #### Inputs:
 
@@ -238,7 +257,7 @@ Name of the cached shop setup
 These actions execute various tests on the previously installed shops
 
 ### phpunit
-Executes phpunit tests in a running container
+Executes phpunit tests in a running container and uploads the logs as artefacts.
 
 #### Inputs:
 **container:** *not required*, *default:*  php  
@@ -266,6 +285,7 @@ Grep pattern which indicate that the test failed
 none
 
 ### codeception
+Executes codeception tests in a running container and uploads the logs and outputs as artifacts.
 
 #### Inputs:
 **container:** *not required*, *default:*  php  
