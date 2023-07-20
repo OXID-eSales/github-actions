@@ -16,7 +16,7 @@ on:
         type: string
         description: 'Runner for this workflow'
         required: false
-        default: 'ubuntu-latest'
+        default: '"ubuntu-latest"'
       git_sdk_url:
         type: string
         description: 'URL for the docker-eshop sdk repo to clone'
@@ -110,7 +110,7 @@ on:
   
 jobs:
   init:
-    runs-on: ${{ inputs.runs_on }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Initialize'
         run: |
@@ -160,7 +160,7 @@ jobs:
         mysql: ${{ fromJSON(inputs.mysql) }}
       fail-fast: false
     needs: init
-    runs-on: ${{ inputs.runs_on }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
     outputs:
       prepared_shop: ${{ steps.prepare_shop.outputs.prepared_shop }}
     steps:
@@ -197,7 +197,7 @@ jobs:
         mysql: ${{ fromJSON(inputs.mysql) }}
       fail-fast: false
     needs: [ prepare_shop ]
-    runs-on: ${{ inputs.runs_on }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
     outputs:
       installed_shop: ${{ steps.install_shop.outputs.installed_shop }}
     steps:
@@ -239,7 +239,7 @@ jobs:
         mysql: ${{ fromJSON(inputs.mysql) }}
       fail-fast: false
     needs: [ install_shop ]
-    runs-on: ${{ inputs.runs_on }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Debug cached name'
         run: |
@@ -277,7 +277,7 @@ jobs:
         mysql: ${{ fromJSON(inputs.mysql) }}
       fail-fast: false
     needs: [ install_shop ]
-    runs-on: ${{ inputs.runs_on }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Cleanup (pre)'
         uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
@@ -313,7 +313,7 @@ jobs:
         mysql: ${{ fromJSON(inputs.mysql) }}
       fail-fast: false
     needs: [ install_shop ]
-    runs-on: ${{ inputs.runs_on }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Cleanup (pre)'
         uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
@@ -354,7 +354,7 @@ jobs:
         mysql: ${{ fromJSON(inputs.mysql) }}
       fail-fast: false
     needs: [ prepare_shop ]
-    runs-on: ${{ inputs.runs_on }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Cleanup (pre)'
         uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
@@ -404,7 +404,7 @@ jobs:
       - integration_tests
       - codeception_tests
       - shop_setup_tests
-    runs-on: ${{ inputs.runs_on }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Cleanup (post)'
         uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
