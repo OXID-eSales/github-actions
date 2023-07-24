@@ -61,8 +61,6 @@ runs:
     - name: Check results
       shell: bash
       run: |
-<<<<<<< HEAD
-=======
         if [ ! -s "${{ inputs.logfile }}" ]; then
           cat <<EOF
         *******************************************************************************
@@ -71,7 +69,6 @@ runs:
         EOF
           exit 1
         fi
->>>>>>> OXDEV_7198
         if grep -q -Ei '${{ inputs.failure_pattern}}' "${{ inputs.logfile }}"; then
           cat <<EOF
         *******************************************************************************

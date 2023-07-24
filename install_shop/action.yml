@@ -35,6 +35,10 @@ inputs:
     type: boolean
     required: false
     default: false
+  config_idebug:
+    type: boolean
+    required: false
+    default: false
   cache_endpoint:
     type: string
     description: 'secrets.CACHE_ENDPOINT for actions-cache'
@@ -80,7 +84,13 @@ runs:
           --db-password root \
           --shop-url http://localhost.local \
           --shop-directory /var/www/source \
-          --compile-directory /var/www/source/tmp
+          --compile-directory /var/www/source/tmp \
+
+    - name: Activate iDebug
+      if: ${{ inputs.config_idebug == 'true' }}
+      shell: bash
+      run: |
+        perl -pi -e 's#iDebug = 0;#iDebug = -1;#g;' source/source/config.inc.php
 
     - name: Activate shop's theme
       if: ${{ inputs.is_enterprise == 'true' }}
@@ -94,6 +104,17 @@ runs:
       run: |
         docker-compose down
         sleep 2
+
+    - name: Upload configuration artifacts
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: Configs-${{ inputs.php }}-${{ inputs.mysql }}_install_shop
+        path: |
+          docker-compose.yml
+          source/composer.json
+          source/composer.lock
+          source/source/config.inc.php
 
     - name: Cache current installation
       uses: tespkg/actions-cache@v1

@@ -63,11 +63,11 @@ on:
       github_run_number:
         type: string
         required: false
-        description: 'github.run_number and github.run_attempts are used in generating the cache id (tbd)'
+        description: 'github.run_number and github.run_attempts are used in generating the cache id'
       github_run_attempt:
         type: string
         required: false
-        description: 'github.run_number and github.run_attempts are used in generating the cache id (tbd)'
+        description: 'github.run_number and github.run_attempts are used in generating the cache id'
       php:
         type: string
         required: false
@@ -228,10 +228,6 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
-      - name: 'Debug cached name'
-        run: |
-          echo "is: ${{ steps.install_shop.outputs.installed_shop }}"
-
   unit_tests:
     strategy:
       matrix:
@@ -241,10 +237,6 @@ jobs:
     needs: [ install_shop ]
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
-      - name: 'Debug cached name'
-        run: |
-          echo "is2: ${{ needs.install_shop.outputs.installed_shop }}"
-
       - name: 'Cleanup (pre)'
         uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
 
