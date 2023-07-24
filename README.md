@@ -78,9 +78,6 @@ Version of MySQL for this instance
 This action can be used on the community edition (ce) and enterprise edition (ee) of the shop. On top of setting this to true, a few extra variables/secrets must
 be provided for using the action on ee.
 
-**enterprise_github_token:** *not required*, *default:* ''  
-OAuth token to access enterprise repos
-
 ### Secrets
 
 **DOCKER_HUB_USER:**  
@@ -178,6 +175,15 @@ Version of MySQL for this instance
 This action can be used on the community edition (ce) and enterprise edition (ee) of the shop. On top of setting this to true, a few extra variables/secrets must
 be provided for using the action on ee.
 
+**custom_ini_error_reporting:** *not required*, *default:* E_ALL & ~E_DEPRECATED & ~E_NOTICE & ~E_WARNING    
+Error reporting settings for php custom.ini
+
+**custom_ini_xdebug:** *not required*, *default:* xdebug.max_nesting_level=1000  
+xdebug settings for php custom.ini
+
+**add_services:** *not required*, *default:* selenium-chrome  
+Space separated list of extra services to add
+
 **enterprise_github_token:** *not required*, *default:* ''  
 OAuth token to access enterprise repos
 
@@ -239,6 +245,9 @@ Version of MySQL for this instance
 **is_enterprise:** *not required*, *default:*  false  
 This action can be used on the community edition (ce) and enterprise edition (ee) of the shop. On top of setting this to true, a few extra variables/secrets must
 be provided for using the action on ee.
+
+**config_idebug** *not required*, *default:* false  
+Set iDebug to -1 in config.inc.php
 
 **cache_endpoint:** *not required*, *default:* ${{ secrets.CACHE_ENDPOINT }}  
 secrets.CACHE_ENDPOINT for actions-cache

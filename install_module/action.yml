@@ -1,0 +1,132 @@
+name: 'install_module'
+description: 'Fetches the module and installs it'
+inputs:
+  cached_shop:
+    type: string
+    description: 'Name of the cached object from prepare_shop/install_shop/install_module'
+    required: true
+  package_name:
+    type: string
+    description: 'Name of the module package'
+    required: true
+  module_ids:
+    type: string
+    description: 'Ids of the module'
+    required: true
+  module_path:
+    type: string
+    description: 'Path for the checkout and url'
+    required: false
+    default: 'test-module'
+  template_engine:
+    type: string
+    default: 'both'
+  git_module_url:
+    type: string
+    description: 'URL for the module repository'
+    required: false
+  git_module_ref:
+    type: string
+    description: 'Branch, tag or hash of the commit to check out'
+    required: false
+  php:
+    type: string
+    required: true
+    description: 'Version of PHP for this instance'
+  mysql:
+    type: string
+    required: true
+    description: 'Version of MySQL for this instance'
+  enterprise_github_token:
+    type: string
+    required: false
+    description: 'OAuth token to access enterprise repos'
+    default: ''
+  cache_endpoint:
+    type: string
+    description: 'secrets.CACHE_ENDPOINT for actions-cache'
+    required: false
+    default: ''
+  cache_access_key:
+    type: string
+    description: 'secrets.CACHE_ACCESS_KEY for actions-cache'
+    required: false
+    default: ''
+  cache_secret_key:
+    type: string
+    description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
+    required: false
+    default: ''
+outputs:
+  installed_shop_with_module:
+    description: 'Name of the cached shop installation'
+    value: ${{ steps.init.outputs.installed_shop_with_module }}
+runs:
+  using: "composite"
+  steps:
+    - name: Initialize
+      id: init
+      shell: bash
+      run: |
+        CACHED_NAME="shopInstallation-ee-${{ inputs.cached_shop }}+${{ inputs.module_ids }}"
+        echo "installed_shop_with_module=$CACHED_NAME" | tee -a $GITHUB_OUTPUT
+        echo "EXEC_PHP=docker-compose exec -T php" | tee -a $GITHUB_ENV
+
+    - name: Checkout current module
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ inputs.git_module_url }}
+        ref: ${{ inputs.git_module_ref }}
+        path: source/${{ inputs.module_path }}
+        token: ${{ inputs.enterprise_github_token }}
+
+    - name: Install module
+      run: |
+        $EXEC_PHP php composer config repositories.${{ inputs.package_name }} \
+          --json '{"type":"path", "url":"./${{ inputs.module_path }}", "options": {"symlink": true}}'
+        $EXEC_PHP php composer require ${{ inputs.package_name }}:* --no-interaction --no-update
+
+    - name: Install dependencies and reset shop
+      run: |
+        $EXEC_PHP composer update --no-interaction
+        $EXEC_PHP bin/oe-console oe:database:reset \
+          --db-host=mysql --db-port=3306 --db-name=example --db-user=root --db-password=root --force
+        $EXEC_PHP bin/oe-console oe:module:activate ${{ inputs.module_ids }}
+
+    - name: Install module dependencies
+      run: |
+        $EXEC_PHP --workdir=/var/www/test-module php composer install
+
+    - name: Stop containers
+      if: always()
+      shell: bash
+      run: |
+        docker-compose down
+        sleep 2
+
+    - name: Show docker log
+      if: always()
+      run: |
+        docker-compose logs
+
+    - name: Upload configuration artifacts
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: Configs-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.template_engine }}_${{ inputs.module_ids }}
+        path: |
+          docker-compose.yml
+          source/composer.json
+          source/composer.lock
+          source/source/config.inc.php
+
+    - name: Cache current installation
+      uses: tespkg/actions-cache@v1
+      with:
+        path: |
+          ./*
+        key: ${{ steps.init.outputs.installed_shop_with_module }}
+        endpoint: ${{ inputs.cache_endpoint }}
+        accessKey: ${{ inputs.cache_access_key }}
+        secretKey: ${{ inputs.cache_secret_key }}
+        bucket: oxideshop-ee

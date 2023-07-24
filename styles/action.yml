@@ -1,0 +1,60 @@
+name: 'styles'
+description: 'Configures styles'
+inputs:
+  module_path:
+    type: string
+    description: 'Path for the checkout and url'
+    required: false
+    default: 'test-module'
+  php:
+    type: string
+    required: true
+    description: 'Version of PHP for this instance'
+outputs:
+  installed_shop_with_module:
+    description: 'Name of the cached shop installation'
+    value: ${{ steps.init.outputs.installed_shop_with_module }}
+runs:
+  using: "composite"
+  steps:
+    - name: Initialize
+      id: init
+      shell: bash
+      run: |
+        echo "EXEC_PHP=docker-compose exec -T php" | tee -a $GITHUB_ENV
+
+      - name: Run phpstan
+        id: phpstan
+        if: always()
+        run: |
+          $EXEC_PHP --workdir=/var/www/${{ inputs.module_path }} \
+            php bash -c "composer phpstan-report; composer phpstan"
+
+      - name: Run phpmd
+        id: phpmd
+        if: always()
+        continue-on-error: true
+        run: |
+          $EXEC_PHP --workdir=/var/www/${{ inputs.module_path }} \
+            php bash -c "composer phpmd-report; composer phpmd"
+
+      - name: Run phpcs
+        if: always()
+        run: |
+          $EXEC_PHP --workdir=/var/www/${{ inputs.module_path }} \
+            php composer phpcs
+
+      - name: Stop containers
+        if: always()
+        run: |
+          make down
+          sleep 2
+
+      - name: Upload log artifact
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: StylesLog-${{ inputs.php }}
+          path: |
+            source/${{ inputs.module_path }}/tests/reports/phpstan.report.json
+            source/${{ inputs.module_path }}/tests/reports/phpmd.report.json
