@@ -46,16 +46,28 @@ inputs:
     required: false
     description: 'Github run artifact to put the logfile in'
     default: 'phpunit-logs'
-  output_folder:
+  output_files:
     type: string
     required: false
     description: 'Folder where codeception creates its output'
-    default: 'source/tests/Codeception/_output'
+    default: |
+      docker-compose.yml
+      source/composer.json
+      source/composer.lock
+      source/source/config.inc.php
+      source/source/log/oxideshop.log
+      data/php/logs/error_log.txt
+      source/tests/Codeception/_output
   output_artifact:
     type: string
     required: false
     description: 'Github run artifact for the codeception output'
     default: 'codeception-artifacts'
+  coverage_path:
+    type: string
+    required: false
+    description: 'Path for the coverage file, don't upload if it is empty'
+    default: ''
   failure_pattern:
     type: string
     required: false
@@ -84,7 +96,7 @@ runs:
             -c ${{ inputs.configuration }} \
             --ext DotReporter \
             ${{ inputs.additional_options }} \
-            | tee ${{ inputs.logfile }} 2>&1 || true
+            2>&1 | tee ${{ inputs.logfile }} || true
 
     - name: Upload Codeception Log
       if: always()
@@ -100,8 +112,17 @@ runs:
       uses: actions/upload-artifact@v3
       with:
         name: ${{ inputs.output_artifact }}
-        path: ${{ inputs.output_folder }}/*
+        path: ${{ inputs.output_files }}
         if-no-files-found: ignore
+        retention-days: 7
+
+    - name: Upload Coverage Report
+      if: ${{ always() && inputs.coverage_path != "" }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-reports
+        path: ${{ inputs.coverage_path }}
+        if-no-files-found: error
         retention-days: 7
 
     - name: Check results
@@ -119,6 +140,14 @@ runs:
           cat <<EOF
         *******************************************************************************
         codeception test ${{ inputs.test }} failed
+        *******************************************************************************
+        EOF
+          exit 1
+        fi
+        if [ -n "${{ inputs.coverage_path }}" && ! -s "${{ inputs.coverage_path }}" ]; then
+          cat <<EOF
+        *******************************************************************************
+        "${{ inputs.coverage_path }}" is empty!
         *******************************************************************************
         EOF
           exit 1

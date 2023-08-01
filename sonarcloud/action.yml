@@ -1,0 +1,113 @@
+name: 'sonarcloud'
+description: 'Executes phpunit in a running container'
+inputs:
+  container:
+    type: string
+    required: false
+    description: 'Name of the container to run the test in'
+    default: 'php'
+  container_options:
+    type: string
+    required: false
+    description: 'Additional options to pass into the container'
+    default: ''
+  target_branch:
+    type: string
+    required: false
+    description: 'Target branch for the scan'
+    default: 'b-8.0.x'
+  phpcov_version:
+    type: string
+    description: 'Version of phpcov to use'
+    default: '8.2.1'
+  sonarcloud_organization:
+    type: string
+    required: false
+    description: 'Name of the organization in sonarcloud'
+    default: 'oxid-esales'
+  sonarcloud_project_key:
+    type: string
+    required: false
+    description: 'Project key in sonarcloud'
+    default: 'OXID-eSales_oxideshop_ce'
+  sonarcloud_project_name:
+    type: string
+    required: false
+    description: 'Project name in sonarcloud'
+    default: 'oxideshop_ce_internal'
+  sonarcloud_parameters:
+    type: string
+    description: 'Parameters passed to the scanner'
+    default: |
+      -Dsonar.language=php
+      -Dsonar.sources=source
+      -Dsonar.tests=tests
+      -Dsonar.sourceEncoding=UTF-8
+      -Dsonar.php.coverage.reportPaths=tests/coverage.xml
+      -Dsonar.cpd.php.minimumTokens=25
+      -Dsonar.cpd.php.minimumLines=5
+  output_files:
+    type: string
+    required: false
+    description: 'sonarcloud output and test settings'
+    default: |
+      tests/*
+  output_artifact:
+    type: string
+    required: false
+    description: 'Github run artifact for the sonarcloud output'
+    default: 'sonarcloud-artifacts'
+  sonar_token:
+    type: string
+    required: true
+    description: 'Token for Sonarcloud'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Download coverage artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: coverage-reports
+        path: ./source/coverage/
+
+    - name: Collect and merge coverage reports
+      continue-on-error: true
+      run: |
+        ls -alh source/coverage
+        wget https://phar.phpunit.de/phpcov-${{ inputs.phpcov_version }}.phar
+        mv phpcov-${{ inputs.phpcov_version }}.phar source/phpcov.phar
+        docker-compose exec -T \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container }}
+          php phpcov.phar merge --clover coverage.xml ./coverage
+        perl -pi -e 's#/var/www/test-module/#./#g;' source/coverage.xml
+        [ ! -d ./tests ] && mkdir -p ./tests
+        cp source/coverage.xml ./tests/
+
+    - name: Set target branch
+      run: |
+        TARGET_BRANCH_PARAM="-Dsonar.branch.target=${{ inputs.target_branch }}"
+        if [ "${{ github.ref_name}}" == "${{ github.event.repository.default_branch }}" ]; then
+          TARGET_BRANCH_PARAM=""
+        fi
+        echo "TARGET_BRANCH_PARAM=$TARGET_PRANCH_PARAM" >> $GITHUB_ENV
+
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        SONAR_TOKEN: ${{ inputs.sonar_token }}
+      with:
+        args: >
+          -Dsonar.organization=${{ inputs.sonarcloud_organization }}
+          -Dsonar.projectKey=${{ inputs.sonarcloud_project_key }}
+          -Dsonar.projectName=${{ inputs.sonarcloud_project_name }}
+          ${{ inputs.sonarcloud_parameters }}
+          ${{ env.TARGET_BRANCH_PARAM }}
+
+    - name: Upload log artifact
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ inputs.output_artifact }}
+        path: ${{ inputs.output_files }}

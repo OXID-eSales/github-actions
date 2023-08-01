@@ -10,6 +10,11 @@ inputs:
     description: 'Options to pass along to composer'
     required: false
     default: '--with-all-dependencies'
+  update:
+    type: boolean
+    description: ' Run composer update after installing all themes'
+    required: false
+    default: true
     
 runs:
   using: "composite"
@@ -20,3 +25,6 @@ runs:
       for THEME in ${{ inputs.themes }}; do
         docker-compose exec -T php composer require "${THEME}" ${{ inputs.options }}
       done
+      if [ '${{ inputs.update }}' == 'true' ]; then
+        docker-compose exec -T php composer update --no-interaction
+      fi
