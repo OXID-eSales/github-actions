@@ -7,7 +7,7 @@ inputs:
     required: true
   options:
     type: string
-    description: 'Options to pass along to composer'
+    description: 'Options to pass along to composer during install'
     required: false
     default: '--with-all-dependencies'
   update:
@@ -15,6 +15,21 @@ inputs:
     description: ' Run composer update after installing all themes'
     required: false
     default: true
+  update_options:
+    type: string
+    description: 'Options to pass along to composer during install'
+    required: false
+    default: '--no-interaction'
+  container:
+    type: string
+    required: false
+    description: 'Name of the container to run the test in'
+    default: 'php'
+  container_options:
+    type: string
+    required: false
+    description: 'Additional options to pass into the container'
+    default: ''
     
 runs:
   using: "composite"
@@ -23,8 +38,14 @@ runs:
     shell: bash
     run: |
       for THEME in ${{ inputs.themes }}; do
-        docker-compose exec -T php composer require "${THEME}" ${{ inputs.options }}
+        echo "\033[0;35m### Installing ${THEME} with ${{ inputs.options }}\033[0m"
+        docker-compose exec -T ${{ inputs.container_options }} \
+          ${{ inputs.container }} \
+          composer require "${THEME}" ${{ inputs.options }}
       done
       if [ '${{ inputs.update }}' == 'true' ]; then
-        docker-compose exec -T php composer update --no-interaction
+        echo "\033[0;35m### Running composer update with ${{ inputs.update_options }}\033[0m"
+        docker-compose exec -T ${{ inputs.container_options }} \
+          ${{ inputs.container }} \
+          composer update ${{ inputs.update_options }}
       fi

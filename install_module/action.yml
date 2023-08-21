@@ -5,6 +5,16 @@ inputs:
     type: string
     description: 'Name of the cached object from prepare_shop/install_shop/install_module'
     required: true
+  container:
+    type: string
+    required: false
+    description: 'Name of the container to run the test in'
+    default: 'php'
+  container_options:
+    type: string
+    required: false
+    description: 'Additional options to pass into the container'
+    default: ''
   package_name:
     type: string
     description: 'Name of the module package'
@@ -20,28 +30,49 @@ inputs:
     default: 'test-module'
   template_engine:
     type: string
+    description: 'One of twig, smarty, both'
     default: 'both'
   git_module_url:
     type: string
     description: 'URL for the module repository'
-    required: false
+    required: true
   git_module_ref:
     type: string
     description: 'Branch, tag or hash of the commit to check out'
     required: false
   php:
     type: string
-    required: true
+    required: false
     description: 'Version of PHP for this instance'
+    default: '8.2'
   mysql:
     type: string
-    required: true
+    required: false
     description: 'Version of MySQL for this instance'
+    default: '8.0'
+  output_files:
+    type: string
+    required: false
+    description: 'Output files of the codeception run to put into the output artifact'
+    default: |
+      docker-compose.yml
+      source/composer.json
+      source/composer.lock
+      source/source/config.inc.php
+  output_artifact:
+    type: string
+    required: false
+    description: 'Github run artifact to put the output files in'
+    default: 'Configs-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.template_engine }}_${{ inputs.module_ids }}'
   enterprise_github_token:
     type: string
     required: false
     description: 'OAuth token to access enterprise repos'
     default: ''
+  cache_bucket:
+    type: string
+    description: 'Name of the local s3 cache bucket'
+    default: 'oxideshop-ee'
   cache_endpoint:
     type: string
     description: 'secrets.CACHE_ENDPOINT for actions-cache'
@@ -68,9 +99,10 @@ runs:
       id: init
       shell: bash
       run: |
-        CACHED_NAME="shopInstallation-ee-${{ inputs.cached_shop }}+${{ inputs.module_ids }}"
+        CACHED_NAME="${{ inputs.cached_shop }}+${{ inputs.module_ids }}"
         echo "installed_shop_with_module=$CACHED_NAME" | tee -a $GITHUB_OUTPUT
-        echo "EXEC_PHP=docker-compose exec -T php" | tee -a $GITHUB_ENV
+        echo "EXEC_PHP=docker-compose exec -T ${{ inputs. container_options }} ${{ inputs.container }} \" | tee -a $GITHUB_ENV
+        echo "\033[0;35m### Caching the installation as ${CACHED_NAME}\033[0m"
 
     - name: Checkout current module
       uses: actions/checkout@v3
@@ -113,12 +145,8 @@ runs:
       if: always()
       uses: actions/upload-artifact@v3
       with:
-        name: Configs-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.template_engine }}_${{ inputs.module_ids }}
-        path: |
-          docker-compose.yml
-          source/composer.json
-          source/composer.lock
-          source/source/config.inc.php
+        name: ${{ inputs.output_artifact }}
+        path: ${{ inputs.output_files }}
 
     - name: Cache current installation
       uses: tespkg/actions-cache@v1
@@ -129,4 +157,4 @@ runs:
         endpoint: ${{ inputs.cache_endpoint }}
         accessKey: ${{ inputs.cache_access_key }}
         secretKey: ${{ inputs.cache_secret_key }}
-        bucket: oxideshop-ee
+        bucket: ${{ inputs.cache_bucket }}

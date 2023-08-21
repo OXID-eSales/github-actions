@@ -1,5 +1,5 @@
 name: 'codeception'
-description: 'Executes codeception tests in a running shop'
+description: 'Executes codeception tests in a running shop and uploads the logs and outputs as artifacts'
 inputs:
   container:
     type: string
@@ -24,7 +24,7 @@ inputs:
   suite:
     type: string
     required: false
-    description: 'Name of the suite to run'
+    description: 'Name of the codeception test suite to run.'
     default: 'acceptance,acceptanceAdmin'
   test:
     type: string
@@ -49,7 +49,7 @@ inputs:
   output_files:
     type: string
     required: false
-    description: 'Folder where codeception creates its output'
+    description: 'Output files of the codeception run to put into the output artifact'
     default: |
       docker-compose.yml
       source/composer.json
@@ -61,7 +61,7 @@ inputs:
   output_artifact:
     type: string
     required: false
-    description: 'Github run artifact for the codeception output'
+    description: 'Github run artifact to put the output files in'
     default: 'codeception-artifacts'
   coverage_path:
     type: string
@@ -128,27 +128,29 @@ runs:
     - name: Check results
       shell: bash
       run: |
+        PURPLE=$(echo -e "\033[0;31m")
+        NOCOLOR=$(echo -e "\033[0m")
         if [ ! -s "${{ inputs.logfile }}" ]; then
           cat <<EOF
-        *******************************************************************************
+        ${PURPLE}###############################################################################
         Log file is empty! Seems like no tests have been run!
-        *******************************************************************************
+        ###############################################################################
         EOF
           exit 1
         fi
         if grep -q -Ei '${{ inputs.failure_pattern}}' "${{ inputs.logfile }}"; then
           cat <<EOF
-        *******************************************************************************
+        ${PURPLE}###############################################################################
         codeception test ${{ inputs.test }} failed
-        *******************************************************************************
+        ###############################################################################
         EOF
           exit 1
         fi
         if [ -n "${{ inputs.coverage_path }}" && ! -s "${{ inputs.coverage_path }}" ]; then
           cat <<EOF
-        *******************************************************************************
+        ${PURPLE}###############################################################################
         "${{ inputs.coverage_path }}" is empty!
-        *******************************************************************************
+        ###############################################################################
         EOF
           exit 1
         fi

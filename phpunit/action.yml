@@ -1,5 +1,5 @@
 name: 'phpunit'
-description: 'Executes phpunit in a running container'
+description: 'Executes phpunit tests in a running container and uploads the logs as artefacts'
 inputs:
   container:
     type: string
@@ -52,9 +52,8 @@ inputs:
   coverage_path:
     type: string
     required: false
-    description: 'Path for the coverage file, don't upload if it is empty'
+    description: 'Path for the coverage file, not uploaded if it is empty'
     default: ''
-
   failure_pattern:
     type: string
     required: false
@@ -66,7 +65,7 @@ runs:
     - name: Run PHPUnit Unit tests
       shell: bash
       run: |
-        docker-compose exec -T ${{ inputs. container_options }} \
+        docker-compose exec -T ${{ inputs.container_options }} \
           ${{ inputs.container }} \
           php vendor/bin/phpunit \
             -c "${{ inputs.configuration }}" \
@@ -105,27 +104,29 @@ runs:
     - name: Check results
       shell: bash
       run: |
+        PURPLE=$(echo -e "\033[0;31m")
+        NOCOLOR=$(echo -e "\033[0m")
         if [ ! -s "${{ inputs.logfile }}" ]; then
           cat <<EOF
-        *******************************************************************************
-        Log file is empty! Seems like no tests have been run!
-        *******************************************************************************
+        ${PURPLE}###############################################################################
+        ### Log file is empty! Seems like no tests have been run!
+        ###############################################################################${NOCOLOR}
         EOF
           exit 1
         fi
         if grep -q -Ei '${{ inputs.failure_pattern}}' "${{ inputs.logfile }}"; then
           cat <<EOF
-        *******************************************************************************
-        phpunit test ${{ inputs.test }} failed
-        *******************************************************************************
+        ${PURPLE}###############################################################################
+        ### phpunit test ${{ inputs.test }} failed
+        ###############################################################################${NOCOLOR}
         EOF
           exit 1
         fi
         if [ -n "${{ inputs.coverage_path }}" && ! -s "${{ inputs.coverage_path }}" ]; then
           cat <<EOF
-        *******************************************************************************
-        "${{ inputs.coverage_path }}" is empty!
-        *******************************************************************************
+        ${PURPLE}###############################################################################
+        ### "${{ inputs.coverage_path }}" is empty!
+        ###############################################################################${NOCOLOR}
         EOF
           exit 1
         fi

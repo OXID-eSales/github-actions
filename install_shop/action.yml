@@ -25,12 +25,14 @@ inputs:
     default: '0'
   php:
     type: string
-    required: true
+    required: false
     description: 'Version of PHP for this instance'
+    default: '8.2'
   mysql:
     type: string
-    required: true
+    required: false
     description: 'Version of MySQL for this instance'
+    default: '8.0'
   is_enterprise:
     type: boolean
     required: false
@@ -39,6 +41,10 @@ inputs:
     type: boolean
     required: false
     default: false
+  cache_bucket:
+    type: string
+    description: 'Name of the local s3 cache bucket'
+    default: 'oxideshop-ee'
   cache_endpoint:
     type: string
     description: 'secrets.CACHE_ENDPOINT for actions-cache'
@@ -72,6 +78,7 @@ runs:
         fi
         echo "installed_shop=$CACHED_NAME" | tee -a $GITHUB_OUTPUT
         echo "EXEC_PHP=docker-compose exec -T php" | tee -a $GITHUB_ENV
+        echo "\033[0;35m### Caching the installation as ${CACHED_NAME}\033[0m"
 
     - name: Run Install Shop
       shell: bash
@@ -125,4 +132,4 @@ runs:
         endpoint: ${{ inputs.cache_endpoint }}
         accessKey: ${{ inputs.cache_access_key }}
         secretKey: ${{ inputs.cache_secret_key }}
-        bucket: oxideshop-ee
+        bucket: ${{ inputs.cache_bucket }}

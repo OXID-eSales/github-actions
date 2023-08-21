@@ -359,10 +359,31 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}        
 
+      - name: Install admin theme and template engine and APEX theme
+        if: inputs.is_enterprise == false
+        uses: 'OXID-eSales/github-actions/install_themes@v0'
+        with:
+          themes: 'oxid-esales/twig-admin-theme oxid-esales/apex-theme'
 
       - name: 'Run codeception tests (ce)'
         if: inputs.is_enterprise == false
         uses: 'OXID-eSales/github-actions/codeception@v0'
+        with:
+          additional_options: '--skip-group flow_theme'
+          logfile: codeception_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_phpunit_log.txt
+
+      - name: 'Run codeception tests (ee)'
+        if: inputs.is_enterprise == true
+        uses: 'OXID-eSales/github-actions/codeception@v0'
+        with:
+          configuration: 'vendor/oxid-esales/oxideshop-ee/Tests/codeception.yml'
+          build: true
+          logfile: codeception_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_phpunit_log.txt
+          output_folder: 'source/vendor/oxid-esales/oxideshop-ee/Tests/Codeception/_output'
+
+      - name: 'Run shop setup tests (ce)'
+        if: inputs.is_enterprise == false
+        uses: 'OXID-eSales/github-actions/shop_setup_tests@v0'
         with:
           container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e DB_NAME=setup_test -e DB_USERNAME=root -e DB_PASSWORD=root -e DB_HOST=mysql -e DB_PORT=3306 -e SHOP_URL=http://localhost.local/ -e SHOP_SOURCE_PATH=/var/www/source/'
           suite: 'acceptanceSetup'
@@ -370,9 +391,9 @@ jobs:
           logfile: shop_setup_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_phpunit_log.txt
           output_artifact: shop_setup-artifacts
         
-      - name: 'Run codeception tests (ee)'
+      - name: 'Run shop setup tests (ee)'
         if: inputs.is_enterprise == true
-        uses: 'OXID-eSales/github-actions/codeception@v0'
+        uses: 'OXID-eSales/github-actions/shop_setup_tests@v0'
         with:
           container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e DB_NAME=setup_test -e DB_USERNAME=root -e DB_PASSWORD=root -e DB_HOST=mysql -e DB_PORT=3306 -e SHOP_URL=http://localhost.local/ -e SHOP_SOURCE_PATH=/var/www/source/'
           configuration: 'vendor/oxid-esales/oxideshop-ee/Tests/codeception.yml'

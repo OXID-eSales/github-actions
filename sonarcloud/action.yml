@@ -1,5 +1,5 @@
 name: 'sonarcloud'
-description: 'Executes phpunit in a running container'
+description: 'Runs sonarcloud in the given container'
 inputs:
   container:
     type: string
@@ -46,6 +46,10 @@ inputs:
       -Dsonar.php.coverage.reportPaths=tests/coverage.xml
       -Dsonar.cpd.php.minimumTokens=25
       -Dsonar.cpd.php.minimumLines=5
+  sonar_token:
+    type: string
+    required: true
+    description: 'Token for Sonarcloud'
   output_files:
     type: string
     required: false
@@ -57,10 +61,6 @@ inputs:
     required: false
     description: 'Github run artifact for the sonarcloud output'
     default: 'sonarcloud-artifacts'
-  sonar_token:
-    type: string
-    required: true
-    description: 'Token for Sonarcloud'
 
 runs:
   using: "composite"

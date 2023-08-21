@@ -5,6 +5,10 @@ inputs:
     type: string
     description: 'Name of the cached object from prepare_shop/install_shop'
     required: true
+  cache_bucket:
+    type: string
+    description: 'Name of the local s3 cache bucket'
+    default: 'oxideshop-ee'
   cache_endpoint:
     type: string
     description: 'secrets.CACHE_ENDPOINT for actions-cache'
@@ -35,19 +39,21 @@ runs:
         endpoint: ${{ inputs.cache_endpoint }}
         accessKey: ${{ inputs.cache_access_key }}
         secretKey: ${{ inputs.cache_secret_key }}
-        bucket: oxideshop-ee
+        bucket:  ${{ inputs.cache_secret_key }}
+        bucket: ${{ inputs.cache_bucket }}
 
     - name: Confirm successful restore
       shell: bash
       run: |
         if [ "${{ steps.load_installed_shop.outputs.cache-hit }}" != "true" ]; then
-          echo "Failed to load ${{ inputs.installed_shop }} from cache"
+          echo "\033[0;31m### Failed to load ${{ inputs.installed_shop }} from cache\033[0m"
           exit 1
         fi
 
     - name: Start containers
       shell: bash
       run: |
+        echo "\033[0;35m### Starting containers\033[0m"
         make up
         sleep 2
 
@@ -55,6 +61,7 @@ runs:
       if: failure()
       shell: bash
       run: |
+        echo "\033[0;31m### Starting containers failed\033[0m"
         cat docker-compose.yml
         docker-compose logs --tail=200
         for c in $(docker ps -aq); do

@@ -20,7 +20,6 @@ inputs:
     type: string
     description: 'Branch, tag or hash of the commit to check out'
     required: true
-    default: ${{ github.ref_name }}
   git_enterprise_ref:
     type: string
     description: 'Branch to check out for the enterprise repos'
@@ -29,7 +28,7 @@ inputs:
     type: string
     description: 'Name of the github event (github.event_name), used to handle pull requests'
     required: false
-    default: ${{ github.event_name }}
+    default: ''
   github_event_number:
     type: string
     description: 'Number of the github event (github.event_number), used to handle pull requests'
@@ -39,32 +38,31 @@ inputs:
     type: string
     description: 'Base reference (github.base_ref) for testing the github pull request'
     required: false
-    default: ${{ github.base_ref }}
+    default: ''
   github_sha:
     type: string
-    required: false
+    required: true
     description: 'github.sha is used in generating the cache id'
-    default: ${{ github.sha }}
   github_run_number:
     type: string
     required: false
-    description: 'github.run_number and github.run_attempts are used in generating the cache id (tbd)'
+    description: 'github.run_number and github.run_attempts are used in generating the cache id'
     default: '0'
   github_run_attempt:
     type: string
     required: false
-    description: 'github.run_number and github.run_attempts are used in generating the cache id (tbd)'
+    description: 'github.run_number and github.run_attempts are used in generating the cache id'
     default: '0'
   php:
     type: string
     required: false
     description: 'Version of PHP for this instance'
-    default: ${{ matrix.php }}
+    default: '8.2'
   mysql:
     type: string
     required: false
     description: 'Version of MySQL for this instance'
-    default: ${{ matrix.mysql }}
+    default: '8.0'
   is_enterprise:
     type: boolean
     required: false
@@ -90,6 +88,10 @@ inputs:
     required: false
     description: 'OAuth token to access enterprise repos'
     default: ''
+  cache_bucket:
+    type: string
+    description: 'Name of the local s3 cache bucket'
+    default: 'oxideshop-ee'
   cache_endpoint:
     type: string
     description: 'secrets.CACHE_ENDPOINT for actions-cache'
@@ -123,6 +125,7 @@ runs:
         fi
         echo "prepared_shop=$CACHED_NAME" | tee -a $GITHUB_OUTPUT
         echo "EXEC_PHP=docker-compose exec -T php" | tee -a $GITHUB_ENV
+        echo "\033[0;35m### Caching the installation as ${CACHED_NAME}\033[0m"
 
     - name: Clone testing environment master
       shell: bash
@@ -182,6 +185,7 @@ runs:
       if: failure()
       shell: bash
       run: |
+        echo "\033[0;31m### Starting docker failed\033[0m"
         cat docker-compose.yml
         docker-compose logs --tail=200
         for c in $(docker ps -aq); do
@@ -220,6 +224,7 @@ runs:
       if: always()
       shell: bash
       run: |
+        echo "\033[0;35m### Stopping containers $c\033[0m"
         docker-compose down
         sleep 2
 
@@ -232,4 +237,4 @@ runs:
         endpoint: ${{ inputs.cache_endpoint }}
         accessKey: ${{ inputs.cache_access_key }}
         secretKey: ${{ inputs.cache_secret_key }}
-        bucket: oxideshop-ee
+        bucket: ${{ inputs.cache_bucket }}

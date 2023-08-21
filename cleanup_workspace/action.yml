@@ -1,26 +1,45 @@
 name: 'cleanup_workspace'
 description: 'Deletes files and cleans up the docker environment'
+inputs:
+  clean_workspace:
+    type: boolean
+    description: 'Clean the workspace'
+    default: true
+  kill_containers:
+    type: boolean
+    description: 'Kill running docker containers'
+    default: false
+  prune_docker:
+    type: boolean
+    description: 'Prune docker'
+    default: true
+
 runs:
   using: "composite"
   steps:
     - name: Cleanup workspace
+      if: ${{ inputs.clean_workspace == 'true' }}
       shell: bash
       run: |
+        echo "\033[0;35m### Cleaning $(pwd)\033[0m"
         ls -la ./
         rm -rf ./* || true
         rm -rf ./.??* || true
         ls -la ./
 
     - name: Kill docker containers
-      if: env.ACT == false
+      if: ${{ inputs.kill_containers == 'true' }}
       shell: bash
       run: |
         docker ps -a
         for c in $(docker ps -q); do
-          echo "Killing container $c"
+          echo "\033[0;35m### Killing container $c\033[0m"
           docker kill $c
         done
 
     - name: Cleanup Docker
+      if: ${{ inputs.prune_docker == 'true' }}
       shell: bash
-      run: docker system prune --force
+      run: |
+        echo "\033[0;35m### Pruning docker\033[0m"
+        docker system prune --force
