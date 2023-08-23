@@ -1,0 +1,118 @@
+name: 'load_testplan'
+description: 'Fetches the testplan and sets environment variables for it'
+inputs:
+  testplan:
+    type: string
+    description: 'URL/file name of the yaml file to load'
+    required: true
+  repository:
+    type: string
+    description: 'Optional name of the repository to check out. Needed, if "testplan" is not a URL'
+    required: false
+    default: ''
+  ref:
+    type: string
+    description: 'Branch, tag or hash of the commit to check out'
+    required: false
+    default: ''
+  override:
+    type: string
+    description: 'Optional YAML code to override the testplan'
+    required: false
+    default: ''
+runs:
+  using: composite
+  steps:
+    - name: 'Checkout repository'
+      if: ${{ inputs.repository != '' }}
+      uses: actions/checkout@v3
+      with:
+        # Repository name with owner. For example, actions/checkout
+        # Default: ${{ github.repository }}
+        repository: ${{ inputs.repository }}
+        ref: ${{ inputs.ref }}
+
+    - name: 'Initialize default values'
+      shell: bash
+      run: |
+        cat >.testplan.yml <<EOF
+        github:
+          action: &github_action '${{ github.action }}'
+          action_path: &github_action_path '${{ github.action_path }}'
+          action_ref: &github_action_ref '${{ github.action_ref }}'
+          action_repository: &github_action_repository '${{ github.action_repository }}'
+          action_status: &github_action_status '${{ github.action_status }}'
+          actor: &github_actor '${{ github.actor }}'
+          actor_id: &github_actor_id '${{ github.actor_id }}'
+          api_url: &github_api_url '${{ github.api_url }}'
+          base_ref: &github_base_ref '${{ github.base_ref }}'
+          env: &github_env '${{ github.env }}'
+          event: &github_event '${{ github.event }}'
+          event_name: &github_event_name '${{ github.event_name }}'
+          event_path: &github_event_path '${{ github.event_path }}'
+          graphql_url: &github_graphql_url '${{ github.graphql_url }}'
+          head_ref: &github_head_ref '${{ github.head_ref }}'
+          job: &github_job '${{ github.job }}'
+          job_workflow_sha: &github_job_workflow_sha '${{ github.job_workflow_sha }}'
+          path: &github_path '${{ github.path }}'
+          ref: &github_ref '${{ github.ref }}'
+          ref_name: &github_ref_name '${{ github.ref_name }}'
+          ref_protected: &github_ref_protected '${{ github.ref_protected }}'
+          ref_type: &github_ref_type '${{ github.ref_type }}'
+          repository: &github_repository '${{ github.repository }}'
+          repository_id: &github_repository_id '${{ github.repository_id }}'
+          repository_owner: &github_repository_owner '${{ github.repository_owner }}'
+          repository_owner_id: &github_repository_owner_id '${{ github.repository_owner_id }}'
+          repositoryUrl: &github_repositoryUrl '${{ github.repositoryUrl }}'
+          retention_days: &github_retention_days '${{ github.retention_days }}'
+          run_id: &github_run_id '${{ github.run_id }}'
+          run_number: &github_run_number '${{ github.run_number }}'
+          run_attempt: &github_run_attempt '${{ github.run_attempt }}'
+          secret_source: &github_secret_source '${{ github.secret_source }}'
+          server_url: &github_server_url '${{ github.server_url }}'
+          sha: &github_sha '${{ github.sha }}'
+          token: &github_token '${{ github.token }}'
+          triggering_actor: &github_triggering_actor '${{ github.triggering_actor }}'
+          workflow: &github_workflow '${{ github.workflow }}'
+          workflow_ref: &github_workflow_ref '${{ github.workflow_ref }}'
+          workflow_sha: &github_workflow_sha '${{ github.workflow_sha }}'
+          workspace: &github_workspace '${{ github.workspace }}'
+        EOF
+
+    - name: 'Append testplan from URL'
+      if: ${{ inputs.repository == '' }}
+      shell: bash
+      run: |
+        curl -sSjkL "${{ inputs.testplan }}" >>.testplan.yml
+        if [ -n "${{ inputs.override }}" ]; then
+          echo "${{ inputs.override }}" >>.testplan_override.yml
+        fi
+
+    - name: 'Append testplan from file'
+      if: ${{ inputs.repository != '' }}
+      shell: bash
+      run: |
+        cat "${{ inputs.testplan }}" >>.testplan.yml
+        if [ -n "${{ inputs.override }}" ]; then
+          echo "${{ inputs.override }}" >>.testplan_override.yml
+        fi
+
+    - name: 'Load variables'
+      uses: actions-tools/yaml-outputs@v2
+      id: yaml
+      with:
+        file-path: .testplan.yml
+        separator: '_'
+
+    - name: 'Load overrides'
+      uses: actions-tools/yaml-outputs@v2
+      with:
+        file-path: .testplan_override.yml
+        separator: '_'
+
+    - name: 'Dump variables'
+      shell: bash
+      run: |
+        echo -e "\033[0;35m### Environment"
+        env
+        echo -e "\033[0m"

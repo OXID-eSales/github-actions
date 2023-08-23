@@ -1,5 +1,10 @@
 # start_shop
-Fetches a shop from cache and starts it.
+Fetches a shop installation identified by the input "cached_shop" from cache and starts it.
+By providing cache_bucket, cache_endpoint etc, a local s3 cache is used. Otherwise, it falls
+back to the regular Github cache. If the cached shop can't be loaded, the action fails.
+
+After loading the installation from cache, trhe containers are started, using "make up".
+If starting the containers failed, the docker-compose.yml and the container logs are printed
 
 # Inputs:
 **cached_shop:** *required*, *no default*  

@@ -1,0 +1,92 @@
+workflow:
+  # Runner for this workflow, we use a json string or array inside this string to allow
+  # something like '["self_hosted", "x64"]'
+  runs_on: '"ubuntu-latest"'
+  # The variables "php" and "mysql" are used to run a matrix of all combinations
+  matrix:
+    # A json array of php versions to test
+    php: '["8.1","8.2"]'
+    # A json array of mysql versions to test
+    mysql: '["5.7","8.0"]'
+global:
+  # URL for the docker-eshop sdk repo to clone 
+  git_sdk_url: &git_sdk_url 'https://github.com/OXID-eSales/docker-eshop-sdk.git'
+  # Branch to check out for the SDK
+  git_sdk_ref: &git_sdk_ref 'main'
+  # URL for the oxidshop_ce repository
+  git_shop_url: &git_shop_url 'https://github.com/OXID-eSales/oxideshop_ce.git'
+  # Branch, tag or hash of the commit to check out
+  git_shop_ref: *github_ref_name
+
+  # This action can be used on the community edition (ce) and enterprise
+  # edition (ee) of the shop. On top of setting this to true, a few extra 
+  # variables/secrets must be provided for using the action on ee.
+  is_enterprise: &is_enterprise false
+  # If is enterprise is set to true, you need to provide the following
+  # - secrets.enterprise_github_token
+  # - testplan entry global.git_enterprise_ref
+  # Branch to check out for the enterprise repos
+  git_enterprise_ref: &git_enterprise_ref ''
+
+  # When running on a self hosted runner with access to a local s3 cache:
+  # Set the following secrets:
+  # - secrets.CACHE_ENDPOINT
+  # - secrets.CACHE_ACCESS_KEY
+  # - secrets.CACHE_SECRET_KEY
+  cache_bucket: &cache_bucket 'oxideshop-ee'
+
+  # Should we do a cleanup step before running (not needed on ephemeral runners)
+  pre_cleanup: &pre_cleanup false
+
+  # Name of the container running php
+  container: &container 'php'
+
+  # Additional options when running something in the the container
+  container_options: &container_options ''
+
+init:
+  # Should we log in to docker? If set to "true", you need to set the following secrets:
+  # - secrets.DOCKER_HUB_USER
+  # - secrets.DOCKER_HUB_TOKEN
+  docker_login: false
+
+# See docs/actions/prepare_shop.md for more information.
+prepare_shop:
+  # Using the global settings here
+  pre_cleanup: *pre_cleanup
+  container: *container
+  container_options: *container_options
+  git_sdk_url: *git_sdk_url
+  git_sdk_ref: *git_sdk_ref
+  git_shop_url: *git_shop_url
+  git_shop_ref: *git_shop_ref
+  git_enterprise_ref: *git_enterprise_ref
+  is_enterprise: *is_enterprise
+  cache_bucket: *cache_bucket
+  # Error reporting settings for php custom.ini
+  custom_ini_error_reporting: 'E_ALL & ~E_DEPRECATED & ~E_NOTICE & ~E_WARNING'
+  # xdebug settings for php custom.ini
+  custom_ini_xdebug: 'xdebug.max_nesting_level=1000'
+  # Space separated list of extra services to add
+  add_services: 'selenium-chrome'
+
+# See docs/actions/start_shop.md and docs/actions/install_shop.md for more information.
+install_shop:
+  # Using the global settings here
+  pre_cleanup: *pre_cleanup
+  container: *container
+  container_options: *container_options
+  git_shop_ref: *git_shop_ref
+  git_enterprise_ref: *git_enterprise_ref
+  is_enterprise: *is_enterprise
+  cache_bucket: *cache_bucket
+  # Set iDebug in source/source/config.inc.php
+  config_idebug: false
+  # Configuration files for the shop setup'
+  output_files: |
+    docker-compose.yml
+    source/composer.json
+    source/composer.lock
+    source/source/config.inc.php
+  # Configuration file is dynamic, so we use the actions default
+  #output_artifact: 'Configs-<inputs.php>-<inputs.mysql>_install_shop'

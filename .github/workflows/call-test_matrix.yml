@@ -12,83 +12,90 @@ name: call-test_matrix
 on:
   workflow_call:
     inputs:
-      runs_on:
+      testplan:
         type: string
-        description: 'Runner for this workflow'
-        required: false
-        default: '"ubuntu-latest"'
-      git_sdk_url:
-        type: string
-        description: 'URL for the docker-eshop sdk repo to clone'
-        required: false
-        default: 'https://github.com/OXID-eSales/docker-eshop-sdk.git'
-      git_sdk_ref:
-        type: string
-        description: 'Branch, tag or hash of the commit to check out'
-        required: false
-        default: 'master'
-      git_shop_url:
-        type: string
-        description: 'URL for the oxidshop_ce repository'
-        required: false
-        default: 'https://github.com/OXID-eSales/oxideshop_ce.git'
-      git_shop_ref:
-        type: string
-        description: 'Branch, tag or hash of the commit to check out'
+        description: 'Testplan to run'
         required: true
-        default: ${{ github.ref_name }}
-      git_enterprise_ref:
-        type: string
-        description: 'Branch to check out for the enterprise repos'
-        required: false
-      github_event_name:
-        type: string
-        description: 'Name of the github event (github.event_name), used to handle pull requests'
-        required: false
-        default: ${{ github.event_name }}
-      github_event_number:
-        type: string
-        description: 'Number of the github event (github.event_number), used to handle pull requests'
-        required: false
-      github_base_ref:
-        type: string
-        description: 'Base reference (github.base_ref) for testing the github pull request'
-        required: false
-        default: ${{ github.base_ref }}
-      github_sha:
-        type: string
-        required: false
-        description: 'github.sha is used in generating the cache id'
-        default: ${{ github.sha }}
-      github_run_number:
-        type: string
-        required: false
-        description: 'github.run_number and github.run_attempts are used in generating the cache id'
-      github_run_attempt:
-        type: string
-        required: false
-        description: 'github.run_number and github.run_attempts are used in generating the cache id'
-      php:
-        type: string
-        required: false
-        description: 'Version of PHP for this instance'
-        default: '["8.1","8.2"]'
-      mysql:
-        type: string
-        required: false
-        description: 'Version of MySQL for this instance'
-        default: '["5.7","8.0"]'
-      is_enterprise:
-        type: boolean
-        required: false
-        description: 'This action can be used on the community edition (ce) and enterprise edition (ee) of the shop. On top of setting this to true, a few extra variables/secrets must be provided for using the action on ee.'
-        default: false
-      enterprise_github_token:
-        type: string
-        required: false
-        description: 'OAuth token to access enterprise repos'
-        default: ''
+#      runs_on:
+#        type: string
+#        description: 'Runner for this workflow'
+#        required: false
+#        default: '"ubuntu-latest"'
+#      git_sdk_url:
+#        type: string
+#        description: 'URL for the docker-eshop sdk repo to clone'
+#        required: false
+#        default: 'https://github.com/OXID-eSales/docker-eshop-sdk.git'
+#      git_sdk_ref:
+#        type: string
+#        description: 'Branch, tag or hash of the commit to check out'
+#        required: false
+#        default: 'master'
+#      git_shop_url:
+#        type: string
+#        description: 'URL for the oxidshop_ce repository'
+#        required: false
+#        default: 'https://github.com/OXID-eSales/oxideshop_ce.git'
+#      git_shop_ref:
+#        type: string
+#        description: 'Branch, tag or hash of the commit to check out'
+#        required: true
+#        default: ${{ github.ref_name }}
+#      git_enterprise_ref:
+#        type: string
+#        description: 'Branch to check out for the enterprise repos'
+#        required: false
+#      github_event_name:
+#        type: string
+#        description: 'Name of the github event (github.event_name), used to handle pull requests'
+#        required: false
+#        default: ${{ github.event_name }}
+#      github_event_number:
+#        type: string
+#        description: 'Number of the github event (github.event_number), used to handle pull requests'
+#        required: false
+#      github_base_ref:
+#        type: string
+#        description: 'Base reference (github.base_ref) for testing the github pull request'
+#        required: false
+#        default: ${{ github.base_ref }}
+#      github_sha:
+#        type: string
+#        required: false
+#        description: 'github.sha is used in generating the cache id'
+#        default: ${{ github.sha }}
+#      github_run_number:
+#        type: string
+#        required: false
+#        description: 'github.run_number and github.run_attempts are used in generating the cache id'
+#      github_run_attempt:
+#        type: string
+#        required: false
+#        description: 'github.run_number and github.run_attempts are used in generating the cache id'
+#      php:
+#        type: string
+#        required: false
+#        description: 'Version of PHP for this instance'
+#        default: '["8.1","8.2"]'
+#      mysql:
+#        type: string
+#        required: false
+#        description: 'Version of MySQL for this instance'
+#        default: '["5.7","8.0"]'
+#      is_enterprise:
+#        type: boolean
+#        required: false
+#        description: 'This action can be used on the community edition (ce) and enterprise edition (ee) of the shop. On top of setting this to true, a few extra variables/secrets must be provided for using the action on ee.'
+#        default: false
+#      enterprise_github_token:
+#        type: string
+#        required: false
+#        description: 'OAuth token to access enterprise repos'
+#        default: ''
     secrets:
+      enterprise_github_token:
+        description: 'OAuth token to access enterprise repos'
+        required: false
       DOCKER_HUB_USER:
         description: 'user for the docker login'
         required: false
@@ -110,43 +117,14 @@ on:
   
 jobs:
   init:
-    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    runs-on: ${{ fromJSON(env.workflow_runs_on) }}
     steps:
-      - name: 'Initialize'
-        run: |
-          DOCKER_LOGIN="false"
-          [ -n "${{ secrets.DOCKER_HUB_TOKEN }}" ] && DOCKER_LOGIN="true"
-
-          cat <<EOF
-          Running matrix with the following inputs:
-          ************************************************************
-          git_sdk_url=${{ inputs.git_sdk_url }}
-          git_sdk_ref=${{ inputs.git_sdk_ref }}
-          git_shop_url=${{ inputs.git_shop_url }}
-          git_shop_ref=${{ inputs.git_shop_ref }}|${{ github.ref_name }}
-          git_enterprise_ref=${{ inputs.git_enterprise_ref }}
-          github_event_name=${{ inputs.github_event_name }}|${{ github.event_name }}
-          github_event_number=${{ inputs.github_event_number }}|${{ github.event_number }}
-          github_base_ref=${{ inputs.github_base_ref }}|${{ github.base_ref }}
-          github_sha=${{ inputs.github_sha }}|${{ github.sha }}
-          github_run_number=${{ inputs.github_run_number }}|${{ github.run_number }}
-          github_run_attempt=${{ inputs.github_run_attempt }}|${{ github.run_attempt }}
-          php=${{ inputs.php }}
-          mysql=${{ inputs.mysql }}
-          is_enterprise=${{ inputs.is_enterprise }}
-          docker_hub_user=${{ secrets.DOCKER_HUB_USER }}
-          docker_hub_token=${{ secrets.DOCKER_HUB_TOKEN }}
-          enterprise_github_token=${{ secrets.enterprise_github_token }}
-          cache_endpoint=${{ secrets.CACHE_ENDPOINT }}
-          cache_access_key=${{ secrets.CACHE_ACCESS_KEY }}
-          cache_secret_key=${{ secrets.CACHE_SECRET_KEY }}
-          DOCKER_LOGIN=$DOCKER_LOGIN
-          ************************************************************
-          EOF
-          echo "DOCKER_LOGIN=$DOCKER_LOGIN" >>$GITHUB_ENV
-
+      - name: 'Load Testplan'
+        uses: 'OXID-eSales/github-actions/load_testplan@v0'
+        with:
+          testplan: ${{ inputs.testplan }}
       - name: Login to Docker Hub
-        if: ${{ env.DOCKER_LOGIN == 'true' }}
+        if: ${{ env.init_docker_login == 'true' }}
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_HUB_USER }}
@@ -156,58 +134,66 @@ jobs:
   prepare_shop:
     strategy:
       matrix:
-        php: ${{ fromJSON(inputs.php) }}
-        mysql: ${{ fromJSON(inputs.mysql) }}
+        php: ${{ fromJSON(env.workflow_matrix_php) }}
+        mysql: ${{ fromJSON(env.workflow_matrix_mysql) }}
       fail-fast: false
     needs: init
-    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    runs-on: ${{ fromJSON(env.workflow_runs_on) }}
     outputs:
       prepared_shop: ${{ steps.prepare_shop.outputs.prepared_shop }}
     steps:
       - name: 'Cleanup (pre)'
+        if: ${{ env.prepare_shop_pre_cleanup }}
         uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
 
       - name: 'Prepare Shop'
         id: prepare_shop
         uses: 'OXID-eSales/github-actions/prepare_shop@v0'
         with:
-          git_sdk_url: ${{ inputs.git_sdk_url }}
-          git_sdk_ref: ${{ inputs.git_sdk_ref }}
-          git_shop_url: ${{ inputs.git_shop_url }}
-          git_shop_ref: ${{ inputs.git_shop_ref }}
-          git_enterprise_ref: ${{ inputs.git_enterprise_ref }}
+          git_sdk_url: ${{ env.prepare_shop_git_sdk_url }}
+          git_sdk_ref: ${{ env.prepare_shop_git_sdk_ref }}
+          git_shop_url: ${{ env.prepare_shop_git_shop_url }}
+          git_shop_ref: ${{ env.prepare_shop_git_shop_ref }}
+          git_enterprise_ref: ${{ env.prepare_shop_git_enterprise_ref }}
           github_event_name: ${{ github.event_name }}
-          github_event_number: ${{ inputs.github_event_number }}
-          github_base_ref: ${{ inputs.github_base_ref }}
-          github_sha: ${{ inputs.github_sha }}
-          github_run_number: ${{ inputs.github_run_number }}
-          github_run_attempt: ${{ inputs.github_run_attempt }}
+          github_event_number: ${{ github.event_number }}
+          github_base_ref: ${{ github.base_ref }}
+          github_sha: ${{ github.sha }}
+          github_run_number: ${{ github.run_number }}
+          github_run_attempt: ${{ github.run_attempt }}
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
-          is_enterprise: ${{ inputs.is_enterprise }}
+          is_enterprise: ${{ env.prepare_shop_is_enterprise }}
+          custom_ini_error_reporting: ${{ env.prepare_shop_custom_ini_error_reporting }}
+          custom_ini_xdebug: ${{ env.prepare_shop_custom_ini_xdebug }}
+          add_services: ${{ env.prepare_shop_add_services }}
           enterprise_github_token: ${{ secrets.enterprise_github_token }}
+          cache_bucket: ${{ env.prepare_shop_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
   install_shop:
+    needs: [ prepare_shop ]
     strategy:
       matrix:
-        php: ${{ fromJSON(inputs.php) }}
-        mysql: ${{ fromJSON(inputs.mysql) }}
+        php: ${{ fromJSON(env.workflow_matrix_php) }}
+        mysql: ${{ fromJSON(env.workflow_matrix_mysql) }}
       fail-fast: false
-    needs: [ prepare_shop ]
-    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    needs: init
+    runs-on: ${{ fromJSON(env.workflow_runs_on) }}
     outputs:
       installed_shop: ${{ steps.install_shop.outputs.installed_shop }}
     steps:
       - name: 'Cleanup (pre)'
+        if: ${{ env.install_shop_pre_cleanup }}
         uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
 
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: ${{ needs.prepare_shop.outputs.prepared_shop }}
+          cache_bucket: ${{ env.install_shop_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}        
@@ -216,14 +202,16 @@ jobs:
         id: install_shop
         uses: 'OXID-eSales/github-actions/install_shop@v0'
         with:
-          git_shop_ref: ${{ inputs.git_shop_ref }}
-          git_enterprise_ref: ${{ inputs.git_enterprise_ref }}
-          github_sha: ${{ inputs.github_sha }}
-          github_run_number: ${{ inputs.github_run_number }}
-          github_run_attempt: ${{ inputs.github_run_attempt }}
+          git_shop_ref: ${{ env.install_shop_git_shop_ref }}
+          git_enterprise_ref: ${{ env.install_shop_git_enterprise_ref }}
+          github_sha: ${{ github.sha }}
+          github_run_number: ${{ github.run_number }}
+          github_run_attempt: ${{ github.run_attempt }}
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
-          is_enterprise: ${{ inputs.is_enterprise }}
+          is_enterprise: ${{ env.install_shop_is_enterprise }}
+          config_idebug: ${{ env.install_shop_config_idebug }}
+          cache_bucket: ${{ env.prepare_shop_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}

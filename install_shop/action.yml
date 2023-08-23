@@ -1,6 +1,16 @@
 name: 'install_shop'
 description: 'Fetches the prepared shop from cache and installs it'
 inputs:
+  container:
+    type: string
+    required: false
+    description: 'Name of the container to run the test in'
+    default: 'php'
+  container_options:
+    type: string
+    required: false
+    description: 'Additional options to pass into the container'
+    default: ''
   git_enterprise_ref:
     type: string
     description: 'Branch to check out for the enterprise repos'
@@ -41,6 +51,20 @@ inputs:
     type: boolean
     required: false
     default: false
+  output_files:
+    type: string
+    required: false
+    description: 'Configuration files for the shop setup'
+    default: |
+      docker-compose.yml
+      source/composer.json
+      source/composer.lock
+      source/source/config.inc.php
+  output_artifact:
+    type: string
+    required: false
+    description: 'Github run artifact for the config output'
+    default: 'Configs-${{ inputs.php }}-${{ inputs.mysql }}_install_shop'
   cache_bucket:
     type: string
     description: 'Name of the local s3 cache bucket'
@@ -77,8 +101,8 @@ runs:
           CACHED_NAME="shopInstallation-ce-${{ inputs.git_shop_ref }}-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}"
         fi
         echo "installed_shop=$CACHED_NAME" | tee -a $GITHUB_OUTPUT
-        echo "EXEC_PHP=docker-compose exec -T php" | tee -a $GITHUB_ENV
-        echo "\033[0;35m### Caching the installation as ${CACHED_NAME}\033[0m"
+        echo "EXEC_PHP=docker-compose exec -T ${{ inputs.container_options }} ${{ inputs.container }}" | tee -a $GITHUB_ENV
+        echo -e "\033[0;35m### Caching the installation as ${CACHED_NAME}\033[0m"
 
     - name: Run Install Shop
       shell: bash
@@ -116,12 +140,8 @@ runs:
       if: always()
       uses: actions/upload-artifact@v3
       with:
-        name: Configs-${{ inputs.php }}-${{ inputs.mysql }}_install_shop
-        path: |
-          docker-compose.yml
-          source/composer.json
-          source/composer.lock
-          source/source/config.inc.php
+        name: ${{ inputs.output_artifact }}
+        path: ${{ inputs.output_files }}
 
     - name: Cache current installation
       uses: tespkg/actions-cache@v1

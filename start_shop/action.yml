@@ -46,14 +46,14 @@ runs:
       shell: bash
       run: |
         if [ "${{ steps.load_installed_shop.outputs.cache-hit }}" != "true" ]; then
-          echo "\033[0;31m### Failed to load ${{ inputs.installed_shop }} from cache\033[0m"
+          echo -e "\033[0;31m### Failed to load ${{ inputs.installed_shop }} from cache\033[0m"
           exit 1
         fi
 
     - name: Start containers
       shell: bash
       run: |
-        echo "\033[0;35m### Starting containers\033[0m"
+        echo -e "\033[0;35m### Starting containers\033[0m"
         make up
         sleep 2
 
@@ -61,7 +61,7 @@ runs:
       if: failure()
       shell: bash
       run: |
-        echo "\033[0;31m### Starting containers failed\033[0m"
+        echo -e "\033[0;31m### Starting containers failed\033[0m"
         cat docker-compose.yml
         docker-compose logs --tail=200
         for c in $(docker ps -aq); do

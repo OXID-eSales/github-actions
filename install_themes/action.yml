@@ -38,13 +38,13 @@ runs:
     shell: bash
     run: |
       for THEME in ${{ inputs.themes }}; do
-        echo "\033[0;35m### Installing ${THEME} with ${{ inputs.options }}\033[0m"
+        echo -e "\033[0;35m### Installing ${THEME} with ${{ inputs.options }}\033[0m"
         docker-compose exec -T ${{ inputs.container_options }} \
           ${{ inputs.container }} \
           composer require "${THEME}" ${{ inputs.options }}
       done
       if [ '${{ inputs.update }}' == 'true' ]; then
-        echo "\033[0;35m### Running composer update with ${{ inputs.update_options }}\033[0m"
+        echo -e "\033[0;35m### Running composer update with ${{ inputs.update_options }}\033[0m"
         docker-compose exec -T ${{ inputs.container_options }} \
           ${{ inputs.container }} \
           composer update ${{ inputs.update_options }}

@@ -1,6 +1,16 @@
 name: 'prepare_shop'
 description: 'Prepares the shop and creates a cache for it'
 inputs:
+  container:
+    type: string
+    required: false
+    description: 'Name of the container running php'
+    default: 'php'
+  container_options:
+    type: string
+    required: false
+    description: 'Additional options when running something in the the container'
+    default: ''
   git_sdk_url:
     type: string
     description: 'URL for the docker-eshop sdk repo to clone'
@@ -124,7 +134,7 @@ runs:
           CACHED_NAME="preparedShop-ce-${{ inputs.git_shop_ref }}-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}"
         fi
         echo "prepared_shop=$CACHED_NAME" | tee -a $GITHUB_OUTPUT
-        echo "EXEC_PHP=docker-compose exec -T php" | tee -a $GITHUB_ENV
+        echo "EXEC_PHP=docker-compose exec -T ${{ inputs.container_options }} ${{ inputs.container }}" | tee -a $GITHUB_ENV
         echo "\033[0;35m### Caching the installation as ${CACHED_NAME}\033[0m"
 
     - name: Clone testing environment master
@@ -152,7 +162,7 @@ runs:
 
         if [ -n "${{ inputs.add_services }}" ]; then
           for $SERVICE in ${{ inputs.add_services }}; do
-            if [ "${SERRVICE}" == "nginx-rp" ]; then
+            if [ "${SERVICE}" == "nginx-rp" ]; then
               perl -pi\
                 -e 's#- 80:80#- 8000:80#g;'\
                 -e 's#apache:localhost.local#nginx:localhost.local#g;'\
@@ -224,7 +234,7 @@ runs:
       if: always()
       shell: bash
       run: |
-        echo "\033[0;35m### Stopping containers $c\033[0m"
+        echo -e "\033[0;35m### Stopping containers $c\033[0m"
         docker-compose down
         sleep 2
 

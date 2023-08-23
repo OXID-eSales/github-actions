@@ -1,7 +1,43 @@
 # prepare_shop
-Prepares the shop and creates a cache for it to be used by following steps like install_shop or start_shop.
+This action checks out the SDK and the CE shop. If this is a pull request, it is merged into the base ref.
+
+After this, "make setup" and "make addbasicservices" is run. If there are additional modules specified in
+the "add_services" input, they are loaded as well. The actioon also takes care of changing the ports for
+apache, if the "nginx-rp" service is installed.
+
+Afterwards, the variables PHP_VERSION and MYSQL_VERSION are set in the ".env" file and the inputs "custom_ini_xdebug" and "custom_ini_error_reporting" are used to update containers/php/custom.ini and we substitute /var/www/ by /var/www/source/ in "containers/httpd/project.conf".
+
+The containers are started. Df the container start with docker-compose fails, the docker-compose and container logs are printed and the action fails.
+
+If the input "is_enterprise" is set to true, we configure composer to use the input "enterprise_github_token" and configure the following git repositories:
+- repositories.oxid-esales/oxideshop-pe: https://github.com/OXID-eSales/oxideshop_pe.git
+- repositories.oxid-esales/oxideshop-ee: https://github.com/OXID-eSales/oxideshop_ee.git
+- repositories.oxid-esales/twig-component-pe:https://github.com/OXID-eSales/twig-component-pe.git
+- repositories.oxid-esales/twig-component-ee: https://github.com/OXID-eSales/twig-component-ee.git
+
+In the same step, the following components are required, using the input "git_enterprise_ref" as version:
+- oxid-esales/oxideshop-pe
+- oxid-esales/oxideshop-ee
+- oxid-esales/twig-component-ee
+- oxid-esales/twig-admin-theme
+- oxid-esales/apex-theme
+- oxid-esales/codeception-modules
+- oxid-esales/codeception-page-objects
+
+As the next step, composer update is run for both CE and EE shop installations and we copy source/config.inc.php.dist to source/config.inc.php before stopping the containers.
+
+This in stallation is cached as preparedShop-<type>-<git_enterprise_ref>-<php>-<mysql>-<github.sha>-<github.run_number>-<github.run_attempt>, where type is either "ce" or "ee", depending on the "is_enterprise" input.
+This can be used by multiple following jobs like start_shop or shop_setup_test. The name of the cached object
+is returned as output "prepared_shop".
 
 ## Inputs:
+
+**container:** *not required*, *default:*  php  
+Name of the container to run the test in.
+
+**container_options:** *not required*, *default:*  ''
+Additional options to pass into the container.
+
 **git_sdk_url:** *not required*, *default:* 'https://github.com/OXID-eSales/docker-eshop-sdk.git'  
 URL for the docker-eshop sdk repository to clone.
 
@@ -75,5 +111,6 @@ Needed to access the local cache instead of the GitHub cache.
 Populate with ${{ secrets.CACHE_SECRET_KEY }}, its content will be hidden by GitHub.
 
 ## Outputs:
+
 **prepared_shop**  
 Name of the cached shop setup to be reused by later steps.

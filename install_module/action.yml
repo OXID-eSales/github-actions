@@ -102,7 +102,7 @@ runs:
         CACHED_NAME="${{ inputs.cached_shop }}+${{ inputs.module_ids }}"
         echo "installed_shop_with_module=$CACHED_NAME" | tee -a $GITHUB_OUTPUT
         echo "EXEC_PHP=docker-compose exec -T ${{ inputs. container_options }} ${{ inputs.container }} \" | tee -a $GITHUB_ENV
-        echo "\033[0;35m### Caching the installation as ${CACHED_NAME}\033[0m"
+        echo -e "\033[0;35m### Caching the installation as ${CACHED_NAME}\033[0m"
 
     - name: Checkout current module
       uses: actions/checkout@v3
