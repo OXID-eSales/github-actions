@@ -3,7 +3,7 @@ description: 'Deletes files and cleans up the docker environment'
 inputs:
   clean_workspace:
     type: boolean
-    description: 'Clean the workspace'
+    description: 'Clean the workspace by deleting all files and directories'
     default: true
   kill_containers:
     type: boolean

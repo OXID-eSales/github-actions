@@ -21,12 +21,12 @@ global:
   # This action can be used on the community edition (ce) and enterprise
   # edition (ee) of the shop. On top of setting this to true, a few extra 
   # variables/secrets must be provided for using the action on ee.
-  is_enterprise: &is_enterprise false
+  is_enterprise: &is_enterprise true
   # If is enterprise is set to true, you need to provide the following
   # - secrets.enterprise_github_token
   # - testplan entry global.git_enterprise_ref
   # Branch to check out for the enterprise repos
-  git_enterprise_ref: &git_enterprise_ref ''
+  git_enterprise_ref: &git_enterprise_ref 'b-8.0.x'
 
   # When running on a self hosted runner with access to a local s3 cache:
   # Set the following secrets:
@@ -108,7 +108,7 @@ unit_tests:
   # Name of the configuration file
   configuration: 'phpunit.xml'
   # Name of the test or folder to run
-  test: 'tests/Unit'
+  test: 'vendor/oxid-esales/oxideshop-ee/Tests/Unit'
   # Optional: Additional options to pass to phpunit
   additional_options: ''
   # Name of the output logfile - This is dynamic, so we set it in the workflow
@@ -137,7 +137,7 @@ integration_tests:
   # Name of the configuration file
   configuration: 'phpunit.xml'
   # Name of the test or folder to run
-  test: 'tests/Integration'
+  test: 'vendor/oxid-esales/oxideshop-ee/Tests/Integration'
   # Optional: Additional options to pass to phpunit
   additional_options: '--bootstrap tests/bootstrap.php'
   # Name of the output logfile - This is dynamic, so we set it in the workflow
@@ -165,9 +165,9 @@ codeception_tests:
   container: *container
   container_options: *container_options
   # Name of the configuration file
-  configuration: 'tests/codeception.yml'
+  configuration: 'vendor/oxid-esales/oxideshop-ee/Tests/codeception.yml'
   # Whether to run the build step before running codeception or not
-  build: false
+  build: true
   # Name of the codeception test suite to run
   suite: 'acceptance,acceptanceAdmin'
   # Name of the test to run
@@ -186,7 +186,7 @@ codeception_tests:
       source/source/config.inc.php
       source/source/log/oxideshop.log
       data/php/logs/error_log.txt
-      source/tests/Codeception/_output
+      source/vendor/oxid-esales/oxideshop-ee/Tests/Codeception/_output
   # Github run artifact to put the output files in - This is dynamic, so we set it in the workflow
   # output_artifact: codeception-artifacts_PHP<matrix.php>_MYSQL<matrix.mysql>
   # Path for the coverage file, not uploaded if it is empty
@@ -215,9 +215,9 @@ shop_setup_tests:
     # Options to pass along to composer during install
     update_options: '--no-interaction'
   # Name of the configuration file
-  configuration: 'tests/codeception.yml'
+  configuration: 'vendor/oxid-esales/oxideshop-ee/Tests/codeception.yml'
   # Whether to run the build step before running codeception or not
-  build: false
+  build: true
   # Name of the codeception test suite to run
   suite: 'acceptanceSetup'
   # Name of the test to run
@@ -236,7 +236,7 @@ shop_setup_tests:
       source/source/config.inc.php
       source/source/log/oxideshop.log
       data/php/logs/error_log.txt
-      source/tests/Codeception/_output
+      source/vendor/oxid-esales/oxideshop-ee/Tests/Codeception/_output
   # Github run artifact to put the output files in - This is dynamic, so we set it in the workflow
   # output_artifact: codeception-artifacts_PHP<matrix.php>_MYSQL<matrix.mysql>
   # Path for the coverage file, not uploaded if it is empty

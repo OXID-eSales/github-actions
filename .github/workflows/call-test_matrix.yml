@@ -16,82 +16,6 @@ on:
         type: string
         description: 'Testplan to run'
         required: true
-#      runs_on:
-#        type: string
-#        description: 'Runner for this workflow'
-#        required: false
-#        default: '"ubuntu-latest"'
-#      git_sdk_url:
-#        type: string
-#        description: 'URL for the docker-eshop sdk repo to clone'
-#        required: false
-#        default: 'https://github.com/OXID-eSales/docker-eshop-sdk.git'
-#      git_sdk_ref:
-#        type: string
-#        description: 'Branch, tag or hash of the commit to check out'
-#        required: false
-#        default: 'master'
-#      git_shop_url:
-#        type: string
-#        description: 'URL for the oxidshop_ce repository'
-#        required: false
-#        default: 'https://github.com/OXID-eSales/oxideshop_ce.git'
-#      git_shop_ref:
-#        type: string
-#        description: 'Branch, tag or hash of the commit to check out'
-#        required: true
-#        default: ${{ github.ref_name }}
-#      git_enterprise_ref:
-#        type: string
-#        description: 'Branch to check out for the enterprise repos'
-#        required: false
-#      github_event_name:
-#        type: string
-#        description: 'Name of the github event (github.event_name), used to handle pull requests'
-#        required: false
-#        default: ${{ github.event_name }}
-#      github_event_number:
-#        type: string
-#        description: 'Number of the github event (github.event_number), used to handle pull requests'
-#        required: false
-#      github_base_ref:
-#        type: string
-#        description: 'Base reference (github.base_ref) for testing the github pull request'
-#        required: false
-#        default: ${{ github.base_ref }}
-#      github_sha:
-#        type: string
-#        required: false
-#        description: 'github.sha is used in generating the cache id'
-#        default: ${{ github.sha }}
-#      github_run_number:
-#        type: string
-#        required: false
-#        description: 'github.run_number and github.run_attempts are used in generating the cache id'
-#      github_run_attempt:
-#        type: string
-#        required: false
-#        description: 'github.run_number and github.run_attempts are used in generating the cache id'
-#      php:
-#        type: string
-#        required: false
-#        description: 'Version of PHP for this instance'
-#        default: '["8.1","8.2"]'
-#      mysql:
-#        type: string
-#        required: false
-#        description: 'Version of MySQL for this instance'
-#        default: '["5.7","8.0"]'
-#      is_enterprise:
-#        type: boolean
-#        required: false
-#        description: 'This action can be used on the community edition (ce) and enterprise edition (ee) of the shop. On top of setting this to true, a few extra variables/secrets must be provided for using the action on ee.'
-#        default: false
-#      enterprise_github_token:
-#        type: string
-#        required: false
-#        description: 'OAuth token to access enterprise repos'
-#        default: ''
     secrets:
       enterprise_github_token:
         description: 'OAuth token to access enterprise repos'
@@ -132,24 +56,30 @@ jobs:
           logout: false
 
   prepare_shop:
+    needs: [ init ]
     strategy:
       matrix:
         php: ${{ fromJSON(env.workflow_matrix_php) }}
         mysql: ${{ fromJSON(env.workflow_matrix_mysql) }}
       fail-fast: false
-    needs: init
     runs-on: ${{ fromJSON(env.workflow_runs_on) }}
     outputs:
       prepared_shop: ${{ steps.prepare_shop.outputs.prepared_shop }}
     steps:
       - name: 'Cleanup (pre)'
-        if: ${{ env.prepare_shop_pre_cleanup }}
+        if: ${{ env.prepare_shop_pre_cleanup_run }}
         uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
+        with:
+          clean_workspace: ${{ env.prepare_shop_pre_cleanup_clean_workspace }}
+          kill_containers: ${{ env.prepare_shop_pre_cleanup_kill_containers }}
+          prune_docker: ${{ env.prepare_shop_pre_cleanup_prune_docker }}
 
       - name: 'Prepare Shop'
         id: prepare_shop
         uses: 'OXID-eSales/github-actions/prepare_shop@v0'
         with:
+          container: ${{ env.prepare_shop_container }}
+          container_options: ${{ env.prepare_shop_container_options }}
           git_sdk_url: ${{ env.prepare_shop_git_sdk_url }}
           git_sdk_ref: ${{ env.prepare_shop_git_sdk_ref }}
           git_shop_url: ${{ env.prepare_shop_git_shop_url }}
@@ -180,14 +110,17 @@ jobs:
         php: ${{ fromJSON(env.workflow_matrix_php) }}
         mysql: ${{ fromJSON(env.workflow_matrix_mysql) }}
       fail-fast: false
-    needs: init
     runs-on: ${{ fromJSON(env.workflow_runs_on) }}
     outputs:
       installed_shop: ${{ steps.install_shop.outputs.installed_shop }}
     steps:
       - name: 'Cleanup (pre)'
-        if: ${{ env.install_shop_pre_cleanup }}
+        if: ${{ env.install_shop_pre_cleanup_run }}
         uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
+        with:
+          clean_workspace: ${{ env.install_shop_pre_cleanup_clean_workspace }}
+          kill_containers: ${{ env.install_shop_pre_cleanup_kill_containers }}
+          prune_docker: ${{ env.install_shop_pre_cleanup_prune_docker }}
 
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v0'
@@ -202,6 +135,8 @@ jobs:
         id: install_shop
         uses: 'OXID-eSales/github-actions/install_shop@v0'
         with:
+          container: ${{ env.install_shop_container }}
+          container_options: ${{ env.install_shop_container_options }}
           git_shop_ref: ${{ env.install_shop_git_shop_ref }}
           git_enterprise_ref: ${{ env.install_shop_git_enterprise_ref }}
           github_sha: ${{ github.sha }}
@@ -211,97 +146,119 @@ jobs:
           mysql: ${{ matrix.mysql }}
           is_enterprise: ${{ env.install_shop_is_enterprise }}
           config_idebug: ${{ env.install_shop_config_idebug }}
-          cache_bucket: ${{ env.prepare_shop_cache_bucket }}
+          output_artifact: 'Configs-${{ matrix.php }}-${{ matrix.mysql }}_install_shop'
+          cache_bucket: ${{ env.install_shop_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
   unit_tests:
+    needs: [ install_shop ]
     strategy:
       matrix:
-        php: ${{ fromJSON(inputs.php) }}
-        mysql: ${{ fromJSON(inputs.mysql) }}
+        php: ${{ fromJSON(env.workflow_matrix_php) }}
+        mysql: ${{ fromJSON(env.workflow_matrix_mysql) }}
       fail-fast: false
-    needs: [ install_shop ]
-    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    runs-on: ${{ fromJSON(env.workflow_runs_on) }}
     steps:
       - name: 'Cleanup (pre)'
+        if: ${{ env.unit_tests_pre_cleanup_run }}
         uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
+        with:
+          clean_workspace: ${{ env.unit_tests_pre_cleanup_clean_workspace }}
+          kill_containers: ${{ env.unit_tests_pre_cleanup_kill_containers }}
+          prune_docker: ${{ env.unit_tests_pre_cleanup_prune_docker }}
 
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: ${{ needs.install_shop.outputs.installed_shop }}
+          cache_bucket: ${{ env.unit_tests_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
-      - name: 'Run unit tests (ce)'
-        if: inputs.is_enterprise == false
+      - name: 'Run unit tests'
         uses: 'OXID-eSales/github-actions/phpunit@v0'
         with:
-          test: 'tests/Unit'
+          container: ${{ env.unit_tests_container }}
+          container_options: ${{ env.unit_tests_container_options }}
+          configuration: ${{ env.unit_tests_configuration }}
+          test: ${{ env.unit_tests_test }}
+          additional_options: ${{ env.unit_tests_additional_options }}
           logfile: unit_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_phpunit_log.txt
-
-      - name: 'Run unit tests (ee)'
-        if: inputs.is_enterprise == true
-        uses: 'OXID-eSales/github-actions/phpunit@v0'
-        with:
-          test: 'vendor/oxid-esales/oxideshop-ee/Tests/Unit'
-          logfile: 'unit_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_phpunit_log.txt'
+          logfile_artifact: ${{ env.unit_tests_logfile_artifact }}
+          output_files: ${{ env.unit_tests_output_files }}
+          output_artifact: unit-artifacts_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
+          coverage_path: ${{ env.unit_tests_coverage_path }}
+          coverage_artifact: unit-coverage-reports _PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
+          failure_pattern: ${{ env.unit_tests_failure_pattern }}
 
   integration_tests:
+    needs: [ install_shop ]
     strategy:
       matrix:
-        php: ${{ fromJSON(inputs.php) }}
-        mysql: ${{ fromJSON(inputs.mysql) }}
+        php: ${{ fromJSON(env.workflow_matrix_php) }}
+        mysql: ${{ fromJSON(env.workflow_matrix_mysql) }}
       fail-fast: false
-    needs: [ install_shop ]
-    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    runs-on: ${{ fromJSON(env.workflow_runs_on) }}
     steps:
       - name: 'Cleanup (pre)'
+        if: ${{ env.integration_tests_pre_cleanup_run }}
         uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
+        with:
+          clean_workspace: ${{ env.integration_tests_pre_cleanup_clean_workspace }}
+          kill_containers: ${{ env.integration_tests_pre_cleanup_kill_containers }}
+          prune_docker: ${{ env.integration_tests_pre_cleanup_prune_docker }}
 
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: ${{ needs.install_shop.outputs.installed_shop }}
+          cache_bucket: ${{ env.integration_tests_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
-      - name: 'Run integration tests (ce)'
+      - name: 'Run integration tests'
         if: inputs.is_enterprise == false
         uses: 'OXID-eSales/github-actions/phpunit@v0'
         with:
-          test: 'tests/Integration'
-          additional_options: '--bootstrap tests/bootstrap.php'
+          container: ${{ env.integration_tests_container }}
+          container_options: ${{ env.integration_tests_container_options }}
+          configuration: ${{ env.integration_tests_configuration }}
+          test: ${{ env.integration_tests_test }}
+          additional_options: ${{ env.integration_tests_additional_options }}
           logfile: integration_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_phpunit_log.txt
+          logfile_artifact: ${{ env.integration_tests_logfile_artifact }}
+          output_files: ${{ env.integration_tests_output_files }}
+          output_artifact: integration-artifacts_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
+          coverage_path: ${{ env.integration_tests_coverage_path }}
+          coverage_artifact: integration-coverage-reports _PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
+          failure_pattern: ${{ env.integration_tests_failure_pattern }}
 
-      - name: 'Run integration tests (ee)'
-        if: inputs.is_enterprise == true
-        uses: 'OXID-eSales/github-actions/phpunit@v0'
-        with:
-          test: 'vendor/oxid-esales/oxideshop-ee/Tests/Integration'
-          additional_options: '--bootstrap tests/bootstrap.php'
-          logfile: 'integration_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_phpunit_log.txt'
-  
   codeception_tests:
+    needs: [ install_shop ]
     strategy:
       matrix:
-        php: ${{ fromJSON(inputs.php) }}
-        mysql: ${{ fromJSON(inputs.mysql) }}
+        php: ${{ fromJSON(env.workflow_matrix_php) }}
+        mysql: ${{ fromJSON(env.workflow_matrix_mysql) }}
       fail-fast: false
-    needs: [ install_shop ]
-    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    runs-on: ${{ fromJSON(env.workflow_runs_on) }}
     steps:
       - name: 'Cleanup (pre)'
+        if: ${{ env.codeception_tests_pre_cleanup_run }}
         uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
+        with:
+          clean_workspace: ${{ env.codeception_tests_pre_cleanup_clean_workspace }}
+          kill_containers: ${{ env.codeception_tests_pre_cleanup_kill_containers }}
+          prune_docker: ${{ env.codeception_tests_pre_cleanup_prune_docker }}
 
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: ${{ needs.install_shop.outputs.installed_shop }}
+          cache_bucket: ${{ env.codeception_tests_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}        
@@ -311,38 +268,45 @@ jobs:
         with:
           themes: 'oxid-esales/twig-admin-theme:dev-b-8.0.x oxid-esales/apex-theme:dev-b-7.1.x'
 
-      - name: 'Run codeception tests (ce)'
+      - name: 'Run codeception tests'
         if: inputs.is_enterprise == false
         uses: 'OXID-eSales/github-actions/codeception@v0'
         with:
-          additional_options: '--skip-group flow_theme'
+          container: ${{ env.codeception_tests_container }}
+          container_options: ${{ env.codeception_tests_container_options }}
+          configuration: ${{ env.codeception_tests_configuration }}
+          test: ${{ env.codeception_tests_test }}
+          additional_options: ${{ env.codeception_tests_additional_options }}
           logfile: codeception_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_phpunit_log.txt
-
-      - name: 'Run codeception tests (ee)'
-        if: inputs.is_enterprise == true
-        uses: 'OXID-eSales/github-actions/codeception@v0'
-        with:
-          configuration: 'vendor/oxid-esales/oxideshop-ee/Tests/codeception.yml'
-          build: true
-          logfile: codeception_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_phpunit_log.txt
-          output_folder: 'source/vendor/oxid-esales/oxideshop-ee/Tests/Codeception/_output'
+          logfile_artifact: ${{ env.codeception_tests_logfile_artifact }}
+          output_files: ${{ env.codeception_tests_output_files }}
+          output_artifact: codeception-artifacts_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
+          coverage_path: ${{ env.codeception_tests_coverage_path }}
+          coverage_artifact: codeception-coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
+          failure_pattern: ${{ env.codeception_tests_failure_pattern }}
  
   shop_setup_tests:
+    needs: [ prepare_shop ]
     strategy:
       matrix:
-        php: ${{ fromJSON(inputs.php) }}
-        mysql: ${{ fromJSON(inputs.mysql) }}
+        php: ${{ fromJSON(env.workflow_matrix_php) }}
+        mysql: ${{ fromJSON(env.workflow_matrix_mysql) }}
       fail-fast: false
-    needs: [ prepare_shop ]
-    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    runs-on: ${{ fromJSON(env.workflow_runs_on) }}
     steps:
       - name: 'Cleanup (pre)'
+        if: ${{ env.shop_setup_tests_pre_cleanup_run }}
         uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
+        with:
+          clean_workspace: ${{ env.shop_setup_tests_pre_cleanup_clean_workspace }}
+          kill_containers: ${{ env.shop_setup_tests_pre_cleanup_kill_containers }}
+          prune_docker: ${{ env.shop_setup_tests_pre_cleanup_prune_docker }}
 
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: ${{ needs.prepare_shop.outputs.prepared_shop }}
+          cache_bucket: ${{ env.shop_setup_tests_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}        
@@ -351,53 +315,32 @@ jobs:
         if: inputs.is_enterprise == false
         uses: 'OXID-eSales/github-actions/install_themes@v0'
         with:
-          themes: 'oxid-esales/twig-admin-theme oxid-esales/apex-theme'
+          container: ${{ env.shop_setup_tests_container }}
+          container_options: ${{ env.shop_setup_tests_container_options }}
+          themes: ${{ env.shop_setup_tests_themes_install }}
+          options: ${{ env.shop_setup_tests_themes_options }}
+          update: ${{ env.shop_setup_tests_themes_update }}
+          update_options: ${{ env.shop_setup_tests_themes_update_options }}
 
-      - name: 'Run codeception tests (ce)'
+      - name: 'Run codeception tests'
         if: inputs.is_enterprise == false
         uses: 'OXID-eSales/github-actions/codeception@v0'
         with:
-          additional_options: '--skip-group flow_theme'
-          logfile: codeception_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_phpunit_log.txt
-
-      - name: 'Run codeception tests (ee)'
-        if: inputs.is_enterprise == true
-        uses: 'OXID-eSales/github-actions/codeception@v0'
-        with:
-          configuration: 'vendor/oxid-esales/oxideshop-ee/Tests/codeception.yml'
-          build: true
-          logfile: codeception_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_phpunit_log.txt
-          output_folder: 'source/vendor/oxid-esales/oxideshop-ee/Tests/Codeception/_output'
-
-      - name: 'Run shop setup tests (ce)'
-        if: inputs.is_enterprise == false
-        uses: 'OXID-eSales/github-actions/shop_setup_tests@v0'
-        with:
-          container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e DB_NAME=setup_test -e DB_USERNAME=root -e DB_PASSWORD=root -e DB_HOST=mysql -e DB_PORT=3306 -e SHOP_URL=http://localhost.local/ -e SHOP_SOURCE_PATH=/var/www/source/'
-          suite: 'acceptanceSetup'
-          additional_options: '--skip-group flow_theme'
+          container: ${{ env.shop_setup_tests_container }}
+          container_options: ${{ env.shop_setup_tests_container_options }}
+          configuration: ${{ env.shop_setup_tests_configuration }}
+          test: ${{ env.shop_setup_tests_test }}
+          additional_options: ${{ env.shop_setup_tests_additional_options }}
           logfile: shop_setup_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_phpunit_log.txt
-          output_artifact: shop_setup-artifacts
-        
-      - name: 'Run shop setup tests (ee)'
-        if: inputs.is_enterprise == true
-        uses: 'OXID-eSales/github-actions/shop_setup_tests@v0'
-        with:
-          container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e DB_NAME=setup_test -e DB_USERNAME=root -e DB_PASSWORD=root -e DB_HOST=mysql -e DB_PORT=3306 -e SHOP_URL=http://localhost.local/ -e SHOP_SOURCE_PATH=/var/www/source/'
-          configuration: 'vendor/oxid-esales/oxideshop-ee/Tests/codeception.yml'
-          build: true
-          suite: 'acceptanceSetup'
-          logfile: shop_setup_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_phpunit_log.txt
-          output_folder: 'source/vendor/oxid-esales/oxideshop-ee/Tests/Codeception/_output'
-          output_artifact: shop_setup-artifacts
+          logfile_artifact: ${{ env.shop_setup_tests_logfile_artifact }}
+          output_files: ${{ env.shop_setup_tests_output_files }}
+          output_artifact: shop_setup-artifacts_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
+          coverage_path: ${{ env.shop_setup_tests_coverage_path }}
+          coverage_artifact: shop_setup-coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
+          failure_pattern: ${{ env.shop_setup_tests_failure_pattern }}
 
   finish:
     if: ${{ always() }}
-    strategy:
-      matrix:
-        php: ${{ fromJSON(inputs.php) }}
-        mysql: ${{ fromJSON(inputs.mysql) }}
-      fail-fast: false
     needs:
       - prepare_shop
       - install_shop
@@ -405,13 +348,9 @@ jobs:
       - integration_tests
       - codeception_tests
       - shop_setup_tests
-    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    runs-on: ${{ fromJSON(env.workflow_runs_on) }}
     steps:
-      - name: 'Cleanup (post)'
-        uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
-
       - name: 'Docker logout'
+        if: ${{ env.finish_docker_logout }}
         shell: bash
-        run: |
-          docker logout
-          
+        run: docker logout

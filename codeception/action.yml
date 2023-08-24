@@ -24,7 +24,7 @@ inputs:
   suite:
     type: string
     required: false
-    description: 'Name of the codeception test suite to run.'
+    description: 'Name of the codeception test suite to run'
     default: 'acceptance,acceptanceAdmin'
   test:
     type: string
@@ -68,6 +68,11 @@ inputs:
     required: false
     description: 'Path for the coverage file, don't upload if it is empty'
     default: ''
+  coverage_artifact:
+    type: string
+    required: false
+    description: 'Github run artifact for the coverage file'
+    default: 'coverage-reports'
   failure_pattern:
     type: string
     required: false
@@ -120,7 +125,7 @@ runs:
       if: ${{ always() && inputs.coverage_path != "" }}
       uses: actions/upload-artifact@v3
       with:
-        name: coverage-reports
+        name: ${{ inputs.coverage_artifact }}
         path: ${{ inputs.coverage_path }}
         if-no-files-found: error
         retention-days: 7
