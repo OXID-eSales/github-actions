@@ -9,9 +9,9 @@ global:
   # URL for the docker-eshop sdk repo to clone 
   git_sdk_url: &git_sdk_url 'https://github.com/OXID-eSales/docker-eshop-sdk.git'
   # Branch to check out for the SDK
-  git_sdk_ref: &git_sdk_ref 'main'
+  git_sdk_ref: &git_sdk_ref 'master'
   # URL for the oxidshop_ce repository
-  git_shop_url: &git_shop_url 'https://github.com/OXID-eSales/oxideshop_ce.git'
+  git_shop_url: &git_shop_url 'https://github.com/joernott/oxideshop_ce.git'
   # Branch, tag or hash of the commit to check out
   git_shop_ref: *github_ref_name
 
