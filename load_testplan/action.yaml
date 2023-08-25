@@ -87,6 +87,7 @@ runs:
         if [ -n "${{ inputs.override }}" ]; then
           echo "${{ inputs.override }}" >>.testplan_override.yml
         fi
+        cat .testplan.yml
 
     - name: 'Append testplan from file'
       if: ${{ inputs.repository != '' }}
