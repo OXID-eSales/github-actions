@@ -38,13 +38,14 @@ on:
       enterprise_github_token:
         required: false
         description: 'OAuth token to access enterprise repos'
-  
+env:
+  action_version: 'v0'
 jobs:
   init:
     runs-on: ${{ fromJSON(env.workflow_runs_on) }}
     steps:
       - name: 'Load Testplan'
-        uses: 'OXID-eSales/github-actions/load_testplan@v0'
+        uses: 'OXID-eSales/github-actions/load_testplan@${{ env.action_version }}'
         with:
           testplan: ${{ inputs.testplan }}
       - name: Login to Docker Hub
