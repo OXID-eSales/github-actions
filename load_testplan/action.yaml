@@ -119,7 +119,7 @@ runs:
         env
         echo -e "\033[0m"
 
-#outputs:
+outputs: ${{ steps.yaml.outputs }}
   # installed_shop:
   #   description: 'Name of the cached shop installation'
   #   value: ${{ steps.init.outputs.installed_shop }}
