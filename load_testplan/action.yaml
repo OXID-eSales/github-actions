@@ -84,6 +84,7 @@ runs:
       shell: bash
       run: |
         curl -sSjkL "${{ inputs.testplan }}" >>.testplan.yml
+        cat .testplan.yml
         if [ -n "${{ inputs.override }}" ]; then
           echo "${{ inputs.override }}" >>.testplan_override.yml
         fi
