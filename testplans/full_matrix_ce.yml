@@ -16,7 +16,7 @@ global:
   # URL for the oxidshop_ce repository
   git_shop_url: &git_shop_url 'https://github.com/OXID-eSales/oxideshop_ce.git'
   # Branch, tag or hash of the commit to check out
-  git_shop_ref: &git_shop_ref *github_ref_name
+  git_shop_ref: *github_ref_name
 
   # This action can be used on the community edition (ce) and enterprise
   # edition (ee) of the shop. On top of setting this to true, a few extra 
@@ -66,7 +66,7 @@ prepare_shop:
   git_sdk_url: *git_sdk_url
   git_sdk_ref: *git_sdk_ref
   git_shop_url: *git_shop_url
-  git_shop_ref: *git_shop_ref
+  git_shop_ref: *github_ref_name
   git_enterprise_ref: *git_enterprise_ref
   is_enterprise: *is_enterprise
   cache_bucket: *cache_bucket
@@ -83,7 +83,7 @@ install_shop:
   pre_cleanup: *pre_cleanup
   container: *container
   container_options: *container_options
-  git_shop_ref: *git_shop_ref
+  git_shop_ref: *github_ref_name
   git_enterprise_ref: *git_enterprise_ref
   is_enterprise: *is_enterprise
   cache_bucket: *cache_bucket
