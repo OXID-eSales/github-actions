@@ -87,7 +87,6 @@ runs:
         if [ -n "${{ inputs.override }}" ]; then
           echo "${{ inputs.override }}" >>.testplan_override.yml
         fi
-        cat .testplan.yml
 
     - name: 'Append testplan from file'
       if: ${{ inputs.repository != '' }}
@@ -97,7 +96,6 @@ runs:
         if [ -n "${{ inputs.override }}" ]; then
           echo "${{ inputs.override }}" >>.testplan_override.yml
         fi
-        cat .testplan.yml
 
     - name: 'Load variables'
       uses: actions-tools/yaml-outputs@v2
@@ -106,12 +104,22 @@ runs:
         file-path: .testplan.yml
         separator: '_'
 
+    - name: 'Dump Testplan on failure'
+      if: failure()
+      shell: bash
+      run: cat .testplan.yml
+        
     - name: 'Load overrides'
       uses: actions-tools/yaml-outputs@v2
       if: ${{ inputs.override != '' }}
       with:
         file-path: .testplan_override.yml
         separator: '_'
+
+    - name: 'Dump Testplan on failure'
+      if: failure()
+      shell: bash
+      run: cat .testplan_override.yml
 
     - name: 'Dump variables'
       shell: bash
