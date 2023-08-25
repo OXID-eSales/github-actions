@@ -1,7 +1,4 @@
 workflow:
-  # Runner for this workflow, we use a json string or array inside this string to allow
-  # something like '["self_hosted", "x64"]'
-  runs_on: '"ubuntu-latest"'
   # The variables "php" and "mysql" are used to run a matrix of all combinations
   matrix:
     # A json array of php versions to test
@@ -47,7 +44,6 @@ global:
     prune_docker: true
   # Name of the container running php
   container: &container 'php'
-
   # Additional options when running something in the the container
   container_options: &container_options ''
 

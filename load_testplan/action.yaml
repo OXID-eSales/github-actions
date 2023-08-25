@@ -128,7 +128,226 @@ runs:
         env
         echo -e "\033[0m"
 
-#outputs: ${{ steps.yaml.outputs }}
-  # installed_shop:
-  #   description: 'Name of the cached shop installation'
-  #   value: ${{ steps.init.outputs.installed_shop }}
+outputs:
+  # workflow variables
+  workflow_matrix_mysql:
+    value: ${{ steps.yaml.outputs.workflow_matrix_mysql}}
+  workflow_matrix_php:
+    value: ${{ steps.yaml.outputs.workflow_matrix_php}}
+  # global variables
+  global_git_sdk_url:
+    value: ${{ steps.yaml.outputs.global_git_sdk_url}}
+  global_git_sdk_ref:
+    value: ${{ steps.yaml.outputs.global_git_sdk_ref}}
+  global_git_shop_url:
+    value: ${{ steps.yaml.outputs.global_git_shop_url}}
+  global_git_shop_ref:
+    value: ${{ steps.yaml.outputs.global_git_shop_ref}}
+  global_is_enterprise:
+    value: ${{ steps.yaml.outputs.global_is_enterprise}}
+  global_git_enterprise_ref:
+    value: ${{ steps.yaml.outputs.global_git_enterprise_ref}}
+  global_cache_bucket:
+    value: ${{ steps.yaml.outputs.global_cache_bucket}}
+  global_pre_cleanup_run:
+    value: ${{ steps.yaml.outputs.global_pre_cleanup_run}}
+  global_pre_cleanup_clean_workspace:
+    value: ${{ steps.yaml.outputs.global_pre_cleanup_clean_workspace}}
+  global_pre_cleanup_kill_containers:
+    value: ${{ steps.yaml.outputs.global_pre_cleanup_kill_containers}}
+  global_pre_cleanup_prune_docker:
+    value: ${{ steps.yaml.outputs.global_pre_cleanup_prune_docker}}
+  global_container:
+    value: ${{ steps.yaml.outputs.global_container}}
+  global_container_options:
+    value: ${{ steps.yaml.outputs.global_container_options}}
+  # init variables
+  init_docker_login:
+    value: ${{ steps.yaml.outputs.init_docker_login}}
+  # prepare_shop variables
+  prepare_shop_pre_cleanup_run:
+    value: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_run}}
+  prepare_shop_pre_cleanup_clean_workspace:
+    value: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_clean_workspace}}
+  prepare_shop_pre_cleanup_kill_containers:
+    value: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_kill_containers}}
+  prepare_shop_pre_cleanup_prune_docker:
+    value: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_prune_docker}}
+  prepare_shop_container:
+    value: ${{ steps.yaml.outputs.prepare_shop_container}}
+  prepare_shop_container_options:
+    value: ${{ steps.yaml.outputs.prepare_shop_container_options}}
+  prepare_shop_git_sdk_url:
+    value: ${{ steps.yaml.outputs.prepare_shop_git_sdk_url}}
+  prepare_shop_git_sdk_ref:
+    value: ${{ steps.yaml.outputs.prepare_shop_git_sdk_ref}}
+  prepare_shop_git_shop_url:
+    value: ${{ steps.yaml.outputs.prepare_shop_git_shop_url}}
+  prepare_shop_git_shop_ref:
+    value: ${{ steps.yaml.outputs.prepare_shop_git_shop_ref}}
+  prepare_shop_git_enterprise_ref:
+    value: ${{ steps.yaml.outputs.prepare_shop_git_enterprise_ref}}
+  prepare_shop_is_enterprise:
+    value: ${{ steps.yaml.outputs.prepare_shop_is_enterprise}}
+  prepare_shop_cache_bucket:
+    value: ${{ steps.yaml.outputs.prepare_shop_cache_bucket}}
+  prepare_shop_custom_ini_error_reporting:
+    value: ${{ steps.yaml.outputs.prepare_shop_custom_ini_error_reporting}}
+  prepare_shop_custom_ini_xdebug:
+    value: ${{ steps.yaml.outputs.prepare_shop_custom_ini_xdebug}}
+  prepare_shop_add_services:
+    value: ${{ steps.yaml.outputs.prepare_shop_add_services}}
+  # install_shop variables
+  install_shop_pre_cleanup_run:
+    value: ${{ steps.yaml.outputs.install_shop_pre_cleanup_run}}
+  install_shop_pre_cleanup_clean_workspace:
+    value: ${{ steps.yaml.outputs.install_shop_pre_cleanup_clean_workspace}}
+  install_shop_pre_cleanup_kill_containers:
+    value: ${{ steps.yaml.outputs.install_shop_pre_cleanup_kill_containers}}
+  install_shop_pre_cleanup_prune_docker:
+    value: ${{ steps.yaml.outputs.install_shop_pre_cleanup_prune_docker}}
+  install_shop_container:
+    value: ${{ steps.yaml.outputs.install_shop_container}}
+  install_shop_container_options:
+    value: ${{ steps.yaml.outputs.install_shop_container_options}}
+  install_shop_git_shop_ref:
+    value: ${{ steps.yaml.outputs.install_shop_git_shop_ref}}
+  install_shop_git_enterprise_ref:
+    value: ${{ steps.yaml.outputs.install_shop_git_enterprise_ref}}
+  install_shop_is_enterprise:
+    value: ${{ steps.yaml.outputs.install_shop_is_enterprise}}
+  install_shop_cache_bucket:
+    value: ${{ steps.yaml.outputs.install_shop_cache_bucket}}
+  install_shop_config_idebug:
+    value: ${{ steps.yaml.outputs.install_shop_config_idebug}}
+  install_shop_output_files:
+    value: ${{ steps.yaml.outputs.install_shop_output_files}}
+  # unit_test variables
+  unit_tests_pre_cleanup_run:
+    value: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_run}}
+  unit_tests_pre_cleanup_clean_workspace:
+    value: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_clean_workspace}}
+  unit_tests_pre_cleanup_kill_containers:
+    value: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_kill_containers}}
+  unit_tests_pre_cleanup_prune_docker:
+    value: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_prune_docker}}
+  unit_tests_container:
+    value: ${{ steps.yaml.outputs.unit_tests_container}}
+  unit_tests_container_options:
+    value: ${{ steps.yaml.outputs.unit_tests_container_options}}
+  unit_tests_cache_bucket:
+    value: ${{ steps.yaml.outputs.unit_tests_cache_bucket}}
+  unit_tests_configuration:
+    value: ${{ steps.yaml.outputs.unit_tests_configuration}}
+  unit_tests_test:
+    value: ${{ steps.yaml.outputs.unit_tests_test}}
+  unit_tests_additional_options:
+    value: ${{ steps.yaml.outputs.unit_tests_additional_options}}
+  unit_tests_logfile_artifact:
+    value: ${{ steps.yaml.outputs.unit_tests_logfile_artifact}}
+  unit_tests_output_files:
+    value: ${{ steps.yaml.outputs.unit_tests_output_files}}
+  unit_tests_coverage_path:
+    value: ${{ steps.yaml.outputs.unit_tests_coverage_path}}
+  # integration_tests variables
+  integration_tests_pre_cleanup_run:
+    value: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_run}}
+  integration_tests_pre_cleanup_clean_workspace:
+    value: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_clean_workspace}}
+  integration_tests_pre_cleanup_kill_containers:
+    value: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_kill_containers}}
+  integration_tests_pre_cleanup_prune_docker:
+    value: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_prune_docker}}
+  integration_tests_container:
+    value: ${{ steps.yaml.outputs.integration_tests_container}}
+  integration_tests_container_options:
+    value: ${{ steps.yaml.outputs.integration_tests_container_options}}
+  integration_tests_cache_bucket:
+    value: ${{ steps.yaml.outputs.integration_tests_cache_bucket}}
+  integration_tests_configuration:
+    value: ${{ steps.yaml.outputs.integration_tests_configuration}}
+  integration_tests_test:
+    value: ${{ steps.yaml.outputs.integration_tests_test}}
+  integration_tests_additional_options:
+    value: ${{ steps.yaml.outputs.integration_tests_additional_options}}
+  integration_tests_logfile_artifact:
+    value: ${{ steps.yaml.outputs.integration_tests_logfile_artifact}}
+  integration_tests_output_files:
+    value: ${{ steps.yaml.outputs.integration_tests_output_files}}
+  integration_tests_coverage_path:
+    value: ${{ steps.yaml.outputs.integration_tests_coverage_path}}
+  integration_tests_failure_pattern:
+    value: ${{ steps.yaml.outputs.integration_tests_failure_pattern}}
+  # codeception_tests variables
+  codeception_tests_pre_cleanup_run:
+    value: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_run}}
+  codeception_tests_pre_cleanup_clean_workspace:
+    value: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_clean_workspace}}
+  codeception_tests_pre_cleanup_kill_containers:
+    value: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_kill_containers}}
+  codeception_tests_pre_cleanup_prune_docker:
+    value: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_prune_docker}}
+  codeception_tests_container:
+    value: ${{ steps.yaml.outputs.codeception_tests_container}}
+  codeception_tests_container_options:
+    value: ${{ steps.yaml.outputs.codeception_tests_container_options}}
+  codeception_tests_configuration:
+    value: ${{ steps.yaml.outputs.codeception_tests_configuration}}
+  codeception_tests_build:
+    value: ${{ steps.yaml.outputs.codeception_tests_build}}
+  codeception_tests_suite:
+    value: ${{ steps.yaml.outputs.codeception_tests_suite}}
+  codeception_tests_test:
+    value: ${{ steps.yaml.outputs.codeception_tests_test}}
+  codeception_tests_additional_options:
+    value: ${{ steps.yaml.outputs.codeception_tests_additional_options}}
+  codeception_tests_logfile_artifact:
+    value: ${{ steps.yaml.outputs.codeception_tests_logfile_artifact}}
+  codeception_tests_output_files:
+    value: ${{ steps.yaml.outputs.codeception_tests_output_files}}
+  codeception_tests_coverage_path:
+    value: ${{ steps.yaml.outputs.codeception_tests_coverage_path}}
+  codeception_tests_failure_pattern:
+    value: ${{ steps.yaml.outputs.codeception_tests_failure_pattern}}
+  # shop_setup_tests variables
+  shop_setup_tests_pre_cleanup_run:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_run}}
+  shop_setup_tests_pre_cleanup_clean_workspace:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_clean_workspace}}
+  shop_setup_tests_pre_cleanup_kill_containers:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_kill_containers}}
+  shop_setup_tests_pre_cleanup_prune_docker:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_prune_docker}}
+  shop_setup_tests_container:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_container}}
+  shop_setup_tests_container_options:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_container_options}}
+  shop_setup_tests_themes_install:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_themes_install}}
+  shop_setup_tests_themes_options:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_themes_options}}
+  shop_setup_tests_themes_update:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_themes_update}}
+  shop_setup_tests_themes_update_options:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_themes_update_options}}
+  shop_setup_tests_configuration:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_configuration}}
+  shop_setup_tests_build:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_build}}
+  shop_setup_tests_suite:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_suite}}
+  shop_setup_tests_test:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_test}}
+  shop_setup_tests_additional_options:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_additional_options}}
+  shop_setup_tests_logfile_artifact:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_logfile_artifact}}
+  shop_setup_tests_output_files:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_output_files}}
+  shop_setup_tests_coverage_path:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_coverage_path}}
+  shop_setup_tests_failure_pattern:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_failure_pattern}}
+  # finish variables
+  finish_docker_logout:
+    value: ${{ steps.yaml.outputs.finish_docker_logout}}

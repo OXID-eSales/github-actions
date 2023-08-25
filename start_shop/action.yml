@@ -39,7 +39,6 @@ runs:
         endpoint: ${{ inputs.cache_endpoint }}
         accessKey: ${{ inputs.cache_access_key }}
         secretKey: ${{ inputs.cache_secret_key }}
-        bucket:  ${{ inputs.cache_secret_key }}
         bucket: ${{ inputs.cache_bucket }}
 
     - name: Confirm successful restore
