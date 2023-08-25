@@ -96,6 +96,7 @@ runs:
         if [ -n "${{ inputs.override }}" ]; then
           echo "${{ inputs.override }}" >>.testplan_override.yml
         fi
+        cat .testplan.yml
 
     - name: 'Load variables'
       uses: actions-tools/yaml-outputs@v2
@@ -116,3 +117,8 @@ runs:
         echo -e "\033[0;35m### Environment"
         env
         echo -e "\033[0m"
+
+outputs:
+  # installed_shop:
+  #   description: 'Name of the cached shop installation'
+  #   value: ${{ steps.init.outputs.installed_shop }}
