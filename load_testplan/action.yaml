@@ -108,6 +108,7 @@ runs:
 
     - name: 'Load overrides'
       uses: actions-tools/yaml-outputs@v2
+      if: ${{ inputs.override != '' }}
       with:
         file-path: .testplan_override.yml
         separator: '_'
