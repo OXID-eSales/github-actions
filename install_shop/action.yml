@@ -64,7 +64,7 @@ inputs:
     type: string
     required: false
     description: 'Github run artifact for the config output'
-    default: 'Configs-${{ inputs.php }}-${{ inputs.mysql }}_install_shop'
+    default: 'configs_install_shop'
   cache_bucket:
     type: string
     description: 'Name of the local s3 cache bucket'
