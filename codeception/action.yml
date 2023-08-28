@@ -66,7 +66,7 @@ inputs:
   coverage_path:
     type: string
     required: false
-    description: 'Path for the coverage file, don't upload if it is empty'
+    description: 'Path for the coverage file, do not upload if it is empty'
     default: ''
   coverage_artifact:
     type: string
