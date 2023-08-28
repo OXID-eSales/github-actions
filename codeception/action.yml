@@ -149,6 +149,7 @@ runs:
         codeception test ${{ inputs.test }} failed
         ###############################################################################
         EOF
+          grep -Ei '${{ inputs.failure_pattern}}' "${{ inputs.logfile }}"
           exit 1
         fi
         if [ -n "${{ inputs.coverage_path }}" && ! -s "${{ inputs.coverage_path }}" ]; then
