@@ -97,7 +97,7 @@ runs:
         retention-days: 7
 
     - name: Upload Coverage Report
-      if: ${{  always() && inputs.coverage_path != "" }}
+      if: ${{  always() && inputs.coverage_path != '' }}
       uses: actions/upload-artifact@v3
       with:
         name: ${{ inputs.coverage_artifact }}
