@@ -122,6 +122,8 @@ unit_tests:
   coverage_path: ''
   # Github run artifact for the coverage file - This is dynamic, so we set it in the workflow
   # coverage_artifact: coverage-reports _PHP<matrix.php>_MYSQL<matrix.mysql>
+  # Grep pattern which indicate that the test failed
+  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error'
 
 # See docs/actions/start_shop.md and docs/actions/phpunit.md for more information.
 integration_tests:

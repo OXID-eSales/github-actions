@@ -250,6 +250,8 @@ outputs:
     value: ${{ steps.yaml.outputs.unit_tests_output_files}}
   unit_tests_coverage_path:
     value: ${{ steps.yaml.outputs.unit_tests_coverage_path}}
+  unit_tests_failure_pattern:
+    value: ${{ steps.yaml.outputs.unit_tests_failure_pattern}}
   # integration_tests variables
   integration_tests_pre_cleanup_run:
     value: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_run}}
