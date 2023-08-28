@@ -161,14 +161,15 @@ runs:
         make addbasicservices
 
         if [ -n "${{ inputs.add_services }}" ]; then
-          for $SERVICE in ${{ inputs.add_services }}; do
+          for SERVICE in ${{ inputs.add_services }}; do
+            echo -e "\033[0;31mAdding service ${SERVICE}\033[0m"
             if [ "${SERVICE}" == "nginx-rp" ]; then
               perl -pi\
                 -e 's#- 80:80#- 8000:80#g;'\
                 -e 's#apache:localhost.local#nginx:localhost.local#g;'\
                 docker-compose.yml
             fi
-            make file=services/${{ inputs.add_services }}.yml addservice
+            make file=services/${SERVICE}.yml addservice
           done
         fi
 
