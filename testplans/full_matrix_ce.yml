@@ -160,6 +160,7 @@ codeception_tests:
   pre_cleanup: *pre_cleanup
   container: *container
   container_options: *container_options
+  cache_bucket: *cache_bucket
   # Name of the configuration file
   configuration: 'tests/codeception.yml'
   # Whether to run the build step before running codeception or not
@@ -200,6 +201,7 @@ shop_setup_tests:
   container: *container
   # We pass the configuration parameters into the container here
   container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e DB_NAME=setup_test -e DB_USERNAME=root -e DB_PASSWORD=root -e DB_HOST=mysql -e DB_PORT=3306 -e SHOP_URL=http://localhost.local/ -e SHOP_SOURCE_PATH=/var/www/source/'
+  cache_bucket: *cache_bucket
   # Themes to install
   themes:
     # Space separated list of themes to install
