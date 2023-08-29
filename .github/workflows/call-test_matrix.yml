@@ -16,76 +16,360 @@ on:
         type: string
         description: 'Testplan to run'
         required: true
+      runs_on:
+        type: string
+        description: 'JSON string/array describing the runner'
+        required: true
+        default: '"ubuntu-latest"'
     secrets:
-      enterprise_github_token:
-        description: 'OAuth token to access enterprise repos'
-        required: false
       DOCKER_HUB_USER:
-        description: 'user for the docker login'
+        #description: 'user for the docker login'
         required: false
       DOCKER_HUB_TOKEN:
-        description: 'Token for the docker login'
+        #description: 'Token for the docker login'
         required: false
       CACHE_ENDPOINT:
-        description: 'Endpoint for tespkg/actions-cache@v1'
+        #description: 'Endpoint for tespkg/actions-cache@v1'
         required: false # only for ee
       CACHE_ACCESS_KEY:
-        description: 'Access key for tespkg/actions-cache@v1'
+        #description: 'Access key for tespkg/actions-cache@v1'
         required: false # only for ee
       CACHE_SECRET_KEY:
-        description: 'Secret key for tespkg/actions-cache@v1'
+        #description: 'Secret key for tespkg/actions-cache@v1'
         required: false # only for ee
       enterprise_github_token:
         required: false
-        description: 'OAuth token to access enterprise repos'
-env:
-  action_version: 'v0'
+        #description: 'OAuth token to access enterprise repos'
+ 
 jobs:
   init:
-    runs-on: ${{ fromJSON(env.workflow_runs_on) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Load Testplan'
-        uses: 'OXID-eSales/github-actions/load_testplan@${{ env.action_version }}'
+        id: yaml
+        uses: 'OXID-eSales/github-actions/load_testplan@v0'
         with:
           testplan: ${{ inputs.testplan }}
+      - name: 'Print Testplan'
+        run: |
+          PURPLE=$(echo -e "\033[0;35m")
+          NO_COLOR=$(echo -e "\033[0m")
+          cat <<EOF
+            ${PURPLE}### workflow variables${NO_COLOR}
+            workflow_matrix_mysql: ${{ steps.yaml.outputs.workflow_matrix_mysql}}
+            workflow_matrix_php: ${{ steps.yaml.outputs.workflow_matrix_php}}
+            ${PURPLE}### global variables${NO_COLOR}
+            global_git_sdk_url: ${{ steps.yaml.outputs.global_git_sdk_url}}
+            global_git_sdk_ref: ${{ steps.yaml.outputs.global_git_sdk_ref}}
+            global_git_shop_url: ${{ steps.yaml.outputs.global_git_shop_url}}
+            global_git_shop_ref: ${{ steps.yaml.outputs.global_git_shop_ref}}
+            global_is_enterprise: ${{ steps.yaml.outputs.global_is_enterprise}}
+            global_git_enterprise_ref: ${{ steps.yaml.outputs.global_git_enterprise_ref}}
+            global_cache_bucket: ${{ steps.yaml.outputs.global_cache_bucket}}
+            global_pre_cleanup_run: ${{ steps.yaml.outputs.global_pre_cleanup_run}}
+            global_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.global_pre_cleanup_clean_workspace}}
+            global_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.global_pre_cleanup_kill_containers}}
+            global_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.global_pre_cleanup_prune_docker}}
+            global_container: ${{ steps.yaml.outputs.global_container}}
+            global_container_options: ${{ steps.yaml.outputs.global_container_options}}
+            ${PURPLE}### init variables${NO_COLOR}
+            init_docker_login: ${{ steps.yaml.outputs.init_docker_login}}
+            ${PURPLE}### prepare_shop variables${NO_COLOR}
+            prepare_shop_matrix_mysql: ${{ steps.yaml.outputs.prepare_shop_matrix_mysql}}
+            prepare_shop_matrix_php: ${{ steps.yaml.outputs.prepare_shop_matrix_php}}
+            prepare_shop_pre_cleanup_run: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_run}}
+            prepare_shop_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_clean_workspace}}
+            prepare_shop_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_kill_containers}}
+            prepare_shop_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_prune_docker}}
+            prepare_shop_container: ${{ steps.yaml.outputs.prepare_shop_container}}
+            prepare_shop_container_options: ${{ steps.yaml.outputs.prepare_shop_container_options}}
+            prepare_shop_git_sdk_url: ${{ steps.yaml.outputs.prepare_shop_git_sdk_url}}
+            prepare_shop_git_sdk_ref: ${{ steps.yaml.outputs.prepare_shop_git_sdk_ref}}
+            prepare_shop_git_shop_url: ${{ steps.yaml.outputs.prepare_shop_git_shop_url}}
+            prepare_shop_git_shop_ref: ${{ steps.yaml.outputs.prepare_shop_git_shop_ref}}
+            prepare_shop_git_enterprise_ref: ${{ steps.yaml.outputs.prepare_shop_git_enterprise_ref}}
+            prepare_shop_is_enterprise: ${{ steps.yaml.outputs.prepare_shop_is_enterprise}}
+            prepare_shop_cache_bucket: ${{ steps.yaml.outputs.prepare_shop_cache_bucket}}
+            prepare_shop_custom_ini_error_reporting: ${{ steps.yaml.outputs.prepare_shop_custom_ini_error_reporting}}
+            prepare_shop_custom_ini_xdebug: ${{ steps.yaml.outputs.prepare_shop_custom_ini_xdebug}}
+            prepare_shop_add_services: ${{ steps.yaml.outputs.prepare_shop_add_services}}
+            ${PURPLE}### install_shop variables${NO_COLOR}
+            install_shop_matrix_mysql: ${{ steps.yaml.outputs.install_shop_matrix_mysql}}
+            install_shop_matrix_php: ${{ steps.yaml.outputs.install_shop_matrix_php}}
+            install_shop_pre_cleanup_run: ${{ steps.yaml.outputs.install_shop_pre_cleanup_run}}
+            install_shop_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.install_shop_pre_cleanup_clean_workspace}}
+            install_shop_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.install_shop_pre_cleanup_kill_containers}}
+            install_shop_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.install_shop_pre_cleanup_prune_docker}}
+            install_shop_container: ${{ steps.yaml.outputs.install_shop_container}}
+            install_shop_container_options: ${{ steps.yaml.outputs.install_shop_container_options}}
+            install_shop_git_shop_ref: ${{ steps.yaml.outputs.install_shop_git_shop_ref}}
+            install_shop_git_enterprise_ref: ${{ steps.yaml.outputs.install_shop_git_enterprise_ref}}
+            install_shop_is_enterprise: ${{ steps.yaml.outputs.install_shop_is_enterprise}}
+            install_shop_cache_bucket: ${{ steps.yaml.outputs.install_shop_cache_bucket}}
+            install_shop_config_idebug: ${{ steps.yaml.outputs.install_shop_config_idebug}}
+            install_shop_output_files: ${{ steps.yaml.outputs.install_shop_output_files}}
+            ${PURPLE}### unit_test variables${NO_COLOR}
+            unit_tests_skip: ${{ steps.yaml.outputs.unit_tests_skip}}
+            unit_tests_matrix_mysql: ${{ steps.yaml.outputs.unit_tests_matrix_mysql}}
+            unit_tests_matrix_php: ${{ steps.yaml.outputs.unit_tests_matrix_php}}
+            unit_tests_pre_cleanup_run: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_run}}
+            unit_tests_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_clean_workspace}}
+            unit_tests_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_kill_containers}}
+            unit_tests_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_prune_docker}}
+            unit_tests_container: ${{ steps.yaml.outputs.unit_tests_container}}
+            unit_tests_container_options: ${{ steps.yaml.outputs.unit_tests_container_options}}
+            unit_tests_cache_bucket: ${{ steps.yaml.outputs.unit_tests_cache_bucket}}
+            unit_tests_configuration: ${{ steps.yaml.outputs.unit_tests_configuration}}
+            unit_tests_test: ${{ steps.yaml.outputs.unit_tests_test}}
+            unit_tests_additional_options: ${{ steps.yaml.outputs.unit_tests_additional_options}}
+            unit_tests_logfile_artifact: ${{ steps.yaml.outputs.unit_tests_logfile_artifact}}
+            unit_tests_output_files: ${{ steps.yaml.outputs.unit_tests_output_files}}
+            unit_tests_coverage_path: ${{ steps.yaml.outputs.unit_tests_coverage_path}}
+            unit_tests_failure_pattern: ${{ steps.yaml.outputs.unit_tests_failure_pattern}}
+            ${PURPLE}### integration_tests variables${NO_COLOR}
+            integration_tests_skip: ${{ steps.yaml.outputs.integration_tests_skip}}
+            integration_tests_matrix_mysql: ${{ steps.yaml.outputs.integration_tests_matrix_mysql}}
+            integration_tests_matrix_php: ${{ steps.yaml.outputs.integration_tests_matrix_php}}
+            integration_tests_pre_cleanup_run: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_run}}
+            integration_tests_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_clean_workspace}}
+            integration_tests_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_kill_containers}}
+            integration_tests_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_prune_docker}}
+            integration_tests_container: ${{ steps.yaml.outputs.integration_tests_container}}
+            integration_tests_container_options: ${{ steps.yaml.outputs.integration_tests_container_options}}
+            integration_tests_cache_bucket: ${{ steps.yaml.outputs.integration_tests_cache_bucket}}
+            integration_tests_configuration: ${{ steps.yaml.outputs.integration_tests_configuration}}
+            integration_tests_test: ${{ steps.yaml.outputs.integration_tests_test}}
+            integration_tests_additional_options: ${{ steps.yaml.outputs.integration_tests_additional_options}}
+            integration_tests_logfile_artifact: ${{ steps.yaml.outputs.integration_tests_logfile_artifact}}
+            integration_tests_output_files: ${{ steps.yaml.outputs.integration_tests_output_files}}
+            integration_tests_coverage_path: ${{ steps.yaml.outputs.integration_tests_coverage_path}}
+            integration_tests_failure_pattern: ${{ steps.yaml.outputs.integration_tests_failure_pattern}}
+            ${PURPLE}### codeception_tests variables${NO_COLOR}
+            codeception_tests_skip: ${{ steps.yaml.outputs.codeception_tests_skip}}
+            codeception_tests_matrix_mysql: ${{ steps.yaml.outputs.codeception_tests_matrix_mysql}}
+            codeception_tests_matrix_php: ${{ steps.yaml.outputs.codeception_tests_matrix_php}}
+            codeception_tests_pre_cleanup_run: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_run}}
+            codeception_tests_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_clean_workspace}}
+            codeception_tests_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_kill_containers}}
+            codeception_tests_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_prune_docker}}
+            codeception_tests_container: ${{ steps.yaml.outputs.codeception_tests_container}}
+            codeception_tests_container_options: ${{ steps.yaml.outputs.codeception_tests_container_options}}
+            codeception_tests_cache_bucket: ${{ steps.yaml.outputs.codeception_tests_cache_bucket}}
+            codeception_tests_configuration: ${{ steps.yaml.outputs.codeception_tests_configuration}}
+            codeception_tests_build: ${{ steps.yaml.outputs.codeception_tests_build}}
+            codeception_tests_suite: ${{ steps.yaml.outputs.codeception_tests_suite}}
+            codeception_tests_test: ${{ steps.yaml.outputs.codeception_tests_test}}
+            codeception_tests_additional_options: ${{ steps.yaml.outputs.codeception_tests_additional_options}}
+            codeception_tests_logfile_artifact: ${{ steps.yaml.outputs.codeception_tests_logfile_artifact}}
+            codeception_tests_output_files: ${{ steps.yaml.outputs.codeception_tests_output_files}}
+            codeception_tests_coverage_path: ${{ steps.yaml.outputs.codeception_tests_coverage_path}}
+            codeception_tests_failure_pattern: ${{ steps.yaml.outputs.codeception_tests_failure_pattern}}
+            ${PURPLE}### shop_setup_tests variables${NO_COLOR}
+            shop_setup_tests_skip: ${{ steps.yaml.outputs.shop_setup_tests_skip}}
+            shop_setup_tests_matrix_mysql: ${{ steps.yaml.outputs.shop_setup_tests_matrix_mysql}}
+            shop_setup_tests_matrix_php: ${{ steps.yaml.outputs.shop_setup_tests_matrix_php}}
+            shop_setup_tests_pre_cleanup_run: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_run}}
+            shop_setup_tests_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_clean_workspace}}
+            shop_setup_tests_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_kill_containers}}
+            shop_setup_tests_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_prune_docker}}
+            shop_setup_tests_container: ${{ steps.yaml.outputs.shop_setup_tests_container}}
+            shop_setup_tests_container_options: ${{ steps.yaml.outputs.shop_setup_tests_container_options}}
+            shop_setup_tests_cache_bucket: ${{ steps.yaml.outputs.shop_setup_tests_cache_bucket}}
+            shop_setup_tests_themes_install: ${{ steps.yaml.outputs.shop_setup_tests_themes_install}}
+            shop_setup_tests_themes_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_options}}
+            shop_setup_tests_themes_update: ${{ steps.yaml.outputs.shop_setup_tests_themes_update}}
+            shop_setup_tests_themes_update_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_update_options}}
+            shop_setup_tests_configuration: ${{ steps.yaml.outputs.shop_setup_tests_configuration}}
+            shop_setup_tests_build: ${{ steps.yaml.outputs.shop_setup_tests_build}}
+            shop_setup_tests_suite: ${{ steps.yaml.outputs.shop_setup_tests_suite}}
+            shop_setup_tests_test: ${{ steps.yaml.outputs.shop_setup_tests_test}}
+            shop_setup_tests_additional_options: ${{ steps.yaml.outputs.shop_setup_tests_additional_options}}
+            shop_setup_tests_logfile_artifact: ${{ steps.yaml.outputs.shop_setup_tests_logfile_artifact}}
+            shop_setup_tests_output_files: ${{ steps.yaml.outputs.shop_setup_tests_output_files}}
+            shop_setup_tests_coverage_path: ${{ steps.yaml.outputs.shop_setup_tests_coverage_path}}
+            shop_setup_tests_failure_pattern: ${{ steps.yaml.outputs.shop_setup_tests_failure_pattern}}
+            ${PURPLE}### finish variables${NO_COLOR}
+            finish_skip: ${{ steps.yaml.outputs.finish_skip}}
+            finish_matrix_mysql: ${{ steps.yaml.outputs.finish_matrix_mysql}}
+            finish_matrix_php: ${{ steps.yaml.outputs.finish_matrix_php}}
+            finish_docker_logout: ${{ steps.yaml.outputs.finish_docker_logout}}
+            EOF
       - name: Login to Docker Hub
-        if: ${{ env.init_docker_login == 'true' }}
+        if: ${{ steps.yaml.outputs.init_docker_login == 'true' }}
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
           logout: false
+    outputs:
+      # workflow variables
+      workflow_matrix_mysql: ${{ steps.yaml.outputs.workflow_matrix_mysql}}
+      workflow_matrix_php: ${{ steps.yaml.outputs.workflow_matrix_php}}
+      # global variables
+      global_git_sdk_url: ${{ steps.yaml.outputs.global_git_sdk_url}}
+      global_git_sdk_ref: ${{ steps.yaml.outputs.global_git_sdk_ref}}
+      global_git_shop_url: ${{ steps.yaml.outputs.global_git_shop_url}}
+      global_git_shop_ref: ${{ steps.yaml.outputs.global_git_shop_ref}}
+      global_is_enterprise: ${{ steps.yaml.outputs.global_is_enterprise}}
+      global_git_enterprise_ref: ${{ steps.yaml.outputs.global_git_enterprise_ref}}
+      global_cache_bucket: ${{ steps.yaml.outputs.global_cache_bucket}}
+      global_pre_cleanup_run: ${{ steps.yaml.outputs.global_pre_cleanup_run}}
+      global_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.global_pre_cleanup_clean_workspace}}
+      global_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.global_pre_cleanup_kill_containers}}
+      global_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.global_pre_cleanup_prune_docker}}
+      global_container: ${{ steps.yaml.outputs.global_container}}
+      global_container_options: ${{ steps.yaml.outputs.global_container_options}}
+      # init variables
+      init_docker_login: ${{ steps.yaml.outputs.init_docker_login}}
+      # prepare_shop variables
+      prepare_shop_matrix_mysql: ${{ steps.yaml.outputs.prepare_shop_matrix_mysql}}
+      prepare_shop_matrix_php: ${{ steps.yaml.outputs.prepare_shop_matrix_php}}
+      prepare_shop_pre_cleanup_run: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_run}}
+      prepare_shop_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_clean_workspace}}
+      prepare_shop_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_kill_containers}}
+      prepare_shop_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_prune_docker}}
+      prepare_shop_container: ${{ steps.yaml.outputs.prepare_shop_container}}
+      prepare_shop_container_options: ${{ steps.yaml.outputs.prepare_shop_container_options}}
+      prepare_shop_git_sdk_url: ${{ steps.yaml.outputs.prepare_shop_git_sdk_url}}
+      prepare_shop_git_sdk_ref: ${{ steps.yaml.outputs.prepare_shop_git_sdk_ref}}
+      prepare_shop_git_shop_url: ${{ steps.yaml.outputs.prepare_shop_git_shop_url}}
+      prepare_shop_git_shop_ref: ${{ steps.yaml.outputs.prepare_shop_git_shop_ref}}
+      prepare_shop_git_enterprise_ref: ${{ steps.yaml.outputs.prepare_shop_git_enterprise_ref}}
+      prepare_shop_is_enterprise: ${{ steps.yaml.outputs.prepare_shop_is_enterprise}}
+      prepare_shop_cache_bucket: ${{ steps.yaml.outputs.prepare_shop_cache_bucket}}
+      prepare_shop_custom_ini_error_reporting: ${{ steps.yaml.outputs.prepare_shop_custom_ini_error_reporting}}
+      prepare_shop_custom_ini_xdebug: ${{ steps.yaml.outputs.prepare_shop_custom_ini_xdebug}}
+      prepare_shop_add_services: ${{ steps.yaml.outputs.prepare_shop_add_services}}
+      # install_shop variables
+      install_shop_matrix_mysql: ${{ steps.yaml.outputs.install_shop_matrix_mysql}}
+      install_shop_matrix_php: ${{ steps.yaml.outputs.install_shop_matrix_php}}
+      install_shop_pre_cleanup_run: ${{ steps.yaml.outputs.install_shop_pre_cleanup_run}}
+      install_shop_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.install_shop_pre_cleanup_clean_workspace}}
+      install_shop_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.install_shop_pre_cleanup_kill_containers}}
+      install_shop_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.install_shop_pre_cleanup_prune_docker}}
+      install_shop_container: ${{ steps.yaml.outputs.install_shop_container}}
+      install_shop_container_options: ${{ steps.yaml.outputs.install_shop_container_options}}
+      install_shop_git_shop_ref: ${{ steps.yaml.outputs.install_shop_git_shop_ref}}
+      install_shop_git_enterprise_ref: ${{ steps.yaml.outputs.install_shop_git_enterprise_ref}}
+      install_shop_is_enterprise: ${{ steps.yaml.outputs.install_shop_is_enterprise}}
+      install_shop_cache_bucket: ${{ steps.yaml.outputs.install_shop_cache_bucket}}
+      install_shop_config_idebug: ${{ steps.yaml.outputs.install_shop_config_idebug}}
+      install_shop_output_files: ${{ steps.yaml.outputs.install_shop_output_files}}
+      # unit_test variables
+      unit_tests_skip: ${{ steps.yaml.outputs.unit_tests_skip}}
+      unit_tests_matrix_mysql: ${{ steps.yaml.outputs.unit_tests_matrix_mysql}}
+      unit_tests_matrix_php: ${{ steps.yaml.outputs.unit_tests_matrix_php}}
+      unit_tests_pre_cleanup_run: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_run}}
+      unit_tests_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_clean_workspace}}
+      unit_tests_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_kill_containers}}
+      unit_tests_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_prune_docker}}
+      unit_tests_container: ${{ steps.yaml.outputs.unit_tests_container}}
+      unit_tests_container_options: ${{ steps.yaml.outputs.unit_tests_container_options}}
+      unit_tests_cache_bucket: ${{ steps.yaml.outputs.unit_tests_cache_bucket}}
+      unit_tests_configuration: ${{ steps.yaml.outputs.unit_tests_configuration}}
+      unit_tests_test: ${{ steps.yaml.outputs.unit_tests_test}}
+      unit_tests_additional_options: ${{ steps.yaml.outputs.unit_tests_additional_options}}
+      unit_tests_logfile_artifact: ${{ steps.yaml.outputs.unit_tests_logfile_artifact}}
+      unit_tests_output_files: ${{ steps.yaml.outputs.unit_tests_output_files}}
+      unit_tests_coverage_path: ${{ steps.yaml.outputs.unit_tests_coverage_path}}
+      unit_tests_failure_pattern: ${{ steps.yaml.outputs.unit_tests_failure_pattern}}
+      # integration_tests variables
+      integration_tests_skip: ${{ steps.yaml.outputs.integration_tests_skip}}
+      integration_tests_matrix_mysql: ${{ steps.yaml.outputs.integration_tests_matrix_mysql}}
+      integration_tests_matrix_php: ${{ steps.yaml.outputs.integration_tests_matrix_php}}
+      integration_tests_pre_cleanup_run: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_run}}
+      integration_tests_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_clean_workspace}}
+      integration_tests_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_kill_containers}}
+      integration_tests_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_prune_docker}}
+      integration_tests_container: ${{ steps.yaml.outputs.integration_tests_container}}
+      integration_tests_container_options: ${{ steps.yaml.outputs.integration_tests_container_options}}
+      integration_tests_cache_bucket: ${{ steps.yaml.outputs.integration_tests_cache_bucket}}
+      integration_tests_configuration: ${{ steps.yaml.outputs.integration_tests_configuration}}
+      integration_tests_test: ${{ steps.yaml.outputs.integration_tests_test}}
+      integration_tests_additional_options: ${{ steps.yaml.outputs.integration_tests_additional_options}}
+      integration_tests_logfile_artifact: ${{ steps.yaml.outputs.integration_tests_logfile_artifact}}
+      integration_tests_output_files: ${{ steps.yaml.outputs.integration_tests_output_files}}
+      integration_tests_coverage_path: ${{ steps.yaml.outputs.integration_tests_coverage_path}}
+      integration_tests_failure_pattern: ${{ steps.yaml.outputs.integration_tests_failure_pattern}}
+      # codeception_tests variables
+      codeception_tests_skip: ${{ steps.yaml.outputs.codeception_tests_skip}}
+      codeception_tests_matrix_mysql: ${{ steps.yaml.outputs.codeception_tests_matrix_mysql}}
+      codeception_tests_matrix_php: ${{ steps.yaml.outputs.codeception_tests_matrix_php}}
+      codeception_tests_pre_cleanup_run: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_run}}
+      codeception_tests_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_clean_workspace}}
+      codeception_tests_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_kill_containers}}
+      codeception_tests_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_prune_docker}}
+      codeception_tests_container: ${{ steps.yaml.outputs.codeception_tests_container}}
+      codeception_tests_container_options: ${{ steps.yaml.outputs.codeception_tests_container_options}}
+      codeception_tests_cache_bucket: ${{ steps.yaml.outputs.codeception_tests_cache_bucket}}
+      codeception_tests_configuration: ${{ steps.yaml.outputs.codeception_tests_configuration}}
+      codeception_tests_build: ${{ steps.yaml.outputs.codeception_tests_build}}
+      codeception_tests_suite: ${{ steps.yaml.outputs.codeception_tests_suite}}
+      codeception_tests_test: ${{ steps.yaml.outputs.codeception_tests_test}}
+      codeception_tests_additional_options: ${{ steps.yaml.outputs.codeception_tests_additional_options}}
+      codeception_tests_logfile_artifact: ${{ steps.yaml.outputs.codeception_tests_logfile_artifact}}
+      codeception_tests_output_files: ${{ steps.yaml.outputs.codeception_tests_output_files}}
+      codeception_tests_coverage_path: ${{ steps.yaml.outputs.codeception_tests_coverage_path}}
+      codeception_tests_failure_pattern: ${{ steps.yaml.outputs.codeception_tests_failure_pattern}}
+      # shop_setup_tests variables
+      shop_setup_tests_skip: ${{ steps.yaml.outputs.shop_setup_tests_skip}}
+      shop_setup_tests_matrix_mysql: ${{ steps.yaml.outputs.shop_setup_tests_matrix_mysql}}
+      shop_setup_tests_matrix_php: ${{ steps.yaml.outputs.shop_setup_tests_matrix_php}}
+      shop_setup_tests_pre_cleanup_run: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_run}}
+      shop_setup_tests_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_clean_workspace}}
+      shop_setup_tests_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_kill_containers}}
+      shop_setup_tests_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_prune_docker}}
+      shop_setup_tests_container: ${{ steps.yaml.outputs.shop_setup_tests_container}}
+      shop_setup_tests_container_options: ${{ steps.yaml.outputs.shop_setup_tests_container_options}}
+      shop_setup_tests_cache_bucket: ${{ steps.yaml.outputs.shop_setup_tests_cache_bucket}}
+      shop_setup_tests_themes_install: ${{ steps.yaml.outputs.shop_setup_tests_themes_install}}
+      shop_setup_tests_themes_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_options}}
+      shop_setup_tests_themes_update: ${{ steps.yaml.outputs.shop_setup_tests_themes_update}}
+      shop_setup_tests_themes_update_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_update_options}}
+      shop_setup_tests_configuration: ${{ steps.yaml.outputs.shop_setup_tests_configuration}}
+      shop_setup_tests_build: ${{ steps.yaml.outputs.shop_setup_tests_build}}
+      shop_setup_tests_suite: ${{ steps.yaml.outputs.shop_setup_tests_suite}}
+      shop_setup_tests_test: ${{ steps.yaml.outputs.shop_setup_tests_test}}
+      shop_setup_tests_additional_options: ${{ steps.yaml.outputs.shop_setup_tests_additional_options}}
+      shop_setup_tests_logfile_artifact: ${{ steps.yaml.outputs.shop_setup_tests_logfile_artifact}}
+      shop_setup_tests_output_files: ${{ steps.yaml.outputs.shop_setup_tests_output_files}}
+      shop_setup_tests_coverage_path: ${{ steps.yaml.outputs.shop_setup_tests_coverage_path}}
+      shop_setup_tests_failure_pattern: ${{ steps.yaml.outputs.shop_setup_tests_failure_pattern}}
+      # finish variables
+      finish_skip: ${{ steps.yaml.outputs.finish_skip}}
+      finish_matrix_mysql: ${{ steps.yaml.outputs.finish_matrix_mysql}}
+      finish_matrix_php: ${{ steps.yaml.outputs.finish_matrix_php}}
+      finish_docker_logout: ${{ steps.yaml.outputs.finish_docker_logout}}
 
   prepare_shop:
     needs: [ init ]
     strategy:
       matrix:
-        php: ${{ fromJSON(env.workflow_matrix_php) }}
-        mysql: ${{ fromJSON(env.workflow_matrix_mysql) }}
+        php: ${{ fromJSON(needs.init.outputs.prepare_shop_matrix_php) }}
+        mysql: ${{ fromJSON(needs.init.outputs.prepare_shop_matrix_mysql) }}
       fail-fast: false
-    runs-on: ${{ fromJSON(env.workflow_runs_on) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
     outputs:
       prepared_shop: ${{ steps.prepare_shop.outputs.prepared_shop }}
     steps:
       - name: 'Cleanup (pre)'
-        if: ${{ env.prepare_shop_pre_cleanup_run }}
+        if: ${{ needs.init.outputs.prepare_shop_pre_cleanup_run }}
         uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
         with:
-          clean_workspace: ${{ env.prepare_shop_pre_cleanup_clean_workspace }}
-          kill_containers: ${{ env.prepare_shop_pre_cleanup_kill_containers }}
-          prune_docker: ${{ env.prepare_shop_pre_cleanup_prune_docker }}
-
+          clean_workspace: ${{ needs.init.outputs.prepare_shop_pre_cleanup_clean_workspace }}
+          kill_containers: ${{ needs.init.outputs.prepare_shop_pre_cleanup_kill_containers }}
+          prune_docker: ${{ needs.init.outputs.prepare_shop_pre_cleanup_prune_docker }}
       - name: 'Prepare Shop'
         id: prepare_shop
         uses: 'OXID-eSales/github-actions/prepare_shop@v0'
         with:
-          container: ${{ env.prepare_shop_container }}
-          container_options: ${{ env.prepare_shop_container_options }}
-          git_sdk_url: ${{ env.prepare_shop_git_sdk_url }}
-          git_sdk_ref: ${{ env.prepare_shop_git_sdk_ref }}
-          git_shop_url: ${{ env.prepare_shop_git_shop_url }}
-          git_shop_ref: ${{ env.prepare_shop_git_shop_ref }}
-          git_enterprise_ref: ${{ env.prepare_shop_git_enterprise_ref }}
+          container: ${{ needs.init.outputs.prepare_shop_container }}
+          container_options: ${{ needs.init.outputs.prepare_shop_container_options }}
+          git_sdk_url: ${{ needs.init.outputs.prepare_shop_git_sdk_url }}
+          git_sdk_ref: ${{ needs.init.outputs.prepare_shop_git_sdk_ref }}
+          git_shop_url: ${{ needs.init.outputs.prepare_shop_git_shop_url }}
+          git_shop_ref: ${{ needs.init.outputs.prepare_shop_git_shop_ref }}
+          git_enterprise_ref: ${{ needs.init.outputs.prepare_shop_git_enterprise_ref }}
           github_event_name: ${{ github.event_name }}
           github_event_number: ${{ github.event_number }}
           github_base_ref: ${{ github.base_ref }}
@@ -94,40 +378,40 @@ jobs:
           github_run_attempt: ${{ github.run_attempt }}
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
-          is_enterprise: ${{ env.prepare_shop_is_enterprise }}
-          custom_ini_error_reporting: ${{ env.prepare_shop_custom_ini_error_reporting }}
-          custom_ini_xdebug: ${{ env.prepare_shop_custom_ini_xdebug }}
-          add_services: ${{ env.prepare_shop_add_services }}
+          is_enterprise: ${{ needs.init.outputs.prepare_shop_is_enterprise }}
+          custom_ini_error_reporting: ${{ needs.init.outputs.prepare_shop_custom_ini_error_reporting }}
+          custom_ini_xdebug: ${{ needs.init.outputs.prepare_shop_custom_ini_xdebug }}
+          add_services: ${{ needs.init.outputs.prepare_shop_add_services }}
           enterprise_github_token: ${{ secrets.enterprise_github_token }}
-          cache_bucket: ${{ env.prepare_shop_cache_bucket }}
+          cache_bucket: ${{ needs.init.outputs.prepare_shop_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
   install_shop:
-    needs: [ prepare_shop ]
+    needs: [ init, prepare_shop ]
     strategy:
       matrix:
-        php: ${{ fromJSON(env.workflow_matrix_php) }}
-        mysql: ${{ fromJSON(env.workflow_matrix_mysql) }}
+        php: ${{ fromJSON(needs.init.outputs.install_shop_matrix_php) }}
+        mysql: ${{ fromJSON(needs.init.outputs.install_shop_matrix_mysql) }}
       fail-fast: false
-    runs-on: ${{ fromJSON(env.workflow_runs_on) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
     outputs:
       installed_shop: ${{ steps.install_shop.outputs.installed_shop }}
     steps:
       - name: 'Cleanup (pre)'
-        if: ${{ env.install_shop_pre_cleanup_run }}
+        if: ${{ needs.init.outputs.install_shop_pre_cleanup_run }}
         uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
         with:
-          clean_workspace: ${{ env.install_shop_pre_cleanup_clean_workspace }}
-          kill_containers: ${{ env.install_shop_pre_cleanup_kill_containers }}
-          prune_docker: ${{ env.install_shop_pre_cleanup_prune_docker }}
+          clean_workspace: ${{ needs.init.outputs.install_shop_pre_cleanup_clean_workspace }}
+          kill_containers: ${{ needs.init.outputs.install_shop_pre_cleanup_kill_containers }}
+          prune_docker: ${{ needs.init.outputs.install_shop_pre_cleanup_prune_docker }}
 
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: ${{ needs.prepare_shop.outputs.prepared_shop }}
-          cache_bucket: ${{ env.install_shop_cache_bucket }}
+          cache_bucket: ${{ needs.init.outputs.install_shop_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}        
@@ -136,45 +420,46 @@ jobs:
         id: install_shop
         uses: 'OXID-eSales/github-actions/install_shop@v0'
         with:
-          container: ${{ env.install_shop_container }}
-          container_options: ${{ env.install_shop_container_options }}
-          git_shop_ref: ${{ env.install_shop_git_shop_ref }}
-          git_enterprise_ref: ${{ env.install_shop_git_enterprise_ref }}
+          container: ${{ needs.init.outputs.install_shop_container }}
+          container_options: ${{ needs.init.outputs.install_shop_container_options }}
+          git_shop_ref: ${{ needs.init.outputs.install_shop_git_shop_ref }}
+          git_enterprise_ref: ${{ needs.init.outputs.install_shop_git_enterprise_ref }}
           github_sha: ${{ github.sha }}
           github_run_number: ${{ github.run_number }}
           github_run_attempt: ${{ github.run_attempt }}
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
-          is_enterprise: ${{ env.install_shop_is_enterprise }}
-          config_idebug: ${{ env.install_shop_config_idebug }}
+          is_enterprise: ${{ needs.init.outputs.install_shop_is_enterprise }}
+          config_idebug: ${{ needs.init.outputs.install_shop_config_idebug }}
           output_artifact: 'Configs-${{ matrix.php }}-${{ matrix.mysql }}_install_shop'
-          cache_bucket: ${{ env.install_shop_cache_bucket }}
+          cache_bucket: ${{ needs.init.outputs.install_shop_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
   unit_tests:
-    needs: [ install_shop ]
+    needs: [ init, install_shop ]
+    if: ${{ needs.init.outputs.unit_tests_skip != 'true' }}
     strategy:
       matrix:
-        php: ${{ fromJSON(env.workflow_matrix_php) }}
-        mysql: ${{ fromJSON(env.workflow_matrix_mysql) }}
+        php: ${{ fromJSON(needs.init.outputs.unit_tests_matrix_php) }}
+        mysql: ${{ fromJSON(needs.init.outputs.unit_tests_matrix_mysql) }}
       fail-fast: false
-    runs-on: ${{ fromJSON(env.workflow_runs_on) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Cleanup (pre)'
-        if: ${{ env.unit_tests_pre_cleanup_run }}
+        if: ${{ needs.init.outputs.unit_tests_pre_cleanup_run }}
         uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
         with:
-          clean_workspace: ${{ env.unit_tests_pre_cleanup_clean_workspace }}
-          kill_containers: ${{ env.unit_tests_pre_cleanup_kill_containers }}
-          prune_docker: ${{ env.unit_tests_pre_cleanup_prune_docker }}
+          clean_workspace: ${{ needs.init.outputs.unit_tests_pre_cleanup_clean_workspace }}
+          kill_containers: ${{ needs.init.outputs.unit_tests_pre_cleanup_kill_containers }}
+          prune_docker: ${{ needs.init.outputs.unit_tests_pre_cleanup_prune_docker }}
 
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: ${{ needs.install_shop.outputs.installed_shop }}
-          cache_bucket: ${{ env.unit_tests_cache_bucket }}
+          cache_bucket: ${{ needs.init.outputs.unit_tests_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
@@ -182,84 +467,85 @@ jobs:
       - name: 'Run unit tests'
         uses: 'OXID-eSales/github-actions/phpunit@v0'
         with:
-          container: ${{ env.unit_tests_container }}
-          container_options: ${{ env.unit_tests_container_options }}
-          configuration: ${{ env.unit_tests_configuration }}
-          test: ${{ env.unit_tests_test }}
-          additional_options: ${{ env.unit_tests_additional_options }}
+          container: ${{ needs.init.outputs.unit_tests_container }}
+          container_options: ${{ needs.init.outputs.unit_tests_container_options }}
+          configuration: ${{ needs.init.outputs.unit_tests_configuration }}
+          test: ${{ needs.init.outputs.unit_tests_test }}
+          additional_options: ${{ needs.init.outputs.unit_tests_additional_options }}
           logfile: unit_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_phpunit_log.txt
-          logfile_artifact: ${{ env.unit_tests_logfile_artifact }}
-          output_files: ${{ env.unit_tests_output_files }}
+          logfile_artifact: ${{ needs.init.outputs.unit_tests_logfile_artifact }}
+          output_files: ${{ needs.init.outputs.unit_tests_output_files }}
           output_artifact: unit-artifacts_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
-          coverage_path: ${{ env.unit_tests_coverage_path }}
+          coverage_path: ${{ needs.init.outputs.unit_tests_coverage_path }}
           coverage_artifact: unit-coverage-reports _PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
-          failure_pattern: ${{ env.unit_tests_failure_pattern }}
+          failure_pattern: ${{ needs.init.outputs.unit_tests_failure_pattern }}
 
   integration_tests:
-    needs: [ install_shop ]
+    needs: [ init, install_shop ]
+    if: ${{ needs.init.outputs.unit_tests_skip != 'true' }}
     strategy:
       matrix:
-        php: ${{ fromJSON(env.workflow_matrix_php) }}
-        mysql: ${{ fromJSON(env.workflow_matrix_mysql) }}
+        php: ${{ fromJSON(needs.init.outputs.integration_tests_matrix_php) }}
+        mysql: ${{ fromJSON(needs.init.outputs.integration_tests_matrix_mysql) }}
       fail-fast: false
-    runs-on: ${{ fromJSON(env.workflow_runs_on) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Cleanup (pre)'
-        if: ${{ env.integration_tests_pre_cleanup_run }}
+        if: ${{ needs.init.outputs.integration_tests_pre_cleanup_run }}
         uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
         with:
-          clean_workspace: ${{ env.integration_tests_pre_cleanup_clean_workspace }}
-          kill_containers: ${{ env.integration_tests_pre_cleanup_kill_containers }}
-          prune_docker: ${{ env.integration_tests_pre_cleanup_prune_docker }}
+          clean_workspace: ${{ needs.init.outputs.integration_tests_pre_cleanup_clean_workspace }}
+          kill_containers: ${{ needs.init.outputs.integration_tests_pre_cleanup_kill_containers }}
+          prune_docker: ${{ needs.init.outputs.integration_tests_pre_cleanup_prune_docker }}
 
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: ${{ needs.install_shop.outputs.installed_shop }}
-          cache_bucket: ${{ env.integration_tests_cache_bucket }}
+          cache_bucket: ${{ needs.init.outputs.integration_tests_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
       - name: 'Run integration tests'
-        if: inputs.is_enterprise == false
         uses: 'OXID-eSales/github-actions/phpunit@v0'
         with:
-          container: ${{ env.integration_tests_container }}
-          container_options: ${{ env.integration_tests_container_options }}
-          configuration: ${{ env.integration_tests_configuration }}
-          test: ${{ env.integration_tests_test }}
-          additional_options: ${{ env.integration_tests_additional_options }}
+          container: ${{ needs.init.outputs.integration_tests_container }}
+          container_options: ${{ needs.init.outputs.integration_tests_container_options }}
+          configuration: ${{ needs.init.outputs.integration_tests_configuration }}
+          test: ${{ needs.init.outputs.integration_tests_test }}
+          additional_options: ${{ needs.init.outputs.integration_tests_additional_options }}
           logfile: integration_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_phpunit_log.txt
-          logfile_artifact: ${{ env.integration_tests_logfile_artifact }}
-          output_files: ${{ env.integration_tests_output_files }}
+          logfile_artifact: ${{ needs.init.outputs.integration_tests_logfile_artifact }}
+          output_files: ${{ needs.init.outputs.integration_tests_output_files }}
           output_artifact: integration-artifacts_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
-          coverage_path: ${{ env.integration_tests_coverage_path }}
+          coverage_path: ${{ needs.init.outputs.integration_tests_coverage_path }}
           coverage_artifact: integration-coverage-reports _PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
-          failure_pattern: ${{ env.integration_tests_failure_pattern }}
+          failure_pattern: ${{ needs.init.outputs.integration_tests_failure_pattern }}
 
   codeception_tests:
-    needs: [ install_shop ]
+    needs: [ init, install_shop ]
+    if: ${{ needs.init.outputs.codeception_tests_skip != 'true' }}
     strategy:
       matrix:
-        php: ${{ fromJSON(env.workflow_matrix_php) }}
-        mysql: ${{ fromJSON(env.workflow_matrix_mysql) }}
+        php: ${{ fromJSON(needs.init.outputs.codeception_tests_matrix_php) }}
+        mysql: ${{ fromJSON(needs.init.outputs.codeception_tests_matrix_mysql) }}
       fail-fast: false
-    runs-on: ${{ fromJSON(env.workflow_runs_on) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Cleanup (pre)'
-        if: ${{ env.codeception_tests_pre_cleanup_run }}
+        if: ${{ needs.init.outputs.codeception_tests_pre_cleanup_run }}
         uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
         with:
-          clean_workspace: ${{ env.codeception_tests_pre_cleanup_clean_workspace }}
-          kill_containers: ${{ env.codeception_tests_pre_cleanup_kill_containers }}
-          prune_docker: ${{ env.codeception_tests_pre_cleanup_prune_docker }}
+          clean_workspace: ${{ needs.init.outputs.codeception_tests_pre_cleanup_clean_workspace }}
+          kill_containers: ${{ needs.init.outputs.codeception_tests_pre_cleanup_kill_containers }}
+          prune_docker: ${{ needs.init.outputs.codeception_tests_pre_cleanup_prune_docker }}
 
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: ${{ needs.install_shop.outputs.installed_shop }}
-          cache_bucket: ${{ env.codeception_tests_cache_bucket }}
+          cache_bucket: ${{ needs.init.outputs.codeception_tests_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}        
@@ -270,88 +556,92 @@ jobs:
           themes: 'oxid-esales/twig-admin-theme:dev-b-8.0.x oxid-esales/apex-theme:dev-b-7.1.x'
 
       - name: 'Run codeception tests'
-        if: inputs.is_enterprise == false
         uses: 'OXID-eSales/github-actions/codeception@v0'
         with:
-          container: ${{ env.codeception_tests_container }}
-          container_options: ${{ env.codeception_tests_container_options }}
-          configuration: ${{ env.codeception_tests_configuration }}
-          test: ${{ env.codeception_tests_test }}
-          additional_options: ${{ env.codeception_tests_additional_options }}
+          container: ${{ needs.init.outputs.codeception_tests_container }}
+          container_options: ${{ needs.init.outputs.codeception_tests_container_options }}
+          build: ${{ needs.init.outputs.codeception_tests_build }}
+          configuration: ${{ needs.init.outputs.codeception_tests_configuration }}
+          suite: ${{ needs.init.outputs.codeception_tests_suite }}
+          test: ${{ needs.init.outputs.codeception_tests_test }}
+          additional_options: ${{ needs.init.outputs.codeception_tests_additional_options }}
           logfile: codeception_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_phpunit_log.txt
-          logfile_artifact: ${{ env.codeception_tests_logfile_artifact }}
-          output_files: ${{ env.codeception_tests_output_files }}
+          logfile_artifact: ${{ needs.init.outputs.codeception_tests_logfile_artifact }}
+          output_files: ${{ needs.init.outputs.codeception_tests_output_files }}
           output_artifact: codeception-artifacts_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
-          coverage_path: ${{ env.codeception_tests_coverage_path }}
+          coverage_path: ${{ needs.init.outputs.codeception_tests_coverage_path }}
           coverage_artifact: codeception-coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
-          failure_pattern: ${{ env.codeception_tests_failure_pattern }}
+          failure_pattern: ${{ needs.init.outputs.codeception_tests_failure_pattern }}
  
   shop_setup_tests:
-    needs: [ prepare_shop ]
+    needs: [ init, prepare_shop ]
+    if: ${{ needs.init.outputs.shop_setup_tests_skip != 'true' }}
     strategy:
       matrix:
-        php: ${{ fromJSON(env.workflow_matrix_php) }}
-        mysql: ${{ fromJSON(env.workflow_matrix_mysql) }}
+        php: ${{ fromJSON(needs.init.outputs.shop_setup_tests_matrix_php) }}
+        mysql: ${{ fromJSON(needs.init.outputs.shop_setup_tests_matrix_mysql) }}
       fail-fast: false
-    runs-on: ${{ fromJSON(env.workflow_runs_on) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Cleanup (pre)'
-        if: ${{ env.shop_setup_tests_pre_cleanup_run }}
+        if: ${{ needs.init.outputs.shop_setup_tests_pre_cleanup_run }}
         uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
         with:
-          clean_workspace: ${{ env.shop_setup_tests_pre_cleanup_clean_workspace }}
-          kill_containers: ${{ env.shop_setup_tests_pre_cleanup_kill_containers }}
-          prune_docker: ${{ env.shop_setup_tests_pre_cleanup_prune_docker }}
+          clean_workspace: ${{ needs.init.outputs.shop_setup_tests_pre_cleanup_clean_workspace }}
+          kill_containers: ${{ needs.init.outputs.shop_setup_tests_pre_cleanup_kill_containers }}
+          prune_docker: ${{ needs.init.outputs.shop_setup_tests_pre_cleanup_prune_docker }}
 
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: ${{ needs.prepare_shop.outputs.prepared_shop }}
-          cache_bucket: ${{ env.shop_setup_tests_cache_bucket }}
+          cache_bucket: ${{ needs.init.outputs.shop_setup_tests_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}        
 
       - name: Install admin theme and template engine and APEX theme
-        if: inputs.is_enterprise == false
+        if: ${{ needs.init.outputs.global_is_enterprise == 'false' }}
         uses: 'OXID-eSales/github-actions/install_themes@v0'
         with:
-          container: ${{ env.shop_setup_tests_container }}
-          container_options: ${{ env.shop_setup_tests_container_options }}
-          themes: ${{ env.shop_setup_tests_themes_install }}
-          options: ${{ env.shop_setup_tests_themes_options }}
-          update: ${{ env.shop_setup_tests_themes_update }}
-          update_options: ${{ env.shop_setup_tests_themes_update_options }}
+          container: ${{ needs.init.outputs.shop_setup_tests_container }}
+          container_options: ${{ needs.init.outputs.shop_setup_tests_container_options }}
+          themes: ${{ needs.init.outputs.shop_setup_tests_themes_install }}
+          options: ${{ needs.init.outputs.shop_setup_tests_themes_options }}
+          update: ${{ needs.init.outputs.shop_setup_tests_themes_update }}
+          update_options: ${{ needs.init.outputs.shop_setup_tests_themes_update_options }}
 
       - name: 'Run codeception tests'
-        if: inputs.is_enterprise == false
         uses: 'OXID-eSales/github-actions/codeception@v0'
         with:
-          container: ${{ env.shop_setup_tests_container }}
-          container_options: ${{ env.shop_setup_tests_container_options }}
-          configuration: ${{ env.shop_setup_tests_configuration }}
-          test: ${{ env.shop_setup_tests_test }}
-          additional_options: ${{ env.shop_setup_tests_additional_options }}
+          container: ${{ needs.init.outputs.shop_setup_tests_container }}
+          container_options: ${{ needs.init.outputs.shop_setup_tests_container_options }}
+          build: ${{ needs.init.outputs.shop_setup_tests_build }}
+          configuration: ${{ needs.init.outputs.shop_setup_tests_configuration }}
+          suite: ${{ needs.init.outputs.shop_setup_tests_suite }}
+          test: ${{ needs.init.outputs.shop_setup_tests_test }}
+          additional_options: ${{ needs.init.outputs.shop_setup_tests_additional_options }}
           logfile: shop_setup_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_phpunit_log.txt
-          logfile_artifact: ${{ env.shop_setup_tests_logfile_artifact }}
-          output_files: ${{ env.shop_setup_tests_output_files }}
+          logfile_artifact: ${{ needs.init.outputs.shop_setup_tests_logfile_artifact }}
+          output_files: ${{ needs.init.outputs.shop_setup_tests_output_files }}
           output_artifact: shop_setup-artifacts_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
-          coverage_path: ${{ env.shop_setup_tests_coverage_path }}
+          coverage_path: ${{ needs.init.outputs.shop_setup_tests_coverage_path }}
           coverage_artifact: shop_setup-coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
-          failure_pattern: ${{ env.shop_setup_tests_failure_pattern }}
+          failure_pattern: ${{ needs.init.outputs.shop_setup_tests_failure_pattern }}
 
   finish:
-    if: ${{ always() }}
+    if: ${{ always() && needs.init.outputs.finish_skip != 'true' }}
     needs:
+      - init
       - prepare_shop
       - install_shop
       - unit_tests
       - integration_tests
       - codeception_tests
       - shop_setup_tests
-    runs-on: ${{ fromJSON(env.workflow_runs_on) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Docker logout'
-        if: ${{ env.finish_docker_logout }}
+        if: ${{ needs.init.outputs.finish_docker_logout }}
         shell: bash
         run: docker logout

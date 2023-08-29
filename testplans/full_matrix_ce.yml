@@ -11,7 +11,7 @@ global:
   # Branch to check out for the SDK
   git_sdk_ref: &git_sdk_ref 'master'
   # URL for the oxidshop_ce repository
-  git_shop_url: &git_shop_url 'https://github.com/joernott/oxideshop_ce.git'
+  git_shop_url: &git_shop_url 'https://github.com/OXID-eSales/oxideshop_ce.git'
   # Branch, tag or hash of the commit to check out
   git_shop_ref: *github_ref_name
 
@@ -51,7 +51,7 @@ init:
   # Should we log in to docker? If set to "true", you need to set the following secrets:
   # - secrets.DOCKER_HUB_USER
   # - secrets.DOCKER_HUB_TOKEN
-  docker_login: &docker_login false
+  docker_login: &docker_login true
 
 # See docs/actions/prepare_shop.md for more information.
 prepare_shop:
@@ -188,7 +188,7 @@ codeception_tests:
   # Name of the configuration file
   configuration: 'tests/codeception.yml'
   # Whether to run the build step before running codeception or not
-  build: false
+  build: true
   # Name of the codeception test suite to run
   suite: 'acceptance,acceptanceAdmin'
   # Name of the test to run
@@ -281,6 +281,5 @@ finish:
   matrix:
     php: *matrix_php
     mysql: *matrix_mysql
-
   # Whether we should logout from docker, we mirror docker login
   docker_logout: *docker_login
