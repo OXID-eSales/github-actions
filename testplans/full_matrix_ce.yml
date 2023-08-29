@@ -2,9 +2,9 @@ workflow:
   # The variables "php" and "mysql" are used to run a matrix of all combinations
   matrix:
     # A json array of php versions to test
-    php: '["8.1","8.2"]'
+    php: &matrix_php '["8.1","8.2"]'
     # A json array of mysql versions to test
-    mysql: '["5.7","8.0"]'
+    mysql: &matrix_mysql '["5.7","8.0"]'
 global:
   # URL for the docker-eshop sdk repo to clone 
   git_sdk_url: &git_sdk_url 'https://github.com/OXID-eSales/docker-eshop-sdk.git'
@@ -56,6 +56,9 @@ init:
 # See docs/actions/prepare_shop.md for more information.
 prepare_shop:
   # Using the global settings here
+  matrix:
+    php: *matrix_php
+    mysql: *matrix_mysql
   pre_cleanup: *pre_cleanup
   container: *container
   container_options: *container_options
@@ -76,6 +79,9 @@ prepare_shop:
 # See docs/actions/start_shop.md and docs/actions/install_shop.md for more information.
 install_shop:
   # Using the global settings here
+  matrix:
+    php: *matrix_php
+    mysql: *matrix_mysql
   pre_cleanup: *pre_cleanup
   container: *container
   container_options: *container_options
@@ -96,7 +102,12 @@ install_shop:
 
 # See docs/actions/start_shop.md and docs/actions/phpunit.md for more information.
 unit_tests:
+  # Skip this part of the test run
+  skip: false
   # Using the global settings here
+  matrix:
+    php: *matrix_php
+    mysql: *matrix_mysql
   pre_cleanup: *pre_cleanup
   container: *container
   container_options: *container_options
@@ -127,7 +138,12 @@ unit_tests:
 
 # See docs/actions/start_shop.md and docs/actions/phpunit.md for more information.
 integration_tests:
-    # Using the global settings here
+  # Skip this part of the test run
+  skip: false
+  # Using the global settings here
+  matrix:
+    php: *matrix_php
+    mysql: *matrix_mysql
   pre_cleanup: *pre_cleanup
   container: *container
   container_options: *container_options
@@ -158,7 +174,12 @@ integration_tests:
 
 # See docs/actions/start_shop.md and docs/actions/codeception.md for more information.
 codeception_tests:
+  # Skip this part of the test run
+  skip: false
   # Using the global settings here
+  matrix:
+    php: *matrix_php
+    mysql: *matrix_mysql
   pre_cleanup: *pre_cleanup
   container: *container
   # For codeception, we need different options than the empty default
@@ -199,7 +220,12 @@ codeception_tests:
 # See docs/actions/start_shop.md, docs/actions/install_themes and docs/actions/codeception.md
 # for more information.
 shop_setup_tests:
+  # Skip this part of the test run
+  skip: false
   # Using the global settings here
+  matrix:
+    php: *matrix_php
+    mysql: *matrix_mysql
   pre_cleanup: *pre_cleanup
   container: *container
   # We pass the configuration parameters into the container here
@@ -249,5 +275,12 @@ shop_setup_tests:
 
 # This is the final cleanup at the end
 finish:
+  # Skip this part of the test run
+  skip: true
+  # Using the global settings here
+  matrix:
+    php: *matrix_php
+    mysql: *matrix_mysql
+
   # Whether we should logout from docker, we mirror docker login
   docker_logout: *docker_login

@@ -166,6 +166,10 @@ outputs:
   init_docker_login:
     value: ${{ steps.yaml.outputs.init_docker_login}}
   # prepare_shop variables
+  prepare_shop_matrix_mysql:
+    value: ${{ steps.yaml.outputs.prepare_shop_matrix_mysql}}
+  prepare_shop_matrix_php:
+    value: ${{ steps.yaml.outputs.prepare_shop_matrix_php}}
   prepare_shop_pre_cleanup_run:
     value: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_run}}
   prepare_shop_pre_cleanup_clean_workspace:
@@ -199,6 +203,10 @@ outputs:
   prepare_shop_add_services:
     value: ${{ steps.yaml.outputs.prepare_shop_add_services}}
   # install_shop variables
+  install_shop_matrix_mysql:
+    value: ${{ steps.yaml.outputs.install_shop_matrix_mysql}}
+  install_shop_matrix_php:
+    value: ${{ steps.yaml.outputs.install_shop_matrix_php}}
   install_shop_pre_cleanup_run:
     value: ${{ steps.yaml.outputs.install_shop_pre_cleanup_run}}
   install_shop_pre_cleanup_clean_workspace:
@@ -223,7 +231,13 @@ outputs:
     value: ${{ steps.yaml.outputs.install_shop_config_idebug}}
   install_shop_output_files:
     value: ${{ steps.yaml.outputs.install_shop_output_files}}
-  # unit_test variables
+  # unit_tests variables
+  unit_tests_skip:
+    value: ${{ steps.yaml.outputs.unit_tests_skip}}
+  unit_tests_matrix_mysql:
+    value: ${{ steps.yaml.outputs.unit_tests_matrix_mysql}}
+  unit_tests_matrix_php:
+    value: ${{ steps.yaml.outputs.unit_tests_matrix_php}}
   unit_tests_pre_cleanup_run:
     value: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_run}}
   unit_tests_pre_cleanup_clean_workspace:
@@ -253,6 +267,12 @@ outputs:
   unit_tests_failure_pattern:
     value: ${{ steps.yaml.outputs.unit_tests_failure_pattern}}
   # integration_tests variables
+  integration_tests_skip:
+    value: ${{ steps.yaml.outputs.integration_tests_skip}}
+  integration_tests_matrix_mysql:
+    value: ${{ steps.yaml.outputs.integration_tests_matrix_mysql}}
+  integration_tests_matrix_php:
+    value: ${{ steps.yaml.outputs.integration_tests_matrix_php}}
   integration_tests_pre_cleanup_run:
     value: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_run}}
   integration_tests_pre_cleanup_clean_workspace:
@@ -282,6 +302,12 @@ outputs:
   integration_tests_failure_pattern:
     value: ${{ steps.yaml.outputs.integration_tests_failure_pattern}}
   # codeception_tests variables
+  codeception_tests_skip:
+    value: ${{ steps.yaml.outputs.codeception_tests_skip}}
+  codeception_tests_matrix_mysql:
+    value: ${{ steps.yaml.outputs.codeception_tests_matrix_mysql}}
+  codeception_tests_matrix_php:
+    value: ${{ steps.yaml.outputs.codeception_tests_matrix_php}}
   codeception_tests_pre_cleanup_run:
     value: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_run}}
   codeception_tests_pre_cleanup_clean_workspace:
@@ -315,6 +341,12 @@ outputs:
   codeception_tests_failure_pattern:
     value: ${{ steps.yaml.outputs.codeception_tests_failure_pattern}}
   # shop_setup_tests variables
+  shop_setup_tests_skip:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_skip}}
+  shop_setup_tests_matrix_mysql:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_matrix_mysql}}
+  shop_setup_tests_matrix_php:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_matrix_php}}
   shop_setup_tests_pre_cleanup_run:
     value: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_run}}
   shop_setup_tests_pre_cleanup_clean_workspace:
@@ -356,5 +388,11 @@ outputs:
   shop_setup_tests_failure_pattern:
     value: ${{ steps.yaml.outputs.shop_setup_tests_failure_pattern}}
   # finish variables
+  finish_skip:
+    value: ${{ steps.yaml.outputs.finish_skip}}
+  finish_matrix_mysql:
+    value: ${{ steps.yaml.outputs.finish_matrix_mysql}}
+  finish_matrix_php:
+    value: ${{ steps.yaml.outputs.finish_matrix_php}}
   finish_docker_logout:
     value: ${{ steps.yaml.outputs.finish_docker_logout}}
