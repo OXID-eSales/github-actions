@@ -85,7 +85,7 @@ runs:
       if: ${{ inputs.build == 'true' }}
       shell: bash
       run: |
-        docker-compose exec -T
+        docker-compose exec -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container }} \
           php vendor/bin/codecept build \
