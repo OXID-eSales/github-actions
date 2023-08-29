@@ -191,6 +191,7 @@ runs:
       run: |
         make up
         sleep 2
+        docker-compose ps --all
 
     - name: Output docker logs if make up failed
       if: failure()

@@ -161,7 +161,8 @@ codeception_tests:
   # Using the global settings here
   pre_cleanup: *pre_cleanup
   container: *container
-  container_options: *container_options
+  # For codeception, we need different options than the empty default
+  container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex'
   cache_bucket: *cache_bucket
   # Name of the configuration file
   configuration: 'tests/codeception.yml'
