@@ -244,16 +244,16 @@ runs:
         $EXEC_PHP composer config repositories.oxid-esales/twig-component-pe git "https://github.com/OXID-eSales/twig-component-pe.git"
         echo -e "\033[0;35m###  configure twig-component-ee ###\033[0m"
         $EXEC_PHP composer config repositories.oxid-esales/twig-component-ee git "https://github.com/OXID-eSales/twig-component-ee.git"
-        echo -e "\033[0;35m###  require oxideshop-pe:${{ inputs.git_enterprise_ref }} ###\033[0m"
-        $EXEC_PHP composer require "oxid-esales/oxideshop-pe:${{ inputs.git_enterprise_ref }}" --no-update
-        echo -e "\033[0;35m###  require oxideshop-ee:${{ inputs.git_enterprise_ref }} ###\033[0m"
-        $EXEC_PHP composer require "oxid-esales/oxideshop-ee:${{ inputs.git_enterprise_ref }}" --no-update
-        echo -e "\033[0;35m###  require twig-component-pe ###\033[0m"
-        $EXEC_PHP composer require "oxid-esales/twig-component-ee:${{ inputs.git_enterprise_ref }}" --no-update
-        echo -e "\033[0;35m###  require codeception-modules:${{ inputs.git_enterprise_ref }} ###\033[0m"
-        $EXEC_PHP composer require "oxid-esales/codeception-modules:${{ inputs.git_enterprise_ref }}" --no-update
-        echo -e "\033[0;35m###  require codeception-page-objects:${{ inputs.git_enterprise_ref }} ###\033[0m"
-        $EXEC_PHP composer require "oxid-esales/codeception-page-objects:${{ inputs.git_enterprise_ref }}" --no-update
+        echo -e "\033[0;35m###  require oxideshop-pe:dev-${{ inputs.git_enterprise_ref }} ###\033[0m"
+        $EXEC_PHP composer require "oxid-esales/oxideshop-pe:dev-${{ inputs.git_enterprise_ref }}" --no-update
+        echo -e "\033[0;35m###  require oxideshop-ee:dev-${{ inputs.git_enterprise_ref }} ###\033[0m"
+        $EXEC_PHP composer require "oxid-esales/oxideshop-ee:dev-${{ inputs.git_enterprise_ref }}" --no-update
+        echo -e "\033[0;35m###  require twig-component-pe:dev-${{ inputs.git_enterprise_ref }} ###\033[0m"
+        $EXEC_PHP composer require "oxid-esales/twig-component-ee:dev-${{ inputs.git_enterprise_ref }}" --no-update
+        echo -e "\033[0;35m###  require codeception-modules:dev-${{ inputs.git_enterprise_ref }} ###\033[0m"
+        $EXEC_PHP composer require "oxid-esales/codeception-modules:dev-${{ inputs.git_enterprise_ref }}" --no-update
+        echo -e "\033[0;35m###  require codeception-page-objects:dev-${{ inputs.git_enterprise_ref }} ###\033[0m"
+        $EXEC_PHP composer require "oxid-esales/codeception-page-objects:dev-${{ inputs.git_enterprise_ref }}" --no-update
 
     - name: 'Install Themes ${{ inputs.themes_install }}'
       if: ${{ inputs.themes_install != '' }}
