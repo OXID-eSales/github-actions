@@ -13,41 +13,42 @@ inputs:
     default: ''
   git_sdk_url:
     type: string
-    description: 'URL for the docker-eshop sdk repo to clone'
     required: false
+    description: 'URL for the docker-eshop sdk repo to clone'
     default: 'https://github.com/OXID-eSales/docker-eshop-sdk.git'
   git_sdk_ref:
     type: string
-    description: 'Branch, tag or hash of the commit to check out'
     required: false
+    description: 'Branch, tag or hash of the commit to check out'
     default: 'master'
   git_shop_url:
     type: string
-    description: 'URL for the oxidshop_ce repository'
     required: false
+    description: 'URL for the oxidshop_ce repository'
     default: 'https://github.com/OXID-eSales/oxideshop_ce.git'
   git_shop_ref:
     type: string
-    description: 'Branch, tag or hash of the commit to check out'
     required: true
+    description: 'Branch, tag or hash of the commit to check out'
   git_enterprise_ref:
     type: string
-    description: 'Branch to check out for the enterprise repos'
     required: false
+    description: 'Branch to check out for the enterprise repos'
+    default: ''
   github_event_name:
     type: string
-    description: 'Name of the github event (github.event_name), used to handle pull requests'
     required: false
+    description: 'Name of the github event (github.event_name), used to handle pull requests'
     default: ''
   github_event_number:
     type: string
-    description: 'Number of the github event (github.event_number), used to handle pull requests'
     required: false
+    description: 'Number of the github event (github.event_number), used to handle pull requests'
     default: '0'
   github_base_ref:
     type: string
-    description: 'Base reference (github.base_ref) for testing the github pull request'
     required: false
+    description: 'Base reference (github.base_ref) for testing the github pull request'
     default: ''
   github_sha:
     type: string
@@ -93,6 +94,26 @@ inputs:
     required: false
     description: 'Space separated list of extra services to add'
     default: 'selenium-chrome'
+  themes_install:
+    type: string
+    required: false
+    description: 'Space separated list of themes to install'
+    default: ''
+  themes_options:
+    type: string
+    required: false
+    description: 'Options to pass along to composer during install'
+    default: '--with-all-dependencies'
+  themes_update:
+    type: string
+    required: false
+    description: 'Run composer update after installing all themes'
+    default: true
+  themes_update_options:
+    type: string
+    required: false
+    description: 'Options to pass along to composer during install'
+    default: '--no-interaction'
   enterprise_github_token:
     type: string
     required: false
@@ -100,22 +121,23 @@ inputs:
     default: ''
   cache_bucket:
     type: string
+    required: false
     description: 'Name of the local s3 cache bucket'
     default: 'oxideshop-ee'
   cache_endpoint:
     type: string
-    description: 'secrets.CACHE_ENDPOINT for actions-cache'
     required: false
+    description: 'secrets.CACHE_ENDPOINT for actions-cache'
     default: ''
   cache_access_key:
     type: string
-    description: 'secrets.CACHE_ACCESS_KEY for actions-cache'
     required: false
+    description: 'secrets.CACHE_ACCESS_KEY for actions-cache'
     default: ''
   cache_secret_key:
     type: string
-    description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
     required: false
+    description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
     default: ''
 outputs:
   prepared_shop:
@@ -218,10 +240,19 @@ runs:
         $EXEC_PHP composer require oxid-esales/oxideshop-pe:${{ inputs.git_enterprise_ref }} --no-update
         $EXEC_PHP composer require oxid-esales/oxideshop-ee:${{ inputs.git_enterprise_ref }} --no-update
         $EXEC_PHP composer require oxid-esales/twig-component-ee:${{ inputs.git_enterprise_ref }} --no-update
-        $EXEC_PHP composer require oxid-esales/twig-admin-theme:${{ inputs.git_enterprise_ref }} --no-update
-        $EXEC_PHP composer require oxid-esales/apex-theme:${{ inputs.git_enterprise_ref }} --no-update
         $EXEC_PHP composer require oxid-esales/codeception-modules:${{ inputs.git_enterprise_ref }} --no-update
         $EXEC_PHP composer require oxid-esales/codeception-page-objects:${{ inputs.git_enterprise_ref }} --no-update
+
+    - name: 'Install Themes ${{ inputs.themes_install }}'
+      if: ${{ inputs.themes_install != '' }}
+      uses: 'OXID-eSales/github-actions/install_themes@v0'
+      with:
+        container: ${{ inputs.container }}
+        container_options: ${{ inputs.container_options }}
+        themes: ${{ inputs.themes_install }}
+        options: ${{ inputs.themes_options }}
+        update: ${{ inputs.themes_update }}
+        update_options: ${{ inputs.themes_update_options }}
 
     - name: Install dependencies
       shell: bash

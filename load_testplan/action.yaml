@@ -3,22 +3,22 @@ description: 'Fetches the testplan and sets environment variables for it'
 inputs:
   testplan:
     type: string
-    description: 'URL/file name of the yaml file to load'
     required: true
+    description: 'URL/file name of the yaml file to load'
   repository:
     type: string
-    description: 'Optional name of the repository to check out. Needed, if "testplan" is not a URL'
     required: false
+    description: 'Optional name of the repository to check out. Needed, if "testplan" is not a URL'
     default: ''
   ref:
     type: string
-    description: 'Branch, tag or hash of the commit to check out'
     required: false
+    description: 'Branch, tag or hash of the commit to check out'
     default: ''
   override:
     type: string
-    description: 'Optional YAML code to override the testplan'
     required: false
+    description: 'Optional YAML code to override the testplan'
     default: ''
 runs:
   using: composite
@@ -202,6 +202,15 @@ outputs:
     value: ${{ steps.yaml.outputs.prepare_shop_custom_ini_xdebug}}
   prepare_shop_add_services:
     value: ${{ steps.yaml.outputs.prepare_shop_add_services}}
+  prepare_shop_themes_install:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_themes_install}}
+  prepare_shop_themes_options:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_themes_options}}
+  prepare_shop_themes_update:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_themes_update}}
+  prepare_shop_themes_update_options:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_themes_update_options}}
+
   # install_shop variables
   install_shop_matrix_mysql:
     value: ${{ steps.yaml.outputs.install_shop_matrix_mysql}}

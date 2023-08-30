@@ -37,6 +37,7 @@ inputs:
     default: 'oxideshop_ce_internal'
   sonarcloud_parameters:
     type: string
+    required: false
     description: 'Parameters passed to the scanner'
     default: |
       -Dsonar.language=php

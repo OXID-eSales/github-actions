@@ -3,8 +3,8 @@ description: 'Fetches the module and installs it'
 inputs:
   cached_shop:
     type: string
-    description: 'Name of the cached object from prepare_shop/install_shop/install_module'
     required: true
+    description: 'Name of the cached object from prepare_shop/install_shop/install_module'
   container:
     type: string
     required: false
@@ -17,29 +17,30 @@ inputs:
     default: ''
   package_name:
     type: string
-    description: 'Name of the module package'
     required: true
+    description: 'Name of the module package'
   module_ids:
     type: string
-    description: 'Ids of the module'
     required: true
+    description: 'Ids of the module'
   module_path:
     type: string
-    description: 'Path for the checkout and url'
     required: false
+    description: 'Path for the checkout and url'
     default: 'test-module'
   template_engine:
     type: string
+    required: false
     description: 'One of twig, smarty, both'
     default: 'both'
   git_module_url:
     type: string
-    description: 'URL for the module repository'
     required: true
+    description: 'URL for the module repository'
   git_module_ref:
     type: string
-    description: 'Branch, tag or hash of the commit to check out'
     required: false
+    description: 'Branch, tag or hash of the commit to check out'
   php:
     type: string
     required: false
@@ -71,22 +72,23 @@ inputs:
     default: ''
   cache_bucket:
     type: string
+    required: false
     description: 'Name of the local s3 cache bucket'
     default: 'oxideshop-ee'
   cache_endpoint:
     type: string
-    description: 'secrets.CACHE_ENDPOINT for actions-cache'
     required: false
+    description: 'secrets.CACHE_ENDPOINT for actions-cache'
     default: ''
   cache_access_key:
     type: string
-    description: 'secrets.CACHE_ACCESS_KEY for actions-cache'
     required: false
+    description: 'secrets.CACHE_ACCESS_KEY for actions-cache'
     default: ''
   cache_secret_key:
     type: string
-    description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
     required: false
+    description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
     default: ''
 outputs:
   installed_shop_with_module:

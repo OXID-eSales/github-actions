@@ -1,10 +1,20 @@
 name: 'styles'
 description: 'Configures styles'
 inputs:
+  container:
+    type: string
+    required: false
+    description: 'Name of the container to run the test in'
+    default: 'php'
+  container_options:
+    type: string
+    required: false
+    description: 'Additional options to pass into the container'
+    default: ''
   module_path:
     type: string
-    description: 'Path for the checkout and url'
     required: false
+    description: 'Path for the checkout and url'
     default: 'test-module'
   php:
     type: string
@@ -17,31 +27,32 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Initialize
-      id: init
-      shell: bash
-      run: |
-        echo "EXEC_PHP=docker-compose exec -T php" | tee -a $GITHUB_ENV
 
       - name: Run phpstan
         id: phpstan
         if: always()
         run: |
-          $EXEC_PHP --workdir=/var/www/${{ inputs.module_path }} \
-            php bash -c "composer phpstan-report; composer phpstan"
+          docker-compose exec -T ${{ inputs.container_options }} \
+            --workdir=/var/www/${{ inputs.module_path }} \
+            ${{ inputs.container }} \
+            bash -c "composer phpstan-report; composer phpstan"
 
       - name: Run phpmd
         id: phpmd
         if: always()
         continue-on-error: true
         run: |
-          $EXEC_PHP --workdir=/var/www/${{ inputs.module_path }} \
-            php bash -c "composer phpmd-report; composer phpmd"
+          docker-compose exec -T ${{ inputs.container_options }} \
+            --workdir=/var/www/${{ inputs.module_path }} \
+            ${{ inputs.container }} \
+            bash -c "composer phpmd-report; composer phpmd"
 
       - name: Run phpcs
         if: always()
         run: |
-          $EXEC_PHP --workdir=/var/www/${{ inputs.module_path }} \
+          docker-compose exec -T ${{ inputs.container_options }} \
+            --workdir=/var/www/${{ inputs.module_path }} \
+            ${{ inputs.container }} \
             php composer phpcs
 
       - name: Stop containers

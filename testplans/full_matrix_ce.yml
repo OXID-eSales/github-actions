@@ -75,6 +75,16 @@ prepare_shop:
   custom_ini_xdebug: 'xdebug.max_nesting_level=1000'
   # Space separated list of extra services to add
   add_services: 'selenium-chrome'
+  # Themes to install
+  themes:
+    # Space separated list of themes to install
+    install: ''
+    # Options to pass along to composer during install
+    options: '--with-all-dependencies'
+    # Run composer update after installing all themes
+    update: true
+    # Options to pass along to composer during install
+    update_options: '--no-interaction'
 
 # See docs/actions/start_shop.md and docs/actions/install_shop.md for more information.
 install_shop:

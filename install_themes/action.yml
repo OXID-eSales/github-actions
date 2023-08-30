@@ -3,22 +3,22 @@ description: 'Installs oxidshop themes'
 inputs:
   themes:
     type: string
-    description: 'Space separated list of themes to install'
     required: true
+    description: 'Space separated list of themes to install'
   options:
     type: string
-    description: 'Options to pass along to composer during install'
     required: false
+    description: 'Options to pass along to composer during install'
     default: '--with-all-dependencies'
   update:
     type: boolean
-    description: ' Run composer update after installing all themes'
     required: false
+    description: 'Run composer update after installing all themes'
     default: true
   update_options:
     type: string
-    description: 'Options to pass along to composer during install'
     required: false
+    description: 'Options to pass along to composer during install'
     default: '--no-interaction'
   container:
     type: string

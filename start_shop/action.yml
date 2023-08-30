@@ -3,26 +3,27 @@ description: 'Fetches a shop from cache and starts it'
 inputs:
   cached_shop:
     type: string
-    description: 'Name of the cached object from prepare_shop/install_shop'
     required: true
+    description: 'Name of the cached object from prepare_shop/install_shop'
   cache_bucket:
     type: string
+    required: false
     description: 'Name of the local s3 cache bucket'
     default: 'oxideshop-ee'
   cache_endpoint:
     type: string
-    description: 'secrets.CACHE_ENDPOINT for actions-cache'
     required: false
+    description: 'secrets.CACHE_ENDPOINT for actions-cache'
     default: ''
   cache_access_key:
     type: string
-    description: 'secrets.CACHE_ACCESS_KEY for actions-cache'
     required: false
+    description: 'secrets.CACHE_ACCESS_KEY for actions-cache'
     default: ''
   cache_secret_key:
     type: string
-    description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
     required: false
+    description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
     default: ''
 runs:
   using: "composite"

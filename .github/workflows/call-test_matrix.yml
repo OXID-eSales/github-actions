@@ -93,6 +93,10 @@ jobs:
             prepare_shop_custom_ini_error_reporting: ${{ steps.yaml.outputs.prepare_shop_custom_ini_error_reporting}}
             prepare_shop_custom_ini_xdebug: ${{ steps.yaml.outputs.prepare_shop_custom_ini_xdebug}}
             prepare_shop_add_services: ${{ steps.yaml.outputs.prepare_shop_add_services}}
+            prepare_shop_themes_install: ${{ steps.yaml.outputs.shop_setup_tests_themes_install}}
+            prepare_shop_themes_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_options}}
+            prepare_shop_themes_update: ${{ steps.yaml.outputs.shop_setup_tests_themes_update}}
+            prepare_shop_themes_update_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_update_options}}      
             ${PURPLE}### install_shop variables${NO_COLOR}
             install_shop_matrix_mysql: ${{ steps.yaml.outputs.install_shop_matrix_mysql}}
             install_shop_matrix_php: ${{ steps.yaml.outputs.install_shop_matrix_php}}
@@ -240,6 +244,10 @@ jobs:
       prepare_shop_custom_ini_error_reporting: ${{ steps.yaml.outputs.prepare_shop_custom_ini_error_reporting}}
       prepare_shop_custom_ini_xdebug: ${{ steps.yaml.outputs.prepare_shop_custom_ini_xdebug}}
       prepare_shop_add_services: ${{ steps.yaml.outputs.prepare_shop_add_services}}
+      prepare_shop_themes_install: ${{ steps.yaml.outputs.shop_setup_tests_themes_install}}
+      prepare_shop_themes_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_options}}
+      prepare_shop_themes_update: ${{ steps.yaml.outputs.shop_setup_tests_themes_update}}
+      prepare_shop_themes_update_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_update_options}}    
       # install_shop variables
       install_shop_matrix_mysql: ${{ steps.yaml.outputs.install_shop_matrix_mysql}}
       install_shop_matrix_php: ${{ steps.yaml.outputs.install_shop_matrix_php}}
@@ -382,11 +390,16 @@ jobs:
           custom_ini_error_reporting: ${{ needs.init.outputs.prepare_shop_custom_ini_error_reporting }}
           custom_ini_xdebug: ${{ needs.init.outputs.prepare_shop_custom_ini_xdebug }}
           add_services: ${{ needs.init.outputs.prepare_shop_add_services }}
+          themes_install: ${{ needs.init.outputs.shop_setup_tests_themes_install}}
+          themes_options: ${{ needs.init.outputs.shop_setup_tests_themes_options}}
+          themes_update: ${{ needs.init.outputs.shop_setup_tests_themes_update}}
+          themes_update_options: ${{ needs.init.outputs.shop_setup_tests_themes_update_options}}
           enterprise_github_token: ${{ secrets.enterprise_github_token }}
           cache_bucket: ${{ needs.init.outputs.prepare_shop_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          
 
   install_shop:
     needs: [ init, prepare_shop ]
