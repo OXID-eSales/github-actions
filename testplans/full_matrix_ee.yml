@@ -193,6 +193,7 @@ codeception_tests:
     mysql: *matrix_mysql
   pre_cleanup: *pre_cleanup
   container: *container
+  cache_bucket: *cache_bucket
   # For codeception, we need different options than the empty default
   container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex'
   # Name of the configuration file
@@ -238,6 +239,7 @@ shop_setup_tests:
     mysql: *matrix_mysql
   pre_cleanup: *pre_cleanup
   container: *container
+  cache_bucket: *cache_bucket
   # We pass the configuration parameters into the container here
   container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e DB_NAME=setup_test -e DB_USERNAME=root -e DB_PASSWORD=root -e DB_HOST=mysql -e DB_PORT=3306 -e SHOP_URL=http://localhost.local/ -e SHOP_SOURCE_PATH=/var/www/source/'
   # Themes to install
