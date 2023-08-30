@@ -232,7 +232,7 @@ runs:
       shell: bash
       run: |
         $EXEC_PHP composer config github-protocols https
-        $EXEC_PHP composer config -g github-oauth.github.com ${{ inputs.enterprise_github_token }}
+        $EXEC_PHP composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
         $EXEC_PHP composer config repositories.oxid-esales/oxideshop-pe git https://github.com/OXID-eSales/oxideshop_pe.git
         $EXEC_PHP composer config repositories.oxid-esales/oxideshop-ee git https://github.com/OXID-eSales/oxideshop_ee.git
         $EXEC_PHP composer config repositories.oxid-esales/twig-component-pe git https://github.com/OXID-eSales/twig-component-pe.git
@@ -256,6 +256,7 @@ runs:
 
     - name: Install dependencies
       shell: bash
+      if: ${{ inputs.themes_install == '' }}
       run: |
         $EXEC_PHP composer update --no-interaction
 
