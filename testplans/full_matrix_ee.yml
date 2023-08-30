@@ -190,7 +190,7 @@ codeception_tests:
   # Using the global settings here
   matrix:
     php: *matrix_php
-    mysql: *matrix_mysqle
+    mysql: *matrix_mysql
   pre_cleanup: *pre_cleanup
   container: *container
   # For codeception, we need different options than the empty default
