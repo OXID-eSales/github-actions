@@ -286,7 +286,7 @@ shop_setup_tests:
 # This is the final cleanup at the end
 finish:
   # Skip this part of the test run
-  skip: true
+  skip: false
   # Using the global settings here
   matrix:
     php: *matrix_php
