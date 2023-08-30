@@ -184,7 +184,7 @@ runs:
 
         if [ -n "${{ inputs.add_services }}" ]; then
           for SERVICE in ${{ inputs.add_services }}; do
-            echo -e "\033[0;31mAdding service ${SERVICE}\033[0m"
+            echo -e "\033[0;35mAdding service ${SERVICE}\033[0m"
             if [ "${SERVICE}" == "nginx-rp" ]; then
               perl -pi\
                 -e 's#- 80:80#- 8000:80#g;'\
@@ -219,11 +219,13 @@ runs:
       if: failure()
       shell: bash
       run: |
-        echo "\033[0;31m### Starting docker failed\033[0m"
+        echo -e "\033[0;31m### Starting docker failed\033[0m"
+        echo -e "\033[0;35m###  docker-compose.yml ###\033[0m"
         cat docker-compose.yml
+        echo -e "\033[0;35m###  docker-compose logs ###\033[0m"
         docker-compose logs --tail=200
         for c in $(docker ps -aq); do
-          echo "*** Logs for $c ***"
+          echo -e "\033[0;35m###  Logs for $c ###\033[0m"
           docker logs -n 200 $c
         done
 
@@ -231,17 +233,27 @@ runs:
       if: ${{ inputs.is_enterprise == 'true' }}
       shell: bash
       run: |
+        echo -e "\033[0;35m###  configure github access ###\033[0m"
         $EXEC_PHP composer config github-protocols https
         $EXEC_PHP composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
-        $EXEC_PHP composer config repositories.oxid-esales/oxideshop-pe git https://github.com/OXID-eSales/oxideshop_pe.git
-        $EXEC_PHP composer config repositories.oxid-esales/oxideshop-ee git https://github.com/OXID-eSales/oxideshop_ee.git
-        $EXEC_PHP composer config repositories.oxid-esales/twig-component-pe git https://github.com/OXID-eSales/twig-component-pe.git
-        $EXEC_PHP composer config repositories.oxid-esales/twig-component-ee git https://github.com/OXID-eSales/twig-component-ee.git
-        $EXEC_PHP composer require oxid-esales/oxideshop-pe:${{ inputs.git_enterprise_ref }} --no-update
-        $EXEC_PHP composer require oxid-esales/oxideshop-ee:${{ inputs.git_enterprise_ref }} --no-update
-        $EXEC_PHP composer require oxid-esales/twig-component-ee:${{ inputs.git_enterprise_ref }} --no-update
-        $EXEC_PHP composer require oxid-esales/codeception-modules:${{ inputs.git_enterprise_ref }} --no-update
-        $EXEC_PHP composer require oxid-esales/codeception-page-objects:${{ inputs.git_enterprise_ref }} --no-update
+        echo -e "\033[0;35m###  configure oxidshop-pe ###\033[0m"
+        $EXEC_PHP composer config repositories.oxid-esales/oxideshop-pe git "https://github.com/OXID-eSales/oxideshop_pe.git"
+        echo -e "\033[0;35m###  configure oxidshop-ee ###\033[0m"
+        $EXEC_PHP composer config repositories.oxid-esales/oxideshop-ee git "https://github.com/OXID-eSales/oxideshop_ee.git"
+        echo -e "\033[0;35m###  configure twig-component-pe ###\033[0m"
+        $EXEC_PHP composer config repositories.oxid-esales/twig-component-pe git "https://github.com/OXID-eSales/twig-component-pe.git"
+        echo -e "\033[0;35m###  configure twig-component-ee ###\033[0m"
+        $EXEC_PHP composer config repositories.oxid-esales/twig-component-ee git "https://github.com/OXID-eSales/twig-component-ee.git"
+        echo -e "\033[0;35m###  require oxideshop-pe:${{ inputs.git_enterprise_ref }} ###\033[0m"
+        $EXEC_PHP composer require "oxid-esales/oxideshop-pe:${{ inputs.git_enterprise_ref }}" --no-update
+        echo -e "\033[0;35m###  require oxideshop-ee:${{ inputs.git_enterprise_ref }} ###\033[0m"
+        $EXEC_PHP composer require "oxid-esales/oxideshop-ee:${{ inputs.git_enterprise_ref }}" --no-update
+        echo -e "\033[0;35m###  require twig-component-pe ###\033[0m"
+        $EXEC_PHP composer require "oxid-esales/twig-component-ee:${{ inputs.git_enterprise_ref }}" --no-update
+        echo -e "\033[0;35m###  require codeception-modules:${{ inputs.git_enterprise_ref }} ###\033[0m"
+        $EXEC_PHP composer require "oxid-esales/codeception-modules:${{ inputs.git_enterprise_ref }}" --no-update
+        echo -e "\033[0;35m###  require codeception-page-objects:${{ inputs.git_enterprise_ref }} ###\033[0m"
+        $EXEC_PHP composer require "oxid-esales/codeception-page-objects:${{ inputs.git_enterprise_ref }}" --no-update
 
     - name: 'Install Themes ${{ inputs.themes_install }}'
       if: ${{ inputs.themes_install != '' }}
