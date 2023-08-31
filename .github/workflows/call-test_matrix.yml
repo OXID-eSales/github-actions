@@ -50,7 +50,7 @@ jobs:
     steps:
       - name: 'Load Testplan'
         id: yaml
-        uses: 'OXID-eSales/github-actions/load_testplan@v0'
+        uses: 'OXID-eSales/github-actions/load_testplan@v1'
         with:
           testplan: ${{ inputs.testplan }}
       - name: 'Print Testplan'
@@ -379,14 +379,14 @@ jobs:
     steps:
       - name: 'Cleanup (pre)'
         if: ${{ needs.init.outputs.prepare_shop_pre_cleanup_run }}
-        uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
+        uses: 'OXID-eSales/github-actions/cleanup_workspace@v1'
         with:
           clean_workspace: ${{ needs.init.outputs.prepare_shop_pre_cleanup_clean_workspace }}
           kill_containers: ${{ needs.init.outputs.prepare_shop_pre_cleanup_kill_containers }}
           prune_docker: ${{ needs.init.outputs.prepare_shop_pre_cleanup_prune_docker }}
       - name: 'Prepare Shop'
         id: prepare_shop
-        uses: 'OXID-eSales/github-actions/prepare_shop@v0'
+        uses: 'OXID-eSales/github-actions/prepare_shop@v1'
         with:
           container: ${{ needs.init.outputs.prepare_shop_container }}
           container_options: ${{ needs.init.outputs.prepare_shop_container_options }}
@@ -432,14 +432,14 @@ jobs:
     steps:
       - name: 'Cleanup (pre)'
         if: ${{ needs.init.outputs.install_shop_pre_cleanup_run }}
-        uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
+        uses: 'OXID-eSales/github-actions/cleanup_workspace@v1'
         with:
           clean_workspace: ${{ needs.init.outputs.install_shop_pre_cleanup_clean_workspace }}
           kill_containers: ${{ needs.init.outputs.install_shop_pre_cleanup_kill_containers }}
           prune_docker: ${{ needs.init.outputs.install_shop_pre_cleanup_prune_docker }}
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v0'
+        uses: 'OXID-eSales/github-actions/start_shop@v1'
         with:
           cached_shop: ${{ needs.prepare_shop.outputs.prepared_shop }}
           cache_bucket: ${{ needs.init.outputs.install_shop_cache_bucket }}
@@ -449,7 +449,7 @@ jobs:
 
       - name: 'Install shop'
         id: install_shop
-        uses: 'OXID-eSales/github-actions/install_shop@v0'
+        uses: 'OXID-eSales/github-actions/install_shop@v1'
         with:
           container: ${{ needs.init.outputs.install_shop_container }}
           container_options: ${{ needs.init.outputs.install_shop_container_options }}
@@ -481,14 +481,14 @@ jobs:
     steps:
       - name: 'Cleanup (pre)'
         if: ${{ needs.init.outputs.unit_tests_pre_cleanup_run }}
-        uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
+        uses: 'OXID-eSales/github-actions/cleanup_workspace@v1'
         with:
           clean_workspace: ${{ needs.init.outputs.unit_tests_pre_cleanup_clean_workspace }}
           kill_containers: ${{ needs.init.outputs.unit_tests_pre_cleanup_kill_containers }}
           prune_docker: ${{ needs.init.outputs.unit_tests_pre_cleanup_prune_docker }}
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v0'
+        uses: 'OXID-eSales/github-actions/start_shop@v1'
         with:
           cached_shop: ${{ needs.install_shop.outputs.installed_shop }}
           cache_bucket: ${{ needs.init.outputs.unit_tests_cache_bucket }}
@@ -497,7 +497,7 @@ jobs:
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
       - name: 'Run unit tests'
-        uses: 'OXID-eSales/github-actions/phpunit@v0'
+        uses: 'OXID-eSales/github-actions/phpunit@v1'
         with:
           container: ${{ needs.init.outputs.unit_tests_container }}
           container_options: ${{ needs.init.outputs.unit_tests_container_options }}
@@ -525,14 +525,14 @@ jobs:
     steps:
       - name: 'Cleanup (pre)'
         if: ${{ needs.init.outputs.integration_tests_pre_cleanup_run }}
-        uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
+        uses: 'OXID-eSales/github-actions/cleanup_workspace@v1'
         with:
           clean_workspace: ${{ needs.init.outputs.integration_tests_pre_cleanup_clean_workspace }}
           kill_containers: ${{ needs.init.outputs.integration_tests_pre_cleanup_kill_containers }}
           prune_docker: ${{ needs.init.outputs.integration_tests_pre_cleanup_prune_docker }}
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v0'
+        uses: 'OXID-eSales/github-actions/start_shop@v1'
         with:
           cached_shop: ${{ needs.install_shop.outputs.installed_shop }}
           cache_bucket: ${{ needs.init.outputs.integration_tests_cache_bucket }}
@@ -541,7 +541,7 @@ jobs:
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
       - name: 'Run integration tests'
-        uses: 'OXID-eSales/github-actions/phpunit@v0'
+        uses: 'OXID-eSales/github-actions/phpunit@v1'
         with:
           container: ${{ needs.init.outputs.integration_tests_container }}
           container_options: ${{ needs.init.outputs.integration_tests_container_options }}
@@ -569,14 +569,14 @@ jobs:
     steps:
       - name: 'Cleanup (pre)'
         if: ${{ needs.init.outputs.codeception_tests_pre_cleanup_run }}
-        uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
+        uses: 'OXID-eSales/github-actions/cleanup_workspace@v1'
         with:
           clean_workspace: ${{ needs.init.outputs.codeception_tests_pre_cleanup_clean_workspace }}
           kill_containers: ${{ needs.init.outputs.codeception_tests_pre_cleanup_kill_containers }}
           prune_docker: ${{ needs.init.outputs.codeception_tests_pre_cleanup_prune_docker }}
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v0'
+        uses: 'OXID-eSales/github-actions/start_shop@v1'
         with:
           cached_shop: ${{ needs.install_shop.outputs.installed_shop }}
           cache_bucket: ${{ needs.init.outputs.codeception_tests_cache_bucket }}
@@ -585,12 +585,12 @@ jobs:
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}        
 
       - name: Install admin theme and template engine and APEX theme
-        uses: 'OXID-eSales/github-actions/install_themes@v0'
+        uses: 'OXID-eSales/github-actions/install_themes@v1'
         with:
           themes: 'oxid-esales/twig-admin-theme:dev-b-8.0.x oxid-esales/apex-theme:dev-b-7.1.x'
 
       - name: 'Run codeception tests'
-        uses: 'OXID-eSales/github-actions/codeception@v0'
+        uses: 'OXID-eSales/github-actions/codeception@v1'
         with:
           container: ${{ needs.init.outputs.codeception_tests_container }}
           container_options: ${{ needs.init.outputs.codeception_tests_container_options }}
@@ -620,14 +620,14 @@ jobs:
     steps:
       - name: 'Cleanup (pre)'
         if: ${{ needs.init.outputs.shop_setup_tests_pre_cleanup_run }}
-        uses: 'OXID-eSales/github-actions/cleanup_workspace@v0'
+        uses: 'OXID-eSales/github-actions/cleanup_workspace@v1'
         with:
           clean_workspace: ${{ needs.init.outputs.shop_setup_tests_pre_cleanup_clean_workspace }}
           kill_containers: ${{ needs.init.outputs.shop_setup_tests_pre_cleanup_kill_containers }}
           prune_docker: ${{ needs.init.outputs.shop_setup_tests_pre_cleanup_prune_docker }}
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v0'
+        uses: 'OXID-eSales/github-actions/start_shop@v1'
         with:
           cached_shop: ${{ needs.prepare_shop.outputs.prepared_shop }}
           cache_bucket: ${{ needs.init.outputs.shop_setup_tests_cache_bucket }}
@@ -637,7 +637,7 @@ jobs:
 
       - name: Install admin theme and template engine and APEX theme
         if: ${{ needs.init.outputs.global_is_enterprise == 'false' }}
-        uses: 'OXID-eSales/github-actions/install_themes@v0'
+        uses: 'OXID-eSales/github-actions/install_themes@v1'
         with:
           container: ${{ needs.init.outputs.shop_setup_tests_container }}
           container_options: ${{ needs.init.outputs.shop_setup_tests_container_options }}
@@ -648,7 +648,7 @@ jobs:
           update_options: ${{ needs.init.outputs.shop_setup_tests_themes_update_options }}
 
       - name: 'Run codeception tests'
-        uses: 'OXID-eSales/github-actions/codeception@v0'
+        uses: 'OXID-eSales/github-actions/codeception@v1'
         with:
           container: ${{ needs.init.outputs.shop_setup_tests_container }}
           container_options: ${{ needs.init.outputs.shop_setup_tests_container_options }}

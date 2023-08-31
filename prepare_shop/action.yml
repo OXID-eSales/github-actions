@@ -262,7 +262,7 @@ runs:
 
     - name: 'Install Themes ${{ inputs.themes_install }}'
       if: ${{ inputs.themes_install != '' }}
-      uses: 'OXID-eSales/github-actions/install_themes@v0'
+      uses: 'OXID-eSales/github-actions/install_themes@v1'
       with:
         container: ${{ inputs.container }}
         container_options: ${{ inputs.container_options }}
