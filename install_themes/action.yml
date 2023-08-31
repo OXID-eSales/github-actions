@@ -30,6 +30,11 @@ inputs:
     required: false
     description: 'Additional options to pass into the container'
     default: ''
+  container_method:
+    type: string
+    required: false
+    description: 'Method to execute the commands inside a container, either "run" or "exec"'
+    default: 'exec'
     
 runs:
   using: "composite"
@@ -39,13 +44,13 @@ runs:
     run: |
       for THEME in ${{ inputs.themes }}; do
         echo -e "\033[0;35m### Installing ${THEME} with ${{ inputs.options }}\033[0m"
-        docker-compose exec -T ${{ inputs.container_options }} \
+        docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container }} \
           composer require "${THEME}" ${{ inputs.options }}
       done
       if [ '${{ inputs.update }}' == 'true' ]; then
         echo -e "\033[0;35m### Running composer update with ${{ inputs.update_options }}\033[0m"
-        docker-compose exec -T ${{ inputs.container_options }} \
+        docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container }} \
           composer update ${{ inputs.update_options }}
       fi

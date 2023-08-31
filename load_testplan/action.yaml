@@ -162,6 +162,8 @@ outputs:
     value: ${{ steps.yaml.outputs.global_container}}
   global_container_options:
     value: ${{ steps.yaml.outputs.global_container_options}}
+  global_container_method:
+    value: ${{ steps.yaml.outputs.global_container_method}}
   # init variables
   init_docker_login:
     value: ${{ steps.yaml.outputs.init_docker_login}}
@@ -182,6 +184,8 @@ outputs:
     value: ${{ steps.yaml.outputs.prepare_shop_container}}
   prepare_shop_container_options:
     value: ${{ steps.yaml.outputs.prepare_shop_container_options}}
+  prepare_shop_container_method:
+    value: ${{ steps.yaml.outputs.prepare_shop_container_method}}
   prepare_shop_git_sdk_url:
     value: ${{ steps.yaml.outputs.prepare_shop_git_sdk_url}}
   prepare_shop_git_sdk_ref:
@@ -228,6 +232,8 @@ outputs:
     value: ${{ steps.yaml.outputs.install_shop_container}}
   install_shop_container_options:
     value: ${{ steps.yaml.outputs.install_shop_container_options}}
+  install_shop_container_method:
+    value: ${{ steps.yaml.outputs.install_shop_container_method}}
   install_shop_git_shop_ref:
     value: ${{ steps.yaml.outputs.install_shop_git_shop_ref}}
   install_shop_git_enterprise_ref:
@@ -259,6 +265,8 @@ outputs:
     value: ${{ steps.yaml.outputs.unit_tests_container}}
   unit_tests_container_options:
     value: ${{ steps.yaml.outputs.unit_tests_container_options}}
+  unit_tests_container_method:
+    value: ${{ steps.yaml.outputs.unit_tests_container_method}}
   unit_tests_cache_bucket:
     value: ${{ steps.yaml.outputs.unit_tests_cache_bucket}}
   unit_tests_configuration:
@@ -294,6 +302,8 @@ outputs:
     value: ${{ steps.yaml.outputs.integration_tests_container}}
   integration_tests_container_options:
     value: ${{ steps.yaml.outputs.integration_tests_container_options}}
+  integration_tests_container_method:
+    value: ${{ steps.yaml.outputs.integration_tests_container_method}}
   integration_tests_cache_bucket:
     value: ${{ steps.yaml.outputs.integration_tests_cache_bucket}}
   integration_tests_configuration:
@@ -329,6 +339,8 @@ outputs:
     value: ${{ steps.yaml.outputs.codeception_tests_container}}
   codeception_tests_container_options:
     value: ${{ steps.yaml.outputs.codeception_tests_container_options}}
+  codeception_tests_container_method:
+    value: ${{ steps.yaml.outputs.codeception_tests_container_method}}
   codeception_tests_cache_bucket:
     value: ${{ steps.yaml.outputs.codeception_tests_cache_bucket}}
   codeception_tests_configuration:
@@ -368,6 +380,8 @@ outputs:
     value: ${{ steps.yaml.outputs.shop_setup_tests_container}}
   shop_setup_tests_container_options:
     value: ${{ steps.yaml.outputs.shop_setup_tests_container_options}}
+  shop_setup_tests_container_method:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_container_method}}
   shop_setup_tests_cache_bucket:
     value: ${{ steps.yaml.outputs.shop_setup_tests_cache_bucket}}
   shop_setup_tests_themes_install:

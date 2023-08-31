@@ -46,6 +46,8 @@ global:
   container: &container 'php'
   # Additional options when running something in the the container
   container_options: &container_options ''
+  # Method to execute the commands inside a container, either "run" or "exec"
+  container_method: &container_method 'exec'
 
 init:
   # Should we log in to docker? If set to "true", you need to set the following secrets:
@@ -62,6 +64,7 @@ prepare_shop:
   pre_cleanup: *pre_cleanup
   container: *container
   container_options: *container_options
+  container_method: *container_method
   git_sdk_url: *git_sdk_url
   git_sdk_ref: *git_sdk_ref
   git_shop_url: *git_shop_url
@@ -95,6 +98,7 @@ install_shop:
   pre_cleanup: *pre_cleanup
   container: *container
   container_options: *container_options
+  container_method: *container_method
   git_shop_ref: *github_ref_name
   git_enterprise_ref: *git_enterprise_ref
   is_enterprise: *is_enterprise
@@ -121,6 +125,7 @@ unit_tests:
   pre_cleanup: *pre_cleanup
   container: *container
   container_options: *container_options
+  container_method: *container_method
   cache_bucket: *cache_bucket
   # Name of the configuration file
   configuration: 'phpunit.xml'
@@ -157,6 +162,7 @@ integration_tests:
   pre_cleanup: *pre_cleanup
   container: *container
   container_options: *container_options
+  container_method: *container_method
   cache_bucket: *cache_bucket
   # Name of the configuration file
   configuration: 'phpunit.xml'
@@ -194,6 +200,7 @@ codeception_tests:
   container: *container
   # For codeception, we need different options than the empty default
   container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex'
+  container_method: &selenium_container_method 'run'
   cache_bucket: *cache_bucket
   # Name of the configuration file
   configuration: 'tests/codeception.yml'
@@ -240,6 +247,7 @@ shop_setup_tests:
   container: *container
   # We pass the configuration parameters into the container here
   container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e DB_NAME=setup_test -e DB_USERNAME=root -e DB_PASSWORD=root -e DB_HOST=mysql -e DB_PORT=3306 -e SHOP_URL=http://localhost.local/ -e SHOP_SOURCE_PATH=/var/www/source/'
+  container_method: *selenium_container_method
   cache_bucket: *cache_bucket
   # Themes to install
   themes:

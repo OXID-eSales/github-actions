@@ -40,6 +40,9 @@ on:
       enterprise_github_token:
         required: false
         #description: 'OAuth token to access enterprise repos'
+      SLACK_WEBHOOK_URL:
+        required: false
+        # description: Webhook for posting to SLACK
  
 jobs:
   init:
@@ -72,6 +75,7 @@ jobs:
             global_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.global_pre_cleanup_prune_docker}}
             global_container: ${{ steps.yaml.outputs.global_container}}
             global_container_options: ${{ steps.yaml.outputs.global_container_options}}
+            global_container_method: ${{ steps.yaml.outputs.global_container_method}}
             ${PURPLE}### init variables${NO_COLOR}
             init_docker_login: ${{ steps.yaml.outputs.init_docker_login}}
             ${PURPLE}### prepare_shop variables${NO_COLOR}
@@ -83,6 +87,7 @@ jobs:
             prepare_shop_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_prune_docker}}
             prepare_shop_container: ${{ steps.yaml.outputs.prepare_shop_container}}
             prepare_shop_container_options: ${{ steps.yaml.outputs.prepare_shop_container_options}}
+            prepare_shop_container_method: ${{ steps.yaml.outputs.prepare_shop_container_method}}
             prepare_shop_git_sdk_url: ${{ steps.yaml.outputs.prepare_shop_git_sdk_url}}
             prepare_shop_git_sdk_ref: ${{ steps.yaml.outputs.prepare_shop_git_sdk_ref}}
             prepare_shop_git_shop_url: ${{ steps.yaml.outputs.prepare_shop_git_shop_url}}
@@ -106,6 +111,7 @@ jobs:
             install_shop_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.install_shop_pre_cleanup_prune_docker}}
             install_shop_container: ${{ steps.yaml.outputs.install_shop_container}}
             install_shop_container_options: ${{ steps.yaml.outputs.install_shop_container_options}}
+            install_shop_container_method: ${{ steps.yaml.outputs.install_shop_container_method}}
             install_shop_git_shop_ref: ${{ steps.yaml.outputs.install_shop_git_shop_ref}}
             install_shop_git_enterprise_ref: ${{ steps.yaml.outputs.install_shop_git_enterprise_ref}}
             install_shop_is_enterprise: ${{ steps.yaml.outputs.install_shop_is_enterprise}}
@@ -122,6 +128,7 @@ jobs:
             unit_tests_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_prune_docker}}
             unit_tests_container: ${{ steps.yaml.outputs.unit_tests_container}}
             unit_tests_container_options: ${{ steps.yaml.outputs.unit_tests_container_options}}
+            unit_tests_container_method: ${{ steps.yaml.outputs.unit_tests_container_method}}
             unit_tests_cache_bucket: ${{ steps.yaml.outputs.unit_tests_cache_bucket}}
             unit_tests_configuration: ${{ steps.yaml.outputs.unit_tests_configuration}}
             unit_tests_test: ${{ steps.yaml.outputs.unit_tests_test}}
@@ -140,6 +147,7 @@ jobs:
             integration_tests_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_prune_docker}}
             integration_tests_container: ${{ steps.yaml.outputs.integration_tests_container}}
             integration_tests_container_options: ${{ steps.yaml.outputs.integration_tests_container_options}}
+            integration_tests_container_method: ${{ steps.yaml.outputs.integration_tests_container_method}}
             integration_tests_cache_bucket: ${{ steps.yaml.outputs.integration_tests_cache_bucket}}
             integration_tests_configuration: ${{ steps.yaml.outputs.integration_tests_configuration}}
             integration_tests_test: ${{ steps.yaml.outputs.integration_tests_test}}
@@ -158,6 +166,7 @@ jobs:
             codeception_tests_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_prune_docker}}
             codeception_tests_container: ${{ steps.yaml.outputs.codeception_tests_container}}
             codeception_tests_container_options: ${{ steps.yaml.outputs.codeception_tests_container_options}}
+            codeception_tests_container_method: ${{ steps.yaml.outputs.codeception_tests_container_method}}
             codeception_tests_cache_bucket: ${{ steps.yaml.outputs.codeception_tests_cache_bucket}}
             codeception_tests_configuration: ${{ steps.yaml.outputs.codeception_tests_configuration}}
             codeception_tests_build: ${{ steps.yaml.outputs.codeception_tests_build}}
@@ -178,6 +187,7 @@ jobs:
             shop_setup_tests_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_prune_docker}}
             shop_setup_tests_container: ${{ steps.yaml.outputs.shop_setup_tests_container}}
             shop_setup_tests_container_options: ${{ steps.yaml.outputs.shop_setup_tests_container_options}}
+            shop_setup_tests_container_method: ${{ steps.yaml.outputs.shop_setup_tests_container_method}}
             shop_setup_tests_cache_bucket: ${{ steps.yaml.outputs.shop_setup_tests_cache_bucket}}
             shop_setup_tests_themes_install: ${{ steps.yaml.outputs.shop_setup_tests_themes_install}}
             shop_setup_tests_themes_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_options}}
@@ -223,6 +233,7 @@ jobs:
       global_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.global_pre_cleanup_prune_docker}}
       global_container: ${{ steps.yaml.outputs.global_container}}
       global_container_options: ${{ steps.yaml.outputs.global_container_options}}
+      global_container_method: ${{ steps.yaml.outputs.global_container_method}}
       # init variables
       init_docker_login: ${{ steps.yaml.outputs.init_docker_login}}
       # prepare_shop variables
@@ -234,6 +245,7 @@ jobs:
       prepare_shop_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_prune_docker}}
       prepare_shop_container: ${{ steps.yaml.outputs.prepare_shop_container}}
       prepare_shop_container_options: ${{ steps.yaml.outputs.prepare_shop_container_options}}
+      prepare_shop_container_method: ${{ steps.yaml.outputs.prepare_shop_container_method}}
       prepare_shop_git_sdk_url: ${{ steps.yaml.outputs.prepare_shop_git_sdk_url}}
       prepare_shop_git_sdk_ref: ${{ steps.yaml.outputs.prepare_shop_git_sdk_ref}}
       prepare_shop_git_shop_url: ${{ steps.yaml.outputs.prepare_shop_git_shop_url}}
@@ -257,6 +269,7 @@ jobs:
       install_shop_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.install_shop_pre_cleanup_prune_docker}}
       install_shop_container: ${{ steps.yaml.outputs.install_shop_container}}
       install_shop_container_options: ${{ steps.yaml.outputs.install_shop_container_options}}
+      install_shop_container_method: ${{ steps.yaml.outputs.install_shop_container_method}}
       install_shop_git_shop_ref: ${{ steps.yaml.outputs.install_shop_git_shop_ref}}
       install_shop_git_enterprise_ref: ${{ steps.yaml.outputs.install_shop_git_enterprise_ref}}
       install_shop_is_enterprise: ${{ steps.yaml.outputs.install_shop_is_enterprise}}
@@ -273,6 +286,7 @@ jobs:
       unit_tests_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_prune_docker}}
       unit_tests_container: ${{ steps.yaml.outputs.unit_tests_container}}
       unit_tests_container_options: ${{ steps.yaml.outputs.unit_tests_container_options}}
+      unit_tests_container_method: ${{ steps.yaml.outputs.unit_tests_container_method}}
       unit_tests_cache_bucket: ${{ steps.yaml.outputs.unit_tests_cache_bucket}}
       unit_tests_configuration: ${{ steps.yaml.outputs.unit_tests_configuration}}
       unit_tests_test: ${{ steps.yaml.outputs.unit_tests_test}}
@@ -291,6 +305,7 @@ jobs:
       integration_tests_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_prune_docker}}
       integration_tests_container: ${{ steps.yaml.outputs.integration_tests_container}}
       integration_tests_container_options: ${{ steps.yaml.outputs.integration_tests_container_options}}
+      integration_tests_container_method: ${{ steps.yaml.outputs.integration_tests_container_method}}
       integration_tests_cache_bucket: ${{ steps.yaml.outputs.integration_tests_cache_bucket}}
       integration_tests_configuration: ${{ steps.yaml.outputs.integration_tests_configuration}}
       integration_tests_test: ${{ steps.yaml.outputs.integration_tests_test}}
@@ -309,6 +324,7 @@ jobs:
       codeception_tests_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_prune_docker}}
       codeception_tests_container: ${{ steps.yaml.outputs.codeception_tests_container}}
       codeception_tests_container_options: ${{ steps.yaml.outputs.codeception_tests_container_options}}
+      codeception_tests_container_method: ${{ steps.yaml.outputs.codeception_tests_container_method}}
       codeception_tests_cache_bucket: ${{ steps.yaml.outputs.codeception_tests_cache_bucket}}
       codeception_tests_configuration: ${{ steps.yaml.outputs.codeception_tests_configuration}}
       codeception_tests_build: ${{ steps.yaml.outputs.codeception_tests_build}}
@@ -329,6 +345,7 @@ jobs:
       shop_setup_tests_pre_cleanup_prune_docker: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_prune_docker}}
       shop_setup_tests_container: ${{ steps.yaml.outputs.shop_setup_tests_container}}
       shop_setup_tests_container_options: ${{ steps.yaml.outputs.shop_setup_tests_container_options}}
+      shop_setup_tests_container_method: ${{ steps.yaml.outputs.shop_setup_tests_container_method}}
       shop_setup_tests_cache_bucket: ${{ steps.yaml.outputs.shop_setup_tests_cache_bucket}}
       shop_setup_tests_themes_install: ${{ steps.yaml.outputs.shop_setup_tests_themes_install}}
       shop_setup_tests_themes_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_options}}
@@ -373,6 +390,7 @@ jobs:
         with:
           container: ${{ needs.init.outputs.prepare_shop_container }}
           container_options: ${{ needs.init.outputs.prepare_shop_container_options }}
+          container_method: ${{ needs.init.outputs.prepare_shop_container_method }}
           git_sdk_url: ${{ needs.init.outputs.prepare_shop_git_sdk_url }}
           git_sdk_ref: ${{ needs.init.outputs.prepare_shop_git_sdk_ref }}
           git_shop_url: ${{ needs.init.outputs.prepare_shop_git_shop_url }}
@@ -435,6 +453,7 @@ jobs:
         with:
           container: ${{ needs.init.outputs.install_shop_container }}
           container_options: ${{ needs.init.outputs.install_shop_container_options }}
+          container_method: ${{ needs.init.outputs.install_shop_container_method }}
           git_shop_ref: ${{ needs.init.outputs.install_shop_git_shop_ref }}
           git_enterprise_ref: ${{ needs.init.outputs.install_shop_git_enterprise_ref }}
           github_sha: ${{ github.sha }}
@@ -482,6 +501,7 @@ jobs:
         with:
           container: ${{ needs.init.outputs.unit_tests_container }}
           container_options: ${{ needs.init.outputs.unit_tests_container_options }}
+          container_method: ${{ needs.init.outputs.unit_tests_container_method }}
           configuration: ${{ needs.init.outputs.unit_tests_configuration }}
           test: ${{ needs.init.outputs.unit_tests_test }}
           additional_options: ${{ needs.init.outputs.unit_tests_additional_options }}
@@ -525,6 +545,7 @@ jobs:
         with:
           container: ${{ needs.init.outputs.integration_tests_container }}
           container_options: ${{ needs.init.outputs.integration_tests_container_options }}
+          container_method: ${{ needs.init.outputs.integration_tests_container_method }}
           configuration: ${{ needs.init.outputs.integration_tests_configuration }}
           test: ${{ needs.init.outputs.integration_tests_test }}
           additional_options: ${{ needs.init.outputs.integration_tests_additional_options }}
@@ -573,6 +594,7 @@ jobs:
         with:
           container: ${{ needs.init.outputs.codeception_tests_container }}
           container_options: ${{ needs.init.outputs.codeception_tests_container_options }}
+          container_method: ${{ needs.init.outputs.codeception_tests_container_method }}
           build: ${{ needs.init.outputs.codeception_tests_build }}
           configuration: ${{ needs.init.outputs.codeception_tests_configuration }}
           suite: ${{ needs.init.outputs.codeception_tests_suite }}
@@ -619,6 +641,7 @@ jobs:
         with:
           container: ${{ needs.init.outputs.shop_setup_tests_container }}
           container_options: ${{ needs.init.outputs.shop_setup_tests_container_options }}
+          container_method: ${{ needs.init.outputs.shop_setup_tests_container_method }}
           themes: ${{ needs.init.outputs.shop_setup_tests_themes_install }}
           options: ${{ needs.init.outputs.shop_setup_tests_themes_options }}
           update: ${{ needs.init.outputs.shop_setup_tests_themes_update }}
@@ -629,6 +652,7 @@ jobs:
         with:
           container: ${{ needs.init.outputs.shop_setup_tests_container }}
           container_options: ${{ needs.init.outputs.shop_setup_tests_container_options }}
+          container_method: ${{ needs.init.outputs.shop_setup_tests_container_method }}
           build: ${{ needs.init.outputs.shop_setup_tests_build }}
           configuration: ${{ needs.init.outputs.shop_setup_tests_configuration }}
           suite: ${{ needs.init.outputs.shop_setup_tests_suite }}
@@ -653,8 +677,58 @@ jobs:
       - codeception_tests
       - shop_setup_tests
     runs-on: ${{ fromJSON(inputs.runs_on) }}
+    env:
+      SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+      overall_result: ${{ needs.prepare_shop.result=='success' && needs.install_shop.result=='success' && needs.unit_tests.result=='success' && needs.integration_tests.result=='success' && needs.codeception_tests.result=='success' && needs.shop_setup_tests.result=='success' }}
     steps:
       - name: 'Docker logout'
         if: ${{ needs.init.outputs.finish_docker_logout }}
         shell: bash
         run: docker logout
+
+      - name: Send custom JSON data to Slack workflow
+        if: ${{ env.SLACK_WEBHOOK != '' }}
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: >
+            {
+              "text": "${{ github.workflow }} on ${{ github.repository }} with testplan ${{ inputs.testplan }} by ${{ github.actor }} ${{ env.overall_result=='success' && 'Successful' || 'Failed' }}",
+              "blocks": [
+                { "type": "header",
+                  "text":
+                    { "type": "plain_text",
+                      "emoji": true,
+                      "text": "${{ github.workflow }} on ${{ github.repository }}  with testplan ${{ inputs.testplan }} by ${{ github.actor }}"
+                    }
+                },
+                { "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn",
+                      "text": "*Status:* ${{ env.overall_result && ':white_check_mark:' || ':x:' }}" 
+                    },
+                    { "type": "mrkdwn",
+                      "text": "*Repository:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.repository }}/actions/runs/${{ github.run_id }}>"
+                    },
+                    { "type": "mrkdwn",
+                      "text": "*Testplan:* <${{ inputs.testplan }}>"
+                    }
+                  ]
+                },
+                { "type": "section",
+                  "text": 
+                    { "type": "mrkdwn",
+                      "text": "
+                      \n* prepare_shop: ${{ needs.prepare_shop.result=='success' && ':white_check_mark:' || ':x:' }}
+                      \n* install_shop: ${{ needs.install_shop.result=='success' && ':white_check_mark:' || ':x:' }}
+                      \n* unit_tests: ${{ needs.unit_tests.result=='success' && ':white_check_mark:' || ':x:' }}
+                      \n* integration_tests ${{ needs.integration_tests.result=='success' && ':white_check_mark:' || ':x:' }}
+                      \n* codeception_tests ${{ needs.codeception_tests.result=='success' && ':white_check_mark:' || ':x:' }}
+                      \n* shop_setup_tests ${{ needs.shop_setup_tests.result=='success' && ':white_check_mark:' || ':x:' }}"
+                    }
+                },
+                { "type": "divider" }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK

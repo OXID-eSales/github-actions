@@ -63,7 +63,7 @@ runs:
       run: |
         echo -e "\033[0;31m### Starting containers failed\033[0m"
         cat docker-compose.yml
-        docker-compose logs --tail=200
+        docker-compose logs --tail=all
         for c in $(docker ps -aq); do
           echo "*** Logs for $c ***"
           docker logs -n 200 $c

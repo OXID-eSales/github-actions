@@ -15,6 +15,11 @@ inputs:
     required: false
     description: 'Additional options to pass into the container'
     default: ''
+  container_method:
+    type: string
+    required: false
+    description: 'Method to execute the commands inside a container, either "run" or "exec"'
+    default: 'exec'
   package_name:
     type: string
     required: true
@@ -103,7 +108,7 @@ runs:
       run: |
         CACHED_NAME="${{ inputs.cached_shop }}+${{ inputs.module_ids }}"
         echo "installed_shop_with_module=$CACHED_NAME" | tee -a $GITHUB_OUTPUT
-        echo "EXEC_PHP=docker-compose exec -T ${{ inputs. container_options }} ${{ inputs.container }} \" | tee -a $GITHUB_ENV
+        echo "EXEC_PHP=docker-compose ${{ inputs.container_method }} -T ${{ inputs. container_options }} ${{ inputs.container }} \" | tee -a $GITHUB_ENV
         echo -e "\033[0;35m### Caching the installation as ${CACHED_NAME}\033[0m"
 
     - name: Checkout current module
@@ -141,7 +146,7 @@ runs:
     - name: Show docker log
       if: always()
       run: |
-        docker-compose logs
+        docker-compose logs --tail=all
 
     - name: Upload configuration artifacts
       if: always()

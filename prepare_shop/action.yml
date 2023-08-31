@@ -11,6 +11,11 @@ inputs:
     required: false
     description: 'Additional options when running something in the the container'
     default: ''
+  container_method:
+    type: string
+    required: false
+    description: 'Method to execute the commands inside a container, either "run" or "exec"'
+    default: 'exec'
   git_sdk_url:
     type: string
     required: false
@@ -156,7 +161,7 @@ runs:
           CACHED_NAME="preparedShop-ce-${{ inputs.git_shop_ref }}-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}"
         fi
         echo "prepared_shop=$CACHED_NAME" | tee -a $GITHUB_OUTPUT
-        echo "EXEC_PHP=docker-compose exec -T ${{ inputs.container_options }} ${{ inputs.container }}" | tee -a $GITHUB_ENV
+        echo "EXEC_PHP=docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} ${{ inputs.container }}" | tee -a $GITHUB_ENV
         echo "\033[0;35m### Caching the installation as ${CACHED_NAME}\033[0m"
 
     - name: Clone testing environment master
@@ -223,7 +228,7 @@ runs:
         echo -e "\033[0;35m###  docker-compose.yml ###\033[0m"
         cat docker-compose.yml
         echo -e "\033[0;35m###  docker-compose logs ###\033[0m"
-        docker-compose logs --tail=200
+        docker-compose logs --tail=all
         for c in $(docker ps -aq); do
           echo -e "\033[0;35m###  Logs for $c ###\033[0m"
           docker logs -n 200 $c

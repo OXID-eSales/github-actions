@@ -11,6 +11,11 @@ inputs:
     required: false
     description: 'Additional options to pass into the container'
     default: ''
+  container_method:
+    type: string
+    required: false
+    description: 'Method to execute the commands inside a container, either "run" or "exec"'
+    default: 'exec'
   git_enterprise_ref:
     type: string
     required: false
@@ -104,7 +109,7 @@ runs:
           CACHED_NAME="shopInstallation-ce-${{ inputs.git_shop_ref }}-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}"
         fi
         echo "installed_shop=$CACHED_NAME" | tee -a $GITHUB_OUTPUT
-        echo "EXEC_PHP=docker-compose exec -T ${{ inputs.container_options }} ${{ inputs.container }}" | tee -a $GITHUB_ENV
+        echo "EXEC_PHP=docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} ${{ inputs.container }}" | tee -a $GITHUB_ENV
         echo -e "\033[0;35m### Caching the installation as ${CACHED_NAME}\033[0m"
 
     - name: Run Install Shop

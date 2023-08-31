@@ -11,6 +11,11 @@ inputs:
     required: false
     description: 'Additional options to pass into the container'
     default: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex'
+  container_method:
+    type: string
+    required: false
+    description: 'Method to execute the commands inside a container, either "run" or "exec"'
+    default: 'exec'
   configuration:
     type: string
     required: false
@@ -85,7 +90,7 @@ runs:
       if: ${{ inputs.build == 'true' }}
       shell: bash
       run: |
-        docker-compose exec -T \
+        docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container }} \
           php vendor/bin/codecept build \
@@ -94,7 +99,7 @@ runs:
     - name: Run Codeception tests
       shell: bash
       run: |
-        docker-compose exec -T \
+        docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
            ${{ inputs.container }} \
            vendor/bin/codecept run ${{ inputs.suite }} ${{ inputs.test }} \

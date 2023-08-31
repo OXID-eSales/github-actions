@@ -11,6 +11,11 @@ inputs:
     required: false
     description: 'Additional options to pass into the container'
     default: ''
+  container_method:
+    type: string
+    required: false
+    description: 'Method to execute the commands inside a container, either "run" or "exec"'
+    default: 'exec'
   target_branch:
     type: string
     required: false
@@ -78,7 +83,7 @@ runs:
         ls -alh source/coverage
         wget https://phar.phpunit.de/phpcov-${{ inputs.phpcov_version }}.phar
         mv phpcov-${{ inputs.phpcov_version }}.phar source/phpcov.phar
-        docker-compose exec -T \
+        docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container }}
           php phpcov.phar merge --clover coverage.xml ./coverage

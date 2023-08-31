@@ -11,6 +11,11 @@ inputs:
     required: false
     description: 'Additional options to pass into the container'
     default: ''
+  container_method:
+    type: string
+    required: false
+    description: 'Method to execute the commands inside a container, either "run" or "exec"'
+    default: 'exec'
   module_path:
     type: string
     required: false
@@ -32,7 +37,7 @@ runs:
         id: phpstan
         if: always()
         run: |
-          docker-compose exec -T ${{ inputs.container_options }} \
+          docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
             --workdir=/var/www/${{ inputs.module_path }} \
             ${{ inputs.container }} \
             bash -c "composer phpstan-report; composer phpstan"
@@ -42,7 +47,7 @@ runs:
         if: always()
         continue-on-error: true
         run: |
-          docker-compose exec -T ${{ inputs.container_options }} \
+          docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
             --workdir=/var/www/${{ inputs.module_path }} \
             ${{ inputs.container }} \
             bash -c "composer phpmd-report; composer phpmd"
@@ -50,7 +55,7 @@ runs:
       - name: Run phpcs
         if: always()
         run: |
-          docker-compose exec -T ${{ inputs.container_options }} \
+          docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
             --workdir=/var/www/${{ inputs.module_path }} \
             ${{ inputs.container }} \
             php composer phpcs
