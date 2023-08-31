@@ -406,7 +406,7 @@ jobs:
         mysql: ${{ fromJSON(needs.init.outputs.prepare_shop_matrix_mysql) }}
       fail-fast: false
       max-parallel: ${{ needs.init.outputs.prepare_shop_max_parallel }}
-      runs-on: ${{ fromJSON(inputs.runs_on) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
     outputs:
       prepared_shop: ${{ steps.prepare_shop.outputs.prepared_shop }}
     steps:
