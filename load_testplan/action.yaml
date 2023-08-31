@@ -343,6 +343,14 @@ outputs:
     value: ${{ steps.yaml.outputs.codeception_tests_container_method}}
   codeception_tests_cache_bucket:
     value: ${{ steps.yaml.outputs.codeception_tests_cache_bucket}}
+  codeception_tests_themes_install:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_themes_install}}
+  codeception_tests_themes_options:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_themes_options}}
+  codeception_tests_themes_update:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_themes_update}}
+  codeception_tests_themes_update_options:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_themes_update_options}}
   codeception_tests_configuration:
     value: ${{ steps.yaml.outputs.codeception_tests_configuration}}
   codeception_tests_build:

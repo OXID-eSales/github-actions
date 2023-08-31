@@ -168,6 +168,10 @@ jobs:
             codeception_tests_container_options: ${{ steps.yaml.outputs.codeception_tests_container_options}}
             codeception_tests_container_method: ${{ steps.yaml.outputs.codeception_tests_container_method}}
             codeception_tests_cache_bucket: ${{ steps.yaml.outputs.codeception_tests_cache_bucket}}
+            codeception_tests_themes_install: ${{ steps.yaml.outputs.shop_setup_tests_themes_install}}
+            codeception_tests_themes_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_options}}
+            codeception_tests_themes_update: ${{ steps.yaml.outputs.shop_setup_tests_themes_update}}
+            codeception_tests_themes_update_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_update_options}}
             codeception_tests_configuration: ${{ steps.yaml.outputs.codeception_tests_configuration}}
             codeception_tests_build: ${{ steps.yaml.outputs.codeception_tests_build}}
             codeception_tests_suite: ${{ steps.yaml.outputs.codeception_tests_suite}}
@@ -326,6 +330,10 @@ jobs:
       codeception_tests_container_options: ${{ steps.yaml.outputs.codeception_tests_container_options}}
       codeception_tests_container_method: ${{ steps.yaml.outputs.codeception_tests_container_method}}
       codeception_tests_cache_bucket: ${{ steps.yaml.outputs.codeception_tests_cache_bucket}}
+      codeception_tests_themes_install: ${{ steps.yaml.outputs.shop_setup_tests_themes_install}}
+      codeception_tests_themes_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_options}}
+      codeception_tests_themes_update: ${{ steps.yaml.outputs.shop_setup_tests_themes_update}}
+      codeception_tests_themes_update_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_update_options}}
       codeception_tests_configuration: ${{ steps.yaml.outputs.codeception_tests_configuration}}
       codeception_tests_build: ${{ steps.yaml.outputs.codeception_tests_build}}
       codeception_tests_suite: ${{ steps.yaml.outputs.codeception_tests_suite}}
@@ -585,10 +593,18 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}        
 
-      - name: Install admin theme and template engine and APEX theme
+
+      - name: Install themes
+        if: ${{ needs.init.outputs.global_is_enterprise == 'false' }}
         uses: 'OXID-eSales/github-actions/install_themes@v0'
         with:
-          themes: 'oxid-esales/twig-admin-theme:dev-b-8.0.x oxid-esales/apex-theme:dev-b-7.1.x'
+          container: ${{ needs.init.outputs.codeception_tests_container }}
+          container_options: ${{ needs.init.outputs.codeception_tests_container_options }}
+          container_method: ${{ needs.init.outputs.codeception_tests_container_method }}
+          themes: ${{ needs.init.outputs.codeception_tests_themes_install }}
+          options: ${{ needs.init.outputs.codeception_tests_themes_options }}
+          update: ${{ needs.init.outputs.codeception_tests_themes_update }}
+          update_options: ${{ needs.init.outputs.codeception_tests_themes_update_options }}
 
       - name: 'Run codeception tests'
         uses: 'OXID-eSales/github-actions/codeception@v0'
@@ -637,7 +653,7 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}        
 
-      - name: Install admin theme and template engine and APEX theme
+      - name: Install themes
         if: ${{ needs.init.outputs.global_is_enterprise == 'false' }}
         uses: 'OXID-eSales/github-actions/install_themes@v0'
         with:

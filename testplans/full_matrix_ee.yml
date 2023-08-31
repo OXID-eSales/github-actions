@@ -202,6 +202,15 @@ codeception_tests:
   # For codeception, we need different options than the empty default
   container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex'
   container_method: &selenium_container_method 'run'
+  themes:
+    # Space separated list of themes to install
+    install: 'oxid-esales/twig-admin-theme oxid-esales/apex-theme'
+    # Options to pass along to composer during install
+    options: '--with-all-dependencies'
+    # Run composer update after installing all themes
+    update: true
+    # Options to pass along to composer during install
+    update_options: '--no-interaction'
   # Name of the configuration file
   configuration: 'vendor/oxid-esales/oxideshop-ee/Tests/codeception.yml'
   # Whether to run the build step before running codeception or not
