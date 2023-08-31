@@ -594,7 +594,7 @@ jobs:
           failure_pattern: ${{ needs.init.outputs.integration_tests_failure_pattern }}
 
   codeception_tests:
-    needs: ['init', 'unit_tests', 'integration_tests']
+    needs: ['init', 'install_shop', 'unit_tests', 'integration_tests']
     if: ${{ needs.init.outputs.codeception_tests_skip != 'true' }}
     strategy:
       matrix:
