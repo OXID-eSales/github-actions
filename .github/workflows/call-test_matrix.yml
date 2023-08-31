@@ -399,7 +399,7 @@ jobs:
       finish_docker_logout: ${{ steps.yaml.outputs.finish_docker_logout}}
 
   prepare_shop:
-    needs: ${{ fromJSON(needs.init.outputs.prepare_shop_needs) }}
+    needs: init
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.prepare_shop_matrix_php) }}
@@ -453,7 +453,7 @@ jobs:
           
 
   install_shop:
-    needs: ${{ fromJSON(needs.init.outputs.install_shop_needs) }}
+    needs: ['init','prepare_shop']
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.install_shop_matrix_php) }}
@@ -504,7 +504,7 @@ jobs:
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
   unit_tests:
-    needs: ${{ fromJSON(needs.init.outputs.unit_tests_needs) }}
+    needs: ['init', 'install_shop']
     if: ${{ needs.init.outputs.unit_tests_skip != 'true' }}
     strategy:
       matrix:
@@ -549,7 +549,7 @@ jobs:
           failure_pattern: ${{ needs.init.outputs.unit_tests_failure_pattern }}
 
   integration_tests:
-    needs: ${{ fromJSON(needs.init.outputs.integration_tests_needs) }}
+    needs: ['init','install_shop']
     if: ${{ needs.init.outputs.unit_tests_skip != 'true' }}
     strategy:
       matrix:
@@ -594,7 +594,7 @@ jobs:
           failure_pattern: ${{ needs.init.outputs.integration_tests_failure_pattern }}
 
   codeception_tests:
-    needs: ${{ fromJSON(needs.init.outputs.codeception_tests_needs) }}
+    needs: ['init', 'unit_tests', 'integration_tests']
     if: ${{ needs.init.outputs.codeception_tests_skip != 'true' }}
     strategy:
       matrix:
@@ -654,7 +654,7 @@ jobs:
           failure_pattern: ${{ needs.init.outputs.codeception_tests_failure_pattern }}
  
   shop_setup_tests:
-    needs: ${{ fromJSON(needs.init.outputs.shop_setup_tests_needs) }}
+    needs: ['init','prepare_shop','codeception_tests']
     if: ${{ needs.init.outputs.shop_setup_tests_skip != 'true' }}
     strategy:
       matrix:
