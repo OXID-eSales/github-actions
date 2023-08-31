@@ -405,7 +405,7 @@ jobs:
         php: ${{ fromJSON(needs.init.outputs.prepare_shop_matrix_php) }}
         mysql: ${{ fromJSON(needs.init.outputs.prepare_shop_matrix_mysql) }}
       fail-fast: false
-      max-parallel: ${{ needs.init.outputs.prepare_shop_max_parallel }}
+      max-parallel: ${{ fromJSON(needs.init.outputs.prepare_shop_max_parallel) }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     outputs:
       prepared_shop: ${{ steps.prepare_shop.outputs.prepared_shop }}
@@ -459,7 +459,7 @@ jobs:
         php: ${{ fromJSON(needs.init.outputs.install_shop_matrix_php) }}
         mysql: ${{ fromJSON(needs.init.outputs.install_shop_matrix_mysql) }}
       fail-fast: false
-      max-parallel: ${{ needs.init.outputs.install_shop_max_parallel }}
+      max-parallel: ${{ fromJSON(needs.init.outputs.install_shop_max_parallel) }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     outputs:
       installed_shop: ${{ steps.install_shop.outputs.installed_shop }}
@@ -511,7 +511,7 @@ jobs:
         php: ${{ fromJSON(needs.init.outputs.unit_tests_matrix_php) }}
         mysql: ${{ fromJSON(needs.init.outputs.unit_tests_matrix_mysql) }}
       fail-fast: false
-      max-parallel: ${{ needs.init.outputs.unit_tests_max_parallel }}
+      max-parallel: ${{ fromJSON(needs.init.outputs.unit_tests_max_parallel) }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Cleanup (pre)'
@@ -556,7 +556,7 @@ jobs:
         php: ${{ fromJSON(needs.init.outputs.integration_tests_matrix_php) }}
         mysql: ${{ fromJSON(needs.init.outputs.integration_tests_matrix_mysql) }}
       fail-fast: false
-      max-parallel: ${{ needs.init.outputs.integration_tests_max_parallel }}
+      max-parallel: ${{ fromJSON(needs.init.outputs.integration_tests_max_parallel) }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Cleanup (pre)'
@@ -601,7 +601,7 @@ jobs:
         php: ${{ fromJSON(needs.init.outputs.codeception_tests_matrix_php) }}
         mysql: ${{ fromJSON(needs.init.outputs.codeception_tests_matrix_mysql) }}
       fail-fast: false
-      max-parallel: ${{ needs.init.outputs.codeception_tests_max_parallel }}
+      max-parallel: ${{ fromJSON(needs.init.outputs.codeception_tests_max_parallel) }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Cleanup (pre)'
@@ -661,7 +661,7 @@ jobs:
         php: ${{ fromJSON(needs.init.outputs.shop_setup_tests_matrix_php) }}
         mysql: ${{ fromJSON(needs.init.outputs.shop_setup_tests_matrix_mysql) }}
       fail-fast: false
-      max-parallel: ${{ needs.init.outputs.shop_setup_tests_max_parallel }}
+      max-parallel: ${{ fromJSON(needs.init.outputs.shop_setup_tests_max_parallel) }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Cleanup (pre)'
