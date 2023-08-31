@@ -565,6 +565,7 @@ jobs:
         php: ${{ fromJSON(needs.init.outputs.codeception_tests_matrix_php) }}
         mysql: ${{ fromJSON(needs.init.outputs.codeception_tests_matrix_mysql) }}
       fail-fast: false
+      max-parallel: 1
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Cleanup (pre)'
@@ -616,6 +617,7 @@ jobs:
         php: ${{ fromJSON(needs.init.outputs.shop_setup_tests_matrix_php) }}
         mysql: ${{ fromJSON(needs.init.outputs.shop_setup_tests_matrix_mysql) }}
       fail-fast: false
+      max-parallel: 1
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Cleanup (pre)'
