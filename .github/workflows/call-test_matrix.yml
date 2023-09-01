@@ -82,7 +82,6 @@ jobs:
             prepare_shop_matrix_mysql: ${{ steps.yaml.outputs.prepare_shop_matrix_mysql}}
             prepare_shop_matrix_php: ${{ steps.yaml.outputs.prepare_shop_matrix_php}}
             prepare_shop_max_parallel: ${{ steps.yaml.outputs.prepare_shop_max_parallel}}
-            prepare_shop_needs: ${{ steps.yaml.outputs.prepare_shop_needs}}
             prepare_shop_pre_cleanup_run: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_run}}
             prepare_shop_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_clean_workspace}}
             prepare_shop_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_kill_containers}}
@@ -108,7 +107,6 @@ jobs:
             install_shop_matrix_mysql: ${{ steps.yaml.outputs.install_shop_matrix_mysql}}
             install_shop_matrix_php: ${{ steps.yaml.outputs.install_shop_matrix_php}}
             install_shop_max_parallel: ${{ steps.yaml.outputs.install_shop_max_parallel}}
-            install_shop_needs: ${{ steps.yaml.outputs.install_shop_needs}}
             install_shop_pre_cleanup_run: ${{ steps.yaml.outputs.install_shop_pre_cleanup_run}}
             install_shop_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.install_shop_pre_cleanup_clean_workspace}}
             install_shop_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.install_shop_pre_cleanup_kill_containers}}
@@ -127,7 +125,6 @@ jobs:
             unit_tests_matrix_mysql: ${{ steps.yaml.outputs.unit_tests_matrix_mysql}}
             unit_tests_matrix_php: ${{ steps.yaml.outputs.unit_tests_matrix_php}}
             unit_tests_max_parallel: ${{ steps.yaml.outputs.unit_tests_max_parallel}}
-            unit_tests_needs: ${{ steps.yaml.outputs.unit_tests_needs}}
             unit_tests_pre_cleanup_run: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_run}}
             unit_tests_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_clean_workspace}}
             unit_tests_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_kill_containers}}
@@ -148,7 +145,6 @@ jobs:
             integration_tests_matrix_mysql: ${{ steps.yaml.outputs.integration_tests_matrix_mysql}}
             integration_tests_matrix_php: ${{ steps.yaml.outputs.integration_tests_matrix_php}}
             integration_tests_max_parallel: ${{ steps.yaml.outputs.integration_tests_max_parallel}}
-            integration_tests_needs: ${{ steps.yaml.outputs.integration_tests_needs}}
             integration_tests_pre_cleanup_run: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_run}}
             integration_tests_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_clean_workspace}}
             integration_tests_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_kill_containers}}
@@ -169,7 +165,6 @@ jobs:
             codeception_tests_matrix_mysql: ${{ steps.yaml.outputs.codeception_tests_matrix_mysql}}
             codeception_tests_matrix_php: ${{ steps.yaml.outputs.codeception_tests_matrix_php}}
             codeception_tests_max_parallel: ${{ steps.yaml.outputs.codeception_tests_max_parallel}}
-            codeception_tests_needs: ${{ steps.yaml.outputs.codeception_tests_needs}}
             codeception_tests_pre_cleanup_run: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_run}}
             codeception_tests_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_clean_workspace}}
             codeception_tests_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_kill_containers}}
@@ -196,7 +191,6 @@ jobs:
             shop_setup_tests_matrix_mysql: ${{ steps.yaml.outputs.shop_setup_tests_matrix_mysql}}
             shop_setup_tests_matrix_php: ${{ steps.yaml.outputs.shop_setup_tests_matrix_php}}
             shop_setup_tests_max_parallel: ${{ steps.yaml.outputs.shop_setup_tests_max_parallel}}
-            shop_setup_tests_needs: ${{ steps.yaml.outputs.shop_setup_tests_needs}}
             shop_setup_tests_pre_cleanup_run: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_run}}
             shop_setup_tests_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_clean_workspace}}
             shop_setup_tests_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_kill_containers}}
@@ -256,7 +250,6 @@ jobs:
       prepare_shop_matrix_mysql: ${{ steps.yaml.outputs.prepare_shop_matrix_mysql}}
       prepare_shop_matrix_php: ${{ steps.yaml.outputs.prepare_shop_matrix_php}}
       prepare_shop_max_parallel: ${{ steps.yaml.outputs.prepare_shop_max_parallel}}
-      prepare_shop_needs: ${{ steps.yaml.outputs.prepare_shop_needs}}
       prepare_shop_pre_cleanup_run: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_run}}
       prepare_shop_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_clean_workspace}}
       prepare_shop_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_kill_containers}}
@@ -282,7 +275,6 @@ jobs:
       install_shop_matrix_mysql: ${{ steps.yaml.outputs.install_shop_matrix_mysql}}
       install_shop_matrix_php: ${{ steps.yaml.outputs.install_shop_matrix_php}}
       install_shop_max_parallel: ${{ steps.yaml.outputs.install_shop_max_parallel}}
-      install_shop_needs: ${{ steps.yaml.outputs.install_shop_needs}}
       install_shop_pre_cleanup_run: ${{ steps.yaml.outputs.install_shop_pre_cleanup_run}}
       install_shop_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.install_shop_pre_cleanup_clean_workspace}}
       install_shop_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.install_shop_pre_cleanup_kill_containers}}
@@ -301,7 +293,6 @@ jobs:
       unit_tests_matrix_mysql: ${{ steps.yaml.outputs.unit_tests_matrix_mysql}}
       unit_tests_matrix_php: ${{ steps.yaml.outputs.unit_tests_matrix_php}}
       unit_tests_max_parallel: ${{ steps.yaml.outputs.unit_tests_max_parallel}}
-      unit_tests_needs: ${{ steps.yaml.outputs.unit_tests_needs}}
       unit_tests_pre_cleanup_run: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_run}}
       unit_tests_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_clean_workspace}}
       unit_tests_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_kill_containers}}
@@ -322,7 +313,6 @@ jobs:
       integration_tests_matrix_mysql: ${{ steps.yaml.outputs.integration_tests_matrix_mysql}}
       integration_tests_matrix_php: ${{ steps.yaml.outputs.integration_tests_matrix_php}}
       integration_tests_max_parallel: ${{ steps.yaml.outputs.integration_tests_max_parallel}}
-      integration_tests_needs: ${{ steps.yaml.outputs.integration_tests_needs}}
       integration_tests_pre_cleanup_run: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_run}}
       integration_tests_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_clean_workspace}}
       integration_tests_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_kill_containers}}
@@ -343,7 +333,6 @@ jobs:
       codeception_tests_matrix_mysql: ${{ steps.yaml.outputs.codeception_tests_matrix_mysql}}
       codeception_tests_matrix_php: ${{ steps.yaml.outputs.codeception_tests_matrix_php}}
       codeception_tests_max_parallel: ${{ steps.yaml.outputs.codeception_tests_max_parallel}}
-      codeception_tests_needs: ${{ steps.yaml.outputs.codeception_tests_needs}}
       codeception_tests_pre_cleanup_run: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_run}}
       codeception_tests_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_clean_workspace}}
       codeception_tests_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_kill_containers}}
@@ -370,7 +359,6 @@ jobs:
       shop_setup_tests_matrix_mysql: ${{ steps.yaml.outputs.shop_setup_tests_matrix_mysql}}
       shop_setup_tests_matrix_php: ${{ steps.yaml.outputs.shop_setup_tests_matrix_php}}
       shop_setup_tests_max_parallel: ${{ steps.yaml.outputs.shop_setup_tests_max_parallel}}
-      shop_setup_tests_needs: ${{ steps.yaml.outputs.shop_setup_tests_needs}}
       shop_setup_tests_pre_cleanup_run: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_run}}
       shop_setup_tests_pre_cleanup_clean_workspace: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_clean_workspace}}
       shop_setup_tests_pre_cleanup_kill_containers: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_kill_containers}}

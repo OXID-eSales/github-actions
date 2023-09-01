@@ -74,8 +74,6 @@ prepare_shop:
   git_enterprise_ref: *git_enterprise_ref
   is_enterprise: *is_enterprise
   cache_bucket: *cache_bucket
-  # Required steps for prepare_shop
-  needs: '["init"]'
   # Error reporting settings for php custom.ini
   custom_ini_error_reporting: 'E_ALL & ~E_DEPRECATED & ~E_NOTICE & ~E_WARNING'
   # xdebug settings for php custom.ini
@@ -108,8 +106,6 @@ install_shop:
   git_enterprise_ref: *git_enterprise_ref
   is_enterprise: *is_enterprise
   cache_bucket: *cache_bucket
-  # Required steps for install_shop
-  needs: '["init","prepare_shop"]'  
   # Set iDebug in source/source/config.inc.php
   config_idebug: false
   # Configuration files for the shop setup'
@@ -135,8 +131,6 @@ unit_tests:
   container_options: *container_options
   container_method: *container_method
   cache_bucket: *cache_bucket
-  # Required steps for the unit tests
-  needs: '["init", "install_shop"]'
   # Name of the configuration file
   configuration: 'phpunit.xml'
   # Name of the test or folder to run
@@ -175,8 +169,6 @@ integration_tests:
   container_options: *container_options
   container_method: *container_method
   cache_bucket: *cache_bucket
-  # Required steps for the integration tests
-  needs: '["init", "install_shop"]'
   # Name of the configuration file
   configuration: 'phpunit.xml'
   # Name of the test or folder to run
@@ -213,8 +205,6 @@ codeception_tests:
   pre_cleanup: *pre_cleanup
   container: *container
   cache_bucket: *cache_bucket
-  # Required steps for the codeception tests
-  needs: '["init", "install_shop", "unit_tests", "integration_tests"]'
   # For codeception, we need different options than the empty default
   container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex'
   container_method: &selenium_container_method 'run'
@@ -272,8 +262,6 @@ shop_setup_tests:
   pre_cleanup: *pre_cleanup
   container: *container
   cache_bucket: *cache_bucket
-  # Required steps for the shop setup tests
-  needs: '["init", "prepare_shop", "install_shop", "unit_tests", "integration_tests", "codeception_tests"]'
   # We pass the configuration parameters into the container here
   container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e DB_NAME=setup_test -e DB_USERNAME=root -e DB_PASSWORD=root -e DB_HOST=mysql -e DB_PORT=3306 -e SHOP_URL=http://localhost.local/ -e SHOP_SOURCE_PATH=/var/www/source/'
   container_method: *selenium_container_method

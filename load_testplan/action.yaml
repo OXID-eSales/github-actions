@@ -176,8 +176,6 @@ outputs:
     value: ${{ steps.yaml.outputs.prepare_shop_matrix_php}}
   prepare_shop_max_parallel:
     value: ${{ steps.yaml.outputs.prepare_shop_max_parallel}}
-  prepare_shop_needs:
-    value: ${{ steps.yaml.outputs.prepare_shop_needs}}
   prepare_shop_pre_cleanup_run:
     value: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_run}}
   prepare_shop_pre_cleanup_clean_workspace:
@@ -228,8 +226,6 @@ outputs:
     value: ${{ steps.yaml.outputs.install_shop_matrix_php}}
   install_shop_max_parallel:
     value: ${{ steps.yaml.outputs.install_shop_max_parallel}}
-  install_shop_needs:
-    value: ${{ steps.yaml.outputs.install_shop_needs}}
   install_shop_pre_cleanup_run:
     value: ${{ steps.yaml.outputs.install_shop_pre_cleanup_run}}
   install_shop_pre_cleanup_clean_workspace:
@@ -265,8 +261,6 @@ outputs:
     value: ${{ steps.yaml.outputs.unit_tests_matrix_php}}
   unit_tests_max_parallel:
     value: ${{ steps.yaml.outputs.unit_tests_max_parallel}}
-  unit_tests_needs:
-    value: ${{ steps.yaml.outputs.unit_tests_needs}}
   unit_tests_pre_cleanup_run:
     value: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_run}}
   unit_tests_pre_cleanup_clean_workspace:
@@ -306,8 +300,6 @@ outputs:
     value: ${{ steps.yaml.outputs.integration_tests_matrix_php}}
   integration_tests_max_parallel:
     value: ${{ steps.yaml.outputs.integration_tests_max_parallel}}
-  integration_tests_needs:
-    value: ${{ steps.yaml.outputs.integration_tests_needs}}
   integration_tests_pre_cleanup_run:
     value: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_run}}
   integration_tests_pre_cleanup_clean_workspace:
@@ -347,8 +339,6 @@ outputs:
     value: ${{ steps.yaml.outputs.codeception_tests_matrix_php}}
   codeception_tests_max_parallel:
     value: ${{ steps.yaml.outputs.codeception_tests_max_parallel}}
-  codeception_tests_needs:
-    value: ${{ steps.yaml.outputs.codeception_tests_needs}}
   codeception_tests_pre_cleanup_run:
     value: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_run}}
   codeception_tests_pre_cleanup_clean_workspace:
@@ -400,8 +390,6 @@ outputs:
     value: ${{ steps.yaml.outputs.shop_setup_tests_matrix_php}}
   shop_setup_tests_max_parallel:
     value: ${{ steps.yaml.outputs.shop_setup_tests_max_parallel}}
-  shop_setup_tests_needs:
-    value: ${{ steps.yaml.outputs.shop_setup_tests_needs}}
   shop_setup_tests_pre_cleanup_run:
     value: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_run}}
   shop_setup_tests_pre_cleanup_clean_workspace:
