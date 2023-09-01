@@ -64,7 +64,6 @@ runs:
         if: always()
         run: |
           make down
-          sleep 2
 
       - name: Upload log artifact
         if: always()

@@ -142,7 +142,7 @@ runs:
       shell: bash
       run: |
         docker-compose down
-        sleep 2
+
 
     - name: Upload configuration artifacts
       if: always()

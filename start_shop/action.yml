@@ -55,7 +55,6 @@ runs:
       run: |
         echo -e "\033[0;35m### Starting containers\033[0m"
         make up
-        sleep 2
 
     - name: Output docker logs if make up failed
       if: failure()
