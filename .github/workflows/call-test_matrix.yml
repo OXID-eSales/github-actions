@@ -496,7 +496,7 @@ jobs:
 
   codeception_tests:
     needs: ['init', 'install_shop', 'unit_tests', 'integration_tests']
-    if: ${{ needs.init.outputs.codeception_tests_skip != 'true' }}
+    if: ${{ always() && needs.init.outputs.codeception_tests_skip != 'true' && needs.install_shop.result == 'success' }}  
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.codeception_tests_matrix_php) }}
@@ -548,7 +548,7 @@ jobs:
  
   shop_setup_tests:
     needs: ['init','prepare_shop','codeception_tests']
-    if: ${{ needs.init.outputs.shop_setup_tests_skip != 'true' }}
+    if: ${{ always() && needs.init.outputs.shop_setup_tests_skip != 'true' && needs.prepare_shop.result == 'success' }}  
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.shop_setup_tests_matrix_php) }}
