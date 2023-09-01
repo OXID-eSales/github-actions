@@ -135,6 +135,8 @@ outputs:
     value: ${{ steps.yaml.outputs.workflow_matrix_mysql}}
   workflow_matrix_php:
     value: ${{ steps.yaml.outputs.workflow_matrix_php}}
+  workflow_max_parallel:
+    value: ${{ steps.yaml.outputs.workflow_max_parallel}}
   # global variables
   global_git_sdk_url:
     value: ${{ steps.yaml.outputs.global_git_sdk_url}}
@@ -172,6 +174,8 @@ outputs:
     value: ${{ steps.yaml.outputs.prepare_shop_matrix_mysql}}
   prepare_shop_matrix_php:
     value: ${{ steps.yaml.outputs.prepare_shop_matrix_php}}
+  prepare_shop_max_parallel:
+    value: ${{ steps.yaml.outputs.prepare_shop_max_parallel}}
   prepare_shop_pre_cleanup_run:
     value: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_run}}
   prepare_shop_pre_cleanup_clean_workspace:
@@ -220,6 +224,8 @@ outputs:
     value: ${{ steps.yaml.outputs.install_shop_matrix_mysql}}
   install_shop_matrix_php:
     value: ${{ steps.yaml.outputs.install_shop_matrix_php}}
+  install_shop_max_parallel:
+    value: ${{ steps.yaml.outputs.install_shop_max_parallel}}
   install_shop_pre_cleanup_run:
     value: ${{ steps.yaml.outputs.install_shop_pre_cleanup_run}}
   install_shop_pre_cleanup_clean_workspace:
@@ -253,6 +259,8 @@ outputs:
     value: ${{ steps.yaml.outputs.unit_tests_matrix_mysql}}
   unit_tests_matrix_php:
     value: ${{ steps.yaml.outputs.unit_tests_matrix_php}}
+  unit_tests_max_parallel:
+    value: ${{ steps.yaml.outputs.unit_tests_max_parallel}}
   unit_tests_pre_cleanup_run:
     value: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_run}}
   unit_tests_pre_cleanup_clean_workspace:
@@ -290,6 +298,8 @@ outputs:
     value: ${{ steps.yaml.outputs.integration_tests_matrix_mysql}}
   integration_tests_matrix_php:
     value: ${{ steps.yaml.outputs.integration_tests_matrix_php}}
+  integration_tests_max_parallel:
+    value: ${{ steps.yaml.outputs.integration_tests_max_parallel}}
   integration_tests_pre_cleanup_run:
     value: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_run}}
   integration_tests_pre_cleanup_clean_workspace:
@@ -327,6 +337,8 @@ outputs:
     value: ${{ steps.yaml.outputs.codeception_tests_matrix_mysql}}
   codeception_tests_matrix_php:
     value: ${{ steps.yaml.outputs.codeception_tests_matrix_php}}
+  codeception_tests_max_parallel:
+    value: ${{ steps.yaml.outputs.codeception_tests_max_parallel}}
   codeception_tests_pre_cleanup_run:
     value: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_run}}
   codeception_tests_pre_cleanup_clean_workspace:
@@ -343,6 +355,14 @@ outputs:
     value: ${{ steps.yaml.outputs.codeception_tests_container_method}}
   codeception_tests_cache_bucket:
     value: ${{ steps.yaml.outputs.codeception_tests_cache_bucket}}
+  codeception_tests_themes_install:
+    value: ${{ steps.yaml.outputs.codeception_tests_themes_install}}
+  codeception_tests_themes_options:
+    value: ${{ steps.yaml.outputs.codeception_tests_themes_options}}
+  codeception_tests_themes_update:
+    value: ${{ steps.yaml.outputs.codeception_tests_themes_update}}
+  codeception_tests_themes_update_options:
+    value: ${{ steps.yaml.outputs.codeception_tests_themes_update_options}}
   codeception_tests_configuration:
     value: ${{ steps.yaml.outputs.codeception_tests_configuration}}
   codeception_tests_build:
@@ -368,6 +388,8 @@ outputs:
     value: ${{ steps.yaml.outputs.shop_setup_tests_matrix_mysql}}
   shop_setup_tests_matrix_php:
     value: ${{ steps.yaml.outputs.shop_setup_tests_matrix_php}}
+  shop_setup_tests_max_parallel:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_max_parallel}}
   shop_setup_tests_pre_cleanup_run:
     value: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_run}}
   shop_setup_tests_pre_cleanup_clean_workspace:
