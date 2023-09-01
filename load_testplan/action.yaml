@@ -152,14 +152,6 @@ outputs:
     value: ${{ steps.yaml.outputs.global_git_enterprise_ref}}
   global_cache_bucket:
     value: ${{ steps.yaml.outputs.global_cache_bucket}}
-  global_pre_cleanup_run:
-    value: ${{ steps.yaml.outputs.global_pre_cleanup_run}}
-  global_pre_cleanup_clean_workspace:
-    value: ${{ steps.yaml.outputs.global_pre_cleanup_clean_workspace}}
-  global_pre_cleanup_kill_containers:
-    value: ${{ steps.yaml.outputs.global_pre_cleanup_kill_containers}}
-  global_pre_cleanup_prune_docker:
-    value: ${{ steps.yaml.outputs.global_pre_cleanup_prune_docker}}
   global_container:
     value: ${{ steps.yaml.outputs.global_container}}
   global_container_options:
@@ -176,14 +168,6 @@ outputs:
     value: ${{ steps.yaml.outputs.prepare_shop_matrix_php}}
   prepare_shop_max_parallel:
     value: ${{ steps.yaml.outputs.prepare_shop_max_parallel}}
-  prepare_shop_pre_cleanup_run:
-    value: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_run}}
-  prepare_shop_pre_cleanup_clean_workspace:
-    value: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_clean_workspace}}
-  prepare_shop_pre_cleanup_kill_containers:
-    value: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_kill_containers}}
-  prepare_shop_pre_cleanup_prune_docker:
-    value: ${{ steps.yaml.outputs.prepare_shop_pre_cleanup_prune_docker}}
   prepare_shop_container:
     value: ${{ steps.yaml.outputs.prepare_shop_container}}
   prepare_shop_container_options:
@@ -226,14 +210,6 @@ outputs:
     value: ${{ steps.yaml.outputs.install_shop_matrix_php}}
   install_shop_max_parallel:
     value: ${{ steps.yaml.outputs.install_shop_max_parallel}}
-  install_shop_pre_cleanup_run:
-    value: ${{ steps.yaml.outputs.install_shop_pre_cleanup_run}}
-  install_shop_pre_cleanup_clean_workspace:
-    value: ${{ steps.yaml.outputs.install_shop_pre_cleanup_clean_workspace}}
-  install_shop_pre_cleanup_kill_containers:
-    value: ${{ steps.yaml.outputs.install_shop_pre_cleanup_kill_containers}}
-  install_shop_pre_cleanup_prune_docker:
-    value: ${{ steps.yaml.outputs.install_shop_pre_cleanup_prune_docker}}
   install_shop_container:
     value: ${{ steps.yaml.outputs.install_shop_container}}
   install_shop_container_options:
@@ -261,14 +237,6 @@ outputs:
     value: ${{ steps.yaml.outputs.unit_tests_matrix_php}}
   unit_tests_max_parallel:
     value: ${{ steps.yaml.outputs.unit_tests_max_parallel}}
-  unit_tests_pre_cleanup_run:
-    value: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_run}}
-  unit_tests_pre_cleanup_clean_workspace:
-    value: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_clean_workspace}}
-  unit_tests_pre_cleanup_kill_containers:
-    value: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_kill_containers}}
-  unit_tests_pre_cleanup_prune_docker:
-    value: ${{ steps.yaml.outputs.unit_tests_pre_cleanup_prune_docker}}
   unit_tests_container:
     value: ${{ steps.yaml.outputs.unit_tests_container}}
   unit_tests_container_options:
@@ -300,14 +268,6 @@ outputs:
     value: ${{ steps.yaml.outputs.integration_tests_matrix_php}}
   integration_tests_max_parallel:
     value: ${{ steps.yaml.outputs.integration_tests_max_parallel}}
-  integration_tests_pre_cleanup_run:
-    value: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_run}}
-  integration_tests_pre_cleanup_clean_workspace:
-    value: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_clean_workspace}}
-  integration_tests_pre_cleanup_kill_containers:
-    value: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_kill_containers}}
-  integration_tests_pre_cleanup_prune_docker:
-    value: ${{ steps.yaml.outputs.integration_tests_pre_cleanup_prune_docker}}
   integration_tests_container:
     value: ${{ steps.yaml.outputs.integration_tests_container}}
   integration_tests_container_options:
@@ -339,14 +299,6 @@ outputs:
     value: ${{ steps.yaml.outputs.codeception_tests_matrix_php}}
   codeception_tests_max_parallel:
     value: ${{ steps.yaml.outputs.codeception_tests_max_parallel}}
-  codeception_tests_pre_cleanup_run:
-    value: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_run}}
-  codeception_tests_pre_cleanup_clean_workspace:
-    value: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_clean_workspace}}
-  codeception_tests_pre_cleanup_kill_containers:
-    value: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_kill_containers}}
-  codeception_tests_pre_cleanup_prune_docker:
-    value: ${{ steps.yaml.outputs.codeception_tests_pre_cleanup_prune_docker}}
   codeception_tests_container:
     value: ${{ steps.yaml.outputs.codeception_tests_container}}
   codeception_tests_container_options:
@@ -390,14 +342,6 @@ outputs:
     value: ${{ steps.yaml.outputs.shop_setup_tests_matrix_php}}
   shop_setup_tests_max_parallel:
     value: ${{ steps.yaml.outputs.shop_setup_tests_max_parallel}}
-  shop_setup_tests_pre_cleanup_run:
-    value: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_run}}
-  shop_setup_tests_pre_cleanup_clean_workspace:
-    value: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_clean_workspace}}
-  shop_setup_tests_pre_cleanup_kill_containers:
-    value: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_kill_containers}}
-  shop_setup_tests_pre_cleanup_prune_docker:
-    value: ${{ steps.yaml.outputs.shop_setup_tests_pre_cleanup_prune_docker}}
   shop_setup_tests_container:
     value: ${{ steps.yaml.outputs.shop_setup_tests_container}}
   shop_setup_tests_container_options:

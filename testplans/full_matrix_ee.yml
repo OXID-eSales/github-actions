@@ -33,16 +33,6 @@ global:
   # - secrets.CACHE_SECRET_KEY
   cache_bucket: &cache_bucket 'oxideshop-ee'
 
-  # Settings for a cleanup before running
-  pre_cleanup: &pre_cleanup
-    # Should we do a cleanup step before running (not needed on ephemeral runners)
-    run: false
-    # Clean the workspace by deleting all files and directories
-    clean_workspace: true
-    # Kill running docker containers (depending on the setup this may commit suicide and fail the run)
-    kill_containers: false
-    # Prune docker
-    prune_docker: true
   # Name of the container running php
   container: &container 'php'
   # Additional options when running something in the the container
@@ -63,7 +53,6 @@ prepare_shop:
     php: *matrix_php
     mysql: *matrix_mysql
   max_parallel: *max_parallel
-  pre_cleanup: *pre_cleanup
   container: *container
   container_options: *container_options
   container_method: *container_method
@@ -98,7 +87,6 @@ install_shop:
     php: *matrix_php
     mysql: *matrix_mysql
   max_parallel: *max_parallel
-  pre_cleanup: *pre_cleanup
   container: *container
   container_options: *container_options
   container_method: *container_method
@@ -126,7 +114,6 @@ unit_tests:
     php: *matrix_php
     mysql: *matrix_mysql
   max_parallel: *max_parallel
-  pre_cleanup: *pre_cleanup
   container: *container
   container_options: *container_options
   container_method: *container_method
@@ -164,7 +151,6 @@ integration_tests:
     php: *matrix_php
     mysql: *matrix_mysql
   max_parallel: *max_parallel
-  pre_cleanup: *pre_cleanup
   container: *container
   container_options: *container_options
   container_method: *container_method
@@ -202,7 +188,6 @@ codeception_tests:
     php: *matrix_php
     mysql: *matrix_mysql
   max_parallel: *max_parallel
-  pre_cleanup: *pre_cleanup
   container: *container
   cache_bucket: *cache_bucket
   # For codeception, we need different options than the empty default
@@ -259,7 +244,6 @@ shop_setup_tests:
     php: *matrix_php
     mysql: *matrix_mysql
   max_parallel: *max_parallel
-  pre_cleanup: *pre_cleanup
   container: *container
   cache_bucket: *cache_bucket
   # We pass the configuration parameters into the container here
