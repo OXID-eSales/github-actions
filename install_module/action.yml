@@ -141,7 +141,7 @@ runs:
       shell: bash
       run: |
         docker-compose down
-        sleep 2
+
 
     - name: Show docker log
       if: always()

@@ -217,7 +217,6 @@ runs:
       shell: bash
       run: |
         make up
-        sleep 2
         docker-compose ps --all
 
     - name: Output docker logs if make up failed
@@ -287,7 +286,6 @@ runs:
       run: |
         echo -e "\033[0;35m### Stopping containers $c\033[0m"
         docker-compose down
-        sleep 2
 
     - name: Cache current installation
       uses: tespkg/actions-cache@v1
