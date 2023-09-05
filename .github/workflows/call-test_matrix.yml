@@ -41,7 +41,6 @@ on:
       enterprise_github_token:
         #description: 'OAuth token to access enterprise repos'
         required: false
-      GITHUB_TOKEN:  #description: Github token for sonarcloud
       SONAR_TOKEN:
         #description: Token for sonarcloud access
         required: false
