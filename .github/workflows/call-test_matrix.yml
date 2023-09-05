@@ -8,6 +8,7 @@ name: call-test_matrix
 # - run integration tests  using the cached shopInstallation
 # - run codeception tests  using the cached shopInstallation
 # - run shop setup tests using the cached preparedShop
+# - run sonarcloud scan
 #
 on:
   workflow_call:
@@ -38,8 +39,12 @@ on:
         #description: 'Secret key for tespkg/actions-cache@v1'
         required: false # only for ee
       enterprise_github_token:
-        required: false
         #description: 'OAuth token to access enterprise repos'
+        required: false
+      GITHUB_TOKEN:  #description: Github token for sonarcloud
+      SONAR_TOKEN:
+        #description: Token for sonarcloud access
+        required: false
       SLACK_WEBHOOK_URL:
         required: false
         # description: Webhook for posting to SLACK
@@ -50,7 +55,7 @@ jobs:
     steps:
       - name: 'Load Testplan'
         id: yaml
-        uses: 'OXID-eSales/github-actions/load_testplan@v1'
+        uses: 'OXID-eSales/github-actions/load_testplan@v0'
         with:
           testplan: ${{ inputs.testplan }}
       - name: 'Print Testplan'
@@ -184,6 +189,33 @@ jobs:
             shop_setup_tests_output_files: ${{ steps.yaml.outputs.shop_setup_tests_output_files}}
             shop_setup_tests_coverage_path: ${{ steps.yaml.outputs.shop_setup_tests_coverage_path}}
             shop_setup_tests_failure_pattern: ${{ steps.yaml.outputs.shop_setup_tests_failure_pattern}}
+            ${PURPLE}### deprecated_test variables${NO_COLOR}
+            deprecated_tests_skip: ${{ steps.yaml.outputs.deprecated_tests_skip}}
+            deprecated_tests_matrix_mysql: ${{ steps.yaml.outputs.deprecated_tests_matrix_mysql}}
+            deprecated_tests_matrix_php: ${{ steps.yaml.outputs.deprecated_tests_matrix_php}}
+            deprecated_tests_max_parallel: ${{ steps.yaml.outputs.deprecated_tests_max_parallel}}
+            deprecated_tests_container: ${{ steps.yaml.outputs.deprecated_tests_container}}
+            deprecated_tests_container_options: ${{ steps.yaml.outputs.deprecated_tests_container_options}}
+            deprecated_tests_container_method: ${{ steps.yaml.outputs.deprecated_tests_container_method}}
+            deprecated_tests_cache_bucket: ${{ steps.yaml.outputs.deprecated_tests_cache_bucket}}
+            deprecated_tests_test: ${{ steps.yaml.outputs.deprecated_tests_test}}
+            deprecated_tests_additional_options: ${{ steps.yaml.outputs.deprecated_tests_additional_options}}
+            deprecated_tests_logfile_artifact: ${{ steps.yaml.outputs.deprecated_tests_logfile_artifact}}
+            deprecated_tests_output_files: ${{ steps.yaml.outputs.deprecated_tests_output_files}}
+            deprecated_tests_coverage_path: ${{ steps.yaml.outputs.deprecated_tests_coverage_path}}
+            deprecated_tests_failure_pattern: ${{ steps.yaml.outputs.deprecated_tests_failure_pattern}}
+            ${PURPLE}### sonarcloud variables${NO_COLOR}
+            sonarcloud_skip: ${{ steps.yaml.outputs.sonarcloud_skip}}
+            sonarcloud_matrix_mysql: ${{ steps.yaml.outputs.sonarcloud_matrix_mysql}}
+            sonarcloud_matrix_php: ${{ steps.yaml.outputs.sonarcloud_matrix_php}}
+            sonarcloud_max_parallel: ${{ steps.yaml.outputs.sonarcloud_max_parallel}}
+            sonarcloud_target_branch: ${{ steps.yaml.outputs.sonarcloud_target_branch}}
+            sonarcloud_organization: ${{ steps.yaml.outputs.sonarcloud_organization}}
+            sonarcloud_project_key: ${{ steps.yaml.outputs.sonarcloud_project_key}}
+            sonarcloud_project_name: ${{ steps.yaml.outputs.sonarcloud_project_name}}
+            sonarcloud_parameters: ${{ steps.yaml.outputs.sonarcloud_parameters}}
+            sonarcloud_internal_project_name: ${{ steps.yaml.outputs.sonarcloud_internal_project_name}}
+            sonarcloud_internal_parameters: ${{ steps.yaml.outputs.sonarcloud_internal_parameters}}
             ${PURPLE}### finish variables${NO_COLOR}
             finish_skip: ${{ steps.yaml.outputs.finish_skip}}
             finish_matrix_mysql: ${{ steps.yaml.outputs.finish_matrix_mysql}}
@@ -324,6 +356,34 @@ jobs:
       shop_setup_tests_output_files: ${{ steps.yaml.outputs.shop_setup_tests_output_files}}
       shop_setup_tests_coverage_path: ${{ steps.yaml.outputs.shop_setup_tests_coverage_path}}
       shop_setup_tests_failure_pattern: ${{ steps.yaml.outputs.shop_setup_tests_failure_pattern}}
+      # deprecated_test variables
+      deprecated_tests_skip: ${{ steps.yaml.outputs.deprecated_tests_skip}}
+      deprecated_tests_matrix_mysql: ${{ steps.yaml.outputs.deprecated_tests_matrix_mysql}}
+      deprecated_tests_matrix_php: ${{ steps.yaml.outputs.deprecated_tests_matrix_php}}
+      deprecated_tests_max_parallel: ${{ steps.yaml.outputs.deprecated_tests_max_parallel}}
+      deprecated_tests_container: ${{ steps.yaml.outputs.deprecated_tests_container}}
+      deprecated_tests_container_options: ${{ steps.yaml.outputs.deprecated_tests_container_options}}
+      deprecated_tests_container_method: ${{ steps.yaml.outputs.deprecated_tests_container_method}}
+      deprecated_tests_cache_bucket: ${{ steps.yaml.outputs.deprecated_tests_cache_bucket}}
+      deprecated_tests_test: ${{ steps.yaml.outputs.deprecated_tests_test}}
+      deprecated_tests_additional_options: ${{ steps.yaml.outputs.deprecated_tests_additional_options}}
+      deprecated_tests_logfile_artifact: ${{ steps.yaml.outputs.deprecated_tests_logfile_artifact}}
+      deprecated_tests_output_files: ${{ steps.yaml.outputs.deprecated_tests_output_files}}
+      deprecated_tests_coverage_path: ${{ steps.yaml.outputs.deprecated_tests_coverage_path}}
+      deprecated_tests_failure_pattern: ${{ steps.yaml.outputs.deprecated_tests_failure_pattern}}
+      # sonarcloud variables
+      sonarcloud_skip: ${{ steps.yaml.outputs.sonarcloud_skip}}
+      sonarcloud_matrix_mysql: ${{ steps.yaml.outputs.sonarcloud_matrix_mysql}}
+      sonarcloud_matrix_php: ${{ steps.yaml.outputs.sonarcloud_matrix_php}}
+      sonarcloud_max_parallel: ${{ steps.yaml.outputs.sonarcloud_max_parallel}}
+      sonarcloud_target_branch: ${{ steps.yaml.outputs.sonarcloud_target_branch}}
+      sonarcloud_organization: ${{ steps.yaml.outputs.sonarcloud_organization}}
+      sonarcloud_project_key: ${{ steps.yaml.outputs.sonarcloud_project_key}}
+      sonarcloud_project_name: ${{ steps.yaml.outputs.sonarcloud_project_name}}
+      sonarcloud_parameters: ${{ steps.yaml.outputs.sonarcloud_parameters}}
+      sonarcloud_internal_project_name: ${{ steps.yaml.outputs.sonarcloud_internal_project_name}}
+      sonarcloud_internal_parameters: ${{ steps.yaml.outputs.sonarcloud_internal_parameters}}
+      
       # finish variables
       finish_skip: ${{ steps.yaml.outputs.finish_skip}}
       finish_matrix_mysql: ${{ steps.yaml.outputs.finish_matrix_mysql}}
@@ -454,7 +514,7 @@ jobs:
           output_files: ${{ needs.init.outputs.unit_tests_output_files }}
           output_artifact: unit-artifacts_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
           coverage_path: ${{ needs.init.outputs.unit_tests_coverage_path }}
-          coverage_artifact: unit-coverage-reports _PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
+          coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
           failure_pattern: ${{ needs.init.outputs.unit_tests_failure_pattern }}
 
   integration_tests:
@@ -543,7 +603,7 @@ jobs:
           output_files: ${{ needs.init.outputs.codeception_tests_output_files }}
           output_artifact: codeception-artifacts_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
           coverage_path: ${{ needs.init.outputs.codeception_tests_coverage_path }}
-          coverage_artifact: codeception-coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
+          coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
           failure_pattern: ${{ needs.init.outputs.codeception_tests_failure_pattern }}
  
   shop_setup_tests:
@@ -594,8 +654,88 @@ jobs:
           output_files: ${{ needs.init.outputs.shop_setup_tests_output_files }}
           output_artifact: shop_setup-artifacts_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
           coverage_path: ${{ needs.init.outputs.shop_setup_tests_coverage_path }}
-          coverage_artifact: shop_setup-coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
+          coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
           failure_pattern: ${{ needs.init.outputs.shop_setup_tests_failure_pattern }}
+
+  deprecated_tests:
+    needs: ['init', 'install_shop']
+    if: ${{ needs.init.outputs.deprecated_tests_skip != 'true' }}
+    strategy:
+      matrix:
+        php: ${{ fromJSON(needs.init.outputs.deprecated_tests_matrix_php) }}
+        mysql: ${{ fromJSON(needs.init.outputs.deprecated_tests_matrix_mysql) }}
+      fail-fast: false
+      max-parallel: ${{ fromJSON(needs.init.outputs.deprecated_tests_max_parallel) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    steps:
+      - name: 'Start shop'
+        uses: 'OXID-eSales/github-actions/start_shop@v1'
+        with:
+          cached_shop: ${{ needs.install_shop.outputs.installed_shop }}
+          cache_bucket: ${{ needs.init.outputs.deprecated_tests_cache_bucket }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+
+      - name: 'Run deprecated tests'
+        uses: 'OXID-eSales/github-actions/runtests@v0'
+        with:
+          container: ${{ needs.init.outputs.deprecated_tests_container }}
+          container_options: ${{ needs.init.outputs.deprecated_tests_container_options }}
+          container_method: ${{ needs.init.outputs.deprecated_tests_container_method }}
+          configuration: ${{ needs.init.outputs.deprecated_tests_configuration }}
+          test: ${{ needs.init.outputs.deprecated_tests_test }}
+          additional_options: ${{ needs.init.outputs.deprecated_tests_additional_options }}
+          logfile: deprecated_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_phpunit_log.txt
+          logfile_artifact: ${{ needs.init.outputs.deprecated_tests_logfile_artifact }}
+          output_files: ${{ needs.init.outputs.deprecated_tests_output_files }}
+          output_artifact: deprecated-artifacts_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
+          coverage_path: ${{ needs.init.outputs.deprecated_tests_coverage_path }}
+          coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
+          failure_pattern: ${{ needs.init.outputs.deprecated_tests_failure_pattern }}
+
+  sonarcloud:
+    needs: ['init', 'install_shop']
+    if: ${{ needs.init.outputs.sonarcloud_skip != 'true' }}
+    strategy:
+      matrix:
+        php: ${{ fromJSON(needs.init.outputs.sonarcloud_matrix_php) }}
+        mysql: ${{ fromJSON(needs.init.outputs.sonarcloud_matrix_mysql) }}
+      fail-fast: false
+      max-parallel: ${{ fromJSON(needs.init.outputs.sonarcloud_max_parallel) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    steps:
+      - name: Checkout shop
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 'SonarCloud Scan (oxideshop_ce)'
+        uses: 'OXID-eSales/github-actions/sonarcloud@v0'
+        with:
+          coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
+          target_branch: ${{ needs.init.outputs.sonarcloud_target_branch }}
+          github_ref_name: ${{ github.ref_name }}
+          sonarcloud_organization: ${{ needs.init.outputs.sonarcloud_organization }}
+          sonarcloud_project_key: ${{ needs.init.outputs.sonarcloud_project_key }}
+          sonarcloud_project_name: ${{ needs.init.outputs.sonarcloud_project_name }}
+          sonarcloud_parameters: ${{ needs.init.outputs.sonarcloud_parameters }}
+          sonar_token: ${{ secrets.SONAR_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: 'SonarCloud Scan (oxideshop_ce_internal)'
+        uses: 'OXID-eSales/github-actions/sonarcloud@v0'
+        with:
+          coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
+          target_branch: ${{ needs.init.outputs.sonarcloud_target_branch }}
+          github_ref_name: ${{ github.ref_name }}
+          sonarcloud_organization: ${{ needs.init.outputs.sonarcloud_organization }}
+          sonarcloud_project_key: ${{ needs.init.outputs.sonarcloud_project_key }}
+          sonarcloud_project_name: ${{ needs.init.outputs.sonarcloud_internal_project_name }}
+          sonarcloud_parameters: ${{ needs.init.outputs.sonarcloud_internal_parameters }}
+          sonar_token: ${{ secrets.SONAR_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
 
   finish:
     if: ${{ always() && needs.init.outputs.finish_skip != 'true' }}
@@ -607,6 +747,8 @@ jobs:
       - integration_tests
       - codeception_tests
       - shop_setup_tests
+      - deprecated_tests
+      - sonarcloud
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     env:
       SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"

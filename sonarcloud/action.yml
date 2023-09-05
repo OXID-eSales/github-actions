@@ -1,30 +1,20 @@
 name: 'sonarcloud'
 description: 'Runs sonarcloud in the given container'
 inputs:
-  container:
+  coverage_artifact:
     type: string
     required: false
-    description: 'Name of the container to run the test in'
-    default: 'php'
-  container_options:
-    type: string
-    required: false
-    description: 'Additional options to pass into the container'
-    default: ''
-  container_method:
-    type: string
-    required: false
-    description: 'Method to execute the commands inside a container, either "run" or "exec"'
-    default: 'exec'
+    description: 'Name of the artifact containing the coverage reports'
+    default: 'coverage-reports'
   target_branch:
     type: string
     required: false
     description: 'Target branch for the scan'
     default: 'b-8.0.x'
-  phpcov_version:
+  github_ref_name:
     type: string
-    description: 'Version of phpcov to use'
-    default: '8.2.1'
+    required: true
+    description: 'Github reference for the scan'
   sonarcloud_organization:
     type: string
     required: false
@@ -39,7 +29,7 @@ inputs:
     type: string
     required: false
     description: 'Project name in sonarcloud'
-    default: 'oxideshop_ce_internal'
+    default: 'oxideshop_ce'
   sonarcloud_parameters:
     type: string
     required: false
@@ -48,14 +38,16 @@ inputs:
       -Dsonar.language=php
       -Dsonar.sources=source
       -Dsonar.tests=tests
-      -Dsonar.sourceEncoding=UTF-8
-      -Dsonar.php.coverage.reportPaths=tests/coverage.xml
       -Dsonar.cpd.php.minimumTokens=25
       -Dsonar.cpd.php.minimumLines=5
   sonar_token:
     type: string
     required: true
     description: 'Token for Sonarcloud'
+  github_token:
+    type: string
+    required: true
+    description: 'Token for Sonarcloud github access'
   output_files:
     type: string
     required: false
@@ -74,24 +66,23 @@ runs:
     - name: Download coverage artifacts
       uses: actions/download-artifact@v3
       with:
-        name: coverage-reports
+        name: ${{ inputs.coverage_artifact }}
         path: ./source/coverage/
 
-    - name: Collect and merge coverage reports
-      continue-on-error: true
+    - name: Fix Paths In Coverage Reports
+      shell: bash
       run: |
-        ls -alh source/coverage
-        wget https://phar.phpunit.de/phpcov-${{ inputs.phpcov_version }}.phar
-        mv phpcov-${{ inputs.phpcov_version }}.phar source/phpcov.phar
-        docker-compose ${{ inputs.container_method }} -T \
-          ${{ inputs.container_options }} \
-          ${{ inputs.container }}
-          php phpcov.phar merge --clover coverage.xml ./coverage
-        perl -pi -e 's#/var/www/test-module/#./#g;' source/coverage.xml
-        [ ! -d ./tests ] && mkdir -p ./tests
-        cp source/coverage.xml ./tests/
+          COVERAGE_FILES=""
+          for FILE in $(find coverage-reports -iname '*_coverage.xml'); do
+            echo -e "\033[0;35mFixing paths in ${FILE}\033[0m"
+            sed -e 's#/var/www/##' -i ${FILE}
+            COVERAGE_FILES="${COVERAGE_FILES},${FILE}"
+          done
+          # remove leading comma when adding this
+          echo "COVERAGE_FILES=${COVERAGE_FILES:1}" | tee -a $GITHUB_ENV
 
     - name: Set target branch
+      shell: bash
       run: |
         TARGET_BRANCH_PARAM="-Dsonar.branch.target=${{ inputs.target_branch }}"
         if [ "${{ github.ref_name}}" == "${{ github.event.repository.default_branch }}" ]; then
@@ -103,17 +94,13 @@ runs:
       uses: sonarsource/sonarcloud-github-action@master
       env:
         SONAR_TOKEN: ${{ inputs.sonar_token }}
+        GITHUB_TOKEN: ${{ inputs.github_token }}
       with:
         args: >
           -Dsonar.organization=${{ inputs.sonarcloud_organization }}
           -Dsonar.projectKey=${{ inputs.sonarcloud_project_key }}
           -Dsonar.projectName=${{ inputs.sonarcloud_project_name }}
+          -Dsonar.branch.name=${{ inputs.github_ref_name }}
+          -Dsonar.php.coverage.reportPaths=${{ env.COVERAGE_FILES }}
           ${{ inputs.sonarcloud_parameters }}
           ${{ env.TARGET_BRANCH_PARAM }}
-
-    - name: Upload log artifact
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ inputs.output_artifact }}
-        path: ${{ inputs.output_files }}

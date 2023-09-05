@@ -16,4 +16,6 @@ This repository contains re-usable GitHub workflows and actions for the OXID-eSa
 - Test actions
     - [phpunit](docs/actions/phpunit.md): Executes phpunit tests in a running container.
     - [codeception](docs/actions/codeception.md): Executes codeception tests in a running container and uploads the logs and outputs as artifacts.
+    - [runtests](docs/actions/phpunit.md): Executes runtests script in a running container.
+- Analysis actions
     - [sonarcloud](docs/actions/sonarcloud.md): Runs sonarcloud over the given installation

@@ -376,6 +376,61 @@ outputs:
     value: ${{ steps.yaml.outputs.shop_setup_tests_coverage_path}}
   shop_setup_tests_failure_pattern:
     value: ${{ steps.yaml.outputs.shop_setup_tests_failure_pattern}}
+  # deprecated_tests variables
+  deprecated_tests_skip:
+    value: ${{ steps.yaml.outputs.deprecated_tests_skip}}
+  deprecated_tests_matrix_mysql:
+    value: ${{ steps.yaml.outputs.deprecated_tests_matrix_mysql}}
+  deprecated_tests_matrix_php:
+    value: ${{ steps.yaml.outputs.deprecated_tests_matrix_php}}
+  deprecated_tests_max_parallel:
+    value: ${{ steps.yaml.outputs.deprecated_tests_max_parallel}}
+  deprecated_tests_container:
+    value: ${{ steps.yaml.outputs.deprecated_tests_container}}
+  deprecated_tests_container_options:
+    value: ${{ steps.yaml.outputs.deprecated_tests_container_options}}
+  deprecated_tests_container_method:
+    value: ${{ steps.yaml.outputs.deprecated_tests_container_method}}
+  deprecated_tests_cache_bucket:
+    value: ${{ steps.yaml.outputs.deprecated_tests_cache_bucket}}
+  deprecated_tests_configuration:
+    value: ${{ steps.yaml.outputs.deprecated_tests_configuration}}
+  deprecated_tests_test:
+    value: ${{ steps.yaml.outputs.deprecated_tests_test}}
+  deprecated_tests_additional_options:
+    value: ${{ steps.yaml.outputs.deprecated_tests_additional_options}}
+  deprecated_tests_logfile_artifact:
+    value: ${{ steps.yaml.outputs.deprecated_tests_logfile_artifact}}
+  deprecated_tests_output_files:
+    value: ${{ steps.yaml.outputs.deprecated_tests_output_files}}
+  deprecated_tests_coverage_path:
+    value: ${{ steps.yaml.outputs.deprecated_tests_coverage_path}}
+  deprecated_tests_failure_pattern:
+    value: ${{ steps.yaml.outputs.deprecated_tests_failure_pattern}}
+  # sonarcloud_variables
+  sonarcloud_skip:
+    value: ${{ steps.yaml.outputs.sonarcloud_skip}}
+  sonarcloud_matrix_mysql:
+    value: ${{ steps.yaml.outputs.sonarcloud_matrix_mysql}}
+  sonarcloud_matrix_php:
+    value: ${{ steps.yaml.outputs.sonarcloud_matrix_php}}
+  sonarcloud_max_parallel:
+    value: ${{ steps.yaml.outputs.sonarcloud_max_parallel}}
+  sonarcloud_target_branch:
+    value: ${{ steps.yaml.outputs.sonarcloud_target_branch}}
+  sonarcloud_organization:
+    value: ${{ steps.yaml.outputs.sonarcloud_organization}}
+  sonarcloud_project_key:
+    value: ${{ steps.yaml.outputs.sonarcloud_project_key}}
+  sonarcloud_project_name:
+    value: ${{ steps.yaml.outputs.sonarcloud_project_name}}
+  sonarcloud_parameters:
+    value: ${{ steps.yaml.outputs.sonarcloud_parameters}}
+  sonarcloud_internal_project_name:
+    value: ${{ steps.yaml.outputs.sonarcloud_internal_project_name}}
+  sonarcloud_internal_parameters:
+    value: ${{ steps.yaml.outputs.sonarcloud_internal_parameters}}
+  
   # finish variables
   finish_skip:
     value: ${{ steps.yaml.outputs.finish_skip}}

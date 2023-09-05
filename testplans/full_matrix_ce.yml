@@ -115,15 +115,16 @@ unit_tests:
     mysql: *matrix_mysql
   max_parallel: *max_parallel
   container: *container
-  container_options: *container_options
   container_method: *container_method
   cache_bucket: *cache_bucket
+  # container options for coverage
+  container_options: '-e XDEBUG_MODE=coverage'
   # Name of the configuration file
   configuration: 'phpunit.xml'
   # Name of the test or folder to run
   test: 'tests/Unit'
   # Optional: Additional options to pass to phpunit
-  additional_options: ''
+  additional_options: '--bootstrap tests/bootstrap.php tests --coverage-clover=/var/www/tests_coverage.xml'
   # Name of the output logfile - This is dynamic, so we set it in the workflow
   #logfile:  'unit_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt'
   # Github run artifact to put the logfile in
@@ -136,9 +137,9 @@ unit_tests:
   # Github run artifact for the phpunit output - This is dynamic, so we set it in the workflow
   # output_artifact: phpunit-artifacts_PHP<matrix.php>_MYSQL<matrix.mysql>
   # Path for the coverage file, not uploaded if it is empty
-  coverage_path: ''
+  coverage_path: 'source/tests_coverage.xml'
   # Github run artifact for the coverage file - This is dynamic, so we set it in the workflow
-  # coverage_artifact: coverage-reports _PHP<matrix.php>_MYSQL<matrix.mysql>
+  # coverage_artifact: coverage-reports_PHP<matrix.php>_MYSQL<matrix.mysql>
   # Grep pattern which indicate that the test failed
   failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error'
 
@@ -175,7 +176,7 @@ integration_tests:
   # Path for the coverage file, not uploaded if it is empty
   coverage_path: ''
   # Github run artifact for the coverage file - This is dynamic, so we set it in the workflow
-  # coverage_artifact: coverage-reports _PHP<matrix.php>_MYSQL<matrix.mysql>
+  # coverage_artifact: coverage-reports_PHP<matrix.php>_MYSQL<matrix.mysql>
   # Grep pattern which indicate that the test failed
   failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error'
 
@@ -213,7 +214,7 @@ codeception_tests:
   # Name of the test to run
   test: ''
   # Additional options to pass to codeception
-  additional_options: '--skip-group flow_theme'
+  additional_options: '--coverage-xml=/var/www/codeception_coverage.xml --skip-group flow_theme'
   # Name of the output logfile - This is dynamic, so we set it in the workflow
   # logfile: codeception_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt
   # Github run artifact to put the logfile in
@@ -230,7 +231,7 @@ codeception_tests:
   # Github run artifact to put the output files in - This is dynamic, so we set it in the workflow
   # output_artifact: codeception-artifacts_PHP<matrix.php>_MYSQL<matrix.mysql>
   # Path for the coverage file, not uploaded if it is empty
-  coverage_path: ''
+  coverage_path: 'source/codeception_coverage.xml'
   # Github run artifact for the coverage file - This is dynamic, so we set it in the workflow
   # coverage_artifact: coverage-reports _PHP<matrix.php>_MYSQL<matrix.mysql>
   # Grep pattern which indicate that the test failed
@@ -289,9 +290,85 @@ shop_setup_tests:
   # Path for the coverage file, not uploaded if it is empty
   coverage_path: ''
   # Github run artifact for the coverage file - This is dynamic, so we set it in the workflow
-  # coverage_artifact: coverage-reports _PHP<matrix.php>_MYSQL<matrix.mysql>
+  # coverage_artifact: coverage-reports_PHP<matrix.php>_MYSQL<matrix.mysql>
   # Grep pattern which indicate that the test failed
   failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH'
+
+deprecated_tests:
+  # Skip this part of the test run
+  skip: false
+  # Using the global settings here
+  matrix:
+    php: *matrix_php
+    mysql: *matrix_mysql
+  max_parallel: *max_parallel
+  container: *container
+  container_method: *container_method
+  cache_bucket: *cache_bucket
+  # container options for coverage
+  container_options: '-e XDEBUG_MODE=coverage'
+  # Themes to install
+  themes:
+    # Space separated list of themes to install
+    install: 'oxid-esales/twig-admin-theme oxid-esales/twig-theme oxid-esales/tests-deprecated-ce'
+    # Options to pass along to composer during install
+    options: '--with-all-dependencies'
+    # Run composer update after installing all themes
+    update: true
+    # Options to pass along to composer during install
+    update_options: '--no-interaction'
+  # Name of the test or folder to run
+  test: 'AllTestsUnit'
+  # Optional: Additional options to pass to phpunit
+  additional_options: '--coverage-clover=/var/www/tests_coverage.xml'
+  # Name of the output logfile - This is dynamic, so we set it in the workflow
+  #logfile:  'deprecated_tests_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt'
+  # Github run artifact to put the logfile in
+  logfile_artifact: 'phpunit-logs'
+  # phpunit output and test settings
+  output_files: |
+    source/unit.cov
+    source/source/log/oxideshop.log
+    data/php/logs/error_log.txt
+  # Github run artifact for the phpunit output - This is dynamic, so we set it in the workflow
+  # output_artifact: phpunit-artifacts_PHP<matrix.php>_MYSQL<matrix.mysql>
+  # Path for the coverage file, not uploaded if it is empty
+  coverage_path: 'source/deprecated_tests_coverage.xml'
+  # Github run artifact for the coverage file - This is dynamic, so we set it in the workflow
+  # coverage_artifact: coverage-reports_PHP<matrix.php>_MYSQL<matrix.mysql>
+  # Grep pattern which indicate that the test failed
+  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH'
+
+# Running sonarcloud
+sonarcloud:
+  # Skip this part of the test run
+  skip: false
+  # We only run sonarcloud for one combination ofo PHP/MySQL
+  matrix:
+    php: '["8.1"]'
+    mysql: '["5.7"]'
+  # Github run artifact for the coverage file - This is dynamic, so we set it in the workflow
+  # coverage_artifact: coverage-reports_PHP<matrix.php>_MYSQL<matrix.mysql>
+  # Target branch for the sonarcloud check. This will only be set if the branch is not the default branch
+  target_branch: b-8.0.x
+  # Sonarcloud settings
+  organization: 'oxid-esales'
+  project_key: 'OXID-eSales_oxideshop_ce'
+  project_name: 'oxideshop_ce'
+  # Parameters passed to the scanner
+  parameters: |
+    -Dsonar.language=php
+    -Dsonar.scm.provider=git  
+    -Dsonar.sources=source
+    -Dsonar.tests=tests
+
+  # for the internal run
+  internal_project_name: 'oxideshop_ce_internal'
+  internal_parameters: |
+    -Dsonar.language=php
+    -Dsonar.scm.provider=git  
+    -Dsonar.sources=source/Internal
+    -Dsonar.tests=tests
 
 # This is the final cleanup at the end
 finish:
