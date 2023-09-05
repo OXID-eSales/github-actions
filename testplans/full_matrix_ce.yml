@@ -303,10 +303,11 @@ deprecated_tests:
     mysql: *matrix_mysql
   max_parallel: *max_parallel
   container: *container
-  container_method: *container_method
   cache_bucket: *cache_bucket
   # container options for coverage
   container_options: '-e XDEBUG_MODE=coverage'
+  # We use run here, too
+  container_method: 'run'
   # Themes to install
   themes:
     # Space separated list of themes to install
