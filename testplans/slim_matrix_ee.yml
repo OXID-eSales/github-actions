@@ -291,6 +291,14 @@ shop_setup_tests:
   # Grep pattern which indicate that the test failed
   failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH'
 
+# We only have these tests on ce
+deprecated_tests:
+  skip: true
+
+# We only do sonarcloud scans for ce
+sonarcloud:
+  skip: true
+
 # This is the final cleanup at the end
 finish:
   # Skip this part of the test run

@@ -293,6 +293,14 @@ shop_setup_tests:
   # Grep pattern which indicate that the test failed
   failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH'
 
+# We only do these thests in the full matrix runs
+deprecated_tests:
+  skip: true
+
+# We only do sonarcloud scans in the full matrix runs
+sonarcloud:
+  skip: true
+
 # This is the final cleanup at the end
 finish:
   # Skip this part of the test run
