@@ -192,7 +192,7 @@ codeception_tests:
   container: *container
   cache_bucket: *cache_bucket
   # For codeception, we need different options than the empty default
-  container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex'
+  container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex -e XDEBUG_MODE=coverage'
   container_method: &selenium_container_method 'run'
 
   # Themes to install
