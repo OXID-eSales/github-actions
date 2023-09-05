@@ -677,6 +677,17 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
+      - name: Install themes
+        uses: 'OXID-eSales/github-actions/install_themes@v1'
+        with:
+          container: ${{ needs.init.outputs.deprecated_tests_container }}
+          container_options: ${{ needs.init.outputs.deprecated_tests_container_options }}
+          container_method: ${{ needs.init.outputs.deprecated_tests_container_method }}
+          themes: ${{ needs.init.outputs.deprecated_tests_themes_install }}
+          options: ${{ needs.init.outputs.deprecated_tests_themes_options }}
+          update: ${{ needs.init.outputs.deprecated_tests_themes_update }}
+          update_options: ${{ needs.init.outputs.deprecated_tests_themes_update_options }}
+
       - name: 'Run deprecated tests'
         uses: 'OXID-eSales/github-actions/runtests@v0'
         with:
@@ -695,7 +706,7 @@ jobs:
           failure_pattern: ${{ needs.init.outputs.deprecated_tests_failure_pattern }}
 
   sonarcloud:
-    needs: ['init', 'install_shop']
+    needs: ['init', 'unit_tests', 'codeception_tests', 'deprecated_tests']
     if: ${{ needs.init.outputs.sonarcloud_skip != 'true' }}
     strategy:
       matrix:
