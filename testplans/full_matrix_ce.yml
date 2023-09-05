@@ -320,7 +320,7 @@ deprecated_tests:
   # Name of the test or folder to run
   test: 'AllTestsUnit'
   # Optional: Additional options to pass to phpunit
-  additional_options: '--coverage-clover=/var/www/tests_coverage.xml'
+  additional_options: '--coverage-clover=/var/www/deprecated_tests_coverage.xml'
   # Name of the output logfile - This is dynamic, so we set it in the workflow
   #logfile:  'deprecated_tests_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt'
   # Github run artifact to put the logfile in

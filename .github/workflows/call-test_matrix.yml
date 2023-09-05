@@ -693,7 +693,6 @@ jobs:
           container: ${{ needs.init.outputs.deprecated_tests_container }}
           container_options: ${{ needs.init.outputs.deprecated_tests_container_options }}
           container_method: ${{ needs.init.outputs.deprecated_tests_container_method }}
-          configuration: ${{ needs.init.outputs.deprecated_tests_configuration }}
           test: ${{ needs.init.outputs.deprecated_tests_test }}
           additional_options: ${{ needs.init.outputs.deprecated_tests_additional_options }}
           logfile: deprecated_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_phpunit_log.txt
