@@ -190,10 +190,10 @@ codeception_tests:
     mysql: *matrix_mysql
   max_parallel: *max_parallel
   container: *container
+  container_method: *container_method
   cache_bucket: *cache_bucket
   # For codeception, we need different options than the empty default
   container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex -e XDEBUG_MODE=coverage'
-  container_method: &selenium_container_method 'run'
 
   # Themes to install
   themes:
@@ -248,10 +248,10 @@ shop_setup_tests:
     mysql: *matrix_mysql
   max_parallel: *max_parallel
   container: *container
+  container_method: *container_method
   cache_bucket: *cache_bucket
   # We pass the configuration parameters into the container here
   container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e DB_NAME=setup_test -e DB_USERNAME=root -e DB_PASSWORD=root -e DB_HOST=mysql -e DB_PORT=3306 -e SHOP_URL=http://localhost.local/ -e SHOP_SOURCE_PATH=/var/www/source/'
-  container_method: *selenium_container_method
   # Themes to install
   themes:
     # Space separated list of themes to install

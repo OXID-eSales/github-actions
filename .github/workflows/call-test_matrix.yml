@@ -639,7 +639,7 @@ jobs:
         with:
           container: ${{ needs.init.outputs.shop_setup_tests_container }}
           container_options: ${{ needs.init.outputs.shop_setup_tests_container_options }}
-          container_method: ${{ needs.init.outputs.shop_setup_tests_container_method }}
+          container_method: 'exec'
           themes: ${{ needs.init.outputs.shop_setup_tests_themes_install }}
           options: ${{ needs.init.outputs.shop_setup_tests_themes_options }}
           update: ${{ needs.init.outputs.shop_setup_tests_themes_update }}
