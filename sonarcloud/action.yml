@@ -73,7 +73,7 @@ runs:
       shell: bash
       run: |
           COVERAGE_FILES=""
-          for FILE in $(find coverage-reports -iname '*_coverage.xml'); do
+          for FILE in $(find ./source/coverage -iname '*_coverage.xml'); do
             echo -e "\033[0;35mFixing paths in ${FILE}\033[0m"
             sed -e 's#/var/www/##' -i ${FILE}
             COVERAGE_FILES="${COVERAGE_FILES},${FILE}"
