@@ -695,6 +695,9 @@ jobs:
           update: ${{ needs.init.outputs.deprecated_tests_themes_update }}
           update_options: ${{ needs.init.outputs.deprecated_tests_themes_update_options }}
 
+      - name: Copy config file
+        run: cp source/vendor/oxid-esales/testing-library/test_config.yml.dist source/test_config.yml
+
       - name: 'Run deprecated tests'
         uses: 'OXID-eSales/github-actions/runtests@v0'
         with:
