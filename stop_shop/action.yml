@@ -1,0 +1,10 @@
+name: 'stop_shop'
+description: 'Stops a running shop instance'
+runs:
+  using: "composite"
+  steps:
+    - name: Stop containers
+      if: always()
+      shell: bash
+      run: |
+        docker-compose down

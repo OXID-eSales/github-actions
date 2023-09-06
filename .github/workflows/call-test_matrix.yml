@@ -524,6 +524,9 @@ jobs:
           coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
           failure_pattern: ${{ needs.init.outputs.unit_tests_failure_pattern }}
 
+      - name: 'Stop shop'
+        uses: 'OXID-eSales/github-actions/stop_shop@v0'
+
   integration_tests:
     needs: ['init','install_shop']
     if: ${{ needs.init.outputs.unit_tests_skip != 'true' }}
@@ -560,6 +563,9 @@ jobs:
           coverage_path: ${{ needs.init.outputs.integration_tests_coverage_path }}
           coverage_artifact: integration-coverage-reports _PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
           failure_pattern: ${{ needs.init.outputs.integration_tests_failure_pattern }}
+
+      - name: 'Stop shop'
+        uses: 'OXID-eSales/github-actions/stop_shop@v0'
 
   codeception_tests:
     needs: ['init', 'install_shop', 'unit_tests', 'integration_tests']
@@ -613,6 +619,9 @@ jobs:
           coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
           failure_pattern: ${{ needs.init.outputs.codeception_tests_failure_pattern }}
  
+      - name: 'Stop shop'
+        uses: 'OXID-eSales/github-actions/stop_shop@v0'
+
   shop_setup_tests:
     needs: ['init','prepare_shop','codeception_tests']
     if: ${{ always() && needs.init.outputs.shop_setup_tests_skip != 'true' && needs.prepare_shop.result == 'success' }}  
@@ -664,6 +673,9 @@ jobs:
           coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
           failure_pattern: ${{ needs.init.outputs.shop_setup_tests_failure_pattern }}
 
+      - name: 'Stop shop'
+        uses: 'OXID-eSales/github-actions/stop_shop@v0'
+
   deprecated_tests:
     needs: ['init', 'install_shop']
     if: ${{ needs.init.outputs.deprecated_tests_skip != 'true' }}
@@ -713,6 +725,9 @@ jobs:
           coverage_path: ${{ needs.init.outputs.deprecated_tests_coverage_path }}
           coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
           failure_pattern: ${{ needs.init.outputs.deprecated_tests_failure_pattern }}
+
+      - name: 'Stop shop'
+        uses: 'OXID-eSales/github-actions/stop_shop@v0'
 
   sonarcloud:
     needs: ['init', 'unit_tests', 'codeception_tests', 'deprecated_tests']
