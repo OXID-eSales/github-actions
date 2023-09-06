@@ -40,6 +40,18 @@ global:
   # Method to execute the commands inside a container, either "run" or "exec"
   container_method: &container_method 'exec'
 
+  # Default themes to install
+  themes: &themes
+    # Space separated list of themes to install
+    install: 'oxid-esales/twig-admin-theme:dev-b-8.0.x oxid-esales/apex-theme:dev-b-8.0.x'
+    # Options to pass along to composer during install
+    options: '--with-all-dependencies'
+    # Run composer update after installing all themes
+    update: true
+    # Options to pass along to composer during install
+    update_options: '--no-interaction'
+
+
 init:
   # Should we log in to docker? If set to "true", you need to set the following secrets:
   # - secrets.DOCKER_HUB_USER
@@ -71,14 +83,8 @@ prepare_shop:
   add_services: 'selenium-chrome'
   # Themes to install
   themes:
-    # Space separated list of themes to install
+    <<: *themes
     install: ''
-    # Options to pass along to composer during install
-    options: '--with-all-dependencies'
-    # Run composer update after installing all themes
-    update: true
-    # Options to pass along to composer during install
-    update_options: '--no-interaction'
 
 # See docs/actions/start_shop.md and docs/actions/install_shop.md for more information.
 install_shop:
@@ -196,15 +202,7 @@ codeception_tests:
   container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex -e XDEBUG_MODE=coverage'
 
   # Themes to install
-  themes:
-    # Space separated list of themes to install
-    install: 'oxid-esales/twig-admin-theme oxid-esales/apex-theme'
-    # Options to pass along to composer during install
-    options: '--with-all-dependencies'
-    # Run composer update after installing all themes
-    update: true
-    # Options to pass along to composer during install
-    update_options: '--no-interaction'
+  themes: *themes
   # Name of the configuration file
   configuration: 'tests/codeception.yml'
   # Whether to run the build step before running codeception or not
@@ -253,15 +251,7 @@ shop_setup_tests:
   # We pass the configuration parameters into the container here
   container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e DB_NAME=setup_test -e DB_USERNAME=root -e DB_PASSWORD=root -e DB_HOST=mysql -e DB_PORT=3306 -e SHOP_URL=http://localhost.local/ -e SHOP_SOURCE_PATH=/var/www/source/'
   # Themes to install
-  themes:
-    # Space separated list of themes to install
-    install: 'oxid-esales/twig-admin-theme oxid-esales/apex-theme'
-    # Options to pass along to composer during install
-    options: '--with-all-dependencies'
-    # Run composer update after installing all themes
-    update: true
-    # Options to pass along to composer during install
-    update_options: '--no-interaction'
+  themes: *themes
   # Name of the configuration file
   configuration: 'tests/codeception.yml'
   # Whether to run the build step before running codeception or not
@@ -308,16 +298,10 @@ deprecated_tests:
   container_options: '-e XDEBUG_MODE=coverage'
   # We use run here, too
   container_method: 'run'
-  # Themes to install
   themes:
+    <<: *themes
     # Space separated list of themes to install
-    install: 'oxid-esales/twig-admin-theme oxid-esales/twig-theme oxid-esales/tests-deprecated-ce'
-    # Options to pass along to composer during install
-    options: '--with-all-dependencies'
-    # Run composer update after installing all themes
-    update: true
-    # Options to pass along to composer during install
-    update_options: '--no-interaction'
+    install: 'oxid-esales/twig-admin-theme:dev-b-8.0.x oxid-esales/twig-theme:dev-b-8.0.x oxid-esales/tests-deprecated-ce:dev-b-8.0.x'
   # Name of the test or folder to run
   test: 'AllTestsUnit'
   # Optional: Additional options to pass to phpunit
