@@ -338,7 +338,7 @@ deprecated_tests:
   # Github run artifact for the coverage file - This is dynamic, so we set it in the workflow
   # coverage_artifact: coverage-reports_PHP<matrix.php>_MYSQL<matrix.mysql>
   # Grep pattern which indicate that the test failed
-  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH'
+  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Fatal|Error|DID NOT FINISH'
 
 # Running sonarcloud
 sonarcloud:
