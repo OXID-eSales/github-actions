@@ -730,8 +730,16 @@ jobs:
         uses: 'OXID-eSales/github-actions/stop_shop@v0'
 
   sonarcloud:
-    needs: ['init', 'unit_tests', 'codeception_tests', 'deprecated_tests']
     if: ${{ always() && needs.init.outputs.sonarcloud_skip != 'true' }}
+    needs:
+      - init
+      - prepare_shop
+      - install_shop
+      - unit_tests
+      - integration_tests
+      - codeception_tests
+      - shop_setup_tests
+      - deprecated_tests
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.sonarcloud_matrix_php) }}
