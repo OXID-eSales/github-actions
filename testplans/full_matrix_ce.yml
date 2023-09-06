@@ -301,7 +301,7 @@ deprecated_tests:
   themes:
     <<: *themes
     # Space separated list of themes to install
-    install: 'oxid-esales/twig-admin-theme:dev-b-8.0.x oxid-esales/twig-theme:dev-b-8.0.x oxid-esales/tests-deprecated-ce:dev-b-8.0.x'
+    install: 'oxid-esales/twig-admin-theme:dev-b-8.0.x oxid-esales/apex-theme:dev-b-8.0.x oxid-esales/tests-deprecated-ce:dev-b-8.0.x'
   # Name of the test or folder to run
   test: 'AllTestsUnit'
   # Optional: Additional options to pass to phpunit
