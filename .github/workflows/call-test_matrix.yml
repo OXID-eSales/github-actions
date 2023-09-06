@@ -716,7 +716,7 @@ jobs:
 
   sonarcloud:
     needs: ['init', 'unit_tests', 'codeception_tests', 'deprecated_tests']
-    if: ${{ needs.init.outputs.sonarcloud_skip != 'true' }}
+    if: ${{ always() && needs.init.outputs.sonarcloud_skip != 'true' }}
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.sonarcloud_matrix_php) }}
