@@ -46,6 +46,8 @@ on:
       SLACK_WEBHOOK_URL:
         required: false
         # description: Webhook for posting to SLACK
+      GITHUB_TOKEN:
+        required: true
  
 jobs:
   init:
