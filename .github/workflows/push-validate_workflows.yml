@@ -1,0 +1,26 @@
+name: push-validate_workflows
+# Validates workflow files on push
+on: push
+
+jobs:
+  init:
+    runs-on: 'ubuntu-latest'
+    steps:  
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: actionlint
+        id: actionlint
+        uses: raven-actions/actionlint@v1
+
+      - name: actionlint Summary
+        if: ${{ steps.actionlint.outputs.exit-code != 0 }}  # example usage, do echo only when actionlint action failed
+        run: |
+          echo "Used actionlint version ${{ steps.actionlint.outputs.version-semver }}"
+          echo "Used actionlint release ${{ steps.actionlint.outputs.version-tag }}"
+          echo "actionlint ended with ${{ steps.actionlint.outputs.exit-code }} exit code"
+          echo "actionlint ended because '${{ steps.actionlint.outputs.exit-message }}'"
+          echo "actionlint found ${{ steps.actionlint.outputs.total-errors }} errors"
+          echo "actionlint checked ${{ steps.actionlint.outputs.total-files }} files"
+          echo "actionlint cache used: ${{ steps.actionlint.outputs.cache-hit }}"
+          exit ${{ steps.actionlint.outputs.exit-code }}
