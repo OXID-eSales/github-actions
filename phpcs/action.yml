@@ -1,0 +1,95 @@
+name: 'phpcs'
+description: 'Executes phpcs tests in a running container and uploads the logs as artefacts'
+inputs:
+  container:
+    type: string
+    required: false
+    description: 'Name of the container to run the test in'
+    default: 'php'
+  container_options:
+    type: string
+    required: false
+    description: 'Additional options to pass into the container'
+    default: ''
+  container_method:
+    type: string
+    required: false
+    description: 'Method to execute the commands inside a container, either "run" or "exec"'
+    default: 'exec'
+  test:
+    type: string
+    required: false
+    description: 'Name of the test or folder to run'
+    default: 'source/Internal'
+  additional_options:
+    type: string
+    required: false
+    description: 'Optional: Additional options to pass to phpunit'
+    default: '-q --standard=PSR12'
+  logfile:
+    type: string
+    required: false
+    description: 'Name of the output logfile'
+    default: 'phpcs_log.txt'
+  logfile_artifact:
+    type: string
+    required: false
+    description: 'Github run artifact to put the logfile in'
+    default: 'phpunit-logs'
+  failure_pattern:
+    type: string
+    required: false
+    description: 'Grep pattern which indicate that the test failed'
+    default: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error'
+runs:
+  using: "composite"
+  steps:
+    - name: Run PHP_CS check
+      shell: bash
+      run: |
+        docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
+          ${{ inputs.container }} \
+          php vendor/bin/phpcs \
+            ${{ inputs.additional_options }} \
+            "${{ inputs.test }}" \
+          | tee "${{ inputs.logfile }}" 2>&1 || true
+
+    - name: Upload Log
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ inputs.logfile_artifact }}
+        path: ${{ inputs.logfile }}
+        if-no-files-found: error
+        retention-days: 7
+
+    - name: Check results
+      shell: bash
+      run: |
+        PURPLE=$(echo -e "\033[0;31m")
+        NOCOLOR=$(echo -e "\033[0m")
+        if [ ! -s "${{ inputs.logfile }}" ]; then
+          cat <<EOF
+        ${PURPLE}###############################################################################
+        ### Log file is empty! Seems like no tests have been run!
+        ###############################################################################${NOCOLOR}
+        EOF
+          exit 1
+        fi
+        if grep -q -Ei '${{ inputs.failure_pattern}}' "${{ inputs.logfile }}"; then
+          cat <<EOF
+        ${PURPLE}###############################################################################
+        ### phpcs test ${{ inputs.test }} failed
+        ###############################################################################${NOCOLOR}
+        EOF
+          grep -Ei '${{ inputs.failure_pattern}}' "${{ inputs.logfile }}"
+          exit 1
+        fi
+        if [ -n "${{ inputs.coverage_path }}" && ! -s "${{ inputs.coverage_path }}" ]; then
+          cat <<EOF
+        ${PURPLE}###############################################################################
+        ### "${{ inputs.coverage_path }}" is empty!
+        ###############################################################################${NOCOLOR}
+        EOF
+          exit 1
+        fi

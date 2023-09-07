@@ -389,6 +389,22 @@ jobs:
       sonarcloud_parameters: ${{ steps.yaml.outputs.sonarcloud_parameters}}
       sonarcloud_internal_project_name: ${{ steps.yaml.outputs.sonarcloud_internal_project_name}}
       sonarcloud_internal_parameters: ${{ steps.yaml.outputs.sonarcloud_internal_parameters}}
+      # phpcs_test variables
+      phpcs_tests_skip: ${{ steps.yaml.outputs.phpcs_tests_skip}}
+      phpcs_tests_matrix_mysql: ${{ steps.yaml.outputs.phpcs_tests_matrix_mysql}}
+      phpcs_tests_matrix_php: ${{ steps.yaml.outputs.phpcs_tests_matrix_php}}
+      phpcs_tests_max_parallel: ${{ steps.yaml.outputs.phpcs_tests_max_parallel}}
+      phpcs_tests_container: ${{ steps.yaml.outputs.phpcs_tests_container}}
+      phpcs_tests_container_options: ${{ steps.yaml.outputs.phpcs_tests_container_options}}
+      phpcs_tests_container_method: ${{ steps.yaml.outputs.phpcs_tests_container_method}}
+      phpcs_tests_cache_bucket: ${{ steps.yaml.outputs.phpcs_tests_cache_bucket}}
+      phpcs_tests_configuration: ${{ steps.yaml.outputs.phpcs_tests_configuration}}
+      phpcs_tests_test: ${{ steps.yaml.outputs.phpcs_tests_test}}
+      phpcs_tests_additional_options: ${{ steps.yaml.outputs.phpcs_tests_additional_options}}
+      phpcs_tests_logfile_artifact: ${{ steps.yaml.outputs.phpcs_tests_logfile_artifact}}
+      phpcs_tests_output_files: ${{ steps.yaml.outputs.phpcs_tests_output_files}}
+      phpcs_tests_coverage_path: ${{ steps.yaml.outputs.phpcs_tests_coverage_path}}
+      phpcs_tests_failure_pattern: ${{ steps.yaml.outputs.phpcs_tests_failure_pattern}}
       
       # finish variables
       finish_skip: ${{ steps.yaml.outputs.finish_skip}}
@@ -778,6 +794,40 @@ jobs:
           sonar_token: ${{ secrets.SONAR_TOKEN }}
           github_token: ${{ github.token }}
 
+  phpcs_tests:
+    needs: ['init', 'install_shop']
+    if: ${{ needs.init.outputs.phpcs_tests_skip != 'true' }}
+    strategy:
+      matrix:
+        php: ${{ fromJSON(needs.init.outputs.phpcs_tests_matrix_php) }}
+        mysql: ${{ fromJSON(needs.init.outputs.phpcs_tests_matrix_mysql) }}
+      fail-fast: false
+      max-parallel: ${{ fromJSON(needs.init.outputs.phpcs_tests_max_parallel) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    steps:
+      - name: 'Start shop'
+        uses: 'OXID-eSales/github-actions/start_shop@v1'
+        with:
+          cached_shop: ${{ needs.install_shop.outputs.installed_shop }}
+          cache_bucket: ${{ needs.init.outputs.phpcs_tests_cache_bucket }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+
+      - name: 'Run phpcs tests'
+        uses: 'OXID-eSales/github-actions/phpcs@v0'
+        with:
+          container: ${{ needs.init.outputs.phpcs_tests_container }}
+          container_options: ${{ needs.init.outputs.phpcs_tests_container_options }}
+          container_method: ${{ needs.init.outputs.phpcs_tests_container_method }}
+          test: ${{ needs.init.outputs.phpcs_tests_test }}
+          additional_options: ${{ needs.init.outputs.phpcs_tests_additional_options }}
+          logfile: phpcs_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_codesniff_log.txt
+          logfile_artifact: ${{ needs.init.outputs.phpcs_tests_logfile_artifact }}
+          failure_pattern: ${{ needs.init.outputs.phpcs_tests_failure_pattern }}
+
+      - name: 'Stop shop'
+        uses: 'OXID-eSales/github-actions/stop_shop@v1'
 
   finish:
     if: ${{ always() && needs.init.outputs.finish_skip != 'true' }}
@@ -791,10 +841,11 @@ jobs:
       - shop_setup_tests
       - deprecated_tests
       - sonarcloud
+      - phpcs_test
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     env:
       SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"
-      overall_result: ${{ needs.prepare_shop.result=='success' && needs.install_shop.result=='success' && needs.unit_tests.result=='success' && needs.integration_tests.result=='success' && needs.codeception_tests.result=='success' && needs.shop_setup_tests.result=='success' }}
+      overall_result: ${{ needs.prepare_shop.result=='success' && needs.install_shop.result=='success' && needs.unit_tests.result=='success' && needs.integration_tests.result=='success' && needs.codeception_tests.result=='success' && needs.shop_setup_tests.result=='success' && needs.sonarcloud.result=='success' && needs.phpcs_tests.result=='success'}}
     steps:
       - name: 'Docker logout'
         if: ${{ needs.init.outputs.finish_docker_logout }}
@@ -838,7 +889,9 @@ jobs:
                       \n* unit_tests: ${{ needs.unit_tests.result=='success' && ':white_check_mark:' || ':x:' }}
                       \n* integration_tests ${{ needs.integration_tests.result=='success' && ':white_check_mark:' || ':x:' }}
                       \n* codeception_tests ${{ needs.codeception_tests.result=='success' && ':white_check_mark:' || ':x:' }}
-                      \n* shop_setup_tests ${{ needs.shop_setup_tests.result=='success' && ':white_check_mark:' || ':x:' }}"
+                      \n* shop_setup_tests ${{ needs.shop_setup_tests.result=='success' && ':white_check_mark:' || ':x:' }}
+                      \n* sonarcloud: ${{ needs.sonarcloud.result=='success' && ':white_check_mark:' || ':x:' }}
+                      \n* phpcs_tests: ${{ needs.phpcs_tests.result=='success' && ':white_check_mark:' || ':x:' }}"
                     }
                 },
                 { "type": "divider" }

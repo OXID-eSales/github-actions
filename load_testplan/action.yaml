@@ -436,7 +436,33 @@ outputs:
     value: ${{ steps.yaml.outputs.sonarcloud_internal_project_name}}
   sonarcloud_internal_parameters:
     value: ${{ steps.yaml.outputs.sonarcloud_internal_parameters}}
-  
+  # phpcs_tests variables
+  phpcs_tests_skip:
+    value: ${{ steps.yaml.outputs.phpcs_tests_skip}}
+  phpcs_tests_matrix_mysql:
+    value: ${{ steps.yaml.outputs.phpcs_tests_matrix_mysql}}
+  phpcs_tests_matrix_php:
+    value: ${{ steps.yaml.outputs.phpcs_tests_matrix_php}}
+  phpcs_tests_max_parallel:
+    value: ${{ steps.yaml.outputs.phpcs_tests_max_parallel}}
+  phpcs_tests_container:
+    value: ${{ steps.yaml.outputs.phpcs_tests_container}}
+  phpcs_tests_container_options:
+    value: ${{ steps.yaml.outputs.phpcs_tests_container_options}}
+  phpcs_tests_container_method:
+    value: ${{ steps.yaml.outputs.phpcs_tests_container_method}}
+  phpcs_tests_cache_bucket:
+    value: ${{ steps.yaml.outputs.phpcs_tests_cache_bucket}}
+  phpcs_tests_configuration:
+    value: ${{ steps.yaml.outputs.phpcs_tests_configuration}}
+  phpcs_tests_test:
+    value: ${{ steps.yaml.outputs.phpcs_tests_test}}
+  phpcs_tests_additional_options:
+    value: ${{ steps.yaml.outputs.phpcs_tests_additional_options}}
+  phpcs_tests_logfile_artifact:
+    value: ${{ steps.yaml.outputs.phpcs_tests_logfile_artifact}}
+  phpcs_tests_failure_pattern:
+    value: ${{ steps.yaml.outputs.phpcs_tests_failure_pattern}}  
   # finish variables
   finish_skip:
     value: ${{ steps.yaml.outputs.finish_skip}}
