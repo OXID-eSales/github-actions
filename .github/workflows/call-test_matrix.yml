@@ -54,7 +54,7 @@ jobs:
     steps:
       - name: 'Load Testplan'
         id: yaml
-        uses: 'OXID-eSales/github-actions/load_testplan@v0'
+        uses: 'OXID-eSales/github-actions/load_testplan@v1'
         with:
           testplan: ${{ inputs.testplan }}
       - name: 'Print Testplan'
@@ -525,7 +525,7 @@ jobs:
           failure_pattern: ${{ needs.init.outputs.unit_tests_failure_pattern }}
 
       - name: 'Stop shop'
-        uses: 'OXID-eSales/github-actions/stop_shop@v0'
+        uses: 'OXID-eSales/github-actions/stop_shop@v1'
 
   integration_tests:
     needs: ['init','install_shop']
@@ -565,7 +565,7 @@ jobs:
           failure_pattern: ${{ needs.init.outputs.integration_tests_failure_pattern }}
 
       - name: 'Stop shop'
-        uses: 'OXID-eSales/github-actions/stop_shop@v0'
+        uses: 'OXID-eSales/github-actions/stop_shop@v1'
 
   codeception_tests:
     needs: ['init', 'install_shop', 'unit_tests', 'integration_tests']
@@ -620,7 +620,7 @@ jobs:
           failure_pattern: ${{ needs.init.outputs.codeception_tests_failure_pattern }}
  
       - name: 'Stop shop'
-        uses: 'OXID-eSales/github-actions/stop_shop@v0'
+        uses: 'OXID-eSales/github-actions/stop_shop@v1'
 
   shop_setup_tests:
     needs: ['init','prepare_shop','codeception_tests']
@@ -674,7 +674,7 @@ jobs:
           failure_pattern: ${{ needs.init.outputs.shop_setup_tests_failure_pattern }}
 
       - name: 'Stop shop'
-        uses: 'OXID-eSales/github-actions/stop_shop@v0'
+        uses: 'OXID-eSales/github-actions/stop_shop@v1'
 
   deprecated_tests:
     needs: ['init', 'install_shop']
@@ -711,7 +711,7 @@ jobs:
         run: cp source/vendor/oxid-esales/testing-library/test_config.yml.dist source/test_config.yml
 
       - name: 'Run deprecated tests'
-        uses: 'OXID-eSales/github-actions/runtests@v0'
+        uses: 'OXID-eSales/github-actions/runtests@v1'
         with:
           container: ${{ needs.init.outputs.deprecated_tests_container }}
           container_options: ${{ needs.init.outputs.deprecated_tests_container_options }}
@@ -727,7 +727,7 @@ jobs:
           failure_pattern: ${{ needs.init.outputs.deprecated_tests_failure_pattern }}
 
       - name: 'Stop shop'
-        uses: 'OXID-eSales/github-actions/stop_shop@v0'
+        uses: 'OXID-eSales/github-actions/stop_shop@v1'
 
   sonarcloud:
     if: ${{ always() && needs.init.outputs.sonarcloud_skip != 'true' }}
@@ -754,7 +754,7 @@ jobs:
           fetch-depth: 0
 
       - name: 'SonarCloud Scan (oxideshop_ce)'
-        uses: 'OXID-eSales/github-actions/sonarcloud@v0'
+        uses: 'OXID-eSales/github-actions/sonarcloud@v1'
         with:
           coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
           target_branch: ${{ needs.init.outputs.sonarcloud_target_branch }}
@@ -767,7 +767,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: 'SonarCloud Scan (oxideshop_ce_internal)'
-        uses: 'OXID-eSales/github-actions/sonarcloud@v0'
+        uses: 'OXID-eSales/github-actions/sonarcloud@v1'
         with:
           coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
           target_branch: ${{ needs.init.outputs.sonarcloud_target_branch }}
