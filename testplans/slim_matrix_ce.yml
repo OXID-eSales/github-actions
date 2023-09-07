@@ -301,6 +301,11 @@ deprecated_tests:
 sonarcloud:
   skip: true
 
+# See docs/actions/start_shop.md and docs/actions/phpphpcs.md for more information.
+phpcs_tests:
+  # Skip this part of the test run
+  skip: true
+
 # This is the final cleanup at the end
 finish:
   # Skip this part of the test run

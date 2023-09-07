@@ -841,7 +841,7 @@ jobs:
       - shop_setup_tests
       - deprecated_tests
       - sonarcloud
-      - phpcs_test
+      - phpcs_tests
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     env:
       SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"

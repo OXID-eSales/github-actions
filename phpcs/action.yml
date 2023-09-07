@@ -24,7 +24,7 @@ inputs:
   additional_options:
     type: string
     required: false
-    description: 'Optional: Additional options to pass to phpunit'
+    description: 'Optional: Additional options to pass to phpcs'
     default: '-q --standard=PSR12'
   logfile:
     type: string

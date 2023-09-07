@@ -299,6 +299,30 @@ deprecated_tests:
 sonarcloud:
   skip: true
 
+# See docs/actions/start_shop.md and docs/actions/phpphpcs.md for more information.
+phpcs_tests:
+  # Skip this part of the test run
+  skip: false
+  # Using the global settings here
+  matrix:
+    php: *matrix_php
+    mysql: *matrix_mysql
+  max_parallel: *max_parallel
+  container: *container
+  container_options: *container_options
+  container_method: *container_method
+  cache_bucket: *cache_bucket
+  # Name of the test or folder to run
+  test: 'vendor/oxid-esales/oxideshop-ee/Internal'
+  # Optional: Additional options to pass to phpcs
+  additional_options: '-q --standard=PSR12'
+  # Name of the output logfile - This is dynamic, so we set it in the workflow
+  #logfile:  'phpcs_PHP<matrix.php>_MYSQL<matrix.mysql>_codesniffer_log.txt'
+  # Github run artifact to put the logfile in
+  logfile_artifact: 'phpunit-logs'
+  # Grep pattern which indicate that the test failed
+  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error'
+
 # This is the final cleanup at the end
 finish:
   # Skip this part of the test run

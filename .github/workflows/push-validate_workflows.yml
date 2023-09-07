@@ -14,7 +14,7 @@ jobs:
         uses: raven-actions/actionlint@v1
 
       - name: actionlint Summary
-        if: ${{ steps.actionlint.outputs.exit-code != 0 }}  # example usage, do echo only when actionlint action failed
+        if: always()
         run: |
           echo "Used actionlint version ${{ steps.actionlint.outputs.version-semver }}"
           echo "Used actionlint release ${{ steps.actionlint.outputs.version-tag }}"
