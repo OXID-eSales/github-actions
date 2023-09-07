@@ -21,7 +21,6 @@ on:
         type: string
         description: 'JSON string/array describing the runner'
         required: true
-        default: '"ubuntu-latest"'
     secrets:
       DOCKER_HUB_USER:
         #description: 'user for the docker login'
@@ -422,7 +421,7 @@ jobs:
           git_shop_ref: ${{ needs.init.outputs.prepare_shop_git_shop_ref }}
           git_enterprise_ref: ${{ needs.init.outputs.prepare_shop_git_enterprise_ref }}
           github_event_name: ${{ github.event_name }}
-          github_event_number: ${{ github.event_number }}
+          github_event_number: ${{ github.event.number }}
           github_base_ref: ${{ github.base_ref }}
           github_sha: ${{ github.sha }}
           github_run_number: ${{ github.run_number }}
@@ -794,7 +793,7 @@ jobs:
       - sonarcloud
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     env:
-      SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+      SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"
       overall_result: ${{ needs.prepare_shop.result=='success' && needs.install_shop.result=='success' && needs.unit_tests.result=='success' && needs.integration_tests.result=='success' && needs.codeception_tests.result=='success' && needs.shop_setup_tests.result=='success' }}
     steps:
       - name: 'Docker logout'
