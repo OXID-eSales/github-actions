@@ -763,7 +763,7 @@ jobs:
           sonarcloud_project_name: ${{ needs.init.outputs.sonarcloud_project_name }}
           sonarcloud_parameters: ${{ needs.init.outputs.sonarcloud_parameters }}
           sonar_token: ${{ secrets.SONAR_TOKEN }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ github.token }}
       
       - name: 'SonarCloud Scan (oxideshop_ce_internal)'
         uses: 'OXID-eSales/github-actions/sonarcloud@v1'
@@ -776,7 +776,7 @@ jobs:
           sonarcloud_project_name: ${{ needs.init.outputs.sonarcloud_internal_project_name }}
           sonarcloud_parameters: ${{ needs.init.outputs.sonarcloud_internal_parameters }}
           sonar_token: ${{ secrets.SONAR_TOKEN }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ github.token }}
 
 
   finish:
