@@ -2,12 +2,24 @@ name: push-validate_workflows
 # Validates workflow files on push
 on: push
 
-jobs:
-  init:
+jobs:    
+  lint:
     runs-on: 'ubuntu-latest'
     steps:  
       - name: Checkout
         uses: actions/checkout@v4
+
+      - yamllint:
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          format: 'github'
+          config_data: |
+            extends: default
+            rules:
+              new-line-at-end-of-file:
+                level: warning
+              trailing-spaces:
+                level: warning
 
       - name: actionlint
         id: actionlint

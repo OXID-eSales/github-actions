@@ -118,7 +118,7 @@ runs:
         separator: '_'
 
     - name: 'Dump Testplan on failure'
-      if: failure()
+      if: ${{ failure() && inputs.override != '' }}
       shell: bash
       run: cat .testplan_override.yml
 

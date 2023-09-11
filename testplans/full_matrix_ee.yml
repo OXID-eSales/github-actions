@@ -40,7 +40,7 @@ global:
   # Method to execute the commands inside a container, either "run" or "exec"
   container_method: &container_method 'exec'
   # Composer steps
-  composer:
+  composer: &composer
     # Enterprise repositories to configure (and require)
     configure:
       # Space separated list of repositories to configure
