@@ -51,7 +51,7 @@ runs:
           ${{ inputs.container }} \
           php vendor/bin/phpcs \
             ${{ inputs.additional_options }} \
-            "${{ inputs.test }}" \
+            ${{ inputs.test }} \
           | tee "${{ inputs.logfile }}" 2>&1 || true
 
     - name: Upload Log
