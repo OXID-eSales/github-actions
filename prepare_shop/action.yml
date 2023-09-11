@@ -285,7 +285,7 @@ runs:
         options: ${{ inputs.composer_configure_options }}
         update: ${{ inputs.composer_configure_update }}
         update_options: ${{ inputs.composer_configure_update_options }}
-        github_enterprise_token: ${{ inputs.enterprise_github_token }}
+        enterprise_github_token: ${{ inputs.enterprise_github_token }}
 
     - name: 'Composer require ${{ inputs.composer_require_install }}'
       if: ${{ inputs.composer_require_install != '' }}
