@@ -52,7 +52,7 @@ runs:
     - name: Require Repositories
       shell: bash
       run: |
-        if [ -z "${{ inputs.ref }}"]; then
+        if [ -z "${{ inputs.ref }}" ]; then
           REF=""
         else
           REF=":${{ inputs.ref }}"
@@ -62,7 +62,7 @@ runs:
           docker-compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
             ${{ inputs.container }} \
-            composer require "${{ inputs.organisation }}/${REPOSITORY}:${REF}" ${{ inputs.options }}
+            composer require "${{ inputs.organisation }}/${REPOSITORY}${REF}" ${{ inputs.options }}
         done
         if [ '${{ inputs.update }}' == 'true' ]; then
           echo -e "\033[0;35m### Running composer update with ${{ inputs.update_options }}\033[0m"

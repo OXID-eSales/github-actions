@@ -57,7 +57,7 @@ runs:
     - name: Configure repositories
       shell: bash
       run: |
-        if [ -z "${{ inputs.ref }}"]; then
+        if [ -z "${{ inputs.ref }}" ]; then
           REF=""
         else
           REF=":${{ inputs.ref }}"
@@ -75,7 +75,7 @@ runs:
         fi
 
         for REPOSITORY in ${{ inputs.repositories }}; do
-          echo -e "\033[0;35m###  configure ${REPOSITORY}:${REF} ###\033[0m"
+          echo -e "\033[0;35m###  configure ${REPOSITORY}${REF} ###\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
             ${{ inputs.container }} \
