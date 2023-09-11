@@ -62,6 +62,7 @@ runs:
         else
           REF=":${{ inputs.ref }}"
         fi
+        ORG=$(echo "${{ inputs.organisation }}" | tr '[:upper:]' '[:lower:]')
         if [ -n "${{ inputs.enterprise_github_token }}" ]; then
           echo -e "\033[0;35m###  configure github access ###\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
@@ -75,16 +76,16 @@ runs:
         fi
 
         for REPOSITORY in ${{ inputs.repositories }}; do
-          echo -e "\033[0;35m###  configure ${{ inputs.organisation|lower }}/${REPOSITORY} ###\033[0m"
+          echo -e "\033[0;35m###  configure ${ORG}/${REPOSITORY} ###\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
             ${{ inputs.container }} \
-            composer config repositories.${{ inputs.organisation|lower }}/${REPOSITORY} git "https://github.com/${{ inputs.organisation }}/${REPOSITORY}.git"
-          echo -e "\033[0;35m###  require "${{ inputs.organisation|lower }}/${REPOSITORY}${REF} with ${{ inputs.options }} ###\033[0m"
+            composer config repositories.${ORG}/${REPOSITORY} git "https://github.com/${{ inputs.organisation }}/${REPOSITORY}.git"
+          echo -e "\033[0;35m###  require "${ORG}/${REPOSITORY}${REF} with ${{ inputs.options }} ###\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
             ${{ inputs.container }} \
-            composer require "${{ inputs.organisation|lower }}/${REPOSITORY}${REF}" ${{ inputs.options }}
+            composer require "${ORG}/${REPOSITORY}${REF}" ${{ inputs.options }}
         done
 
         if [ '${{ inputs.update }}' == 'true' ]; then
