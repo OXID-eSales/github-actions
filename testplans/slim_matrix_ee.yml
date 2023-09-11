@@ -7,17 +7,18 @@ workflow:
     mysql: &matrix_mysql '["8.0"]'
   max_parallel: &max_parallel 4
 global:
-  # URL for the docker-eshop sdk repo to clone 
+  # URL for the docker-eshop sdk repo to clone
   git_sdk_url: &git_sdk_url 'https://github.com/OXID-eSales/docker-eshop-sdk.git'
   # Branch to check out for the SDK
   git_sdk_ref: &git_sdk_ref 'master'
   # URL for the oxidshop_ce repository
   git_shop_url: &git_shop_url 'https://github.com/OXID-eSales/oxideshop_ce.git'
   # Branch, tag or hash of the commit to check out
+  # yamllint disable-line rule:anchors
   git_shop_ref: *github_ref_name
 
   # This action can be used on the community edition (ce) and enterprise
-  # edition (ee) of the shop. On top of setting this to true, a few extra 
+  # edition (ee) of the shop. On top of setting this to true, a few extra
   # variables/secrets must be provided for using the action on ee.
   is_enterprise: &is_enterprise true
   # If is enterprise is set to true, you need to provide the following
@@ -39,6 +40,34 @@ global:
   container_options: &container_options ''
   # Method to execute the commands inside a container, either "run" or "exec"
   container_method: &container_method 'exec'
+  composer: &composer
+    # Enterprise repositories to configure (and require)
+    configure:
+      # Space separated list of repositories to configure
+      install: 'oxideshop-pe oxideshop-ee twig-component-pe twig-component-ee codeception-modules codeception-page-objects'
+      # The organisation for the repositories
+      organisation: 'oxid-esales'
+      # The git reference to install
+      ref: &dev_ref dev-b-8.0.x
+      # Options to pass along to composer when requiring the repositories
+      options: '--no-update'
+      # Run composer update after configuring all repositories
+      update: true
+      # Options to pass along to composer when running composer update
+      update_options: '--no-interaction'
+    require:
+      # Space separated list of repositories to install
+      install: 'twig-admin-theme apex-theme'
+      # The organisation for the repositories
+      organisation: 'oxid-esales'
+      # The git reference to install
+      ref: *dev_ref
+      # Options to pass along to composer during install
+      options: '--with-all-dependencies'
+      # Run composer update after requiring all repositories
+      update: true
+      # Options to pass along to composer during install
+      update_options: '--no-interaction'
 
 init:
   # Should we log in to docker? If set to "true", you need to set the following secrets:
@@ -56,9 +85,11 @@ prepare_shop:
   container: *container
   container_options: *container_options
   container_method: *container_method
+  composer: *composer
   git_sdk_url: *git_sdk_url
   git_sdk_ref: *git_sdk_ref
   git_shop_url: *git_shop_url
+  # yamllint disable-line rule:anchors
   git_shop_ref: *github_ref_name
   git_enterprise_ref: *git_enterprise_ref
   is_enterprise: *is_enterprise
@@ -90,6 +121,7 @@ install_shop:
   container: *container
   container_options: *container_options
   container_method: *container_method
+  # yamllint disable-line rule:anchors
   git_shop_ref: *github_ref_name
   git_enterprise_ref: *git_enterprise_ref
   is_enterprise: *is_enterprise
@@ -103,7 +135,7 @@ install_shop:
     source/composer.lock
     source/source/config.inc.php
   # Configuration file is dynamic, so we use the actions default
-  #output_artifact: 'Configs-<matrix.php>-<matrix.mysql>_install_shop'
+  # output_artifact: 'Configs-<matrix.php>-<matrix.mysql>_install_shop'
 
 # See docs/actions/start_shop.md and docs/actions/phpunit.md for more information.
 unit_tests:
@@ -125,7 +157,7 @@ unit_tests:
   # Optional: Additional options to pass to phpunit
   additional_options: ''
   # Name of the output logfile - This is dynamic, so we set it in the workflow
-  #logfile:  'unit_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt'
+  # logfile: 'unit_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt'
   # Github run artifact to put the logfile in
   logfile_artifact: 'phpunit-logs'
   # phpunit output and test settings
@@ -162,7 +194,7 @@ integration_tests:
   # Optional: Additional options to pass to phpunit
   additional_options: '--bootstrap tests/bootstrap.php'
   # Name of the output logfile - This is dynamic, so we set it in the workflow
-  #logfile:  'integration_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt'
+  # logfile: 'integration_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt'
   # Github run artifact to put the logfile in
   logfile_artifact: 'phpunit-logs'
   # phpunit output and test settings
@@ -190,18 +222,10 @@ codeception_tests:
   max_parallel: *max_parallel
   container: *container
   cache_bucket: *cache_bucket
+  composer: *composer
   # For codeception, we need different options than the empty default
   container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex'
   container_method: &selenium_container_method 'run'
-  themes:
-    # Space separated list of themes to install
-    install: 'oxid-esales/twig-admin-theme oxid-esales/apex-theme'
-    # Options to pass along to composer during install
-    options: '--with-all-dependencies'
-    # Run composer update after installing all themes
-    update: true
-    # Options to pass along to composer during install
-    update_options: '--no-interaction'
   # Name of the configuration file
   configuration: 'vendor/oxid-esales/oxideshop-ee/Tests/codeception.yml'
   # Whether to run the build step before running codeception or not
@@ -246,19 +270,10 @@ shop_setup_tests:
   max_parallel: *max_parallel
   container: *container
   cache_bucket: *cache_bucket
+  composer: *composer
   # We pass the configuration parameters into the container here
   container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e DB_NAME=setup_test -e DB_USERNAME=root -e DB_PASSWORD=root -e DB_HOST=mysql -e DB_PORT=3306 -e SHOP_URL=http://localhost.local/ -e SHOP_SOURCE_PATH=/var/www/source/'
   container_method: *selenium_container_method
-  # Themes to install
-  themes:
-    # Space separated list of themes to install
-    install: 'oxid-esales/twig-admin-theme oxid-esales/apex-theme'
-    # Options to pass along to composer during install
-    options: '--with-all-dependencies'
-    # Run composer update after installing all themes
-    update: true
-    # Options to pass along to composer during install
-    update_options: '--no-interaction'
   # Name of the configuration file
   configuration: 'vendor/oxid-esales/oxideshop-ee/Tests/codeception.yml'
   # Whether to run the build step before running codeception or not

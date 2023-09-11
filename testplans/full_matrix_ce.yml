@@ -7,17 +7,18 @@ workflow:
     mysql: &matrix_mysql '["5.7","8.0"]'
   max_parallel: &max_parallel 4
 global:
-  # URL for the docker-eshop sdk repo to clone 
+  # URL for the docker-eshop sdk repo to clone
   git_sdk_url: &git_sdk_url 'https://github.com/OXID-eSales/docker-eshop-sdk.git'
   # Branch to check out for the SDK
   git_sdk_ref: &git_sdk_ref 'master'
   # URL for the oxidshop_ce repository
   git_shop_url: &git_shop_url 'https://github.com/OXID-eSales/oxideshop_ce.git'
   # Branch, tag or hash of the commit to check out
+  # yamllint disable-line rule:anchors
   git_shop_ref: *github_ref_name
 
   # This action can be used on the community edition (ce) and enterprise
-  # edition (ee) of the shop. On top of setting this to true, a few extra 
+  # edition (ee) of the shop. On top of setting this to true, a few extra
   # variables/secrets must be provided for using the action on ee.
   is_enterprise: &is_enterprise false
   # If is enterprise is set to true, you need to provide the following
@@ -41,7 +42,7 @@ global:
   container_method: &container_method 'exec'
 
   # Composer steps
-  composer:
+  composer: &composer
     # Enterprise repositories to configure (and require)
     configure:
       # Space separated list of repositories to configure
@@ -69,6 +70,7 @@ global:
       update: true
       # Options to pass along to composer during install
       update_options: '--no-interaction'
+
 init:
   # Should we log in to docker? If set to "true", you need to set the following secrets:
   # - secrets.DOCKER_HUB_USER
@@ -88,6 +90,7 @@ prepare_shop:
   git_sdk_url: *git_sdk_url
   git_sdk_ref: *git_sdk_ref
   git_shop_url: *git_shop_url
+  # yamllint disable-line rule:anchors
   git_shop_ref: *github_ref_name
   git_enterprise_ref: *git_enterprise_ref
   is_enterprise: *is_enterprise
@@ -110,6 +113,7 @@ install_shop:
   container: *container
   container_options: *container_options
   container_method: *container_method
+  # yamllint disable-line rule:anchors
   git_shop_ref: *github_ref_name
   git_enterprise_ref: *git_enterprise_ref
   is_enterprise: *is_enterprise
@@ -123,7 +127,7 @@ install_shop:
     source/composer.lock
     source/source/config.inc.php
   # Configuration file is dynamic, so we use the actions default
-  #output_artifact: 'Configs-<matrix.php>-<matrix.mysql>_install_shop'
+  # output_artifact: 'Configs-<matrix.php>-<matrix.mysql>_install_shop'
 
 # See docs/actions/start_shop.md and docs/actions/phpunit.md for more information.
 unit_tests:
@@ -146,7 +150,7 @@ unit_tests:
   # Optional: Additional options to pass to phpunit
   additional_options: '--bootstrap tests/bootstrap.php tests --coverage-clover=/var/www/tests_coverage.xml'
   # Name of the output logfile - This is dynamic, so we set it in the workflow
-  #logfile:  'unit_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt'
+  # logfile: 'unit_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt'
   # Github run artifact to put the logfile in
   logfile_artifact: 'phpunit-logs'
   # phpunit output and test settings
@@ -183,7 +187,7 @@ integration_tests:
   # Optional: Additional options to pass to phpunit
   additional_options: '--bootstrap tests/bootstrap.php'
   # Name of the output logfile - This is dynamic, so we set it in the workflow
-  #logfile:  'integration_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt'
+  # logfile: 'integration_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt'
   # Github run artifact to put the logfile in
   logfile_artifact: 'phpunit-logs'
   # phpunit output and test settings
@@ -319,7 +323,7 @@ deprecated_tests:
   # Optional: Additional options to pass to phpunit
   additional_options: '--coverage-clover=/var/www/deprecated_tests_coverage.xml'
   # Name of the output logfile - This is dynamic, so we set it in the workflow
-  #logfile:  'deprecated_tests_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt'
+  # logfile: 'deprecated_tests_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt'
   # Github run artifact to put the logfile in
   logfile_artifact: 'phpunit-logs'
   # phpunit output and test settings
@@ -356,7 +360,7 @@ sonarcloud:
   # Parameters passed to the scanner
   parameters: |
     -Dsonar.language=php
-    -Dsonar.scm.provider=git  
+    -Dsonar.scm.provider=git
     -Dsonar.sources=source
     -Dsonar.tests=tests
 
@@ -364,7 +368,7 @@ sonarcloud:
   internal_project_name: 'oxideshop_ce_internal'
   internal_parameters: |
     -Dsonar.language=php
-    -Dsonar.scm.provider=git  
+    -Dsonar.scm.provider=git
     -Dsonar.sources=source/Internal
     -Dsonar.tests=tests
 
@@ -386,7 +390,7 @@ phpcs_tests:
   # Optional: Additional options to pass to phpcs
   additional_options: '-q --standard=PSR12'
   # Name of the output logfile - This is dynamic, so we set it in the workflow
-  #logfile:  'phpcs_PHP<matrix.php>_MYSQL<matrix.mysql>_codesniffer_log.txt'
+  # logfile: 'phpcs_PHP<matrix.php>_MYSQL<matrix.mysql>_codesniffer_log.txt'
   # Github run artifact to put the logfile in
   logfile_artifact: 'phpunit-logs'
   # Grep pattern which indicate that the test failed

@@ -109,7 +109,7 @@ runs:
       if: failure()
       shell: bash
       run: cat .testplan.yml
-        
+
     - name: 'Load overrides'
       uses: actions-tools/yaml-outputs@v2
       if: ${{ inputs.override != '' }}
@@ -583,7 +583,7 @@ outputs:
   phpcs_tests_logfile_artifact:
     value: ${{ steps.yaml.outputs.phpcs_tests_logfile_artifact}}
   phpcs_tests_failure_pattern:
-    value: ${{ steps.yaml.outputs.phpcs_tests_failure_pattern}}  
+    value: ${{ steps.yaml.outputs.phpcs_tests_failure_pattern}}
   # finish variables
   finish_skip:
     value: ${{ steps.yaml.outputs.finish_skip}}

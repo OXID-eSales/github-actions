@@ -50,47 +50,47 @@ inputs:
     required: false
     description: 'OAuth token to access enterprise repos'
     default: ''
-    
+
 runs:
   using: "composite"
   steps:
-  - name: Install themes
-    shell: bash
-    run: |
-      if [ -z "${{ inputs.ref }}"]; then
-        REF=""
-      else
-        REF=":${{ inputs.ref }}"
-      fi
-      if [ -n "${{ inputs.enterprise_github_token }}" ]; then
-        echo -e "\033[0;35m###  configure github access ###\033[0m"
-        docker-compose ${{ inputs.container_method }} -T \
-          ${{ inputs.container_options }} \
-          ${{ inputs.container }} \
-          composer config github-protocols https
-        docker-compose ${{ inputs.container_method }} -T \
-          ${{ inputs.container_options }} \
-          ${{ inputs.container }} \
-          composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
-      fi
+    - name: Configure repositories
+      shell: bash
+      run: |
+        if [ -z "${{ inputs.ref }}"]; then
+          REF=""
+        else
+          REF=":${{ inputs.ref }}"
+        fi
+        if [ -n "${{ inputs.enterprise_github_token }}" ]; then
+          echo -e "\033[0;35m###  configure github access ###\033[0m"
+          docker-compose ${{ inputs.container_method }} -T \
+            ${{ inputs.container_options }} \
+            ${{ inputs.container }} \
+            composer config github-protocols https
+          docker-compose ${{ inputs.container_method }} -T \
+            ${{ inputs.container_options }} \
+            ${{ inputs.container }} \
+            composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
+        fi
 
-      for REPOSITORY in ${{ inputs.repositories }}; do
-        echo -e "\033[0;35m###  configure ${REPOSITORY}:${REF} ###\033[0m"
-        docker-compose ${{ inputs.container_method }} -T \
-          ${{ inputs.container_options }} \
-          ${{ inputs.container }} \
-          composer config repositories.${{ inputs.organisation }}/${REPOSITORY} git "https://github.com/${{ inputs.organisation }}/${REPOSITORY}.git"
-        echo -e "\033[0;35m###  require "${{ inputs.organisation }}/${REPOSITORY}${REF} with ${{ inputs.options }} ###\033[0m"
-        docker-compose ${{ inputs.container_method }} -T \
-          ${{ inputs.container_options }} \
-          ${{ inputs.container }} \
-          composer require "${{ inputs.organisation }}/${REPOSITORY}${REF}" ${{ inputs.options }}
-      done
+        for REPOSITORY in ${{ inputs.repositories }}; do
+          echo -e "\033[0;35m###  configure ${REPOSITORY}:${REF} ###\033[0m"
+          docker-compose ${{ inputs.container_method }} -T \
+            ${{ inputs.container_options }} \
+            ${{ inputs.container }} \
+            composer config repositories.${{ inputs.organisation }}/${REPOSITORY} git "https://github.com/${{ inputs.organisation }}/${REPOSITORY}.git"
+          echo -e "\033[0;35m###  require "${{ inputs.organisation }}/${REPOSITORY}${REF} with ${{ inputs.options }} ###\033[0m"
+          docker-compose ${{ inputs.container_method }} -T \
+            ${{ inputs.container_options }} \
+            ${{ inputs.container }} \
+            composer require "${{ inputs.organisation }}/${REPOSITORY}${REF}" ${{ inputs.options }}
+        done
 
-      if [ '${{ inputs.update }}' == 'true' ]; then
-        echo -e "\033[0;35m### Running composer update with ${{ inputs.update_options }}\033[0m"
-        docker-compose ${{ inputs.container_method }} -T \
-          ${{ inputs.container_options }} \
-          ${{ inputs.container }} \
-          composer update ${{ inputs.update_options }}
-      fi
+        if [ '${{ inputs.update }}' == 'true' ]; then
+          echo -e "\033[0;35m### Running composer update with ${{ inputs.update_options }}\033[0m"
+          docker-compose ${{ inputs.container_method }} -T \
+            ${{ inputs.container_options }} \
+            ${{ inputs.container }} \
+            composer update ${{ inputs.update_options }}
+        fi
