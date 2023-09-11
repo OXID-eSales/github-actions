@@ -8,6 +8,9 @@ Name of the container to run the test in.
 **container_options:** *not required*, *default:*  ''  
 Options to pass to the container start.
 
+**container_method:** *not required*, *default*: 'exec'  
+Whether we use exec to run the command in the existing php container or run to spin up a new one.
+
 **test:** *not required*, *default:*  source/Internal
 Name of the test or folder to run.
 

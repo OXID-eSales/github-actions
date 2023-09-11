@@ -75,6 +75,18 @@ jobs:
             global_container: ${{ steps.yaml.outputs.global_container}}
             global_container_options: ${{ steps.yaml.outputs.global_container_options}}
             global_container_method: ${{ steps.yaml.outputs.global_container_method}}
+            global_composer_configure_install: ${{ steps.yaml.outputs.global_composer_configure_install}}
+            global_composer_configure_organisation: ${{ steps.yaml.outputs.global_composer_configure_organisation}}
+            global_composer_configure_ref: ${{ steps.yaml.outputs.global_composer_configure_ref}}
+            global_composer_configure_options: ${{ steps.yaml.outputs.global_composer_configure_options}}
+            global_composer_configure_update: ${{ steps.yaml.outputs.global_composer_configure_update}}
+            global_composer_configure_update_options: ${{ steps.yaml.outputs.global_composer_configure_update_options}}
+            global_composer_require_install: ${{ steps.yaml.outputs.global_composer_require_install}}
+            global_composer_require_organisation: ${{ steps.yaml.outputs.global_composer_require_organisation}}
+            global_composer_require_ref: ${{ steps.yaml.outputs.global_composer_require_ref}}
+            global_composer_require_options: ${{ steps.yaml.outputs.global_composer_require_options}}
+            global_composer_require_update: ${{ steps.yaml.outputs.global_composer_require_update}}
+            global_composer_require_update_options: ${{ steps.yaml.outputs.global_composer_require_update_options}}          
             ${PURPLE}### init variables${NO_COLOR}
             init_docker_login: ${{ steps.yaml.outputs.init_docker_login}}
             ${PURPLE}### prepare_shop variables${NO_COLOR}
@@ -94,10 +106,18 @@ jobs:
             prepare_shop_custom_ini_error_reporting: ${{ steps.yaml.outputs.prepare_shop_custom_ini_error_reporting}}
             prepare_shop_custom_ini_xdebug: ${{ steps.yaml.outputs.prepare_shop_custom_ini_xdebug}}
             prepare_shop_add_services: ${{ steps.yaml.outputs.prepare_shop_add_services}}
-            prepare_shop_themes_install: ${{ steps.yaml.outputs.shop_setup_tests_themes_install}}
-            prepare_shop_themes_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_options}}
-            prepare_shop_themes_update: ${{ steps.yaml.outputs.shop_setup_tests_themes_update}}
-            prepare_shop_themes_update_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_update_options}}      
+            prepare_shop_composer_configure_install: ${{ steps.yaml.outputs.prepare_shop_composer_configure_install}}
+            prepare_shop_composer_configure_organisation: ${{ steps.yaml.outputs.prepare_shop_composer_configure_organisation}}
+            prepare_shop_composer_configure_ref: ${{ steps.yaml.outputs.prepare_shop_composer_configure_ref}}
+            prepare_shop_composer_configure_options: ${{ steps.yaml.outputs.prepare_shop_composer_configure_options}}
+            prepare_shop_composer_configure_update: ${{ steps.yaml.outputs.prepare_shop_composer_configure_update}}
+            prepare_shop_composer_configure_update_options: ${{ steps.yaml.outputs.prepare_shop_composer_configure_update_options}}
+            prepare_shop_composer_require_install: ${{ steps.yaml.outputs.prepare_shop_composer_require_install}}
+            prepare_shop_composer_require_organisation: ${{ steps.yaml.outputs.prepare_shop_composer_require_organisation}}
+            prepare_shop_composer_require_ref: ${{ steps.yaml.outputs.prepare_shop_composer_require_ref}}
+            prepare_shop_composer_require_options: ${{ steps.yaml.outputs.prepare_shop_composer_require_options}}
+            prepare_shop_composer_require_update: ${{ steps.yaml.outputs.prepare_shop_composer_require_update}}
+            prepare_shop_composer_require_update_options: ${{ steps.yaml.outputs.prepare_shop_composer_require_update_options}}      
             ${PURPLE}### install_shop variables${NO_COLOR}
             install_shop_matrix_mysql: ${{ steps.yaml.outputs.install_shop_matrix_mysql}}
             install_shop_matrix_php: ${{ steps.yaml.outputs.install_shop_matrix_php}}
@@ -152,10 +172,18 @@ jobs:
             codeception_tests_container_options: ${{ steps.yaml.outputs.codeception_tests_container_options}}
             codeception_tests_container_method: ${{ steps.yaml.outputs.codeception_tests_container_method}}
             codeception_tests_cache_bucket: ${{ steps.yaml.outputs.codeception_tests_cache_bucket}}
-            codeception_tests_themes_install: ${{ steps.yaml.outputs.shop_setup_tests_themes_install}}
-            codeception_tests_themes_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_options}}
-            codeception_tests_themes_update: ${{ steps.yaml.outputs.shop_setup_tests_themes_update}}
-            codeception_tests_themes_update_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_update_options}}
+            codeception_tests_composer_configure_install: ${{ steps.yaml.outputs.codeception_tests_composer_configure_install}}
+            codeception_tests_composer_configure_organisation: ${{ steps.yaml.outputs.codeception_tests_composer_configure_organisation}}
+            codeception_tests_composer_configure_ref: ${{ steps.yaml.outputs.codeception_tests_composer_configure_ref}}
+            codeception_tests_composer_configure_options: ${{ steps.yaml.outputs.codeception_tests_composer_configure_options}}
+            codeception_tests_composer_configure_update: ${{ steps.yaml.outputs.codeception_tests_composer_configure_update}}
+            codeception_tests_composer_configure_update_options: ${{ steps.yaml.outputs.codeception_tests_composer_configure_update_options}}
+            codeception_tests_composer_require_install: ${{ steps.yaml.outputs.codeception_tests_composer_require_install}}
+            codeception_tests_composer_require_organisation: ${{ steps.yaml.outputs.codeception_tests_composer_require_organisation}}
+            codeception_tests_composer_require_ref: ${{ steps.yaml.outputs.codeception_tests_composer_require_ref}}
+            codeception_tests_composer_require_options: ${{ steps.yaml.outputs.codeception_tests_composer_require_options}}
+            codeception_tests_composer_require_update: ${{ steps.yaml.outputs.codeception_tests_composer_require_update}}
+            codeception_tests_composer_require_update_options: ${{ steps.yaml.outputs.codeception_tests_composer_require_update_options}}          
             codeception_tests_configuration: ${{ steps.yaml.outputs.codeception_tests_configuration}}
             codeception_tests_build: ${{ steps.yaml.outputs.codeception_tests_build}}
             codeception_tests_suite: ${{ steps.yaml.outputs.codeception_tests_suite}}
@@ -174,10 +202,18 @@ jobs:
             shop_setup_tests_container_options: ${{ steps.yaml.outputs.shop_setup_tests_container_options}}
             shop_setup_tests_container_method: ${{ steps.yaml.outputs.shop_setup_tests_container_method}}
             shop_setup_tests_cache_bucket: ${{ steps.yaml.outputs.shop_setup_tests_cache_bucket}}
-            shop_setup_tests_themes_install: ${{ steps.yaml.outputs.shop_setup_tests_themes_install}}
-            shop_setup_tests_themes_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_options}}
-            shop_setup_tests_themes_update: ${{ steps.yaml.outputs.shop_setup_tests_themes_update}}
-            shop_setup_tests_themes_update_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_update_options}}
+            shop_setup_tests_composer_configure_install: ${{ steps.yaml.outputs.shop_setup_tests_composer_configure_install}}
+            shop_setup_tests_composer_configure_organisation: ${{ steps.yaml.outputs.shop_setup_tests_composer_configure_organisation}}
+            shop_setup_tests_composer_configure_ref: ${{ steps.yaml.outputs.shop_setup_tests_composer_configure_ref}}
+            shop_setup_tests_composer_configure_options: ${{ steps.yaml.outputs.shop_setup_tests_composer_configure_options}}
+            shop_setup_tests_composer_configure_update: ${{ steps.yaml.outputs.shop_setup_tests_composer_configure_update}}
+            shop_setup_tests_composer_configure_update_options: ${{ steps.yaml.outputs.shop_setup_tests_composer_configure_update_options}}
+            shop_setup_tests_composer_require_install: ${{ steps.yaml.outputs.shop_setup_tests_composer_require_install}}
+            shop_setup_tests_composer_require_organisation: ${{ steps.yaml.outputs.shop_setup_tests_composer_require_organisation}}
+            shop_setup_tests_composer_require_ref: ${{ steps.yaml.outputs.shop_setup_tests_composer_require_ref}}
+            shop_setup_tests_composer_require_options: ${{ steps.yaml.outputs.shop_setup_tests_composer_require_options}}
+            shop_setup_tests_composer_require_update: ${{ steps.yaml.outputs.shop_setup_tests_composer_require_update}}
+            shop_setup_tests_composer_require_update_options: ${{ steps.yaml.outputs.shop_setup_tests_composer_require_update_options}}      
             shop_setup_tests_configuration: ${{ steps.yaml.outputs.shop_setup_tests_configuration}}
             shop_setup_tests_build: ${{ steps.yaml.outputs.shop_setup_tests_build}}
             shop_setup_tests_suite: ${{ steps.yaml.outputs.shop_setup_tests_suite}}
@@ -196,10 +232,18 @@ jobs:
             deprecated_tests_container_options: ${{ steps.yaml.outputs.deprecated_tests_container_options}}
             deprecated_tests_container_method: ${{ steps.yaml.outputs.deprecated_tests_container_method}}
             deprecated_tests_cache_bucket: ${{ steps.yaml.outputs.deprecated_tests_cache_bucket}}
-            deprecated_tests_themes_install: ${{ steps.yaml.outputs.deprecated_tests_themes_install}}
-            deprecated_tests_themes_options: ${{ steps.yaml.outputs.deprecated_tests_themes_options}}
-            deprecated_tests_themes_update: ${{ steps.yaml.outputs.deprecated_tests_themes_update}}
-            deprecated_tests_themes_update_options: ${{ steps.yaml.outputs.deprecated_tests_themes_update_options}}
+            deprecated_tests_composer_configure_install: ${{ steps.yaml.outputs.deprecated_tests_composer_configure_install}}
+            deprecated_tests_composer_configure_organisation: ${{ steps.yaml.outputs.deprecated_tests_composer_configure_organisation}}
+            deprecated_tests_composer_configure_ref: ${{ steps.yaml.outputs.deprecated_tests_composer_configure_ref}}
+            deprecated_tests_composer_configure_options: ${{ steps.yaml.outputs.deprecated_tests_composer_configure_options}}
+            deprecated_tests_composer_configure_update: ${{ steps.yaml.outputs.deprecated_tests_composer_configure_update}}
+            deprecated_tests_composer_configure_update_options: ${{ steps.yaml.outputs.deprecated_tests_composer_configure_update_options}}
+            deprecated_tests_composer_require_install: ${{ steps.yaml.outputs.deprecated_tests_composer_require_install}}
+            deprecated_tests_composer_require_organisation: ${{ steps.yaml.outputs.deprecated_tests_composer_require_organisation}}
+            deprecated_tests_composer_require_ref: ${{ steps.yaml.outputs.deprecated_tests_composer_require_ref}}
+            deprecated_tests_composer_require_options: ${{ steps.yaml.outputs.deprecated_tests_composer_require_options}}
+            deprecated_tests_composer_require_update: ${{ steps.yaml.outputs.deprecated_tests_composer_require_update}}
+            deprecated_tests_composer_require_update_options: ${{ steps.yaml.outputs.deprecated_tests_composer_require_update_options}}
             deprecated_tests_test: ${{ steps.yaml.outputs.deprecated_tests_test}}
             deprecated_tests_additional_options: ${{ steps.yaml.outputs.deprecated_tests_additional_options}}
             deprecated_tests_logfile_artifact: ${{ steps.yaml.outputs.deprecated_tests_logfile_artifact}}
@@ -246,6 +290,18 @@ jobs:
       global_container: ${{ steps.yaml.outputs.global_container}}
       global_container_options: ${{ steps.yaml.outputs.global_container_options}}
       global_container_method: ${{ steps.yaml.outputs.global_container_method}}
+      global_composer_configure_install: ${{ steps.yaml.outputs.global_composer_configure_install}}
+      global_composer_configure_organisation: ${{ steps.yaml.outputs.global_composer_configure_organisation}}
+      global_composer_configure_ref: ${{ steps.yaml.outputs.global_composer_configure_ref}}
+      global_composer_configure_options: ${{ steps.yaml.outputs.global_composer_configure_options}}
+      global_composer_configure_update: ${{ steps.yaml.outputs.global_composer_configure_update}}
+      global_composer_configure_update_options: ${{ steps.yaml.outputs.global_composer_configure_update_options}}
+      global_composer_require_install: ${{ steps.yaml.outputs.global_composer_require_install}}
+      global_composer_require_organisation: ${{ steps.yaml.outputs.global_composer_require_organisation}}
+      global_composer_require_ref: ${{ steps.yaml.outputs.global_composer_require_ref}}
+      global_composer_require_options: ${{ steps.yaml.outputs.global_composer_require_options}}
+      global_composer_require_update: ${{ steps.yaml.outputs.global_composer_require_update}}
+      global_composer_require_update_options: ${{ steps.yaml.outputs.global_composer_require_update_options}}
       # init variables
       init_docker_login: ${{ steps.yaml.outputs.init_docker_login}}
       # prepare_shop variables
@@ -265,10 +321,18 @@ jobs:
       prepare_shop_custom_ini_error_reporting: ${{ steps.yaml.outputs.prepare_shop_custom_ini_error_reporting}}
       prepare_shop_custom_ini_xdebug: ${{ steps.yaml.outputs.prepare_shop_custom_ini_xdebug}}
       prepare_shop_add_services: ${{ steps.yaml.outputs.prepare_shop_add_services}}
-      prepare_shop_themes_install: ${{ steps.yaml.outputs.shop_setup_tests_themes_install}}
-      prepare_shop_themes_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_options}}
-      prepare_shop_themes_update: ${{ steps.yaml.outputs.shop_setup_tests_themes_update}}
-      prepare_shop_themes_update_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_update_options}}    
+      prepare_shop_composer_configure_install: ${{ steps.yaml.outputs.prepare_shop_composer_configure_install}}
+      prepare_shop_composer_configure_organisation: ${{ steps.yaml.outputs.prepare_shop_composer_configure_organisation}}
+      prepare_shop_composer_configure_ref: ${{ steps.yaml.outputs.prepare_shop_composer_configure_ref}}
+      prepare_shop_composer_configure_options: ${{ steps.yaml.outputs.prepare_shop_composer_configure_options}}
+      prepare_shop_composer_configure_update: ${{ steps.yaml.outputs.prepare_shop_composer_configure_update}}
+      prepare_shop_composer_configure_update_options: ${{ steps.yaml.outputs.prepare_shop_composer_configure_update_options}}
+      prepare_shop_composer_require_install: ${{ steps.yaml.outputs.prepare_shop_composer_require_install}}
+      prepare_shop_composer_require_organisation: ${{ steps.yaml.outputs.prepare_shop_composer_require_organisation}}
+      prepare_shop_composer_require_ref: ${{ steps.yaml.outputs.prepare_shop_composer_require_ref}}
+      prepare_shop_composer_require_options: ${{ steps.yaml.outputs.prepare_shop_composer_require_options}}
+      prepare_shop_composer_require_update: ${{ steps.yaml.outputs.prepare_shop_composer_require_update}}
+      prepare_shop_composer_require_update_options: ${{ steps.yaml.outputs.prepare_shop_composer_require_update_options}}
       # install_shop variables
       install_shop_matrix_mysql: ${{ steps.yaml.outputs.install_shop_matrix_mysql}}
       install_shop_matrix_php: ${{ steps.yaml.outputs.install_shop_matrix_php}}
@@ -323,10 +387,18 @@ jobs:
       codeception_tests_container_options: ${{ steps.yaml.outputs.codeception_tests_container_options}}
       codeception_tests_container_method: ${{ steps.yaml.outputs.codeception_tests_container_method}}
       codeception_tests_cache_bucket: ${{ steps.yaml.outputs.codeception_tests_cache_bucket}}
-      codeception_tests_themes_install: ${{ steps.yaml.outputs.shop_setup_tests_themes_install}}
-      codeception_tests_themes_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_options}}
-      codeception_tests_themes_update: ${{ steps.yaml.outputs.shop_setup_tests_themes_update}}
-      codeception_tests_themes_update_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_update_options}}
+      codeception_tests_composer_configure_install: ${{ steps.yaml.outputs.codeception_tests_composer_configure_install}}
+      codeception_tests_composer_configure_organisation: ${{ steps.yaml.outputs.codeception_tests_composer_configure_organisation}}
+      codeception_tests_composer_configure_ref: ${{ steps.yaml.outputs.codeception_tests_composer_configure_ref}}
+      codeception_tests_composer_configure_options: ${{ steps.yaml.outputs.codeception_tests_composer_configure_options}}
+      codeception_tests_composer_configure_update: ${{ steps.yaml.outputs.codeception_tests_composer_configure_update}}
+      codeception_tests_composer_configure_update_options: ${{ steps.yaml.outputs.codeception_tests_composer_configure_update_options}}
+      codeception_tests_composer_require_install: ${{ steps.yaml.outputs.codeception_tests_composer_require_install}}
+      codeception_tests_composer_require_organisation: ${{ steps.yaml.outputs.codeception_tests_composer_require_organisation}}
+      codeception_tests_composer_require_ref: ${{ steps.yaml.outputs.codeception_tests_composer_require_ref}}
+      codeception_tests_composer_require_options: ${{ steps.yaml.outputs.codeception_tests_composer_require_options}}
+      codeception_tests_composer_require_update: ${{ steps.yaml.outputs.codeception_tests_composer_require_update}}
+      codeception_tests_composer_require_update_options: ${{ steps.yaml.outputs.codeception_tests_composer_require_update_options}}
       codeception_tests_configuration: ${{ steps.yaml.outputs.codeception_tests_configuration}}
       codeception_tests_build: ${{ steps.yaml.outputs.codeception_tests_build}}
       codeception_tests_suite: ${{ steps.yaml.outputs.codeception_tests_suite}}
@@ -345,10 +417,18 @@ jobs:
       shop_setup_tests_container_options: ${{ steps.yaml.outputs.shop_setup_tests_container_options}}
       shop_setup_tests_container_method: ${{ steps.yaml.outputs.shop_setup_tests_container_method}}
       shop_setup_tests_cache_bucket: ${{ steps.yaml.outputs.shop_setup_tests_cache_bucket}}
-      shop_setup_tests_themes_install: ${{ steps.yaml.outputs.shop_setup_tests_themes_install}}
-      shop_setup_tests_themes_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_options}}
-      shop_setup_tests_themes_update: ${{ steps.yaml.outputs.shop_setup_tests_themes_update}}
-      shop_setup_tests_themes_update_options: ${{ steps.yaml.outputs.shop_setup_tests_themes_update_options}}
+      shop_setup_tests_composer_configure_install: ${{ steps.yaml.outputs.shop_setup_tests_composer_configure_install}}
+      shop_setup_tests_composer_configure_organisation: ${{ steps.yaml.outputs.shop_setup_tests_composer_configure_organisation}}
+      shop_setup_tests_composer_configure_ref: ${{ steps.yaml.outputs.shop_setup_tests_composer_configure_ref}}
+      shop_setup_tests_composer_configure_options: ${{ steps.yaml.outputs.shop_setup_tests_composer_configure_options}}
+      shop_setup_tests_composer_configure_update: ${{ steps.yaml.outputs.shop_setup_tests_composer_configure_update}}
+      shop_setup_tests_composer_configure_update_options: ${{ steps.yaml.outputs.shop_setup_tests_composer_configure_update_options}}
+      shop_setup_tests_composer_require_install: ${{ steps.yaml.outputs.shop_setup_tests_composer_require_install}}
+      shop_setup_tests_composer_require_organisation: ${{ steps.yaml.outputs.shop_setup_tests_composer_require_organisation}}
+      shop_setup_tests_composer_require_ref: ${{ steps.yaml.outputs.shop_setup_tests_composer_require_ref}}
+      shop_setup_tests_composer_require_options: ${{ steps.yaml.outputs.shop_setup_tests_composer_require_options}}
+      shop_setup_tests_composer_require_update: ${{ steps.yaml.outputs.shop_setup_tests_composer_require_update}}
+      shop_setup_tests_composer_require_update_options: ${{ steps.yaml.outputs.shop_setup_tests_composer_require_update_options}}    
       shop_setup_tests_configuration: ${{ steps.yaml.outputs.shop_setup_tests_configuration}}
       shop_setup_tests_build: ${{ steps.yaml.outputs.shop_setup_tests_build}}
       shop_setup_tests_suite: ${{ steps.yaml.outputs.shop_setup_tests_suite}}
@@ -367,10 +447,18 @@ jobs:
       deprecated_tests_container_options: ${{ steps.yaml.outputs.deprecated_tests_container_options}}
       deprecated_tests_container_method: ${{ steps.yaml.outputs.deprecated_tests_container_method}}
       deprecated_tests_cache_bucket: ${{ steps.yaml.outputs.deprecated_tests_cache_bucket}}
-      deprecated_tests_themes_install: ${{ steps.yaml.outputs.deprecated_tests_themes_install}}
-      deprecated_tests_themes_options: ${{ steps.yaml.outputs.deprecated_tests_themes_options}}
-      deprecated_tests_themes_update: ${{ steps.yaml.outputs.deprecated_tests_themes_update}}
-      deprecated_tests_themes_update_options: ${{ steps.yaml.outputs.deprecated_tests_themes_update_options}}
+      deprecated_tests_composer_configure_install: ${{ steps.yaml.outputs.deprecated_tests_composer_configure_install}}
+      deprecated_tests_composer_configure_organisation: ${{ steps.yaml.outputs.deprecated_tests_composer_configure_organisation}}
+      deprecated_tests_composer_configure_ref: ${{ steps.yaml.outputs.deprecated_tests_composer_configure_ref}}
+      deprecated_tests_composer_configure_options: ${{ steps.yaml.outputs.deprecated_tests_composer_configure_options}}
+      deprecated_tests_composer_configure_update: ${{ steps.yaml.outputs.deprecated_tests_composer_configure_update}}
+      deprecated_tests_composer_configure_update_options: ${{ steps.yaml.outputs.deprecated_tests_composer_configure_update_options}}
+      deprecated_tests_composer_require_install: ${{ steps.yaml.outputs.deprecated_tests_composer_require_install}}
+      deprecated_tests_composer_require_organisation: ${{ steps.yaml.outputs.deprecated_tests_composer_require_organisation}}
+      deprecated_tests_composer_require_ref: ${{ steps.yaml.outputs.deprecated_tests_composer_require_ref}}
+      deprecated_tests_composer_require_options: ${{ steps.yaml.outputs.deprecated_tests_composer_require_options}}
+      deprecated_tests_composer_require_update: ${{ steps.yaml.outputs.deprecated_tests_composer_require_update}}
+      deprecated_tests_composer_require_update_options: ${{ steps.yaml.outputs.deprecated_tests_composer_require_update_options}}
       deprecated_tests_test: ${{ steps.yaml.outputs.deprecated_tests_test}}
       deprecated_tests_additional_options: ${{ steps.yaml.outputs.deprecated_tests_additional_options}}
       deprecated_tests_logfile_artifact: ${{ steps.yaml.outputs.deprecated_tests_logfile_artifact}}
@@ -426,7 +514,7 @@ jobs:
     steps:
       - name: 'Prepare Shop'
         id: prepare_shop
-        uses: 'OXID-eSales/github-actions/prepare_shop@v1'
+        uses: 'OXID-eSales/github-actions/prepare_shop@v0'
         with:
           container: ${{ needs.init.outputs.prepare_shop_container }}
           container_options: ${{ needs.init.outputs.prepare_shop_container_options }}
@@ -448,16 +536,23 @@ jobs:
           custom_ini_error_reporting: ${{ needs.init.outputs.prepare_shop_custom_ini_error_reporting }}
           custom_ini_xdebug: ${{ needs.init.outputs.prepare_shop_custom_ini_xdebug }}
           add_services: ${{ needs.init.outputs.prepare_shop_add_services }}
-          themes_install: ${{ needs.init.outputs.shop_setup_tests_themes_install}}
-          themes_options: ${{ needs.init.outputs.shop_setup_tests_themes_options}}
-          themes_update: ${{ needs.init.outputs.shop_setup_tests_themes_update}}
-          themes_update_options: ${{ needs.init.outputs.shop_setup_tests_themes_update_options}}
+          composer_configure_organisation: ${{ needs.init.outputs.prepare_shop_composer_configure_organisation}}
+          composer_configure_install: ${{ needs.init.outputs.prepare_shop_composer_configure_install}}
+          composer_configure_ref: ${{ needs.init.outputs.prepare_shop_composer_configure_ref}}
+          composer_configure_options: ${{ needs.init.outputs.prepare_shop_composer_configure_options}}
+          composer_configure_update: ${{ needs.init.outputs.prepare_shop_composer_configure_update}}
+          composer_configure_update_options: ${{ needs.init.outputs.prepare_shop_composer_configure_update_options}}
+          composer_require_organisation: ${{ needs.init.outputs.prepare_shop_composer_require_organisation}}
+          composer_require_install: ${{ needs.init.outputs.prepare_shop_composer_require_install}}
+          composer_require_ref: ${{ needs.init.outputs.prepare_shop_composer_require_ref}}
+          composer_require_options: ${{ needs.init.outputs.prepare_shop_composer_require_options}}
+          composer_require_update: ${{ needs.init.outputs.prepare_shop_composer_require_update}}
+          composer_require_update_options: ${{ needs.init.outputs.prepare_shop_composer_require_update_options}}
           enterprise_github_token: ${{ secrets.enterprise_github_token }}
           cache_bucket: ${{ needs.init.outputs.prepare_shop_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
-          
 
   install_shop:
     needs: ['init','prepare_shop']
@@ -602,18 +697,34 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}        
 
-
-      - name: Install themes
-        if: ${{ needs.init.outputs.global_is_enterprise == 'false' }}
-        uses: 'OXID-eSales/github-actions/install_themes@v1'
+      - name: 'Composer configure and require ${{ needs.init.outputs.codeception_tests_composer_configure_install }}'
+        if: ${{ needs.init.outputs.codeception_tests_composer_configure_install != '' }}
+        uses: 'OXID-eSales/github-actions/composer_configure@v0'
         with:
           container: ${{ needs.init.outputs.codeception_tests_container }}
           container_options: ${{ needs.init.outputs.codeception_tests_container_options }}
-          container_method: ${{ needs.init.outputs.codeception_tests_container_method }}
-          themes: ${{ needs.init.outputs.codeception_tests_themes_install }}
-          options: ${{ needs.init.outputs.codeception_tests_themes_options }}
-          update: ${{ needs.init.outputs.codeception_tests_themes_update }}
-          update_options: ${{ needs.init.outputs.codeception_tests_themes_update_options }}
+          container_method: 'exec'
+          organisation: ${{ needs.init.outputs.codeception_tests_composer_configure_organisation }}
+          repositories: ${{ needs.init.outputs.codeception_tests_composer_configure_repositories }}
+          ref: ${{ needs.init.outputs.codeception_tests_composer_configure_ref }}
+          options: ${{ needs.init.outputs.codeception_tests_composer_configure_options }}
+          update: ${{ needs.init.outputs.codeception_tests_composer_configure_update }}
+          update_options: ${{ needs.init.outputs.codeception_tests_composer_configure_update_options }}
+          github_enterprise_token: ${{ secrets.enterprise_github_token }}
+
+      - name: 'Composer require ${{ needs.init.outputs.codeception_tests_composer_require_install }}'
+        if: ${{ needs.init.outputs.codeception_tests_composer_require_install != '' }}
+        uses: 'OXID-eSales/github-actions/composer_require@v0'
+        with:
+          container: ${{ needs.init.outputs.codeception_tests_container }}
+          container_options: ${{ needs.init.outputs.codeception_tests_container_options }}
+          container_method: 'exec'
+          organisation: ${{ needs.init.outputs.codeception_tests_composer_require_organisation }}
+          repositories: ${{ needs.init.outputs.codeception_tests_composer_require_repositories }}
+          ref: ${{ needs.init.outputs.codeception_tests_composer_require_ref }}
+          options: ${{ needs.init.outputs.codeception_tests_composer_require_options }}
+          update: ${{ needs.init.outputs.codeception_tests_composer_require_update }}
+          update_options: ${{ needs.init.outputs.codeception_tests_composer_require_update_options }}
 
       - name: 'Run codeception tests'
         uses: 'OXID-eSales/github-actions/codeception@v1'
@@ -657,17 +768,34 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}        
 
-      - name: Install themes
-        if: ${{ needs.init.outputs.global_is_enterprise == 'false' }}
-        uses: 'OXID-eSales/github-actions/install_themes@v1'
+      - name: 'Composer configure and require ${{ needs.init.outputs.shop_setup_tests_composer_configure_install }}'
+        if: ${{ needs.init.outputs.shop_setup_tests_composer_configure_install != '' }}
+        uses: 'OXID-eSales/github-actions/composer_configure@v0'
         with:
           container: ${{ needs.init.outputs.shop_setup_tests_container }}
           container_options: ${{ needs.init.outputs.shop_setup_tests_container_options }}
           container_method: 'exec'
-          themes: ${{ needs.init.outputs.shop_setup_tests_themes_install }}
-          options: ${{ needs.init.outputs.shop_setup_tests_themes_options }}
-          update: ${{ needs.init.outputs.shop_setup_tests_themes_update }}
-          update_options: ${{ needs.init.outputs.shop_setup_tests_themes_update_options }}
+          organisation: ${{ needs.init.outputs.shop_setup_tests_composer_configure_organisation }}
+          repositories: ${{ needs.init.outputs.shop_setup_tests_composer_configure_repositories }}
+          ref: ${{ needs.init.outputs.shop_setup_tests_composer_configure_ref }}
+          options: ${{ needs.init.outputs.shop_setup_tests_composer_configure_options }}
+          update: ${{ needs.init.outputs.shop_setup_tests_composer_configure_update }}
+          update_options: ${{ needs.init.outputs.shop_setup_tests_composer_configure_update_options }}
+          github_enterprise_token: ${{ secrets.enterprise_github_token }}
+
+      - name: 'Composer require ${{ needs.init.outputs.shop_setup_tests_composer_require_install }}'
+        if: ${{ needs.init.outputs.shop_setup_tests_composer_require_install != '' }}
+        uses: 'OXID-eSales/github-actions/composer_require@v0'
+        with:
+          container: ${{ needs.init.outputs.shop_setup_tests_container }}
+          container_options: ${{ needs.init.outputs.shop_setup_tests_container_options }}
+          container_method: 'exec'
+          organisation: ${{ needs.init.outputs.shop_setup_tests_composer_require_organisation }}
+          repositories: ${{ needs.init.outputs.shop_setup_tests_composer_require_repositories }}
+          ref: ${{ needs.init.outputs.shop_setup_tests_composer_require_ref }}
+          options: ${{ needs.init.outputs.shop_setup_tests_composer_require_options }}
+          update: ${{ needs.init.outputs.shop_setup_tests_composer_require_update }}
+          update_options: ${{ needs.init.outputs.shop_setup_tests_composer_require_update_options }}
 
       - name: 'Run codeception tests'
         uses: 'OXID-eSales/github-actions/codeception@v1'
@@ -711,16 +839,34 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
-      - name: Install themes
-        uses: 'OXID-eSales/github-actions/install_themes@v1'
+      - name: 'Composer configure and require ${{ needs.init.outputs.deprecated_tests_composer_configure_install }}'
+        if: ${{ needs.init.outputs.deprecated_tests_composer_configure_install != '' }}
+        uses: 'OXID-eSales/github-actions/composer_configure@v0'
         with:
           container: ${{ needs.init.outputs.deprecated_tests_container }}
           container_options: ${{ needs.init.outputs.deprecated_tests_container_options }}
-          container_method: ${{ needs.init.outputs.deprecated_tests_container_method }}
-          themes: ${{ needs.init.outputs.deprecated_tests_themes_install }}
-          options: ${{ needs.init.outputs.deprecated_tests_themes_options }}
-          update: ${{ needs.init.outputs.deprecated_tests_themes_update }}
-          update_options: ${{ needs.init.outputs.deprecated_tests_themes_update_options }}
+          container_method: 'exec'
+          organisation: ${{ needs.init.outputs.deprecated_tests_composer_configure_organisation }}
+          repositories: ${{ needs.init.outputs.deprecated_tests_composer_configure_repositories }}
+          ref: ${{ needs.init.outputs.deprecated_tests_composer_configure_ref }}
+          options: ${{ needs.init.outputs.deprecated_tests_composer_configure_options }}
+          update: ${{ needs.init.outputs.deprecated_tests_composer_configure_update }}
+          update_options: ${{ needs.init.outputs.deprecated_tests_composer_configure_update_options }}
+          github_enterprise_token: ${{ secrets.enterprise_github_token }}
+
+      - name: 'Composer require ${{ needs.init.outputs.deprecated_tests_composer_require_install }}'
+        if: ${{ needs.init.outputs.deprecated_tests_composer_require_install != '' }}
+        uses: 'OXID-eSales/github-actions/composer_require@v0'
+        with:
+          container: ${{ needs.init.outputs.deprecated_tests_container }}
+          container_options: ${{ needs.init.outputs.deprecated_tests_container_options }}
+          container_method: 'exec'
+          organisation: ${{ needs.init.outputs.deprecated_tests_composer_require_organisation }}
+          repositories: ${{ needs.init.outputs.deprecated_tests_composer_require_repositories }}
+          ref: ${{ needs.init.outputs.deprecated_tests_composer_require_ref }}
+          options: ${{ needs.init.outputs.deprecated_tests_composer_require_options }}
+          update: ${{ needs.init.outputs.deprecated_tests_composer_require_update }}
+          update_options: ${{ needs.init.outputs.deprecated_tests_composer_require_update_options }}
 
       - name: Copy config file
         run: cp source/vendor/oxid-esales/testing-library/test_config.yml.dist source/test_config.yml

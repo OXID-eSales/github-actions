@@ -38,6 +38,9 @@ Name of the container to run the test in.
 **container_options:** *not required*, *default:*  ''
 Additional options to pass into the container.
 
+**container_method:** *not required*, *default*: 'exec'  
+Whether we use exec to run the command in the existing php container or run to spin up a new one.
+
 **git_sdk_url:** *not required*, *default:* 'https://github.com/OXID-eSales/docker-eshop-sdk.git'  
 URL for the docker-eshop sdk repository to clone.
 

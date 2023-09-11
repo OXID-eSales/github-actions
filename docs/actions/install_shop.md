@@ -17,6 +17,9 @@ Name of the container to run the test in.
 **container_options:** *not required*, *default:*  ''
 Additional options to pass into the container.
 
+**container_method:** *not required*, *default*: 'exec'  
+Whether we use exec to run the command in the existing php container or run to spin up a new one.
+
 **git_enterprise_ref:** *not required*, *no default*  
 Branch to check out for the enterprise repository.
 

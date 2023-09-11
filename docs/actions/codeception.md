@@ -8,6 +8,9 @@ Name of the container to run the test in.
 **container_options:** *not required*, *default:*  -e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex  
 Additional options to pass into the container.
 
+**container_method:** *not required*, *default*: 'exec'  
+Whether we use exec to run the command in the existing php container or run to spin up a new one.
+
 **configuration:** *not required*, *default:*  tests/codeception.yml  
 Name of the configuration file.
 

@@ -158,6 +158,31 @@ outputs:
     value: ${{ steps.yaml.outputs.global_container_options}}
   global_container_method:
     value: ${{ steps.yaml.outputs.global_container_method}}
+  global_composer_configure_install:
+    value: ${{ steps.yaml.outputs.global_composer_configure_install}}
+  global_composer_configure_organisation:
+    value: ${{ steps.yaml.outputs.global_composer_configure_organisation}}
+  global_composer_configure_ref:
+    value: ${{ steps.yaml.outputs.global_composer_configure_ref}}
+  global_composer_configure_options:
+    value: ${{ steps.yaml.outputs.global_composer_configure_options}}
+  global_composer_configure_update:
+    value: ${{ steps.yaml.outputs.global_composer_configure_update}}
+  global_composer_configure_update_options:
+    value: ${{ steps.yaml.outputs.global_composer_configure_update_options}}
+  global_composer_require_install:
+    value: ${{ steps.yaml.outputs.global_composer_require_install}}
+  global_composer_require_organisation:
+    value: ${{ steps.yaml.outputs.global_composer_require_organisation}}
+  global_composer_require_ref:
+    value: ${{ steps.yaml.outputs.global_composer_require_ref}}
+  global_composer_require_options:
+    value: ${{ steps.yaml.outputs.global_composer_require_options}}
+  global_composer_require_update:
+    value: ${{ steps.yaml.outputs.global_composer_require_update}}
+  global_composer_require_update_options:
+    value: ${{ steps.yaml.outputs.global_composer_require_update_options}}
+
   # init variables
   init_docker_login:
     value: ${{ steps.yaml.outputs.init_docker_login}}
@@ -202,7 +227,30 @@ outputs:
     value: ${{ steps.yaml.outputs.shop_setup_tests_themes_update}}
   prepare_shop_themes_update_options:
     value: ${{ steps.yaml.outputs.shop_setup_tests_themes_update_options}}
-
+  prepare_shop_composer_configure_install:
+    value: ${{ steps.yaml.outputs.prepare_shop_composer_configure_install}}
+  prepare_shop_composer_configure_organisation:
+    value: ${{ steps.yaml.outputs.prepare_shop_composer_configure_organisation}}
+  prepare_shop_composer_configure_ref:
+    value: ${{ steps.yaml.outputs.prepare_shop_composer_configure_ref}}
+  prepare_shop_composer_configure_options:
+    value: ${{ steps.yaml.outputs.prepare_shop_composer_configure_options}}
+  prepare_shop_composer_configure_update:
+    value: ${{ steps.yaml.outputs.prepare_shop_composer_configure_update}}
+  prepare_shop_composer_configure_update_options:
+    value: ${{ steps.yaml.outputs.prepare_shop_composer_configure_update_options}}
+  prepare_shop_composer_require_install:
+    value: ${{ steps.yaml.outputs.prepare_shop_composer_require_install}}
+  prepare_shop_composer_require_organisation:
+    value: ${{ steps.yaml.outputs.prepare_shop_composer_require_organisation}}
+  prepare_shop_composer_require_ref:
+    value: ${{ steps.yaml.outputs.prepare_shop_composer_require_ref}}
+  prepare_shop_composer_require_options:
+    value: ${{ steps.yaml.outputs.prepare_shop_composer_require_options}}
+  prepare_shop_composer_require_update:
+    value: ${{ steps.yaml.outputs.prepare_shop_composer_require_update}}
+  prepare_shop_composer_require_update_options:
+    value: ${{ steps.yaml.outputs.prepare_shop_composer_require_update_options}}
   # install_shop variables
   install_shop_matrix_mysql:
     value: ${{ steps.yaml.outputs.install_shop_matrix_mysql}}
@@ -315,6 +363,31 @@ outputs:
     value: ${{ steps.yaml.outputs.codeception_tests_themes_update}}
   codeception_tests_themes_update_options:
     value: ${{ steps.yaml.outputs.codeception_tests_themes_update_options}}
+  codeception_tests_composer_configure_install:
+    value: ${{ steps.yaml.outputs.codeception_tests_composer_configure_install}}
+  codeception_tests_composer_configure_organisation:
+    value: ${{ steps.yaml.outputs.codeception_tests_composer_configure_organisation}}
+  codeception_tests_composer_configure_ref:
+    value: ${{ steps.yaml.outputs.codeception_tests_composer_configure_ref}}
+  codeception_tests_composer_configure_options:
+    value: ${{ steps.yaml.outputs.codeception_tests_composer_configure_options}}
+  codeception_tests_composer_configure_update:
+    value: ${{ steps.yaml.outputs.codeception_tests_composer_configure_update}}
+  codeception_tests_composer_configure_update_options:
+    value: ${{ steps.yaml.outputs.codeception_tests_composer_configure_update_options}}
+  codeception_tests_composer_require_install:
+    value: ${{ steps.yaml.outputs.codeception_tests_composer_require_install}}
+  codeception_tests_composer_require_organisation:
+    value: ${{ steps.yaml.outputs.codeception_tests_composer_require_organisation}}
+  codeception_tests_composer_require_ref:
+    value: ${{ steps.yaml.outputs.codeception_tests_composer_require_ref}}
+  codeception_tests_composer_require_options:
+    value: ${{ steps.yaml.outputs.codeception_tests_composer_require_options}}
+  codeception_tests_composer_require_update:
+    value: ${{ steps.yaml.outputs.codeception_tests_composer_require_update}}
+  codeception_tests_composer_require_update_options:
+    value: ${{ steps.yaml.outputs.codeception_tests_composer_require_update_options}}
+
   codeception_tests_configuration:
     value: ${{ steps.yaml.outputs.codeception_tests_configuration}}
   codeception_tests_build:
@@ -358,6 +431,30 @@ outputs:
     value: ${{ steps.yaml.outputs.shop_setup_tests_themes_update}}
   shop_setup_tests_themes_update_options:
     value: ${{ steps.yaml.outputs.shop_setup_tests_themes_update_options}}
+  shop_setup_tests_composer_configure_install:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_composer_configure_install}}
+  shop_setup_tests_composer_configure_organisation:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_composer_configure_organisation}}
+  shop_setup_tests_composer_configure_ref:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_composer_configure_ref}}
+  shop_setup_tests_composer_configure_options:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_composer_configure_options}}
+  shop_setup_tests_composer_configure_update:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_composer_configure_update}}
+  shop_setup_tests_composer_configure_update_options:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_composer_configure_update_options}}
+  shop_setup_tests_composer_require_install:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_composer_require_install}}
+  shop_setup_tests_composer_require_organisation:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_composer_require_organisation}}
+  shop_setup_tests_composer_require_ref:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_composer_require_ref}}
+  shop_setup_tests_composer_require_options:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_composer_require_options}}
+  shop_setup_tests_composer_require_update:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_composer_require_update}}
+  shop_setup_tests_composer_require_update_options:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_composer_require_update_options}}
   shop_setup_tests_configuration:
     value: ${{ steps.yaml.outputs.shop_setup_tests_configuration}}
   shop_setup_tests_build:
@@ -401,6 +498,30 @@ outputs:
     value: ${{ steps.yaml.outputs.deprecated_tests_themes_update}}
   deprecated_tests_themes_update_options:
     value: ${{ steps.yaml.outputs.deprecated_tests_themes_update_options}}
+  deprecated_tests_composer_configure_install:
+    value: ${{ steps.yaml.outputs.deprecated_tests_composer_configure_install}}
+  deprecated_tests_composer_configure_organisation:
+    value: ${{ steps.yaml.outputs.deprecated_tests_composer_configure_organisation}}
+  deprecated_tests_composer_configure_ref:
+    value: ${{ steps.yaml.outputs.deprecated_tests_composer_configure_ref}}
+  deprecated_tests_composer_configure_options:
+    value: ${{ steps.yaml.outputs.deprecated_tests_composer_configure_options}}
+  deprecated_tests_composer_configure_update:
+    value: ${{ steps.yaml.outputs.deprecated_tests_composer_configure_update}}
+  deprecated_tests_composer_configure_update_options:
+    value: ${{ steps.yaml.outputs.deprecated_tests_composer_configure_update_options}}
+  deprecated_tests_composer_require_install:
+    value: ${{ steps.yaml.outputs.deprecated_tests_composer_require_install}}
+  deprecated_tests_composer_require_organisation:
+    value: ${{ steps.yaml.outputs.deprecated_tests_composer_require_organisation}}
+  deprecated_tests_composer_require_ref:
+    value: ${{ steps.yaml.outputs.deprecated_tests_composer_require_ref}}
+  deprecated_tests_composer_require_options:
+    value: ${{ steps.yaml.outputs.deprecated_tests_composer_require_options}}
+  deprecated_tests_composer_require_update:
+    value: ${{ steps.yaml.outputs.deprecated_tests_composer_require_update}}
+  deprecated_tests_composer_require_update_options:
+    value: ${{ steps.yaml.outputs.deprecated_tests_composer_require_update_options}}
   deprecated_tests_test:
     value: ${{ steps.yaml.outputs.deprecated_tests_test}}
   deprecated_tests_additional_options:

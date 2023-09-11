@@ -1,0 +1,96 @@
+name: 'composer_configure'
+description: 'Configures oxidshop repositories'
+inputs:
+  organisation:
+    type: string
+    required: false
+    description: 'Organisation for the repository'
+    default: 'oxid-esales'
+  repositories:
+    type: string
+    required: true
+    description: 'Space separated list of repositories to configure'
+  ref:
+    type: string
+    required: false
+    description: 'Branch to check out for the enterprise repositories'
+    default: ''
+  options:
+    type: string
+    required: false
+    description: 'Options to pass along to composer when requiring the repositories'
+    default: '--no-update'
+  update:
+    type: boolean
+    required: false
+    description: 'Run composer update after configuring all repositories'
+    default: true
+  update_options:
+    type: string
+    required: false
+    description: 'Options to pass along to composer when running composer update'
+    default: '--no-interaction'
+  container:
+    type: string
+    required: false
+    description: 'Name of the container to run the test in'
+    default: 'php'
+  container_options:
+    type: string
+    required: false
+    description: 'Additional options to pass into the container'
+    default: ''
+  container_method:
+    type: string
+    required: false
+    description: 'Method to execute the commands inside a container, either "run" or "exec"'
+    default: 'exec'
+  enterprise_github_token:
+    type: string
+    required: false
+    description: 'OAuth token to access enterprise repos'
+    default: ''
+    
+runs:
+  using: "composite"
+  steps:
+  - name: Install themes
+    shell: bash
+    run: |
+      if [ -z "${{ inputs.ref }}"]; then
+        REF=""
+      else
+        REF=":${{ inputs.ref }}"
+      fi
+      if [ -n "${{ inputs.enterprise_github_token }}" ]; then
+        echo -e "\033[0;35m###  configure github access ###\033[0m"
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container }} \
+          composer config github-protocols https
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container }} \
+          composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
+      fi
+
+      for REPOSITORY in ${{ inputs.repositories }}; do
+        echo -e "\033[0;35m###  configure ${REPOSITORY}:${REF} ###\033[0m"
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container }} \
+          composer config repositories.${{ inputs.organisation }}/${REPOSITORY} git "https://github.com/${{ inputs.organisation }}/${REPOSITORY}.git"
+        echo -e "\033[0;35m###  require "${{ inputs.organisation }}/${REPOSITORY}${REF} with ${{ inputs.options }} ###\033[0m"
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container }} \
+          composer require "${{ inputs.organisation }}/${REPOSITORY}${REF}" ${{ inputs.options }}
+      done
+
+      if [ '${{ inputs.update }}' == 'true' ]; then
+        echo -e "\033[0;35m### Running composer update with ${{ inputs.update_options }}\033[0m"
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container }} \
+          composer update ${{ inputs.update_options }}
+      fi

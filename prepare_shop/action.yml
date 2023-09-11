@@ -99,22 +99,60 @@ inputs:
     required: false
     description: 'Space separated list of extra services to add'
     default: 'selenium-chrome'
-  themes_install:
+  composer_configure_install:
     type: string
     required: false
-    description: 'Space separated list of themes to install'
+    description: 'Space separated list of repositories to configure'
     default: ''
-  themes_options:
+  composer_configure_organisation:
+    type: string
+    required: false
+    description: 'The organisation for the repositories'
+    default: 'oxid-esales'
+  composer_configure_ref:
+    type: string
+    description: 'Git reference used in require'
+    default: ''
+  composer_configure_options:
+    type: string
+    required: false
+    description: 'Options to pass along to composer when requiring the repositories'
+    default: '--with-all-dependencies'
+  composer_configure_update:
+    type: string
+    required: false
+    description: 'Run composer update after requiring all repositories'
+    default: true
+  composer_configure_update_options:
     type: string
     required: false
     description: 'Options to pass along to composer during install'
-    default: '--with-all-dependencies'
-  themes_update:
+    default: '--no-interaction'
+  composer_require_install:
     type: string
     required: false
-    description: 'Run composer update after installing all themes'
+    description: 'Space separated list of repositories to require'
+    default: ''
+  composer_require_organisation:
+    type: string
+    required: false
+    description: 'The organisation for the repositories'
+    default: 'oxid-esales'
+  composer_require_ref:
+    type: string
+    description: 'Git reference used in require'
+    default: ''
+  composer_require_options:
+    type: string
+    required: false
+    description: 'Options to pass along to composer when requiring the repositories'
+    default: '--with-all-dependencies'
+  composer_require_update:
+    type: string
+    required: false
+    description: 'Run composer update after requiring all repositories'
     default: true
-  themes_update_options:
+  composer_require_update_options:
     type: string
     required: false
     description: 'Options to pass along to composer during install'
@@ -233,42 +271,34 @@ runs:
           docker logs -n 200 $c
         done
 
-    - name: Require PE, EE, Twig component, Admin theme, Apex
-      if: ${{ inputs.is_enterprise == 'true' }}
-      shell: bash
-      run: |
-        echo -e "\033[0;35m###  configure github access ###\033[0m"
-        $EXEC_PHP composer config github-protocols https
-        $EXEC_PHP composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
-        echo -e "\033[0;35m###  configure oxidshop-pe ###\033[0m"
-        $EXEC_PHP composer config repositories.oxid-esales/oxideshop-pe git "https://github.com/OXID-eSales/oxideshop_pe.git"
-        echo -e "\033[0;35m###  configure oxidshop-ee ###\033[0m"
-        $EXEC_PHP composer config repositories.oxid-esales/oxideshop-ee git "https://github.com/OXID-eSales/oxideshop_ee.git"
-        echo -e "\033[0;35m###  configure twig-component-pe ###\033[0m"
-        $EXEC_PHP composer config repositories.oxid-esales/twig-component-pe git "https://github.com/OXID-eSales/twig-component-pe.git"
-        echo -e "\033[0;35m###  configure twig-component-ee ###\033[0m"
-        $EXEC_PHP composer config repositories.oxid-esales/twig-component-ee git "https://github.com/OXID-eSales/twig-component-ee.git"
-        echo -e "\033[0;35m###  require oxideshop-pe:dev-${{ inputs.git_enterprise_ref }} ###\033[0m"
-        $EXEC_PHP composer require "oxid-esales/oxideshop-pe:dev-${{ inputs.git_enterprise_ref }}" --no-update
-        echo -e "\033[0;35m###  require oxideshop-ee:dev-${{ inputs.git_enterprise_ref }} ###\033[0m"
-        $EXEC_PHP composer require "oxid-esales/oxideshop-ee:dev-${{ inputs.git_enterprise_ref }}" --no-update
-        echo -e "\033[0;35m###  require twig-component-pe:dev-${{ inputs.git_enterprise_ref }} ###\033[0m"
-        $EXEC_PHP composer require "oxid-esales/twig-component-ee:dev-${{ inputs.git_enterprise_ref }}" --no-update
-        echo -e "\033[0;35m###  require codeception-modules:dev-${{ inputs.git_enterprise_ref }} ###\033[0m"
-        $EXEC_PHP composer require "oxid-esales/codeception-modules:dev-${{ inputs.git_enterprise_ref }}" --no-update
-        echo -e "\033[0;35m###  require codeception-page-objects:dev-${{ inputs.git_enterprise_ref }} ###\033[0m"
-        $EXEC_PHP composer require "oxid-esales/codeception-page-objects:dev-${{ inputs.git_enterprise_ref }}" --no-update
-
-    - name: 'Install Themes ${{ inputs.themes_install }}'
-      if: ${{ inputs.themes_install != '' }}
-      uses: 'OXID-eSales/github-actions/install_themes@v1'
+    - name: 'Composer configure and require ${{ inputs.composer_configure_install }}'
+      if: ${{ inputs.composer_configure_install != '' }}
+      uses: 'OXID-eSales/github-actions/composer_configure@v0'
       with:
         container: ${{ inputs.container }}
         container_options: ${{ inputs.container_options }}
-        themes: ${{ inputs.themes_install }}
-        options: ${{ inputs.themes_options }}
-        update: ${{ inputs.themes_update }}
-        update_options: ${{ inputs.themes_update_options }}
+        container_method: 'exec'
+        organisation: ${{ inputs.composer_configure_organisation }}
+        repositories: ${{ inputs.composer_configure_repositories }}
+        ref: ${{ inputs.composer_configure_ref }}
+        options: ${{ inputs.composer_configure_options }}
+        update: ${{ inputs.composer_configure_update }}
+        update_options: ${{ inputs.composer_configure_update_options }}
+        github_enterprise_token: ${{ inputs.enterprise_github_token }}
+
+    - name: 'Composer require ${{ inputs.composer_require_install }}'
+      if: ${{ inputs.composer_require_install != '' }}
+      uses: 'OXID-eSales/github-actions/composer_require@v0'
+      with:
+        container: ${{ inputs.container }}
+        container_options: ${{ inputs.container_options }}
+        container_method: 'exec'
+        organisation: ${{ inputs.composer_require_organisation }}
+        repositories: ${{ inputs.composer_require_repositories }}
+        ref: ${{ inputs.composer_require_ref }}
+        options: ${{ inputs.composer_require_options }}
+        update: ${{ inputs.composer_require_update }}
+        update_options: ${{ inputs.composer_require_update_options }}
 
     - name: Install dependencies
       shell: bash
