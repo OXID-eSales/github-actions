@@ -1031,15 +1031,7 @@ jobs:
                 { "type": "section",
                   "text":
                     { "type": "mrkdwn",
-                      "text": "
-                      \n* prepare_shop: ${{ needs.prepare_shop.result=='success' && ':white_check_mark:' || ':x:' }}
-                      \n* install_shop: ${{ needs.install_shop.result=='success' && ':white_check_mark:' || ':x:' }}
-                      \n* unit_tests: ${{ needs.unit_tests.result=='success' && ':white_check_mark:' || ':x:' }}
-                      \n* integration_tests ${{ needs.integration_tests.result=='success' && ':white_check_mark:' || ':x:' }}
-                      \n* codeception_tests ${{ needs.codeception_tests.result=='success' && ':white_check_mark:' || ':x:' }}
-                      \n* shop_setup_tests ${{ needs.shop_setup_tests.result=='success' && ':white_check_mark:' || ':x:' }}
-                      \n* sonarcloud: ${{ needs.sonarcloud.result=='success' && ':white_check_mark:' || ':x:' }}
-                      \n* phpcs_tests: ${{ needs.phpcs_tests.result=='success' && ':white_check_mark:' || ':x:' }}"
+                      "text": "\n* prepare_shop: ${{ needs.prepare_shop.result=='success' && ':white_check_mark:' || ':x:' }}\n* install_shop: ${{ needs.install_shop.result=='success' && ':white_check_mark:' || ':x:' }}\n* unit_tests: ${{ needs.unit_tests.result=='success' && ':white_check_mark:' || ':x:' }}\n* integration_tests: ${{ needs.integration_tests.result=='success' && ':white_check_mark:' || ':x:' }}\n* codeception_tests: ${{ needs.codeception_tests.result=='success' && ':white_check_mark:' || ':x:' }}\n* shop_setup_tests: ${{ needs.shop_setup_tests.result=='success' && ':white_check_mark:' || ':x:' }}\n* sonarcloud: ${{ needs.sonarcloud.result=='success' && ':white_check_mark:' || ':x:' }}\n* phpcs_tests: ${{ needs.phpcs_tests.result=='success' && ':white_check_mark:' || ':x:' }}"
                     }
                 },
                 { "type": "divider" }
