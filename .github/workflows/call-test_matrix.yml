@@ -852,7 +852,7 @@ jobs:
           options: ${{ needs.init.outputs.deprecated_tests_composer_configure_options }}
           update: ${{ needs.init.outputs.deprecated_tests_composer_configure_update }}
           update_options: ${{ needs.init.outputs.deprecated_tests_composer_configure_update_options }}
-          github_enterprise_token: ${{ secrets.enterprise_github_token }}
+          enterprise_github_token: ${{ secrets.enterprise_github_token }}
 
       - name: 'Composer require ${{ needs.init.outputs.deprecated_tests_composer_require_install }}'
         if: ${{ needs.init.outputs.deprecated_tests_composer_require_install != '' }}
