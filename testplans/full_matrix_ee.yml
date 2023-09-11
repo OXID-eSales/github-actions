@@ -318,6 +318,8 @@ deprecated_tests:
       install: 'oxideshop-pe oxideshop-ee twig-component-pe twig-component-ee tests-deprecated-pe tests-deprecated-ee'
     require:
       install: 'twig-admin-theme apex-theme tests-deprecated-ce'
+  # Name of the config file to copy
+  config_file: 'vendor/oxid-esales/testing-library/test_config.yml.dist'
   # Name of the test or folder to run
   test: 'AllTestsUnit'
   # Optional: Additional options to pass to phpunit

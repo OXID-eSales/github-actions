@@ -54,7 +54,7 @@ jobs:
     steps:
       - name: 'Load Testplan'
         id: yaml
-        uses: 'OXID-eSales/github-actions/load_testplan@v1'
+        uses: 'OXID-eSales/github-actions/load_testplan@v0'
         with:
           testplan: ${{ inputs.testplan }}
       - name: 'Print Testplan'

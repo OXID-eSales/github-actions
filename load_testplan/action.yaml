@@ -490,14 +490,6 @@ outputs:
     value: ${{ steps.yaml.outputs.deprecated_tests_container_method}}
   deprecated_tests_cache_bucket:
     value: ${{ steps.yaml.outputs.deprecated_tests_cache_bucket}}
-  deprecated_tests_themes_install:
-    value: ${{ steps.yaml.outputs.deprecated_tests_themes_install}}
-  deprecated_tests_themes_options:
-    value: ${{ steps.yaml.outputs.deprecated_tests_themes_options}}
-  deprecated_tests_themes_update:
-    value: ${{ steps.yaml.outputs.deprecated_tests_themes_update}}
-  deprecated_tests_themes_update_options:
-    value: ${{ steps.yaml.outputs.deprecated_tests_themes_update_options}}
   deprecated_tests_composer_configure_install:
     value: ${{ steps.yaml.outputs.deprecated_tests_composer_configure_install}}
   deprecated_tests_composer_configure_organisation:
