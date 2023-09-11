@@ -705,7 +705,7 @@ jobs:
           container_options: ${{ needs.init.outputs.codeception_tests_container_options }}
           container_method: 'exec'
           organisation: ${{ needs.init.outputs.codeception_tests_composer_configure_organisation }}
-          repositories: ${{ needs.init.outputs.codeception_tests_composer_configure_repositories }}
+          repositories: ${{ needs.init.outputs.codeception_tests_composer_configure_install }}
           ref: ${{ needs.init.outputs.codeception_tests_composer_configure_ref }}
           options: ${{ needs.init.outputs.codeception_tests_composer_configure_options }}
           update: ${{ needs.init.outputs.codeception_tests_composer_configure_update }}
@@ -720,7 +720,7 @@ jobs:
           container_options: ${{ needs.init.outputs.codeception_tests_container_options }}
           container_method: 'exec'
           organisation: ${{ needs.init.outputs.codeception_tests_composer_require_organisation }}
-          repositories: ${{ needs.init.outputs.codeception_tests_composer_require_repositories }}
+          repositories: ${{ needs.init.outputs.codeception_tests_composer_require_install }}
           ref: ${{ needs.init.outputs.codeception_tests_composer_require_ref }}
           options: ${{ needs.init.outputs.codeception_tests_composer_require_options }}
           update: ${{ needs.init.outputs.codeception_tests_composer_require_update }}
@@ -776,7 +776,7 @@ jobs:
           container_options: ${{ needs.init.outputs.shop_setup_tests_container_options }}
           container_method: 'exec'
           organisation: ${{ needs.init.outputs.shop_setup_tests_composer_configure_organisation }}
-          repositories: ${{ needs.init.outputs.shop_setup_tests_composer_configure_repositories }}
+          repositories: ${{ needs.init.outputs.shop_setup_tests_composer_configure_install }}
           ref: ${{ needs.init.outputs.shop_setup_tests_composer_configure_ref }}
           options: ${{ needs.init.outputs.shop_setup_tests_composer_configure_options }}
           update: ${{ needs.init.outputs.shop_setup_tests_composer_configure_update }}
@@ -791,7 +791,7 @@ jobs:
           container_options: ${{ needs.init.outputs.shop_setup_tests_container_options }}
           container_method: 'exec'
           organisation: ${{ needs.init.outputs.shop_setup_tests_composer_require_organisation }}
-          repositories: ${{ needs.init.outputs.shop_setup_tests_composer_require_repositories }}
+          repositories: ${{ needs.init.outputs.shop_setup_tests_composer_require_install }}
           ref: ${{ needs.init.outputs.shop_setup_tests_composer_require_ref }}
           options: ${{ needs.init.outputs.shop_setup_tests_composer_require_options }}
           update: ${{ needs.init.outputs.shop_setup_tests_composer_require_update }}
@@ -847,7 +847,7 @@ jobs:
           container_options: ${{ needs.init.outputs.deprecated_tests_container_options }}
           container_method: 'exec'
           organisation: ${{ needs.init.outputs.deprecated_tests_composer_configure_organisation }}
-          repositories: ${{ needs.init.outputs.deprecated_tests_composer_configure_repositories }}
+          repositories: ${{ needs.init.outputs.deprecated_tests_composer_configure_install }}
           ref: ${{ needs.init.outputs.deprecated_tests_composer_configure_ref }}
           options: ${{ needs.init.outputs.deprecated_tests_composer_configure_options }}
           update: ${{ needs.init.outputs.deprecated_tests_composer_configure_update }}
@@ -862,7 +862,7 @@ jobs:
           container_options: ${{ needs.init.outputs.deprecated_tests_container_options }}
           container_method: 'exec'
           organisation: ${{ needs.init.outputs.deprecated_tests_composer_require_organisation }}
-          repositories: ${{ needs.init.outputs.deprecated_tests_composer_require_repositories }}
+          repositories: ${{ needs.init.outputs.deprecated_tests_composer_require_install }}
           ref: ${{ needs.init.outputs.deprecated_tests_composer_require_ref }}
           options: ${{ needs.init.outputs.deprecated_tests_composer_require_options }}
           update: ${{ needs.init.outputs.deprecated_tests_composer_require_update }}
