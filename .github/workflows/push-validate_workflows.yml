@@ -9,7 +9,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - yamllint:
+      - name: Lint yaml files
+      - id: yamllint
         uses: ibiqlik/action-yamllint@v3
         with:
           format: 'github'
@@ -21,7 +22,7 @@ jobs:
               trailing-spaces:
                 level: warning
 
-      - name: actionlint
+      - name: Run actionlint
         id: actionlint
         uses: raven-actions/actionlint@v1
 
