@@ -75,16 +75,16 @@ runs:
         fi
 
         for REPOSITORY in ${{ inputs.repositories }}; do
-          echo -e "\033[0;35m###  configure ${REPOSITORY}${REF} ###\033[0m"
+          echo -e "\033[0;35m###  configure ${{ inputs.organisation|lower }}/${REPOSITORY} ###\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
             ${{ inputs.container }} \
-            composer config repositories.${{ inputs.organisation }}/${REPOSITORY} git "https://github.com/${{ inputs.organisation }}/${REPOSITORY}.git"
-          echo -e "\033[0;35m###  require "${{ inputs.organisation }}/${REPOSITORY}${REF} with ${{ inputs.options }} ###\033[0m"
+            composer config repositories.${{ inputs.organisation|lower }}/${REPOSITORY} git "https://github.com/${{ inputs.organisation }}/${REPOSITORY}.git"
+          echo -e "\033[0;35m###  require "${{ inputs.organisation|lower }}/${REPOSITORY}${REF} with ${{ inputs.options }} ###\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
             ${{ inputs.container }} \
-            composer require "${{ inputs.organisation }}/${REPOSITORY}${REF}" ${{ inputs.options }}
+            composer require "${{ inputs.organisation|lower }}/${REPOSITORY}${REF}" ${{ inputs.options }}
         done
 
         if [ '${{ inputs.update }}' == 'true' ]; then

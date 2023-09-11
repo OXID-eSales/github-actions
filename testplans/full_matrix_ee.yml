@@ -47,7 +47,7 @@ global:
       # Space separated list of repositories to configure
       install: 'oxideshop-pe oxideshop-ee twig-component-pe twig-component-ee codeception-modules codeception-page-objects'
       # The organisation for the repositories
-      organisation: 'oxid-esales'
+      organisation: 'OXID-eSales'
       # The git reference to install
       ref: &dev_ref dev-b-8.0.x
       # Options to pass along to composer when requiring the repositories
@@ -60,7 +60,7 @@ global:
       # Space separated list of repositories to install
       install: 'twig-admin-theme apex-theme'
       # The organisation for the repositories
-      organisation: 'oxid-esales'
+      organisation: 'OXID-eSales'
       # The git reference to install
       ref: *dev_ref
       # Options to pass along to composer during install

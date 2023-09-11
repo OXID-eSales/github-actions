@@ -58,11 +58,11 @@ runs:
           REF=":${{ inputs.ref }}"
         fi
         for REPOSITORY in ${{ inputs.repositories }}; do
-          echo -e "\033[0;35m### Requiring ${REPOSITORY}${REF} with ${{ inputs.options }}\033[0m"
+          echo -e "\033[0;35m### Requiring ${{ inputs.organisation|lower }}/${REPOSITORY}${REF} with ${{ inputs.options }}\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
             ${{ inputs.container }} \
-            composer require "${{ inputs.organisation }}/${REPOSITORY}${REF}" ${{ inputs.options }}
+            composer require "${{ inputs.organisation|lower }}/${REPOSITORY}${REF}" ${{ inputs.options }}
         done
         if [ '${{ inputs.update }}' == 'true' ]; then
           echo -e "\033[0;35m### Running composer update with ${{ inputs.update_options }}\033[0m"
