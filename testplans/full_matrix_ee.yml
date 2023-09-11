@@ -45,7 +45,7 @@ global:
     # Enterprise repositories to configure (and require)
     configure:
       # Space separated list of repositories to configure
-      install: 'oxideshop-pe oxideshop-ee twig-component-pe twig-component-ee codeception-modules codeception-page-objects'
+      install: 'oxideshop_pe oxideshop_ee twig-component-pe twig-component-ee codeception-modules codeception-page-objects'
       # The organisation for the repositories
       organisation: 'OXID-eSales'
       # The git reference to install

@@ -76,16 +76,18 @@ runs:
         fi
 
         for REPOSITORY in ${{ inputs.repositories }}; do
-          echo -e "\033[0;35m###  configure ${ORG}/${REPOSITORY} ###\033[0m"
+          # compensate for repos with _ and config with -
+          DASHED_REPO=$(echo "${REPOSITORY}"|tr '_', '-')
+          echo -e "\033[0;35m###  configure ${ORG}/${DASHED_REPO} ###\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
             ${{ inputs.container }} \
-            composer config repositories.${ORG}/${REPOSITORY} git "https://github.com/${{ inputs.organisation }}/${REPOSITORY}.git"
-          echo -e "\033[0;35m###  require "${ORG}/${REPOSITORY}${REF} with ${{ inputs.options }} ###\033[0m"
+            composer config repositories.${ORG}/${DASHED_REPO} git "https://github.com/${{ inputs.organisation }}/${REPOSITORY}.git"
+          echo -e "\033[0;35m###  require "${ORG}/${DASHED_REPO}${REF} with ${{ inputs.options }} ###\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
             ${{ inputs.container }} \
-            composer require "${ORG}/${REPOSITORY}${REF}" ${{ inputs.options }}
+            composer require "${ORG}/${DASHED_REPO}${REF}" ${{ inputs.options }}
         done
 
         if [ '${{ inputs.update }}' == 'true' ]; then
