@@ -267,6 +267,7 @@ shop_setup_tests:
   cache_bucket: *cache_bucket
   composer: *composer
   # We pass the configuration parameters into the container here
+  # yamllint disable-line rule:line-length
   container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e DB_NAME=setup_test -e DB_USERNAME=root -e DB_PASSWORD=root -e DB_HOST=mysql -e DB_PORT=3306 -e SHOP_URL=http://localhost.local/ -e SHOP_SOURCE_PATH=/var/www/source/'
   # Name of the configuration file
   configuration: 'tests/codeception.yml'

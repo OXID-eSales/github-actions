@@ -31,13 +31,13 @@ on:
         required: false
       CACHE_ENDPOINT:
         # description: 'Endpoint for tespkg/actions-cache@v1'
-        required: false # only for ee
+        required: false    # only for ee
       CACHE_ACCESS_KEY:
         # description: 'Access key for tespkg/actions-cache@v1'
-        required: false # only for ee
+        required: false    # only for ee
       CACHE_SECRET_KEY:
         # description: 'Secret key for tespkg/actions-cache@v1'
-        required: false # only for ee
+        required: false    # only for ee
       enterprise_github_token:
         # description: 'OAuth token to access enterprise repos'
         required: false
@@ -47,7 +47,7 @@ on:
       SLACK_WEBHOOK_URL:
         required: false
         # description: Webhook for posting to SLACK
- 
+
 jobs:
   init:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
@@ -555,7 +555,7 @@ jobs:
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
   install_shop:
-    needs: ['init','prepare_shop']
+    needs: ['init', 'prepare_shop']
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.install_shop_matrix_php) }}
@@ -991,6 +991,7 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     env:
       SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"
+      # yamllint disable-line rule:line-length
       overall_result: ${{ needs.prepare_shop.result=='success' && needs.install_shop.result=='success' && needs.unit_tests.result=='success' && needs.integration_tests.result=='success' && needs.codeception_tests.result=='success' && needs.shop_setup_tests.result=='success' && needs.sonarcloud.result=='success' && needs.phpcs_tests.result=='success'}}
     steps:
       - name: 'Docker logout'
@@ -1002,6 +1003,7 @@ jobs:
         if: ${{ env.SLACK_WEBHOOK != '' }}
         uses: slackapi/slack-github-action@v1
         with:
+          # yamllint disable rule:line-length
           payload: >
             {
               "text": "${{ github.workflow }} on ${{ github.repository }} with testplan ${{ inputs.testplan }} by ${{ github.actor }} ${{ env.overall_result=='success' && 'Successful' || 'Failed' }}",
@@ -1043,6 +1045,7 @@ jobs:
                 { "type": "divider" }
               ]
             }
+          # yamllint enable rule:line-length
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK

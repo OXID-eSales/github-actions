@@ -82,7 +82,7 @@ inputs:
   is_enterprise:
     type: boolean
     required: false
-    description: 'This action can be used on the community edition (ce) and enterprise edition (ee) of the shop. On top of setting this to true, a few extra variables/secrets must be provided for using the action on ee.'
+    description: 'Whether we prepare a community or enterprise edition'
     default: false
   custom_ini_error_reporting:
     type: string
@@ -192,6 +192,7 @@ runs:
     - name: Initialize
       id: init
       shell: bash
+      # yamllint disable rule:line-length
       run: |
         if [ "${{ inputs.is_enterprise}}" == "true" ]; then
           CACHED_NAME="preparedShop-ee-${{ inputs.git_enterprise_ref }}-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}"
@@ -201,7 +202,7 @@ runs:
         echo "prepared_shop=$CACHED_NAME" | tee -a $GITHUB_OUTPUT
         echo "EXEC_PHP=docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} ${{ inputs.container }}" | tee -a $GITHUB_ENV
         echo "\033[0;35m### Caching the installation as ${CACHED_NAME}\033[0m"
-
+      # yamllint enable rule:line-length
     - name: Clone testing environment master
       shell: bash
       run: git clone --depth 1 ${{ inputs.git_sdk_url }} --branch ${{ inputs.git_sdk_ref }} --single-branch .
