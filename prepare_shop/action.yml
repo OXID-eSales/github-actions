@@ -280,7 +280,7 @@ runs:
         container_options: ${{ inputs.container_options }}
         container_method: 'exec'
         organisation: ${{ inputs.composer_configure_organisation }}
-        repositories: ${{ inputs.composer_configure_repositories }}
+        repositories: ${{ inputs.composer_configure_install }}
         ref: ${{ inputs.composer_configure_ref }}
         options: ${{ inputs.composer_configure_options }}
         update: ${{ inputs.composer_configure_update }}
@@ -295,7 +295,7 @@ runs:
         container_options: ${{ inputs.container_options }}
         container_method: 'exec'
         organisation: ${{ inputs.composer_require_organisation }}
-        repositories: ${{ inputs.composer_require_repositories }}
+        repositories: ${{ inputs.composer_require_install }}
         ref: ${{ inputs.composer_require_ref }}
         options: ${{ inputs.composer_require_options }}
         update: ${{ inputs.composer_require_update }}
@@ -303,7 +303,7 @@ runs:
 
     - name: Install dependencies
       shell: bash
-      if: ${{ inputs.themes_install == '' }}
+      if: ${{ inputs.composer_configure_install == '' && inputs.composer_require_install == '' }}
       run: |
         $EXEC_PHP composer update --no-interaction
 
