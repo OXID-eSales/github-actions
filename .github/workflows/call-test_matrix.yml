@@ -1011,27 +1011,32 @@ jobs:
           # yamllint disable rule:line-length
           payload: >
             {
-              "text": "${{ github.workflow }} on ${{ github.repository }} with testplan ${{ inputs.testplan }} by ${{ github.actor }} ${{ env.overall_result=='success' && 'Successful' || 'Failed' }}",
               "blocks": [
                 { "type": "header",
                   "text":
                     { "type": "plain_text",
                       "emoji": true,
-                      "text": "${{ github.workflow }} on ${{ github.repository }}  with testplan ${{ inputs.testplan }} by ${{ github.actor }}"
+                      "text": "${{ github.workflow }} on ${{ github.repository }}  with testplan ${{ inputs.testplan }} by ${{ github.actor }} ${{ env.overall_result=='success' && 'Successful' || 'Failed' }}"
                     }
+                },
+                {
+                "type": "divider"
                 },
                 { "type": "section",
                   "fields": [
                     { "type": "mrkdwn",
-                      "text": "*Status:* ${{ env.overall_result && ':white_check_mark:' || ':x:' }}"
+                      "text": "*Status:* ${{ env.overall_result && ':white_check_mark:' || ':x:' }}\n"
                     },
                     { "type": "mrkdwn",
-                      "text": "*Repository:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.repository }}/actions/runs/${{ github.run_id }}>"
+                      "text": "*Repository:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.repository }}/actions/runs/${{ github.run_id }}>\n"
                     },
                     { "type": "mrkdwn",
-                      "text": "*Testplan:* <${{ inputs.testplan }}>"
+                      "text": "*Testplan:* <${{ inputs.testplan }}>\n"
                     }
                   ]
+                },
+                {
+                "type": "divider"
                 },
                 { "type": "section",
                   "fields": [
