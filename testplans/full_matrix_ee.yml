@@ -305,7 +305,7 @@ deprecated_tests:
   matrix:
     php: *matrix_php
     mysql: *matrix_mysql
-  max_parallel: *max_parallel
+  max_parallel: 1
   container: *container
   cache_bucket: *cache_bucket
   # container options for coverage
