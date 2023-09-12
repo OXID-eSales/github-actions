@@ -152,6 +152,8 @@ outputs:
     value: ${{ steps.yaml.outputs.global_git_enterprise_ref}}
   global_cache_bucket:
     value: ${{ steps.yaml.outputs.global_cache_bucket}}
+  global_docker_login:
+    value: ${{ steps.yaml.outputs.global_docker_login}}
   global_container:
     value: ${{ steps.yaml.outputs.global_container}}
   global_container_options:
@@ -193,6 +195,8 @@ outputs:
     value: ${{ steps.yaml.outputs.prepare_shop_matrix_php}}
   prepare_shop_max_parallel:
     value: ${{ steps.yaml.outputs.prepare_shop_max_parallel}}
+  prepare_shop_docker_login:
+    value: ${{ steps.yaml.outputs.prepare_shop_docker_login}}
   prepare_shop_container:
     value: ${{ steps.yaml.outputs.prepare_shop_container}}
   prepare_shop_container_options:
@@ -258,6 +262,8 @@ outputs:
     value: ${{ steps.yaml.outputs.install_shop_matrix_php}}
   install_shop_max_parallel:
     value: ${{ steps.yaml.outputs.install_shop_max_parallel}}
+  install_shop_docker_login:
+    value: ${{ steps.yaml.outputs.install_shop_docker_login}}
   install_shop_container:
     value: ${{ steps.yaml.outputs.install_shop_container}}
   install_shop_container_options:
@@ -285,6 +291,8 @@ outputs:
     value: ${{ steps.yaml.outputs.unit_tests_matrix_php}}
   unit_tests_max_parallel:
     value: ${{ steps.yaml.outputs.unit_tests_max_parallel}}
+  unit_tests_docker_login:
+    value: ${{ steps.yaml.outputs.unit_tests_docker_login}}
   unit_tests_container:
     value: ${{ steps.yaml.outputs.unit_tests_container}}
   unit_tests_container_options:
@@ -316,6 +324,8 @@ outputs:
     value: ${{ steps.yaml.outputs.integration_tests_matrix_php}}
   integration_tests_max_parallel:
     value: ${{ steps.yaml.outputs.integration_tests_max_parallel}}
+  integration_tests_docker_login:
+    value: ${{ steps.yaml.outputs.integration_tests_docker_login}}
   integration_tests_container:
     value: ${{ steps.yaml.outputs.integration_tests_container}}
   integration_tests_container_options:
@@ -347,6 +357,8 @@ outputs:
     value: ${{ steps.yaml.outputs.codeception_tests_matrix_php}}
   codeception_tests_max_parallel:
     value: ${{ steps.yaml.outputs.codeception_tests_max_parallel}}
+  codeception_tests_docker_login:
+    value: ${{ steps.yaml.outputs.codeception_tests_docker_login}}
   codeception_tests_container:
     value: ${{ steps.yaml.outputs.codeception_tests_container}}
   codeception_tests_container_options:
@@ -387,7 +399,6 @@ outputs:
     value: ${{ steps.yaml.outputs.codeception_tests_composer_require_update}}
   codeception_tests_composer_require_update_options:
     value: ${{ steps.yaml.outputs.codeception_tests_composer_require_update_options}}
-
   codeception_tests_configuration:
     value: ${{ steps.yaml.outputs.codeception_tests_configuration}}
   codeception_tests_build:
@@ -415,6 +426,8 @@ outputs:
     value: ${{ steps.yaml.outputs.shop_setup_tests_matrix_php}}
   shop_setup_tests_max_parallel:
     value: ${{ steps.yaml.outputs.shop_setup_tests_max_parallel}}
+  shop_setup_tests_docker_login:
+    value: ${{ steps.yaml.outputs.shop_setup_tests_docker_login}}
   shop_setup_tests_container:
     value: ${{ steps.yaml.outputs.shop_setup_tests_container}}
   shop_setup_tests_container_options:
@@ -482,6 +495,8 @@ outputs:
     value: ${{ steps.yaml.outputs.deprecated_tests_matrix_php}}
   deprecated_tests_max_parallel:
     value: ${{ steps.yaml.outputs.deprecated_tests_max_parallel}}
+  deprecated_tests_docker_login:
+    value: ${{ steps.yaml.outputs.deprecated_tests_docker_login}}
   deprecated_tests_container:
     value: ${{ steps.yaml.outputs.deprecated_tests_container}}
   deprecated_tests_container_options:
@@ -535,6 +550,8 @@ outputs:
     value: ${{ steps.yaml.outputs.sonarcloud_matrix_php}}
   sonarcloud_max_parallel:
     value: ${{ steps.yaml.outputs.sonarcloud_max_parallel}}
+  sonarcloud_docker_login:
+    value: ${{ steps.yaml.outputs.sonarcloud_docker_login}}
   sonarcloud_target_branch:
     value: ${{ steps.yaml.outputs.sonarcloud_target_branch}}
   sonarcloud_organization:
@@ -558,6 +575,8 @@ outputs:
     value: ${{ steps.yaml.outputs.phpcs_tests_matrix_php}}
   phpcs_tests_max_parallel:
     value: ${{ steps.yaml.outputs.phpcs_tests_max_parallel}}
+  phpcs_tests_docker_login:
+    value: ${{ steps.yaml.outputs.phpcs_tests_docker_login}}
   phpcs_tests_container:
     value: ${{ steps.yaml.outputs.phpcs_tests_container}}
   phpcs_tests_container_options:
@@ -583,5 +602,3 @@ outputs:
     value: ${{ steps.yaml.outputs.finish_matrix_mysql}}
   finish_matrix_php:
     value: ${{ steps.yaml.outputs.finish_matrix_php}}
-  finish_docker_logout:
-    value: ${{ steps.yaml.outputs.finish_docker_logout}}

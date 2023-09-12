@@ -34,6 +34,11 @@ global:
   # - secrets.CACHE_SECRET_KEY
   cache_bucket: &cache_bucket 'oxideshop-ee'
 
+  # Should we log in to docker? If set to "true", you need to set the following secrets:
+  # - secrets.DOCKER_HUB_USER
+  # - secrets.DOCKER_HUB_TOKEN
+  docker_login: &docker_login true
+
   # Name of the container running php
   container: &container 'php'
   # Additional options when running something in the the container
@@ -71,12 +76,6 @@ global:
       # Options to pass along to composer during install
       update_options: '--no-interaction'
 
-init:
-  # Should we log in to docker? If set to "true", you need to set the following secrets:
-  # - secrets.DOCKER_HUB_USER
-  # - secrets.DOCKER_HUB_TOKEN
-  docker_login: &docker_login true
-
 # See docs/actions/prepare_shop.md for more information.
 prepare_shop:
   # Using the global settings here
@@ -84,6 +83,7 @@ prepare_shop:
     php: *matrix_php
     mysql: *matrix_mysql
   max_parallel: *max_parallel
+  docker_login: *docker_login
   container: *container
   container_options: *container_options
   container_method: *container_method
@@ -110,6 +110,7 @@ install_shop:
     php: *matrix_php
     mysql: *matrix_mysql
   max_parallel: *max_parallel
+  docker_login: *docker_login
   container: *container
   container_options: *container_options
   container_method: *container_method
@@ -138,6 +139,7 @@ unit_tests:
     php: *matrix_php
     mysql: *matrix_mysql
   max_parallel: *max_parallel
+  docker_login: *docker_login
   container: *container
   container_options: *container_options
   container_method: *container_method
@@ -175,6 +177,7 @@ integration_tests:
     php: *matrix_php
     mysql: *matrix_mysql
   max_parallel: *max_parallel
+  docker_login: *docker_login
   container: *container
   container_options: *container_options
   container_method: *container_method
@@ -212,6 +215,7 @@ codeception_tests:
     php: *matrix_php
     mysql: *matrix_mysql
   max_parallel: *max_parallel
+  docker_login: *docker_login
   container: *container
   container_method: *container_method
   cache_bucket: *cache_bucket
@@ -262,6 +266,7 @@ shop_setup_tests:
     php: *matrix_php
     mysql: *matrix_mysql
   max_parallel: *max_parallel
+  docker_login: *docker_login
   container: *container
   container_method: *container_method
   cache_bucket: *cache_bucket
@@ -322,5 +327,3 @@ finish:
   matrix:
     php: *matrix_php
     mysql: *matrix_mysql
-  # Whether we should logout from docker, we mirror docker login
-  docker_logout: *docker_login

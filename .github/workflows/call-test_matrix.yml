@@ -73,6 +73,7 @@ jobs:
             global_is_enterprise: ${{ steps.yaml.outputs.global_is_enterprise}}
             global_git_enterprise_ref: ${{ steps.yaml.outputs.global_git_enterprise_ref}}
             global_cache_bucket: ${{ steps.yaml.outputs.global_cache_bucket}}
+            global_docker_login: ${{ steps.yaml.outputs.global_docker_login}}
             global_container: ${{ steps.yaml.outputs.global_container}}
             global_container_options: ${{ steps.yaml.outputs.global_container_options}}
             global_container_method: ${{ steps.yaml.outputs.global_container_method}}
@@ -88,12 +89,11 @@ jobs:
             global_composer_require_options: ${{ steps.yaml.outputs.global_composer_require_options}}
             global_composer_require_update: ${{ steps.yaml.outputs.global_composer_require_update}}
             global_composer_require_update_options: ${{ steps.yaml.outputs.global_composer_require_update_options}}
-            ${PURPLE}### init variables${NO_COLOR}
-            init_docker_login: ${{ steps.yaml.outputs.init_docker_login}}
             ${PURPLE}### prepare_shop variables${NO_COLOR}
             prepare_shop_matrix_mysql: ${{ steps.yaml.outputs.prepare_shop_matrix_mysql}}
             prepare_shop_matrix_php: ${{ steps.yaml.outputs.prepare_shop_matrix_php}}
             prepare_shop_max_parallel: ${{ steps.yaml.outputs.prepare_shop_max_parallel}}
+            prepare_shop_docker_login: ${{ steps.yaml.outputs.prepare_shop_docker_login}}
             prepare_shop_container: ${{ steps.yaml.outputs.prepare_shop_container}}
             prepare_shop_container_options: ${{ steps.yaml.outputs.prepare_shop_container_options}}
             prepare_shop_container_method: ${{ steps.yaml.outputs.prepare_shop_container_method}}
@@ -123,6 +123,7 @@ jobs:
             install_shop_matrix_mysql: ${{ steps.yaml.outputs.install_shop_matrix_mysql}}
             install_shop_matrix_php: ${{ steps.yaml.outputs.install_shop_matrix_php}}
             install_shop_max_parallel: ${{ steps.yaml.outputs.install_shop_max_parallel}}
+            install_shop_docker_login: ${{ steps.yaml.outputs.install_shop_docker_login}}
             install_shop_container: ${{ steps.yaml.outputs.install_shop_container}}
             install_shop_container_options: ${{ steps.yaml.outputs.install_shop_container_options}}
             install_shop_container_method: ${{ steps.yaml.outputs.install_shop_container_method}}
@@ -137,6 +138,7 @@ jobs:
             unit_tests_matrix_mysql: ${{ steps.yaml.outputs.unit_tests_matrix_mysql}}
             unit_tests_matrix_php: ${{ steps.yaml.outputs.unit_tests_matrix_php}}
             unit_tests_max_parallel: ${{ steps.yaml.outputs.unit_tests_max_parallel}}
+            unit_tests_docker_login: ${{ steps.yaml.outputs.unit_tests_docker_login}}
             unit_tests_container: ${{ steps.yaml.outputs.unit_tests_container}}
             unit_tests_container_options: ${{ steps.yaml.outputs.unit_tests_container_options}}
             unit_tests_container_method: ${{ steps.yaml.outputs.unit_tests_container_method}}
@@ -153,6 +155,7 @@ jobs:
             integration_tests_matrix_mysql: ${{ steps.yaml.outputs.integration_tests_matrix_mysql}}
             integration_tests_matrix_php: ${{ steps.yaml.outputs.integration_tests_matrix_php}}
             integration_tests_max_parallel: ${{ steps.yaml.outputs.integration_tests_max_parallel}}
+            integration_tests_docker_login: ${{ steps.yaml.outputs.integration_tests_docker_login}}
             integration_tests_container: ${{ steps.yaml.outputs.integration_tests_container}}
             integration_tests_container_options: ${{ steps.yaml.outputs.integration_tests_container_options}}
             integration_tests_container_method: ${{ steps.yaml.outputs.integration_tests_container_method}}
@@ -169,6 +172,7 @@ jobs:
             codeception_tests_matrix_mysql: ${{ steps.yaml.outputs.codeception_tests_matrix_mysql}}
             codeception_tests_matrix_php: ${{ steps.yaml.outputs.codeception_tests_matrix_php}}
             codeception_tests_max_parallel: ${{ steps.yaml.outputs.codeception_tests_max_parallel}}
+            codeception_tests_docker_login: ${{ steps.yaml.outputs.codeception_tests_docker_login}}
             codeception_tests_container: ${{ steps.yaml.outputs.codeception_tests_container}}
             codeception_tests_container_options: ${{ steps.yaml.outputs.codeception_tests_container_options}}
             codeception_tests_container_method: ${{ steps.yaml.outputs.codeception_tests_container_method}}
@@ -199,6 +203,7 @@ jobs:
             shop_setup_tests_matrix_mysql: ${{ steps.yaml.outputs.shop_setup_tests_matrix_mysql}}
             shop_setup_tests_matrix_php: ${{ steps.yaml.outputs.shop_setup_tests_matrix_php}}
             shop_setup_tests_max_parallel: ${{ steps.yaml.outputs.shop_setup_tests_max_parallel}}
+            shop_setup_tests_docker_login: ${{ steps.yaml.outputs.shop_setup_tests_docker_login}}
             shop_setup_tests_container: ${{ steps.yaml.outputs.shop_setup_tests_container}}
             shop_setup_tests_container_options: ${{ steps.yaml.outputs.shop_setup_tests_container_options}}
             shop_setup_tests_container_method: ${{ steps.yaml.outputs.shop_setup_tests_container_method}}
@@ -229,6 +234,7 @@ jobs:
             deprecated_tests_matrix_mysql: ${{ steps.yaml.outputs.deprecated_tests_matrix_mysql}}
             deprecated_tests_matrix_php: ${{ steps.yaml.outputs.deprecated_tests_matrix_php}}
             deprecated_tests_max_parallel: ${{ steps.yaml.outputs.deprecated_tests_max_parallel}}
+            deprecated_tests_docker_login: ${{ steps.yaml.outputs.deprecated_tests_docker_login}}
             deprecated_tests_container: ${{ steps.yaml.outputs.deprecated_tests_container}}
             deprecated_tests_container_options: ${{ steps.yaml.outputs.deprecated_tests_container_options}}
             deprecated_tests_container_method: ${{ steps.yaml.outputs.deprecated_tests_container_method}}
@@ -256,6 +262,7 @@ jobs:
             sonarcloud_matrix_mysql: ${{ steps.yaml.outputs.sonarcloud_matrix_mysql}}
             sonarcloud_matrix_php: ${{ steps.yaml.outputs.sonarcloud_matrix_php}}
             sonarcloud_max_parallel: ${{ steps.yaml.outputs.sonarcloud_max_parallel}}
+            sonarcloud_docker_login: ${{ steps.yaml.outputs.sonarcloud_docker_login}}
             sonarcloud_target_branch: ${{ steps.yaml.outputs.sonarcloud_target_branch}}
             sonarcloud_organization: ${{ steps.yaml.outputs.sonarcloud_organization}}
             sonarcloud_project_key: ${{ steps.yaml.outputs.sonarcloud_project_key}}
@@ -263,19 +270,29 @@ jobs:
             sonarcloud_parameters: ${{ steps.yaml.outputs.sonarcloud_parameters}}
             sonarcloud_internal_project_name: ${{ steps.yaml.outputs.sonarcloud_internal_project_name}}
             sonarcloud_internal_parameters: ${{ steps.yaml.outputs.sonarcloud_internal_parameters}}
+            ${PURPLE}### phpcs_tests variables${NO_COLOR}
+            phpcs_tests_skip: ${{ steps.yaml.outputs.phpcs_tests_skip}}
+            phpcs_tests_matrix_mysql: ${{ steps.yaml.outputs.phpcs_tests_matrix_mysql}}
+            phpcs_tests_matrix_php: ${{ steps.yaml.outputs.phpcs_tests_matrix_php}}
+            phpcs_tests_max_parallel: ${{ steps.yaml.outputs.phpcs_tests_max_parallel}}
+            phpcs_tests_docker_login: ${{ steps.yaml.outputs.phpcs_tests_docker_login}}
+            phpcs_tests_container: ${{ steps.yaml.outputs.phpcs_tests_container}}
+            phpcs_tests_container_options: ${{ steps.yaml.outputs.phpcs_tests_container_options}}
+            phpcs_tests_container_method: ${{ steps.yaml.outputs.phpcs_tests_container_method}}
+            phpcs_tests_cache_bucket: ${{ steps.yaml.outputs.phpcs_tests_cache_bucket}}
+            phpcs_tests_configuration: ${{ steps.yaml.outputs.phpcs_tests_configuration}}
+            phpcs_tests_test: ${{ steps.yaml.outputs.phpcs_tests_test}}
+            phpcs_tests_additional_options: ${{ steps.yaml.outputs.phpcs_tests_additional_options}}
+            phpcs_tests_logfile_artifact: ${{ steps.yaml.outputs.phpcs_tests_logfile_artifact}}
+            phpcs_tests_output_files: ${{ steps.yaml.outputs.phpcs_tests_output_files}}
+            phpcs_tests_coverage_path: ${{ steps.yaml.outputs.phpcs_tests_coverage_path}}
+            phpcs_tests_failure_pattern: ${{ steps.yaml.outputs.phpcs_tests_failure_pattern}}      
             ${PURPLE}### finish variables${NO_COLOR}
             finish_skip: ${{ steps.yaml.outputs.finish_skip}}
             finish_matrix_mysql: ${{ steps.yaml.outputs.finish_matrix_mysql}}
             finish_matrix_php: ${{ steps.yaml.outputs.finish_matrix_php}}
-            finish_docker_logout: ${{ steps.yaml.outputs.finish_docker_logout}}
           EOF
-      - name: Login to Docker Hub
-        if: ${{ steps.yaml.outputs.init_docker_login == 'true' }}
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_HUB_USER }}
-          password: ${{ secrets.DOCKER_HUB_TOKEN }}
-          logout: false
+
     outputs:
       # workflow variables
       workflow_matrix_mysql: ${{ steps.yaml.outputs.workflow_matrix_mysql}}
@@ -288,6 +305,7 @@ jobs:
       global_is_enterprise: ${{ steps.yaml.outputs.global_is_enterprise}}
       global_git_enterprise_ref: ${{ steps.yaml.outputs.global_git_enterprise_ref}}
       global_cache_bucket: ${{ steps.yaml.outputs.global_cache_bucket}}
+      global_docker_login: ${{ steps.yaml.outputs.global_docker_login}}
       global_container: ${{ steps.yaml.outputs.global_container}}
       global_container_options: ${{ steps.yaml.outputs.global_container_options}}
       global_container_method: ${{ steps.yaml.outputs.global_container_method}}
@@ -303,12 +321,11 @@ jobs:
       global_composer_require_options: ${{ steps.yaml.outputs.global_composer_require_options}}
       global_composer_require_update: ${{ steps.yaml.outputs.global_composer_require_update}}
       global_composer_require_update_options: ${{ steps.yaml.outputs.global_composer_require_update_options}}
-      # init variables
-      init_docker_login: ${{ steps.yaml.outputs.init_docker_login}}
       # prepare_shop variables
       prepare_shop_matrix_mysql: ${{ steps.yaml.outputs.prepare_shop_matrix_mysql}}
       prepare_shop_matrix_php: ${{ steps.yaml.outputs.prepare_shop_matrix_php}}
       prepare_shop_max_parallel: ${{ steps.yaml.outputs.prepare_shop_max_parallel}}
+      prepare_shop_docker_login: ${{ steps.yaml.outputs.prepare_shop_docker_login}}
       prepare_shop_container: ${{ steps.yaml.outputs.prepare_shop_container}}
       prepare_shop_container_options: ${{ steps.yaml.outputs.prepare_shop_container_options}}
       prepare_shop_container_method: ${{ steps.yaml.outputs.prepare_shop_container_method}}
@@ -338,6 +355,7 @@ jobs:
       install_shop_matrix_mysql: ${{ steps.yaml.outputs.install_shop_matrix_mysql}}
       install_shop_matrix_php: ${{ steps.yaml.outputs.install_shop_matrix_php}}
       install_shop_max_parallel: ${{ steps.yaml.outputs.install_shop_max_parallel}}
+      install_shop_docker_login: ${{ steps.yaml.outputs.install_shop_docker_login}}
       install_shop_container: ${{ steps.yaml.outputs.install_shop_container}}
       install_shop_container_options: ${{ steps.yaml.outputs.install_shop_container_options}}
       install_shop_container_method: ${{ steps.yaml.outputs.install_shop_container_method}}
@@ -352,6 +370,7 @@ jobs:
       unit_tests_matrix_mysql: ${{ steps.yaml.outputs.unit_tests_matrix_mysql}}
       unit_tests_matrix_php: ${{ steps.yaml.outputs.unit_tests_matrix_php}}
       unit_tests_max_parallel: ${{ steps.yaml.outputs.unit_tests_max_parallel}}
+      unit_tests_docker_login: ${{ steps.yaml.outputs.unit_tests_docker_login}}
       unit_tests_container: ${{ steps.yaml.outputs.unit_tests_container}}
       unit_tests_container_options: ${{ steps.yaml.outputs.unit_tests_container_options}}
       unit_tests_container_method: ${{ steps.yaml.outputs.unit_tests_container_method}}
@@ -368,6 +387,7 @@ jobs:
       integration_tests_matrix_mysql: ${{ steps.yaml.outputs.integration_tests_matrix_mysql}}
       integration_tests_matrix_php: ${{ steps.yaml.outputs.integration_tests_matrix_php}}
       integration_tests_max_parallel: ${{ steps.yaml.outputs.integration_tests_max_parallel}}
+      integration_tests_docker_login: ${{ steps.yaml.outputs.integration_tests_docker_login}}
       integration_tests_container: ${{ steps.yaml.outputs.integration_tests_container}}
       integration_tests_container_options: ${{ steps.yaml.outputs.integration_tests_container_options}}
       integration_tests_container_method: ${{ steps.yaml.outputs.integration_tests_container_method}}
@@ -383,7 +403,8 @@ jobs:
       codeception_tests_skip: ${{ steps.yaml.outputs.codeception_tests_skip}}
       codeception_tests_matrix_mysql: ${{ steps.yaml.outputs.codeception_tests_matrix_mysql}}
       codeception_tests_matrix_php: ${{ steps.yaml.outputs.codeception_tests_matrix_php}}
-      codeception_tests_max_parallel: ${{ steps.yaml.outputs.codeception_tests_max_parallel}}
+      codeception_tests_max_parallel: ${{ steps.yaml.outputs.codeception_tests_max_parallel}}^
+      codeception_tests_docker_login: ${{ steps.yaml.outputs.codeception_tests_docker_login}}
       codeception_tests_container: ${{ steps.yaml.outputs.codeception_tests_container}}
       codeception_tests_container_options: ${{ steps.yaml.outputs.codeception_tests_container_options}}
       codeception_tests_container_method: ${{ steps.yaml.outputs.codeception_tests_container_method}}
@@ -414,6 +435,7 @@ jobs:
       shop_setup_tests_matrix_mysql: ${{ steps.yaml.outputs.shop_setup_tests_matrix_mysql}}
       shop_setup_tests_matrix_php: ${{ steps.yaml.outputs.shop_setup_tests_matrix_php}}
       shop_setup_tests_max_parallel: ${{ steps.yaml.outputs.shop_setup_tests_max_parallel}}
+      shop_setup_tests_docker_login: ${{ steps.yaml.outputs.shop_setup_tests_docker_login}}
       shop_setup_tests_container: ${{ steps.yaml.outputs.shop_setup_tests_container}}
       shop_setup_tests_container_options: ${{ steps.yaml.outputs.shop_setup_tests_container_options}}
       shop_setup_tests_container_method: ${{ steps.yaml.outputs.shop_setup_tests_container_method}}
@@ -439,11 +461,12 @@ jobs:
       shop_setup_tests_output_files: ${{ steps.yaml.outputs.shop_setup_tests_output_files}}
       shop_setup_tests_coverage_path: ${{ steps.yaml.outputs.shop_setup_tests_coverage_path}}
       shop_setup_tests_failure_pattern: ${{ steps.yaml.outputs.shop_setup_tests_failure_pattern}}
-      # deprecated_test variables
+      # deprecated_tests variables
       deprecated_tests_skip: ${{ steps.yaml.outputs.deprecated_tests_skip}}
       deprecated_tests_matrix_mysql: ${{ steps.yaml.outputs.deprecated_tests_matrix_mysql}}
       deprecated_tests_matrix_php: ${{ steps.yaml.outputs.deprecated_tests_matrix_php}}
       deprecated_tests_max_parallel: ${{ steps.yaml.outputs.deprecated_tests_max_parallel}}
+      deprecated_tests_docker_login: ${{ steps.yaml.outputs.deprecated_tests_docker_login}}
       deprecated_tests_container: ${{ steps.yaml.outputs.deprecated_tests_container}}
       deprecated_tests_container_options: ${{ steps.yaml.outputs.deprecated_tests_container_options}}
       deprecated_tests_container_method: ${{ steps.yaml.outputs.deprecated_tests_container_method}}
@@ -471,6 +494,7 @@ jobs:
       sonarcloud_matrix_mysql: ${{ steps.yaml.outputs.sonarcloud_matrix_mysql}}
       sonarcloud_matrix_php: ${{ steps.yaml.outputs.sonarcloud_matrix_php}}
       sonarcloud_max_parallel: ${{ steps.yaml.outputs.sonarcloud_max_parallel}}
+      sonarcloud_docker_login: ${{ steps.yaml.outputs.sonarcloud_docker_login}}
       sonarcloud_target_branch: ${{ steps.yaml.outputs.sonarcloud_target_branch}}
       sonarcloud_organization: ${{ steps.yaml.outputs.sonarcloud_organization}}
       sonarcloud_project_key: ${{ steps.yaml.outputs.sonarcloud_project_key}}
@@ -478,11 +502,12 @@ jobs:
       sonarcloud_parameters: ${{ steps.yaml.outputs.sonarcloud_parameters}}
       sonarcloud_internal_project_name: ${{ steps.yaml.outputs.sonarcloud_internal_project_name}}
       sonarcloud_internal_parameters: ${{ steps.yaml.outputs.sonarcloud_internal_parameters}}
-      # phpcs_test variables
+      # phpcs_tests variables
       phpcs_tests_skip: ${{ steps.yaml.outputs.phpcs_tests_skip}}
       phpcs_tests_matrix_mysql: ${{ steps.yaml.outputs.phpcs_tests_matrix_mysql}}
       phpcs_tests_matrix_php: ${{ steps.yaml.outputs.phpcs_tests_matrix_php}}
       phpcs_tests_max_parallel: ${{ steps.yaml.outputs.phpcs_tests_max_parallel}}
+      phpcs_tests_docker_login: ${{ steps.yaml.outputs.phpcs_tests_docker_login}}
       phpcs_tests_container: ${{ steps.yaml.outputs.phpcs_tests_container}}
       phpcs_tests_container_options: ${{ steps.yaml.outputs.phpcs_tests_container_options}}
       phpcs_tests_container_method: ${{ steps.yaml.outputs.phpcs_tests_container_method}}
@@ -498,7 +523,6 @@ jobs:
       finish_skip: ${{ steps.yaml.outputs.finish_skip}}
       finish_matrix_mysql: ${{ steps.yaml.outputs.finish_matrix_mysql}}
       finish_matrix_php: ${{ steps.yaml.outputs.finish_matrix_php}}
-      finish_docker_logout: ${{ steps.yaml.outputs.finish_docker_logout}}
 
   prepare_shop:
     needs: init
@@ -519,6 +543,9 @@ jobs:
           container: ${{ needs.init.outputs.prepare_shop_container }}
           container_options: ${{ needs.init.outputs.prepare_shop_container_options }}
           container_method: ${{ needs.init.outputs.prepare_shop_container_method }}
+          docker_login: ${{ needs.init.outputs.prepare_shop_docker_login }}
+          docker_user: ${{ secrets.DOCKER_HUB_USER }}
+          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
           git_sdk_url: ${{ needs.init.outputs.prepare_shop_git_sdk_url }}
           git_sdk_ref: ${{ needs.init.outputs.prepare_shop_git_sdk_ref }}
           git_shop_url: ${{ needs.init.outputs.prepare_shop_git_shop_url }}
@@ -574,6 +601,10 @@ jobs:
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          docker_login: ${{ needs.init.outputs.install_shop_docker_login }}
+          docker_user: ${{ secrets.DOCKER_HUB_USER }}
+          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+
 
       - name: 'Install shop'
         id: install_shop
@@ -616,6 +647,10 @@ jobs:
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          docker_login: ${{ needs.init.outputs.unit_tests_docker_login }}
+          docker_user: ${{ secrets.DOCKER_HUB_USER }}
+          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+
 
       - name: 'Run unit tests'
         uses: 'OXID-eSales/github-actions/phpunit@v1'
@@ -656,6 +691,9 @@ jobs:
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          docker_login: ${{ needs.init.outputs.integration_tests_docker_login }}
+          docker_user: ${{ secrets.DOCKER_HUB_USER }}
+          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: 'Run integration tests'
         uses: 'OXID-eSales/github-actions/phpunit@v1'
@@ -696,6 +734,9 @@ jobs:
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          docker_login: ${{ needs.init.outputs.codeception_tests_docker_login }}
+          docker_user: ${{ secrets.DOCKER_HUB_USER }}
+          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: 'Composer configure and require ${{ needs.init.outputs.codeception_tests_composer_configure_install }}'
         if: ${{ needs.init.outputs.codeception_tests_composer_configure_install != '' }}
@@ -767,6 +808,9 @@ jobs:
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          docker_login: ${{ needs.init.outputs.shop_setup_tests_docker_login }}
+          docker_user: ${{ secrets.DOCKER_HUB_USER }}
+          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: 'Composer configure and require ${{ needs.init.outputs.shop_setup_tests_composer_configure_install }}'
         if: ${{ needs.init.outputs.shop_setup_tests_composer_configure_install != '' }}
@@ -843,6 +887,9 @@ jobs:
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          docker_login: ${{ needs.init.outputs.deprecated_tests_docker_login }}
+          docker_user: ${{ secrets.DOCKER_HUB_USER }}
+          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: 'Composer configure and require ${{ needs.init.outputs.deprecated_tests_composer_configure_install }}'
         if: ${{ needs.init.outputs.deprecated_tests_composer_configure_install != '' }}
@@ -964,6 +1011,9 @@ jobs:
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          docker_login: ${{ needs.init.outputs.phpcs_tests_docker_login }}
+          docker_user: ${{ secrets.DOCKER_HUB_USER }}
+          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: 'Run phpcs tests'
         uses: 'OXID-eSales/github-actions/phpcs@v0'
@@ -999,11 +1049,6 @@ jobs:
       # yamllint disable-line rule:line-length
       overall_result: ${{ needs.prepare_shop.result=='success' && needs.install_shop.result=='success' && needs.unit_tests.result=='success' && needs.integration_tests.result=='success' && needs.codeception_tests.result=='success' && needs.shop_setup_tests.result=='success' && needs.sonarcloud.result=='success' && needs.phpcs_tests.result=='success'}}
     steps:
-      - name: 'Docker logout'
-        if: ${{ needs.init.outputs.finish_docker_logout }}
-        shell: bash
-        run: docker logout
-
       - name: Send custom JSON data to Slack workflow
         if: ${{ env.SLACK_WEBHOOK != '' }}
         uses: slackapi/slack-github-action@v1

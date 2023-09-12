@@ -25,6 +25,22 @@ inputs:
     required: false
     description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
     default: ''
+  docker_login:
+    type: boolean
+    required: false
+    description: 'should we log in to docker'
+    default: true
+  docker_user:
+    type: string
+    required: false
+    description: 'secrets.DOCKER_HUB_USER for docker login'
+    default: ''
+  docker_token:
+    type: string
+    required: false
+    description: 'secrets.DOCKER_HUB_TOKEN for docker login'
+    default: ''
+
 runs:
   using: "composite"
   steps:
@@ -49,6 +65,13 @@ runs:
           echo -e "\033[0;31m### Failed to load ${{ inputs.installed_shop }} from cache\033[0m"
           exit 1
         fi
+
+    - name: Login to Docker Hub
+      if: ${{ inputs.docker_login == 'true' }}
+      uses: docker/login-action@v2
+      with:
+        username: ${{ inputs.docker_user }}
+        password: ${{ inputs.docker_token }}
 
     - name: Start containers
       shell: bash

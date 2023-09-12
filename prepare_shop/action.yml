@@ -182,6 +182,22 @@ inputs:
     required: false
     description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
     default: ''
+  docker_login:
+    type: boolean
+    required: false
+    description: 'should we log in to docker'
+    default: true
+  docker_user:
+    type: string
+    required: false
+    description: 'secrets.DOCKER_HUB_USER for docker login'
+    default: ''
+  docker_token:
+    type: string
+    required: false
+    description: 'secrets.DOCKER_HUB_TOKEN for docker login'
+    default: ''
+
 outputs:
   prepared_shop:
     description: 'Name of the cached shop setup'
@@ -251,6 +267,14 @@ runs:
         perl -pi\
             -e 's#/var/www/#/var/www/source/#g;'\
             containers/httpd/project.conf
+
+
+    - name: Login to Docker Hub
+      if: ${{ inputs.docker_login == 'true' }}
+      uses: docker/login-action@v2
+      with:
+        username: ${{ inputs.docker_user }}
+        password: ${{ inputs.docker_token }}
 
     - name: Start containers
       shell: bash
