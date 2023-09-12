@@ -830,6 +830,11 @@ jobs:
       max-parallel: ${{ fromJSON(needs.init.outputs.deprecated_tests_max_parallel) }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
+      - name: Set swap space
+        uses: pierotofy/set-swap-space@master
+        with:
+          swap-size-gb: 10
+
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v1'
         with:
@@ -1029,10 +1034,35 @@ jobs:
                   ]
                 },
                 { "type": "section",
-                  "text":
+                  "fields": [
                     { "type": "mrkdwn",
-                      "text": "\n* prepare_shop: ${{ needs.prepare_shop.result=='success' && ':white_check_mark:' || ':x:' }}\n* install_shop: ${{ needs.install_shop.result=='success' && ':white_check_mark:' || ':x:' }}\n* unit_tests: ${{ needs.unit_tests.result=='success' && ':white_check_mark:' || ':x:' }}\n* integration_tests: ${{ needs.integration_tests.result=='success' && ':white_check_mark:' || ':x:' }}\n* codeception_tests: ${{ needs.codeception_tests.result=='success' && ':white_check_mark:' || ':x:' }}\n* shop_setup_tests: ${{ needs.shop_setup_tests.result=='success' && ':white_check_mark:' || ':x:' }}\n* sonarcloud: ${{ needs.sonarcloud.result=='success' && ':white_check_mark:' || ':x:' }}\n* phpcs_tests: ${{ needs.phpcs_tests.result=='success' && ':white_check_mark:' || ':x:' }}"
+                      "text": "prepare_shop: ${{ needs.prepare_shop.result=='success' && ':white_check_mark:' || ':x:' }}"
+                    },
+                    { "type": "mrkdwn",
+                      "text": "install_shop: ${{ needs.install_shop.result=='success' && ':white_check_mark:' || ':x:' }}"
+                    },
+                    { "type": "mrkdwn",
+                      "text": "unit_tests: ${{ needs.unit_tests.result=='success' && ':white_check_mark:' || ':x:' }}"
+                    },
+                    { "type": "mrkdwn",
+                      "text": "integration_tests: ${{ needs.integration_tests.result=='success' && ':white_check_mark:' || ':x:' }}"
+                    },
+                    { "type": "mrkdwn",
+                      "text": "codeception_tests: ${{ needs.codeception_tests.result=='success' && ':white_check_mark:' || ':x:' }}"
+                    },
+                    { "type": "mrkdwn",
+                      "text": "shop_setup_tests: ${{ needs.shop_setup_tests.result=='success' && ':white_check_mark:' || ':x:' }}"
+                    },
+                    { "type": "mrkdwn",
+                      "text": "deprecated_tests: ${{ needs.deprecated_tests.result=='success' && ':white_check_mark:' || ':x:' }}"
+                    },
+                    { "type": "mrkdwn",
+                      "text": "sonarcloud: ${{ needs.sonarcloud.result=='success' && ':white_check_mark:' || ':x:' }}"
+                    },
+                    { "type": "mrkdwn",
+                      "text": "phpcs_tests: ${{ needs.phpcs_tests.result=='success' && ':white_check_mark:' || ':x:' }}"
                     }
+                  ]
                 }
               ]
             }
