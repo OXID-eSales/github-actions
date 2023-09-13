@@ -12,11 +12,11 @@ inputs:
   summary_list:
     type: string
     required: true
-    description: 'Multiple lines with Name and URL separated by a pipe'
+    description: 'Multiple lines with Name and URL separated by a %'
   job_list:
     type: string
     required: true
-    description: 'Name of the job and its outcome or result separated by a pipe'
+    description: 'Name of the job and its outcome or result separated by a %'
 
 runs:
   using: "composite"
@@ -28,17 +28,15 @@ runs:
         EMOJI=(':white_circle:' ':white_check_mark:' ':black_circle:' ':x:')
         OVERALL_STATUS=0
         SUMMARY_PAYLOAD=""
-        S="${{ inputs.summary_list }}"
-        for SUMMARY in ${S}; do
-          SUMMARY_NAME=$(echo ${SUMMARY}|sed -e 's#|.*##')
-          SUMMARY_URL=$(echo ${SUMMARY}|sed -e 's#.*|##')
+        for SUMMARY in ${{ inputs.summary_list }}; do
+          SUMMARY_NAME=$(echo ${SUMMARY}|sed -e 's|%.*||')
+          SUMMARY_URL=$(echo ${SUMMARY}|sed -e 's|.*%||')
           SUMMARY_PAYLOAD="${SUMMARY_PAYLOAD},\n        { \"type\": \"mrkdwn\", \"text\": \"*${SUMMARY_NAME}:* <${SUMMARY_URL}>\\n\" }"
         done
         JOB_PAYLOAD=""
-        J="${{ inputs.job_list }}"
-        for JOB in ${J}; do
-          JOB_NAME=$(echo ${JOB}|sed -e 's#|.*##')
-          J=$(echo ${JOB}|sed -e 's#.*|##')
+        for JOB in ${{ inputs.job_list }}; do
+          JOB_NAME=$(echo ${JOB}|sed -e 's|%.*||')
+          J=$(echo ${JOB}|sed -e 's|.*%||')
           case $J in
             skipped) JOB_STATUS=0
             success) JOB_STATUS=1
