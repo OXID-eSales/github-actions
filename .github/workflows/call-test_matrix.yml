@@ -875,7 +875,7 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: Set swap space
-        uses: pierotofy/set-swap-space@master
+        uses: actionhippie/swap-space@v1
         with:
           swap-size-gb: 10
 
@@ -1061,7 +1061,7 @@ jobs:
                   "text":
                     { "type": "plain_text",
                       "emoji": true,
-                      "text": "${{ github.workflow }} on ${{ github.repository }}  with testplan ${{ inputs.testplan }} by ${{ github.actor }} ${{ env.overall_result=='success' && 'Successful' || 'Failed' }}"
+                      "text": "${{ github.workflow }} on ${{ github.repository }} by ${{ github.actor }} ${{ env.overall_result=='success' && 'Successful' || 'Failed' }}"
                     }
                 },
                 {
