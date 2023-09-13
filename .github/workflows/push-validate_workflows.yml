@@ -6,8 +6,12 @@ on: push
 jobs:
   lint:
     runs-on: 'ubuntu-latest'
+    env:
+      SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"
+      # yamllint disable-line rule:line-length
     steps:
       - name: Checkout
+        id: checkout
         uses: actions/checkout@v4
 
       - name: Lint yaml files
@@ -41,3 +45,51 @@ jobs:
           echo "actionlint found ${{ steps.actionlint.outputs.total-errors }} errors"
           echo "actionlint checked ${{ steps.actionlint.outputs.total-files }} files"
           echo "actionlint cache used: ${{ steps.actionlint.outputs.cache-hit }}"
+
+      - name: Send custom JSON data to Slack workflow
+        if: ${{ env.SLACK_WEBHOOK != '' }}
+        uses: slackapi/slack-github-action@v1
+        with:
+          # yamllint disable rule:line-length
+          payload: >
+            {
+              "blocks": [
+                { "type": "header",
+                  "text":
+                    { "type": "plain_text",
+                      "emoji": true,
+                      "text": "${{ github.workflow }} on ${{ github.repository }} by ${{ github.actor }} ${{ steps.checkout =='success' && steps.yamllint =='success' && steps.actionlint =='success' && 'Successful' || 'Failed' }}"
+                    }
+                },
+                {
+                "type": "divider"
+                },
+                { "type": "context",
+                  "elements": [
+                    { "type": "mrkdwn",
+                      "text": "*Repository:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.repository }}/actions/runs/${{ github.run_id }}>\n"
+                    }
+                  ]
+                },
+                {
+                "type": "divider"
+                },
+                { "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn",
+                      "text": "checkout: ${{ needs.checkout.result=='success' && ':white_check_mark:' || ':x:' }} ${{ needs.checkout.result }}"
+                    },
+                    { "type": "mrkdwn",
+                      "text": "install_shop: ${{ needs.yamllint.result=='success' && ':white_check_mark:' || ':x:' }} ${{ needs.yamllint.result }}"
+                    },
+                    { "type": "mrkdwn",
+                      "text": "unit_tests: ${{ needs.actionlint.result=='success' && ':white_check_mark:' || ':x:' }} ${{ needs.actionlint.result }}"
+                    }
+                  ]
+                }
+              ]
+            }
+          # yamllint enable rule:line-length
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
