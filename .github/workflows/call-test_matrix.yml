@@ -594,7 +594,7 @@ jobs:
       installed_shop: ${{ steps.install_shop.outputs.installed_shop }}
     steps:
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v1'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: ${{ needs.prepare_shop.outputs.prepared_shop }}
           cache_bucket: ${{ needs.init.outputs.install_shop_cache_bucket }}
@@ -640,7 +640,7 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v1'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: ${{ needs.install_shop.outputs.installed_shop }}
           cache_bucket: ${{ needs.init.outputs.unit_tests_cache_bucket }}
@@ -684,7 +684,7 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v1'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: ${{ needs.install_shop.outputs.installed_shop }}
           cache_bucket: ${{ needs.init.outputs.integration_tests_cache_bucket }}
@@ -727,7 +727,7 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v1'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: ${{ needs.install_shop.outputs.installed_shop }}
           cache_bucket: ${{ needs.init.outputs.codeception_tests_cache_bucket }}
@@ -801,7 +801,7 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v1'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: ${{ needs.prepare_shop.outputs.prepared_shop }}
           cache_bucket: ${{ needs.init.outputs.shop_setup_tests_cache_bucket }}
@@ -880,7 +880,7 @@ jobs:
           swap-size-gb: 10
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v1'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: ${{ needs.install_shop.outputs.installed_shop }}
           cache_bucket: ${{ needs.init.outputs.deprecated_tests_cache_bucket }}
@@ -1004,7 +1004,7 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v1'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: ${{ needs.install_shop.outputs.installed_shop }}
           cache_bucket: ${{ needs.init.outputs.phpcs_tests_cache_bucket }}

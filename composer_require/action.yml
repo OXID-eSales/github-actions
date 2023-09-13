@@ -6,7 +6,7 @@ inputs:
     required: false
     description: 'Organisation for the repository'
     default: 'oxid-esales'
-  repository:
+  repositories:
     type: string
     required: true
     description: 'Space separated list of repositories to install'
