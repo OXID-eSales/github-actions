@@ -1048,74 +1048,23 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     env:
       SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"
-      # yamllint disable-line rule:line-length
-      overall_result: ${{ needs.prepare_shop.result=='success' && needs.install_shop.result=='success' && needs.unit_tests.result=='success' && needs.integration_tests.result=='success' && needs.codeception_tests.result=='success' && needs.shop_setup_tests.result=='success' && needs.sonarcloud.result=='success' && needs.phpcs_tests.result=='success'}}
     steps:
       - name: Send custom JSON data to Slack workflow
-        if: ${{ env.SLACK_WEBHOOK != '' }}
-        uses: slackapi/slack-github-action@v1
+        if: ${{ always() && env.SLACK_WEBHOOK != '' }}
+        uses: 'OXID-eSales/github-actions/slack_status@v0'
         with:
-          # yamllint disable rule:line-length
-          payload: >
-            {
-              "blocks": [
-                { "type": "header",
-                  "text":
-                    { "type": "plain_text",
-                      "emoji": true,
-                      "text": "${{ github.workflow }} on ${{ github.repository }} by ${{ github.actor }} ${{ env.overall_result=='true' && 'Successful' || 'Failed' }}"
-                    }
-                },
-                {
-                "type": "divider"
-                },
-                { "type": "context",
-                  "elements": [
-                    { "type": "mrkdwn",
-                      "text": "*Repository:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.repository }}/actions/runs/${{ github.run_id }}>\n"
-                    },
-                    { "type": "mrkdwn",
-                      "text": "*Testplan:* <${{ inputs.testplan }}>\n"
-                    }
-                  ]
-                },
-                {
-                "type": "divider"
-                },
-                { "type": "section",
-                  "fields": [
-                    { "type": "mrkdwn",
-                      "text": "prepare_shop: ${{ needs.prepare_shop.result=='success' && ':white_check_mark:'||''}}${{ needs.prepare_shop.result=='skipped' && ':white_circle:'||''}}${{ needs.prepare_shop.result=='cancelled' && ':black_circle:'||''}}${{ needs.prepare_shop.result=='failure' && ':x:'||''}} ${{ needs.prepare_shop.result }}"
-                    },
-                    { "type": "mrkdwn",
-                      "text": "install_shop: ${{ needs.install_shop.result=='success' && ':white_check_mark:'||''}}${{ needs.install_shop.result=='skipped' && ':white_circle:'||''}}${{ needs.install_shop.result=='cancelled' && ':black_circle:'||''}}${{ needs.install_shop.result=='failure' && ':x:'||''}} ${{ needs.install_shop.result }}"
-                    },
-                    { "type": "mrkdwn",
-                      "text": "unit_tests: ${{ needs.unit_tests.result=='success' && ':white_check_mark:'||''}}${{ needs.unit_tests.result=='skipped' && ':white_circle:'||''}}${{ needs.unit_tests.result=='cancelled' && ':black_circle:'||''}}${{ needs.unit_tests.result=='failure' && ':x:'||''}} ${{ needs.unit_tests.result }}"
-                    },
-                    { "type": "mrkdwn",
-                      "text": "integration_tests: ${{ needs.integration_tests.result=='success' && ':white_check_mark:'||''}}${{ needs.integration_tests.result=='skipped' && ':white_circle:'||''}}${{ needs.integration_tests.result=='cancelled' && ':black_circle:'||''}}${{ needs.integration_tests.result=='failure' && ':x:'||''}} ${{ needs.integration_tests.result }}"
-                    },
-                    { "type": "mrkdwn",
-                      "text": "codeception_tests: ${{ needs.codeception_tests.result=='success' && ':white_check_mark:'||''}}${{ needs.codeception_tests.result=='skipped' && ':white_circle:'||''}}${{ needs.codeception_tests.result=='cancelled' && ':black_circle:'||''}}${{ needs.codeception_tests.result=='failure' && ':x:'||''}} ${{ needs.codeception_tests.result }}"
-                    },
-                    { "type": "mrkdwn",
-                      "text": "shop_setup_tests: ${{ needs.shop_setup_tests.result=='success' && ':white_check_mark:'||''}}${{ needs.shop_setup_tests.result=='skipped' && ':white_circle:'||''}}${{ needs.shop_setup_tests.result=='cancelled' && ':black_circle:'||''}}${{ needs.shop_setup_tests.result=='failure' && ':x:'||''}} ${{ needs.shop_setup_tests.result }}"
-                    },
-                    { "type": "mrkdwn",
-                      "text": "deprecated_tests: ${{ needs.deprecated_tests.result=='success' && ':white_check_mark:'||''}}${{ needs.deprecated_tests.result=='skipped' && ':white_circle:'||''}}${{ needs.deprecated_tests.result=='cancelled' && ':black_circle:'||''}}${{ needs.deprecated_tests.result=='failure' && ':x:'||''}} ${{ needs.deprecated_tests.result }}"
-                    },
-                    { "type": "mrkdwn",
-                      "text": "sonarcloud: ${{ needs.sonarcloud.result=='success' && ':white_check_mark:'||''}}${{ needs.sonarcloud.result=='skipped' && ':white_circle:'||''}}${{ needs.sonarcloud.result=='cancelled' && ':black_circle:'||''}}${{ needs.sonarcloud.result=='failure' && ':x:'||''}} ${{ needs.sonarcloud.result }}"
-                    },
-                    { "type": "mrkdwn",
-                      "text": "phpcs_tests: ${{ needs.phpcs_tests.result=='success' && ':white_check_mark:'||''}}${{ needs.phpcs_tests.result=='skipped' && ':white_circle:'||''}}${{ needs.phpcs_tests.result=='cancelled' && ':black_circle:'||''}}${{ needs.phpcs_tests.result=='failure' && ':x:'||''}} ${{ needs.phpcs_tests.result }}"
-                    }
-                  ]
-                }
-              ]
-            }
-          # yamllint enable rule:line-length
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+          slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          title: '${{ github.workflow }} on ${{ github.repository }} by ${{ github.actor }}'
+          summary_list: |
+            Repository%${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Testplan%${{ inputs.testplan }}
+          job_list: |
+            prepare_shop%${{ needs.prepare_shop.result }}
+            install_shop%${{ needs.install_shop.result }}
+            unit_tests%${{ needs.unit_tests.result }}
+            integration_tests%${{ needs.integration_tests.result }}
+            codeception_tests%${{ needs.codeception_tests.result }}
+            shop_setup_tests%${{ needs.shop_setup_tests.result }}
+            deprecated_tests%${{ needs.deprecated_tests.result }}
+            sonarcloud%${{ needs.sonarcloud.result }}
+            phpcs_tests%${{ needs.phpcs_tests.result }}

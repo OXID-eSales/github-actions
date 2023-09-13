@@ -4,19 +4,21 @@ inputs:
   slack_webhook:
     type: string
     required: true
-    description: 'Webhook for the slack channel'
+    description: 'URL for the channel web hook, see https://api.slack.com/apps/A04CAPK58G0/incoming-webhooks?'
   title:
     type: string
     required: true
     description: 'Title for the message, status will be added'
   summary_list:
     type: string
-    required: true
+    required: false
     description: 'Multiple lines with Name and URL separated by a %'
+    default: ''
   job_list:
     type: string
-    required: true
+    required: false
     description: 'Name of the job and its outcome or result separated by a %'
+    default: ''
 
 runs:
   using: "composite"
