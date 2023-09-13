@@ -865,7 +865,7 @@ jobs:
 
   deprecated_tests:
     needs: ['init', 'install_shop', 'shop_setup_tests']
-    if: ${{ needs.init.outputs.deprecated_tests_skip != 'true' }}
+    if: ${{ always() && needs.init.outputs.deprecated_tests_skip != 'true' }}
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.deprecated_tests_matrix_php) }}
@@ -996,7 +996,7 @@ jobs:
 
   phpcs_tests:
     needs: ['init', 'install_shop', 'sonarcloud']
-    if: ${{ needs.init.outputs.phpcs_tests_skip != 'true' }}
+    if: ${{ always() && needs.init.outputs.phpcs_tests_skip != 'true' }}
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.phpcs_tests_matrix_php) }}
