@@ -213,7 +213,7 @@ codeception_tests:
   matrix:
     php: *matrix_php
     mysql: *matrix_mysql
-  max_parallel: *max_parallel
+  max_parallel: &codeception_max_parallel 1
   docker_login: *docker_login
   container: *container
   cache_bucket: *cache_bucket
@@ -262,7 +262,7 @@ shop_setup_tests:
   matrix:
     php: *matrix_php
     mysql: *matrix_mysql
-  max_parallel: *max_parallel
+  max_parallel: *codeception_max_parallel
   docker_login: *docker_login
   container: *container
   cache_bucket: *cache_bucket

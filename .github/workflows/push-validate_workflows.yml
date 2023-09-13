@@ -80,10 +80,10 @@ jobs:
                       "text": "checkout: ${{ steps.checkout.outcome=='success' && ':white_check_mark:'||''}}${{ steps.checkout.outcome=='skipped' && ':white_circle:'||''}}${{ steps.checkout.outcome=='cancelled' && ':black_circle:'||''}}${{ steps.checkout.outcome=='failure' && ':x:'||''}} ${{ steps.checkout.outcome }}"
                     },
                     { "type": "mrkdwn",
-                      "text": "install_shop: ${{ steps.yamllint.outcome=='success' && ':white_check_mark:'||''}}${{ steps.yamllint.outcome=='skipped' && ':white_circle:'||''}}${{ steps.yamllint.outcome=='cancelled' && ':black_circle:'||''}}${{ steps.yamllint.outcome=='failure' && ':x:'||''}} ${{ steps.yamllint.outcome }}"
+                      "text": "yamllint: ${{ steps.yamllint.outcome=='success' && ':white_check_mark:'||''}}${{ steps.yamllint.outcome=='skipped' && ':white_circle:'||''}}${{ steps.yamllint.outcome=='cancelled' && ':black_circle:'||''}}${{ steps.yamllint.outcome=='failure' && ':x:'||''}} ${{ steps.yamllint.outcome }}"
                     },
                     { "type": "mrkdwn",
-                      "text": "unit_tests: ${{ steps.actionlint.outcome=='success' && ':white_check_mark:'||''}}${{ steps.actionlint.outcome=='skipped' && ':white_circle:'||''}}${{ steps.actionlint.outcome=='cancelled' && ':black_circle:'||''}}${{ steps.actionlint.outcome=='failure' && ':x:'||''}} ${{ steps.actionlint.outcome }}"
+                      "text": "actionlint: ${{ steps.actionlint.outcome=='success' && ':white_check_mark:'||''}}${{ steps.actionlint.outcome=='skipped' && ':white_circle:'||''}}${{ steps.actionlint.outcome=='cancelled' && ':black_circle:'||''}}${{ steps.actionlint.outcome=='failure' && ':x:'||''}} ${{ steps.actionlint.outcome }}"
                     }
                   ]
                 }
