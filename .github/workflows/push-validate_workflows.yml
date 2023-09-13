@@ -77,13 +77,13 @@ jobs:
                 { "type": "section",
                   "fields": [
                     { "type": "mrkdwn",
-                      "text": "checkout: ${{ needs.checkout.result=='success' && ':white_check_mark:' || ':x:' }} ${{ needs.checkout.result }}"
+                      "text": "checkout: ${{ steps.checkout.result=='success' && ':white_check_mark:' || ':x:' }} ${{ steps.checkout.result }}"
                     },
                     { "type": "mrkdwn",
-                      "text": "install_shop: ${{ needs.yamllint.result=='success' && ':white_check_mark:' || ':x:' }} ${{ needs.yamllint.result }}"
+                      "text": "install_shop: ${{ steps.yamllint.result=='success' && ':white_check_mark:' || ':x:' }} ${{ steps.yamllint.result }}"
                     },
                     { "type": "mrkdwn",
-                      "text": "unit_tests: ${{ needs.actionlint.result=='success' && ':white_check_mark:' || ':x:' }} ${{ needs.actionlint.result }}"
+                      "text": "unit_tests: ${{ steps.actionlint.result=='success' && ':white_check_mark:' || ':x:' }} ${{ steps.actionlint.result }}"
                     }
                   ]
                 }

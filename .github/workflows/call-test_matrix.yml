@@ -286,7 +286,7 @@ jobs:
             phpcs_tests_logfile_artifact: ${{ steps.yaml.outputs.phpcs_tests_logfile_artifact}}
             phpcs_tests_output_files: ${{ steps.yaml.outputs.phpcs_tests_output_files}}
             phpcs_tests_coverage_path: ${{ steps.yaml.outputs.phpcs_tests_coverage_path}}
-            phpcs_tests_failure_pattern: ${{ steps.yaml.outputs.phpcs_tests_failure_pattern}}      
+            phpcs_tests_failure_pattern: ${{ steps.yaml.outputs.phpcs_tests_failure_pattern}}
             ${PURPLE}### finish variables${NO_COLOR}
             finish_skip: ${{ steps.yaml.outputs.finish_skip}}
             finish_matrix_mysql: ${{ steps.yaml.outputs.finish_matrix_mysql}}
