@@ -26,17 +26,17 @@ runs:
       run: |
         STATUS=(Skipped Success Cancelled Failure)
         EMOJI=(':white_circle:' ':white_check_mark:' ':black_circle:' ':x:')
-        echo "${{ inputs.summary_list }}" >"summary_list.txt"
-        echo "${{ inputs.job_list }}" >"job_list.txt"
         OVERALL_STATUS=0
+        SUMMARY_LIST=$(echo "${{ inputs.summary_list }}"|tr '\n' ' ')
         SUMMARY_PAYLOAD=""
-        for SUMMARY in $(cat summary_list.txt); do
+        for SUMMARY in ${SUMMARY_LIST}; do
           SUMMARY_NAME=$(echo ${SUMMARY}|sed -e 's|%.*||')
           SUMMARY_URL=$(echo ${SUMMARY}|sed -e 's|.*%||')
           SUMMARY_PAYLOAD="${SUMMARY_PAYLOAD},\n        { \"type\": \"mrkdwn\", \"text\": \"*${SUMMARY_NAME}:* <${SUMMARY_URL}>\\n\" }"
         done
+        JOB_LIST=$(echo "${{ inputs.job_list }}"|tr '\n' ' ')
         JOB_PAYLOAD=""
-        for JOB in $(cat job_list.txt); do
+        for JOB in ${JOB_LIST}; do
           JOB_NAME=$(echo ${JOB}|sed -e 's|%.*||')
           J=$(echo ${JOB}|sed -e 's|.*%||')
           case $J in
