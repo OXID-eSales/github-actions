@@ -1062,17 +1062,14 @@ jobs:
                   "text":
                     { "type": "plain_text",
                       "emoji": true,
-                      "text": "${{ github.workflow }} on ${{ github.repository }} by ${{ github.actor }} ${{ env.overall_result=='success' && 'Successful' || 'Failed' }}"
+                      "text": "${{ github.workflow }} on ${{ github.repository }} by ${{ github.actor }} ${{ env.overall_result=='true' && 'Successful' || 'Failed' }}"
                     }
                 },
                 {
                 "type": "divider"
                 },
-                { "type": "section",
-                  "fields": [
-                    { "type": "mrkdwn",
-                      "text": "*Status:* ${{ env.overall_result && ':white_check_mark:' || ':x:' }}\n"
-                    },
+                { "type": "context",
+                  "elements": [
                     { "type": "mrkdwn",
                       "text": "*Repository:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.repository }}/actions/runs/${{ github.run_id }}>\n"
                     },
@@ -1087,31 +1084,31 @@ jobs:
                 { "type": "section",
                   "fields": [
                     { "type": "mrkdwn",
-                      "text": "prepare_shop: ${{ needs.prepare_shop.result=='success' && ':white_check_mark:' || ':x:' }}"
+                      "text": "prepare_shop: ${{ needs.prepare_shop.result=='success' && ':white_check_mark:' || ':x:' }} ${{ needs.prepare_shop.result }}"
                     },
                     { "type": "mrkdwn",
-                      "text": "install_shop: ${{ needs.install_shop.result=='success' && ':white_check_mark:' || ':x:' }}"
+                      "text": "install_shop: ${{ needs.install_shop.result=='success' && ':white_check_mark:' || ':x:' }} ${{ needs.install_shop.result }}"
                     },
                     { "type": "mrkdwn",
-                      "text": "unit_tests: ${{ needs.unit_tests.result=='success' && ':white_check_mark:' || ':x:' }}"
+                      "text": "unit_tests: ${{ needs.unit_tests.result=='success' && ':white_check_mark:' || ':x:' }} ${{ needs.unit_tests.result }}"
                     },
                     { "type": "mrkdwn",
-                      "text": "integration_tests: ${{ needs.integration_tests.result=='success' && ':white_check_mark:' || ':x:' }}"
+                      "text": "integration_tests: ${{ needs.integration_tests.result=='success' && ':white_check_mark:' || ':x:' }} ${{ needs.integration_tests.result }}"
                     },
                     { "type": "mrkdwn",
-                      "text": "codeception_tests: ${{ needs.codeception_tests.result=='success' && ':white_check_mark:' || ':x:' }}"
+                      "text": "codeception_tests: ${{ needs.codeception_tests.result=='success' && ':white_check_mark:' || ':x:' }} ${{ needs.codeception_tests.result }}"
                     },
                     { "type": "mrkdwn",
-                      "text": "shop_setup_tests: ${{ needs.shop_setup_tests.result=='success' && ':white_check_mark:' || ':x:' }}"
+                      "text": "shop_setup_tests: ${{ needs.shop_setup_tests.result=='success' && ':white_check_mark:' || ':x:' }} ${{ needs.shop_setup_tests.result }}"
                     },
                     { "type": "mrkdwn",
-                      "text": "deprecated_tests: ${{ needs.deprecated_tests.result=='success' && ':white_check_mark:' || ':x:' }}"
+                      "text": "deprecated_tests: ${{ needs.deprecated_tests.result=='success' && ':white_check_mark:' || ':x:' }} ${{ needs.deprecated_tests.result }}"
                     },
                     { "type": "mrkdwn",
-                      "text": "sonarcloud: ${{ needs.sonarcloud.result=='success' && ':white_check_mark:' || ':x:' }}"
+                      "text": "sonarcloud: ${{ needs.sonarcloud.result=='success' && ':white_check_mark:' || ':x:' }} ${{ needs.sonarcloud.result }}"
                     },
                     { "type": "mrkdwn",
-                      "text": "phpcs_tests: ${{ needs.phpcs_tests.result=='success' && ':white_check_mark:' || ':x:' }}"
+                      "text": "phpcs_tests: ${{ needs.phpcs_tests.result=='success' && ':white_check_mark:' || ':x:' }} ${{ needs.phpcs_tests.result }}"
                     }
                   ]
                 }
