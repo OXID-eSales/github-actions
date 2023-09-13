@@ -864,7 +864,7 @@ jobs:
         uses: 'OXID-eSales/github-actions/stop_shop@v1'
 
   deprecated_tests:
-    needs: ['init', 'install_shop', 'shop_setup_tests' ]
+    needs: ['init', 'install_shop', 'shop_setup_tests']
     if: ${{ needs.init.outputs.deprecated_tests_skip != 'true' }}
     strategy:
       matrix:
