@@ -45,7 +45,7 @@ runs:
             cancelled) JOB_STATUS=2 ;;
             *) JOB_STATUS=3 ;;
           esac
-          if [ ${JOB_STATUS} -g ${OVERALL_STATUS} ]; then
+          if [ ${JOB_STATUS} -gt ${OVERALL_STATUS} ]; then
             OVERALL_STATUS=JOB_STATUS
           fi
           JOB_PAYLOAD="${JOB_PAYLOAD},\n        { \"type\": \"mrkdwn\", \"text\": \"${JOB_NAME}: ${EMOJI[JOB_STATUS]} ${STATUS[JOB_STATUS]}\"}"
@@ -57,7 +57,7 @@ runs:
                 "text":
                   { "type": "plain_text",
                     "emoji": true,
-                    "text": "${EMOJI[OVERALL_STATUS} ${{ inputs.title }} ${STATUS[OVERALL_STATUS]}"
+                    "text": "${EMOJI[OVERALL_STATUS]} ${{ inputs.title }} ${STATUS[OVERALL_STATUS]}"
                   }
               },
               {
