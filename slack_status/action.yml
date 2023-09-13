@@ -28,13 +28,15 @@ runs:
         EMOJI=(':white_circle:' ':white_check_mark:' ':black_circle:' ':x:')
         OVERALL_STATUS=0
         SUMMARY_PAYLOAD=""
-        for SUMMARY in ${{ inputs.summary_list }}; do
+        S="${{ inputs.summary_list }}"
+        for SUMMARY in ${S}; do
           SUMMARY_NAME=$(echo ${SUMMARY}|sed -e 's#|.*##')
           SUMMARY_URL=$(echo ${SUMMARY}|sed -e 's#.*|##')
           SUMMARY_PAYLOAD="${SUMMARY_PAYLOAD},\n        { \"type\": \"mrkdwn\", \"text\": \"*${SUMMARY_NAME}:* <${SUMMARY_URL}>\\n\" }"
         done
         JOB_PAYLOAD=""
-        for JOB in ${{ inputs.job_list }}; do
+        J="${{ inputs.job_list }}"
+        for JOB in ${J}; do
           JOB_NAME=$(echo ${JOB}|sed -e 's#|.*##')
           J=$(echo ${JOB}|sed -e 's#.*|##')
           case $J in
