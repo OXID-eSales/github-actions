@@ -40,10 +40,10 @@ runs:
           JOB_NAME=$(echo ${JOB}|sed -e 's|%.*||')
           J=$(echo ${JOB}|sed -e 's|.*%||')
           case $J in
-            skipped) JOB_STATUS=0
-            success) JOB_STATUS=1
-            cancelled) JOB_STATUS=2
-            *) JOB_STATUS=3
+            skipped) JOB_STATUS=0 ;;
+            success) JOB_STATUS=1 ;;
+            cancelled) JOB_STATUS=2 ;;
+            *) JOB_STATUS=3 ;;
           esac
           if [ ${JOB_STATUS} -g ${OVERALL_STATUS} ]; then
             OVERALL_STATUS=JOB_STATUS
