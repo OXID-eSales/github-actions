@@ -864,7 +864,7 @@ jobs:
         uses: 'OXID-eSales/github-actions/stop_shop@v1'
 
   deprecated_tests:
-    needs: ['init', 'install_shop']
+    needs: ['init', 'install_shop', 'shop_setup_tests' ]
     if: ${{ needs.init.outputs.deprecated_tests_skip != 'true' }}
     strategy:
       matrix:
@@ -995,7 +995,7 @@ jobs:
           github_token: ${{ github.token }}
 
   phpcs_tests:
-    needs: ['init', 'install_shop']
+    needs: ['init', 'install_shop', 'sonarcloud']
     if: ${{ needs.init.outputs.phpcs_tests_skip != 'true' }}
     strategy:
       matrix:
