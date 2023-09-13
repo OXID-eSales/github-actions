@@ -875,6 +875,7 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: Set swap space
+        if: ${{ inputs.runs_on == '"ubuntu-latest"' }}
         uses: actionhippie/swap-space@v1
         with:
           size: 10G
