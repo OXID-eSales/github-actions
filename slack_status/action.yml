@@ -33,7 +33,8 @@ runs:
           SUMMARY_NAME=$(echo ${SUMMARY}|sed -e 's|%.*||')
           SUMMARY_URL=$(echo ${SUMMARY}|sed -e 's|.*%||')
           echo -e "\033[0;35m### summary '${SUMMARY_NAME}' url '${SUMMARY_URL}' \033[0m"
-          SUMMARY_PAYLOAD="${SUMMARY_PAYLOAD},\n        { \"type\": \"mrkdwn\", \"text\": \"*${SUMMARY_NAME}:* <${SUMMARY_URL}>\\n\" }"
+          SUMMARY_PAYLOAD="${SUMMARY_PAYLOAD},
+        { \"type\": \"mrkdwn\", \"text\": \"*${SUMMARY_NAME}:* <${SUMMARY_URL}>\\n\" }"
         done
         JOB_LIST=$(echo "${{ inputs.job_list }}"|tr '\n' ' ')
         JOB_PAYLOAD=""
@@ -48,10 +49,11 @@ runs:
           esac
           echo -e "\033[0;35m### job '${JOB_NAME}' status '${J}' (${JOB_STATUS}) \033[0m"
           if [ ${JOB_STATUS} -gt ${OVERALL_STATUS} ]; then
-            OVERALL_STATUS=JOB_STATUS
+            OVERALL_STATUS=$JOB_STATUS
             echo -e "\033[0;35m### changed overall job status to ${OVERALL_STATUS} \033[0m"
           fi
-          JOB_PAYLOAD="${JOB_PAYLOAD},\n        { \"type\": \"mrkdwn\", \"text\": \"${JOB_NAME}: ${EMOJI[JOB_STATUS]} ${STATUS[JOB_STATUS]}\"}"
+          JOB_PAYLOAD="${JOB_PAYLOAD},
+        { \"type\": \"mrkdwn\", \"text\": \"${JOB_NAME}: ${EMOJI[JOB_STATUS]} ${STATUS[JOB_STATUS]}\"}"
         done
         cat >'payload.yaml' <<EOF
           {
