@@ -403,7 +403,7 @@ jobs:
       codeception_tests_skip: ${{ steps.yaml.outputs.codeception_tests_skip}}
       codeception_tests_matrix_mysql: ${{ steps.yaml.outputs.codeception_tests_matrix_mysql}}
       codeception_tests_matrix_php: ${{ steps.yaml.outputs.codeception_tests_matrix_php}}
-      codeception_tests_max_parallel: ${{ steps.yaml.outputs.codeception_tests_max_parallel}}^
+      codeception_tests_max_parallel: ${{ steps.yaml.outputs.codeception_tests_max_parallel}}
       codeception_tests_docker_login: ${{ steps.yaml.outputs.codeception_tests_docker_login}}
       codeception_tests_container: ${{ steps.yaml.outputs.codeception_tests_container}}
       codeception_tests_container_options: ${{ steps.yaml.outputs.codeception_tests_container_options}}
