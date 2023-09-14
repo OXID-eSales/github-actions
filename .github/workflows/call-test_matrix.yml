@@ -926,7 +926,7 @@ jobs:
         run: cp source/vendor/oxid-esales/testing-library/test_config.yml.dist source/test_config.yml
 
       - name: 'Run deprecated tests'
-        uses: 'OXID-eSales/github-actions/runtests@v1'
+        uses: 'OXID-eSales/github-actions/runtests@v0'
         with:
           container: ${{ needs.init.outputs.deprecated_tests_container }}
           container_options: ${{ needs.init.outputs.deprecated_tests_container_options }}
