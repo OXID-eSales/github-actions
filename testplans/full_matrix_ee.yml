@@ -132,7 +132,7 @@ install_shop:
 # See docs/actions/start_shop.md and docs/actions/phpunit.md for more information.
 unit_tests:
   # Skip this part of the test run
-  skip: true
+  skip: false
   # Using the global settings here
   matrix:
     php: *matrix_php
@@ -170,7 +170,7 @@ unit_tests:
 # See docs/actions/start_shop.md and docs/actions/phpunit.md for more information.
 integration_tests:
   # Skip this part of the test run
-  skip: true
+  skip: false
   # Using the global settings here
   matrix:
     php: *matrix_php
@@ -208,12 +208,12 @@ integration_tests:
 # See docs/actions/start_shop.md and docs/actions/codeception.md for more information.
 codeception_tests:
   # Skip this part of the test run
-  skip: true
+  skip: false
   # Using the global settings here
   matrix:
     php: *matrix_php
     mysql: *matrix_mysql
-  max_parallel: &codeception_max_parallel 1
+  max_parallel: *max_parallel
   docker_login: *docker_login
   container: *container
   cache_bucket: *cache_bucket
@@ -257,12 +257,12 @@ codeception_tests:
 # composer_require.md and docs/actions/codeception.md for more information.
 shop_setup_tests:
   # Skip this part of the test run
-  skip: true
-  # Using the global settings here
+  skip: false
+  # false the global settings here
   matrix:
     php: *matrix_php
     mysql: *matrix_mysql
-  max_parallel: *codeception_max_parallel
+  max_parallel: *max_parallel
   docker_login: *docker_login
   container: *container
   cache_bucket: *cache_bucket
@@ -310,7 +310,7 @@ deprecated_tests:
   matrix:
     php: *matrix_php
     mysql: *matrix_mysql
-  max_parallel: 1
+  max_parallel: *max_parallel
   docker_login: *docker_login
   container: *container
   cache_bucket: *cache_bucket
