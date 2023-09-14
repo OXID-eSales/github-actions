@@ -16,6 +16,11 @@ inputs:
     required: false
     description: 'Method to execute the commands inside a container, either "run" or "exec"'
     default: 'exec'
+  reset_shop:
+    type: boolean
+    required: false
+    description: 'Should we run vendor/bin/reset-shop before the test'
+    default: true
   test:
     type: string
     required: false
@@ -67,6 +72,14 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Reset shop
+      if: ${{ inputs.reset_shop == 'true' }}
+      shell: bash
+      run: |
+        docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
+          ${{ inputs.container }} \
+          php vendor/bin/reset-shop
+
     - name: Run PHPUnit Unit tests
       shell: bash
       run: |
