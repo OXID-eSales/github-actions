@@ -315,7 +315,7 @@ deprecated_tests:
   container: *container
   cache_bucket: *cache_bucket
   # container options for coverage
-  container_options: '-e ACTIVE_THEME=apex -e XDEBUG_MODE=coverage'
+  container_options: '-e ACTIVE_THEME=apex'
   # We use run here, too
   container_method: 'run'
   composer:
@@ -351,7 +351,7 @@ deprecated_tests:
   # Name of the test or folder to run
   test: 'AllTestsUnit'
   # Optional: Additional options to pass to phpunit
-  additional_options: '--filter "/^((?!(testFrontendVAT)).)*$/" --exclude-group quarantine,varnish,paypal_buyerlogin,paypal_external,paypal_graphql,adminFunctionality,flow_theme --coverage-clover=/var/www/deprecated_tests_coverage.xml'
+  additional_options: '--filter "/^((?!(testFrontendVAT)).)*$/" --exclude-group quarantine,varnish,paypal_buyerlogin,paypal_external,paypal_graphql,adminFunctionality,flow_theme'
   # Name of the output logfile - This is dynamic, so we set it in the workflow
   # logfile: 'deprecated_tests_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt'
   # Github run artifact to put the logfile in
