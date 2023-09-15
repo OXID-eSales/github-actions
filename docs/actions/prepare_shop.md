@@ -38,6 +38,9 @@ Name of the container to run the test in.
 **container_options:** *not required*, *default:*  ''
 Additional options to pass into the container.
 
+**container_method:** *not required*, *default*: 'exec'  
+Whether we use exec to run the command in the existing php container or run to spin up a new one.
+
 **git_sdk_url:** *not required*, *default:* 'https://github.com/OXID-eSales/docker-eshop-sdk.git'  
 URL for the docker-eshop sdk repository to clone.
 
@@ -109,6 +112,17 @@ Populate with ${{ secrets.CACHE_ACCESS_KEY }}, its content will be hidden by Git
 **cache_secret_key:** *not required*, *default:* ''  
 Needed to access the local cache instead of the GitHub cache.
 Populate with ${{ secrets.CACHE_SECRET_KEY }}, its content will be hidden by GitHub.
+
+**docker_login:** *not required*, *default:* true  
+Shold we log in to docker?
+
+**docker_user:** *not required*, *default:* ''  
+Needed for docker login.
+Populate with ${{ secrets.DOCKER_HUB_USER }}, its content will be hidden by GitHub.
+
+**docker_token:** *not required*, *default:* ''  
+Needed for docker login.
+Populate with ${{ secrets.DOCKER_HUB_TOKEN }}, its content will be hidden by GitHub.
 
 ## Outputs:
 

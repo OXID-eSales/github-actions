@@ -90,7 +90,7 @@ runs:
       if: ${{ inputs.build == 'true' }}
       shell: bash
       run: |
-        docker-compose ${{ inputs.container_method }} -T \
+        docker-compose exec -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container }} \
           php vendor/bin/codecept build \
@@ -157,7 +157,7 @@ runs:
           grep -Ei '${{ inputs.failure_pattern}}' "${{ inputs.logfile }}"
           exit 1
         fi
-        if [ -n "${{ inputs.coverage_path }}" && ! -s "${{ inputs.coverage_path }}" ]; then
+        if [[ -n "${{ inputs.coverage_path }}" && ! -s "${{ inputs.coverage_path }}" ]]; then
           cat <<EOF
         ${PURPLE}###############################################################################
         "${{ inputs.coverage_path }}" is empty!

@@ -32,44 +32,43 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Run phpstan
+      id: phpstan
+      if: always()
+      run: |
+        docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
+          --workdir=/var/www/${{ inputs.module_path }} \
+          ${{ inputs.container }} \
+          bash -c "composer phpstan-report; composer phpstan"
 
-      - name: Run phpstan
-        id: phpstan
-        if: always()
-        run: |
-          docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
-            --workdir=/var/www/${{ inputs.module_path }} \
-            ${{ inputs.container }} \
-            bash -c "composer phpstan-report; composer phpstan"
+    - name: Run phpmd
+      id: phpmd
+      if: always()
+      continue-on-error: true
+      run: |
+        docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
+          --workdir=/var/www/${{ inputs.module_path }} \
+          ${{ inputs.container }} \
+          bash -c "composer phpmd-report; composer phpmd"
 
-      - name: Run phpmd
-        id: phpmd
-        if: always()
-        continue-on-error: true
-        run: |
-          docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
-            --workdir=/var/www/${{ inputs.module_path }} \
-            ${{ inputs.container }} \
-            bash -c "composer phpmd-report; composer phpmd"
+    - name: Run phpcs
+      if: always()
+      run: |
+        docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
+          --workdir=/var/www/${{ inputs.module_path }} \
+          ${{ inputs.container }} \
+          php composer phpcs
 
-      - name: Run phpcs
-        if: always()
-        run: |
-          docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
-            --workdir=/var/www/${{ inputs.module_path }} \
-            ${{ inputs.container }} \
-            php composer phpcs
+    - name: Stop containers
+      if: always()
+      run: |
+        make down
 
-      - name: Stop containers
-        if: always()
-        run: |
-          make down
-
-      - name: Upload log artifact
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: StylesLog-${{ inputs.php }}
-          path: |
-            source/${{ inputs.module_path }}/tests/reports/phpstan.report.json
-            source/${{ inputs.module_path }}/tests/reports/phpmd.report.json
+    - name: Upload log artifact
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: StylesLog-${{ inputs.php }}
+        path: |
+          source/${{ inputs.module_path }}/tests/reports/phpstan.report.json
+          source/${{ inputs.module_path }}/tests/reports/phpmd.report.json

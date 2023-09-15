@@ -1,0 +1,95 @@
+name: 'slack_message'
+description: 'Sends a status message to slack'
+inputs:
+  slack_webhook:
+    type: string
+    required: true
+    description: 'URL for the channel web hook, see https://api.slack.com/apps/A04CAPK58G0/incoming-webhooks?'
+  title:
+    type: string
+    required: true
+    description: 'Title for the message, status will be added'
+  summary_list:
+    type: string
+    required: false
+    description: 'Multiple lines with Name and URL separated by a %'
+    default: ''
+  job_list:
+    type: string
+    required: false
+    description: 'Name of the job and its outcome or result separated by a %'
+    default: ''
+
+runs:
+  using: "composite"
+  steps:
+    - name: Prepare payload
+      shell: bash
+      run: |
+        STATUS=(Skipped Success Cancelled Failure)
+        EMOJI=(':white_circle:' ':white_check_mark:' ':black_circle:' ':x:')
+        OVERALL_STATUS=0
+        SUMMARY_LIST=$(echo "${{ inputs.summary_list }}"|tr '\n' ' ')
+        SUMMARY_PAYLOAD=""
+        for SUMMARY in ${SUMMARY_LIST}; do
+          SUMMARY_NAME=$(echo ${SUMMARY}|sed -e 's|%.*||')
+          SUMMARY_URL=$(echo ${SUMMARY}|sed -e 's|.*%||')
+          echo -e "\033[0;35m### summary '${SUMMARY_NAME}' url '${SUMMARY_URL}' \033[0m"
+          SUMMARY_PAYLOAD="${SUMMARY_PAYLOAD},
+        { \"type\": \"mrkdwn\", \"text\": \"*${SUMMARY_NAME}:* <${SUMMARY_URL}>\\n\" }"
+        done
+        JOB_LIST=$(echo "${{ inputs.job_list }}"|tr '\n' ' ')
+        JOB_PAYLOAD=""
+        for JOB in ${JOB_LIST}; do
+          JOB_NAME=$(echo ${JOB}|sed -e 's|%.*||')
+          J=$(echo ${JOB}|sed -e 's|.*%||')
+          case $J in
+            skipped) JOB_STATUS=0 ;;
+            success) JOB_STATUS=1 ;;
+            cancelled) JOB_STATUS=2 ;;
+            *) JOB_STATUS=3 ;;
+          esac
+          echo -e "\033[0;35m### job '${JOB_NAME}' status '${J}' (${JOB_STATUS}) \033[0m"
+          if [ ${JOB_STATUS} -gt ${OVERALL_STATUS} ]; then
+            OVERALL_STATUS=$JOB_STATUS
+            echo -e "\033[0;35m### changed overall job status to ${OVERALL_STATUS} \033[0m"
+          fi
+          JOB_PAYLOAD="${JOB_PAYLOAD},
+        { \"type\": \"mrkdwn\", \"text\": \"${JOB_NAME}: ${EMOJI[JOB_STATUS]} ${STATUS[JOB_STATUS]}\"}"
+        done
+        cat >'payload.yaml' <<EOF
+          {
+            "blocks": [
+              { "type": "header",
+                "text":
+                  { "type": "plain_text",
+                    "emoji": true,
+                    "text": "${EMOJI[OVERALL_STATUS]} ${{ inputs.title }} ${STATUS[OVERALL_STATUS]}"
+                  }
+              },
+              {
+              "type": "divider"
+              },
+              { "type": "context",
+                "elements": [${SUMMARY_PAYLOAD:1}
+                ]
+              },
+              {
+              "type": "divider"
+              },
+              { "type": "section",
+                "fields": [${JOB_PAYLOAD:1}
+                ]
+              }
+            ]
+          }
+        EOF
+        cat payload.yaml
+
+    - name: Send custom JSON data to Slack workflow
+      uses: slackapi/slack-github-action@v1
+      with:
+        payload-file-path: 'payload.yaml'
+      env:
+        SLACK_WEBHOOK_URL: ${{ inputs.slack_webhook }}
+        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK

@@ -1,20 +1,42 @@
 name: push-validate_workflows
 # Validates workflow files on push
+# yamllint disable-line rule:truthy
 on: push
 
 jobs:
-  init:
+  lint:
     runs-on: 'ubuntu-latest'
-    steps:  
+    env:
+      SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"
+      # yamllint disable-line rule:line-length
+    steps:
       - name: Checkout
+        id: checkout
         uses: actions/checkout@v4
 
-      - name: actionlint
+      - name: Lint yaml files
+        id: yamllint
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          format: 'github'
+          config_data: |
+            extends: default
+            rules:
+              document-start: disable
+              line-length:
+                max: 160
+                level: warning
+              new-line-at-end-of-file:
+                level: warning
+              trailing-spaces:
+                level: warning
+
+      - name: Run actionlint
         id: actionlint
         uses: raven-actions/actionlint@v1
 
       - name: actionlint Summary
-        if: ${{ steps.actionlint.outputs.exit-code != 0 }}  # example usage, do echo only when actionlint action failed
+        if: always()
         run: |
           echo "Used actionlint version ${{ steps.actionlint.outputs.version-semver }}"
           echo "Used actionlint release ${{ steps.actionlint.outputs.version-tag }}"
@@ -23,4 +45,16 @@ jobs:
           echo "actionlint found ${{ steps.actionlint.outputs.total-errors }} errors"
           echo "actionlint checked ${{ steps.actionlint.outputs.total-files }} files"
           echo "actionlint cache used: ${{ steps.actionlint.outputs.cache-hit }}"
-          exit ${{ steps.actionlint.outputs.exit-code }}
+
+      - name: Send custom JSON data to Slack workflow
+        if: ${{ always() && env.SLACK_WEBHOOK != '' }}
+        uses: 'OXID-eSales/github-actions/slack_status@v1'
+        with:
+          slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          title: '${{ github.workflow }} on ${{ github.repository }} by ${{ github.actor }}'
+          summary_list: |
+            Repository%${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          job_list: |
+            checkout%${{ steps.checkout.outcome}}
+            yamllint%${{ steps.yamllint.outcome}}
+            actionlint%${{ steps.actionlint.outcome }}

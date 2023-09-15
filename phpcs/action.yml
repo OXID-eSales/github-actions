@@ -1,5 +1,5 @@
-name: 'runtests'
-description: 'Executes vendor/bin/runtests in a running container and uploads the logs as artefacts'
+name: 'phpcs'
+description: 'Executes phpcs tests in a running container and uploads the logs as artefacts'
 inputs:
   container:
     type: string
@@ -16,78 +16,47 @@ inputs:
     required: false
     description: 'Method to execute the commands inside a container, either "run" or "exec"'
     default: 'exec'
-  reset_shop:
-    type: boolean
-    required: false
-    description: 'Should we run vendor/bin/reset-shop before the test'
-    default: true
   test:
     type: string
     required: false
     description: 'Name of the test or folder to run'
-    default: 'AllTestsUnit'
+    default: 'source/Internal'
   additional_options:
     type: string
     required: false
-    description: 'Optional: Additional options to pass to phpunit'
-    default: ''
+    description: 'Optional: Additional options to pass to phpcs'
+    default: '-q --standard=PSR12'
   logfile:
     type: string
     required: false
     description: 'Name of the output logfile'
-    default: 'deprecated_tests_log.txt'
+    default: 'phpcs_log.txt'
   logfile_artifact:
     type: string
     required: false
     description: 'Github run artifact to put the logfile in'
     default: 'phpunit-logs'
-  output_files:
-    type: string
-    required: false
-    description: 'phpunit output and test settings'
-    default: |
-      source/unit.cov
-      source/source/log/oxideshop.log
-      data/php/logs/error_log.txt
-  output_artifact:
-    type: string
-    required: false
-    description: 'Github run artifact for the phpunit output'
-    default: 'phpunit-artifacts'
-  coverage_path:
-    type: string
-    required: false
-    description: 'Path for the coverage file, not uploaded if it is empty'
-    default: ''
-  coverage_artifact:
-    type: string
-    required: false
-    description: 'Github run artifact for the coverage file'
-    default: 'coverage-reports'
   failure_pattern:
     type: string
     required: false
     description: 'Grep pattern which indicate that the test failed'
-    default: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH'
+    default: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error'
 runs:
   using: "composite"
   steps:
-    - name: Reset shop
-      if: ${{ inputs.reset_shop == 'true' }}
+    - name: Run PHP_CS check
       shell: bash
       run: |
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container }} \
-          php vendor/bin/reset-shop
+          php vendor/bin/phpcs --version \
+          | tee "${{ inputs.logfile }}" 2>&1 || true
 
-    - name: Run PHPUnit Unit tests
-      shell: bash
-      run: |
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container }} \
-          php vendor/bin/runtests \
+          php vendor/bin/phpcs \
             ${{ inputs.additional_options }} \
-            "${{ inputs.test }}" \
+            ${{ inputs.test }} \
           | tee "${{ inputs.logfile }}" 2>&1 || true
 
     - name: Upload Log
@@ -98,25 +67,6 @@ runs:
         path: ${{ inputs.logfile }}
         if-no-files-found: error
         retention-days: 7
-
-    - name: Upload Artifacts
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ inputs.output_artifact }}
-        path: ${{ inputs.output_files }}
-        if-no-files-found: ignore
-        retention-days: 7
-
-    - name: Upload Coverage Report
-      if: ${{  always() && inputs.coverage_path != '' }}
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ inputs.coverage_artifact }}
-        path: ${{ inputs.coverage_path }}
-        if-no-files-found: ignore
-        retention-days: 7
-
 
     - name: Check results
       shell: bash
@@ -134,7 +84,7 @@ runs:
         if grep -q -Ei '${{ inputs.failure_pattern}}' "${{ inputs.logfile }}"; then
           cat <<EOF
         ${PURPLE}###############################################################################
-        ### phpunit test ${{ inputs.test }} failed
+        ### phpcs test ${{ inputs.test }} failed
         ###############################################################################${NOCOLOR}
         EOF
           grep -Ei '${{ inputs.failure_pattern}}' "${{ inputs.logfile }}"
