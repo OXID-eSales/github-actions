@@ -342,7 +342,7 @@ deprecated_tests:
   # Github run artifact for the phpunit output - This is dynamic, so we set it in the workflow
   # output_artifact: phpunit-artifacts_PHP<matrix.php>_MYSQL<matrix.mysql>
   # Path for the coverage file, not uploaded if it is empty
-  coverage_path: ''
+  coverage_path: 'source/deprecated_tests_coverage.xml'
   # Github run artifact for the coverage file - This is dynamic, so we set it in the workflow
   # coverage_artifact: coverage-reports_PHP<matrix.php>_MYSQL<matrix.mysql>
   # Grep pattern which indicate that the test failed
