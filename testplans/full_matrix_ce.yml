@@ -321,9 +321,34 @@ deprecated_tests:
   # We use run here, too
   container_method: 'run'
   composer:
-    <<: *composer
+    # Enterprise repositories to configure (and require)
+    configure:
+      # Space separated list of repositories to configure
+      install: ''
+      # The organisation for the repositories
+      organisation: 'OXID-eSales'
+      # The git reference to install
+      ref: &dev_ref dev-b-8.0.x
+      # Options to pass along to composer when requiring the repositories
+      options: '--no-update'
+      # Run composer update after configuring all repositories
+      update: true
+      # Options to pass along to composer when running composer update
+      update_options: '--no-interaction'
     require:
+      # Space separated list of repositories to install
       install: 'twig-admin-theme apex-theme tests-deprecated-ce'
+      # The organisation for the repositories
+      organisation: 'OXID-eSales'
+      # The git reference to install
+      ref: *dev_ref
+      # Options to pass along to composer during install
+      options: '--with-all-dependencies'
+      # Run composer update after requiring all repositories
+      update: true
+      # Options to pass along to composer during install
+      update_options: '--no-interaction'
+
   # Name of the config file to copy
   config_file: 'vendor/oxid-esales/testing-library/test_config.yml.dist'
   # Name of the test or folder to run
@@ -398,7 +423,7 @@ phpcs_tests:
   # Name of the test or folder to run
   test: 'source/Internal'
   # Optional: Additional options to pass to phpcs
-  additional_options: '--standard=PSR12'
+  additional_options: '-vp --standard=PSR12'
   # Name of the output logfile - This is dynamic, so we set it in the workflow
   # logfile: 'phpcs_PHP<matrix.php>_MYSQL<matrix.mysql>_codesniffer_log.txt'
   # Github run artifact to put the logfile in
