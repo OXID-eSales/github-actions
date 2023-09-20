@@ -1,10 +1,6 @@
 name: 'install_module'
 description: 'Fetches the module and installs it'
 inputs:
-  cached_shop:
-    type: string
-    required: true
-    description: 'Name of the cached object from prepare_shop/install_shop/install_module'
   container:
     type: string
     required: false
@@ -69,12 +65,16 @@ inputs:
     type: string
     required: false
     description: 'Github run artifact to put the output files in'
-    default: 'Configs-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.template_engine }}_${{ inputs.module_ids }}'
+    default: 'install_module-artifacts'
   enterprise_github_token:
     type: string
     required: false
     description: 'OAuth token to access enterprise repos'
     default: ''
+  cache_name:
+    type: string
+    required: true
+    description: 'Name of the shop to cache'
   cache_bucket:
     type: string
     required: false
@@ -96,21 +96,12 @@ inputs:
     description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
     default: ''
 outputs:
-  installed_shop_with_module:
+  shop_with_module:
     description: 'Name of the cached shop installation'
     value: ${{ steps.init.outputs.installed_shop_with_module }}
 runs:
   using: "composite"
   steps:
-    - name: Initialize
-      id: init
-      shell: bash
-      run: |
-        CACHED_NAME="${{ inputs.cached_shop }}+${{ inputs.module_ids }}"
-        echo "installed_shop_with_module=$CACHED_NAME" | tee -a $GITHUB_OUTPUT
-        echo "EXEC_PHP=docker-compose ${{ inputs.container_method }} -T ${{ inputs. container_options }} ${{ inputs.container }} \" | tee -a $GITHUB_ENV
-        echo -e "\033[0;35m### Caching the installation as ${CACHED_NAME}\033[0m"
-
     - name: Checkout current module
       uses: actions/checkout@v3
       with:
@@ -121,27 +112,44 @@ runs:
 
     - name: Install module
       run: |
-        $EXEC_PHP php composer config repositories.${{ inputs.package_name }} \
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs. container_options }} \
+          ${{ inputs.container }} \
+          php composer config repositories.${{ inputs.package_name }} \
           --json '{"type":"path", "url":"./${{ inputs.module_path }}", "options": {"symlink": true}}'
-        $EXEC_PHP php composer require ${{ inputs.package_name }}:* --no-interaction --no-update
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs. container_options }} \
+          ${{ inputs.container }} \
+          php composer require ${{ inputs.package_name }}:* --no-interaction --no-update
 
     - name: Install dependencies and reset shop
       run: |
-        $EXEC_PHP composer update --no-interaction
-        $EXEC_PHP bin/oe-console oe:database:reset \
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs. container_options }} \
+          ${{ inputs.container }} \
+          composer update --no-interaction
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs. container_options }} \
+          ${{ inputs.container }} \
+          bin/oe-console oe:database:reset \
           --db-host=mysql --db-port=3306 --db-name=example --db-user=root --db-password=root --force
-        $EXEC_PHP bin/oe-console oe:module:activate ${{ inputs.module_ids }}
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs. container_options }} \
+          ${{ inputs.container }} \
+          bin/oe-console oe:module:activate ${{ inputs.module_ids }}
 
     - name: Install module dependencies
       run: |
-        $EXEC_PHP --workdir=/var/www/test-module php composer install
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs. container_options }} \
+          ${{ inputs.container }} \
+          --workdir=/var/www/${{inputs.module_path}} php composer install
 
     - name: Stop containers
       if: always()
       shell: bash
       run: |
         docker-compose down
-
 
     - name: Show docker log
       if: always()

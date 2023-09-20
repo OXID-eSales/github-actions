@@ -162,6 +162,10 @@ inputs:
     required: false
     description: 'OAuth token to access enterprise repos'
     default: ''
+  cache_name:
+    type: string
+    required: true
+    description: 'Name of the shop to cache'
   cache_bucket:
     type: string
     required: false
@@ -210,12 +214,6 @@ runs:
       shell: bash
       # yamllint disable rule:line-length
       run: |
-        if [ "${{ inputs.is_enterprise}}" == "true" ]; then
-          CACHED_NAME="preparedShop-ee-${{ inputs.git_enterprise_ref }}-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}"
-        else
-          CACHED_NAME="preparedShop-ce-${{ inputs.git_shop_ref }}-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.github_sha }}-${{ inputs.github_run_number }}-${{ inputs.github_run_attempt }}"
-        fi
-        echo "prepared_shop=$CACHED_NAME" | tee -a $GITHUB_OUTPUT
         echo "EXEC_PHP=docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} ${{ inputs.container }}" | tee -a $GITHUB_ENV
         echo "\033[0;35m### Caching the installation as ${CACHED_NAME}\033[0m"
       # yamllint enable rule:line-length
@@ -329,11 +327,18 @@ runs:
       shell: bash
       if: ${{ inputs.composer_configure_install == '' && inputs.composer_require_install == '' }}
       run: |
-        $EXEC_PHP composer update --no-interaction
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container }} \
+          composer update --no-interaction
 
     - name: Setup config inc file
       shell: bash
-      run: $EXEC_PHP cp source/config.inc.php.dist source/config.inc.php
+      run: |
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container }} \
+          cp source/config.inc.php.dist source/config.inc.php
 
     - name: Stop containers
       if: always()
@@ -347,7 +352,7 @@ runs:
       with:
         path: |
           ./*
-        key: ${{ steps.init.outputs.prepared_shop }}
+        key: ${{ inputs.cache_name }}
         endpoint: ${{ inputs.cache_endpoint }}
         accessKey: ${{ inputs.cache_access_key }}
         secretKey: ${{ inputs.cache_secret_key }}
