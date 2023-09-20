@@ -602,3 +602,20 @@ outputs:
     value: ${{ steps.yaml.outputs.finish_matrix_mysql}}
   finish_matrix_php:
     value: ${{ steps.yaml.outputs.finish_matrix_php}}
+  # module variables
+  module_matrix_template_engine:
+    value: ${{ steps.yaml.outputs.module_matrix_template_engine }}
+  module_package_name:
+    value: ${{ steps.module.outputs.module_package_name}}
+  module_git_module_url:
+    value: ${{ steps.module.outputs.git_module_url}}
+  module_git_module_ref:
+    value: ${{ steps.module.outputs.git_module_ref}}
+  module_sonarcloud_organization:
+    value: ${{ steps.module.outputs.sonarcloud_organization}}
+  module_sonarcloud_project_key:
+    value: ${{ steps.module.outputs.sonarcloud_project_key}}
+  module_path:
+    value: ${{ steps.module.outputs.path}}
+  module_codecept_test_group:
+    value: ${{ steps.module.outputs.codecept_test_group}}

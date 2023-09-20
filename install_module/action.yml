@@ -69,7 +69,7 @@ inputs:
     type: string
     required: false
     description: 'Github run artifact to put the output files in'
-    default: 'Configs-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.template_engine }}_${{ inputs.module_ids }}'
+    default: 'install_module-artifacts'
   enterprise_github_token:
     type: string
     required: false
@@ -96,7 +96,7 @@ inputs:
     description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
     default: ''
 outputs:
-  installed_shop_with_module:
+  shop_with_module:
     description: 'Name of the cached shop installation'
     value: ${{ steps.init.outputs.installed_shop_with_module }}
 runs:
@@ -106,7 +106,7 @@ runs:
       id: init
       shell: bash
       run: |
-        CACHED_NAME="${{ inputs.cached_shop }}+${{ inputs.module_ids }}"
+        CACHED_NAME="${{ inputs.cached_shop }}+${{ inputs.module_ids }}_${{ inputs.template_engine }}"
         echo "installed_shop_with_module=$CACHED_NAME" | tee -a $GITHUB_OUTPUT
         echo "EXEC_PHP=docker-compose ${{ inputs.container_method }} -T ${{ inputs. container_options }} ${{ inputs.container }} \" | tee -a $GITHUB_ENV
         echo -e "\033[0;35m### Caching the installation as ${CACHED_NAME}\033[0m"
