@@ -75,6 +75,10 @@ inputs:
     required: false
     description: 'OAuth token to access enterprise repos'
     default: ''
+  cache_name:
+    type: string
+    required: true
+    description: 'Name of the shop to cache'
   cache_bucket:
     type: string
     required: false
