@@ -351,6 +351,7 @@ deprecated_tests:
   # Name of the test or folder to run
   test: 'AllTestsUnit'
   # Optional: Additional options to pass to phpunit
+  # yamllint disable-line rule:line-length
   additional_options: '--filter "/^((?!(testFrontendVAT)).)*$/" --exclude-group quarantine,varnish,paypal_buyerlogin,paypal_external,paypal_graphql,adminFunctionality,flow_theme'
   # Name of the output logfile - This is dynamic, so we set it in the workflow
   # logfile: 'deprecated_tests_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt'
