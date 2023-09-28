@@ -105,7 +105,7 @@ prepare_shop:
   git_sdk_ref: *git_sdk_ref
   git_shop_url: *git_shop_url
   # yamllint disable-line rule:anchors
-  git_shop_ref: *github_ref_name
+  git_shop_ref: b-7.0.x
   git_enterprise_ref: *git_enterprise_ref
   is_enterprise: *is_enterprise
   cache_bucket: *cache_bucket
@@ -142,7 +142,7 @@ install_shop:
   container_options: *container_options
   container_method: *container_method
   # yamllint disable-line rule:anchors
-  git_shop_ref: *github_ref_name
+  git_shop_ref: b-7.0.x
   git_enterprise_ref: *git_enterprise_ref
   is_enterprise: *is_enterprise
   cache_bucket: *cache_bucket
