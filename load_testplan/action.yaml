@@ -374,6 +374,8 @@ outputs:
     value: ${{ steps.yaml.outputs.codeception_tests_matrix_mysql}}
   codeception_tests_matrix_php:
     value: ${{ steps.yaml.outputs.codeception_tests_matrix_php}}
+  codeception_tests_matrix_template_engine:
+    value: ${{ steps.yaml.outputs.codeception_tests_matrix_template_engine}}
   codeception_tests_max_parallel:
     value: ${{ steps.yaml.outputs.codeception_tests_max_parallel}}
   codeception_tests_docker_login:
