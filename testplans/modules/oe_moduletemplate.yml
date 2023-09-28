@@ -1,0 +1,13 @@
+---
+# definition for module_ids: oe_moduletemplate
+module:
+  matrix:
+    template_engine: '["smarty","twig"]'
+  package_name: 'oxid-esales/module-template'
+  git_module_url: 'https://github.com/OXID-eSales/module-template.git'
+  git_module_ref: dev-b-7.0.x
+  sonarcloud:
+    organization: oxid-esales
+    project_key: 'OXID-eSales_module-template'
+  path: 'test-module'
+  codecept_test_group: 'oe_moduletemplate'
