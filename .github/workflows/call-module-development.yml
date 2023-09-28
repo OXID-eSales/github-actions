@@ -766,6 +766,18 @@ jobs:
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
+      - name: Test token handling
+        run: |
+          if [ -z "${{ needs.init.outputs.install_module_token }}" ]; then
+            echo "Testplan token is empty"
+          else
+            echo "Testplan token is ${{ needs.init.outputs.install_module_token }}"
+          fi
+
+          if [ "${{ needs.init.outputs.install_module_token }}" == "${{ github.token }}" ]; then
+            echo "Testplan token matches github.token"
+          fi
+      
       - name: Install module
         id: install_module
         uses: 'OXID-eSales/github-actions/install_module@v0'
