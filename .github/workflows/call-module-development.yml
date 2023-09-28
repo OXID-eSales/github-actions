@@ -779,6 +779,7 @@ jobs:
           git_module_url: ${{ needs.init.outputs.module_git_module_url }}
           git_module_ref: ${{ needs.init.outputs.module_git_module_ref }}
           output_artifact: 'Configs-install_module-${{needs.init.outputs.module_ids}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          token: '${{ needs.init.outputs.install_module_token }}'
           cache_name: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.install_module_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
