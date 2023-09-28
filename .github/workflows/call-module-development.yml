@@ -783,7 +783,6 @@ jobs:
           repository: ${{ needs.init.outputs.module_git_module_url }}
           ref: ${{ needs.init.outputs.module_git_module_ref }}
           path: source/${{ needs.init.outputs.module_path }}
-          token: ${{ needs.init.outputs.install_module_token }}
 
       - name: Install module
         id: install_module
