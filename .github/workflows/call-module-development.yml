@@ -118,15 +118,15 @@ jobs:
         run: |
           cat <<EOF
             ${PURPLE}### module variables${NO_COLOR}
-            module_matrix_template_engine: ${{ steps.module.outputs.module_matrix_template_engine}}
-            module_ids: ${{ steps.module.outputs.module_ids}}
-            module_package_name: ${{ steps.module.outputs.module_package_name}}
-            module_git_module_url: ${{ steps.module.outputs.module_git_module_url}}
-            module_git_module_ref: ${{ steps.module.outputs.module_git_module_ref}}
-            module_sonarcloud_organization: ${{ steps.module.outputs.module_sonarcloud_organization}}
-            module_sonarcloud_project_key: ${{ steps.module.outputs.module_sonarcloud_project_key}}
-            module_path: ${{ steps.module.outputs.module_path}}
-            module_codecept_test_group: ${{ steps.module.outputs.module_codecept_test_group}}
+            module_matrix_template_engine: ${{ steps.yaml.outputs.module_matrix_template_engine}}
+            module_ids: ${{ steps.yaml.outputs.module_ids}}
+            module_package_name: ${{ steps.yaml.outputs.module_package_name}}
+            module_git_module_url: ${{ steps.yaml.outputs.module_git_module_url}}
+            module_git_module_ref: ${{ steps.yaml.outputs.module_git_module_ref}}
+            module_sonarcloud_organization: ${{ steps.yaml.outputs.module_sonarcloud_organization}}
+            module_sonarcloud_project_key: ${{ steps.yaml.outputs.module_sonarcloud_project_key}}
+            module_path: ${{ steps.yaml.outputs.module_path}}
+            module_codecept_test_group: ${{ steps.yaml.outputs.module_codecept_test_group}}
           EOF
 
       - name: 'Print prepare_shop variables'
