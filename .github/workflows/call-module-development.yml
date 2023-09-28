@@ -1145,7 +1145,7 @@ jobs:
 
   deprecated_tests:
     needs: ['init', 'install_shop', 'shop_setup_tests']
-    if: ${{ always() && needs.init.outputs.deprecated_tests_skip != 'true' }}
+    if: ${{ always() && needs.init.outputs.deprecated_tests_skip != 'true' && needs.install_shop.result == 'success' }}
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.deprecated_tests_matrix_php) }}
@@ -1225,7 +1225,7 @@ jobs:
         uses: 'OXID-eSales/github-actions/stop_shop@v1'
 
   sonarcloud:
-    if: ${{ always() && needs.init.outputs.sonarcloud_skip != 'true' }}
+    if: ${{ always() && needs.init.outputs.sonarcloud_skip != 'true' && needs.install_shop.result == 'success' }}
     needs:
       - init
       - prepare_shop
@@ -1276,7 +1276,7 @@ jobs:
 
   phpcs_tests:
     needs: ['init', 'install_shop', 'sonarcloud']
-    if: ${{ always() && needs.init.outputs.phpcs_tests_skip != 'true' }}
+    if: ${{ always() && needs.init.outputs.phpcs_tests_skip != 'true' && needs.install_shop.result == 'success' }}
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.phpcs_tests_matrix_php) }}
