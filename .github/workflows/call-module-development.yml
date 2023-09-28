@@ -773,11 +773,18 @@ jobs:
           else
             echo "Testplan token is ${{ needs.init.outputs.install_module_token }}"
           fi
-
           if [ "${{ needs.init.outputs.install_module_token }}" == "${{ github.token }}" ]; then
             echo "Testplan token matches github.token"
           fi
-      
+
+      - name: Checkout module
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ needs.init.outputs.module_git_module_url }}
+          ref: ${{ needs.init.outputs.module_git_module_ref }}
+          path: source/${{ needs.init.outputs.module_path }}
+          token: ${{ needs.init.outputs.install_module_token }}
+
       - name: Install module
         id: install_module
         uses: 'OXID-eSales/github-actions/install_module@v0'

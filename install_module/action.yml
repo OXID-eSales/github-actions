@@ -105,13 +105,13 @@ runs:
           echo "Token is ${{inputs.token}}"
         fi
 
-    - name: Checkout current module
-      uses: actions/checkout@v3
-      with:
-        repository: ${{ inputs.git_module_url }}
-        ref: ${{ inputs.git_module_ref }}
-        path: source/${{ inputs.module_path }}
-        token: ${{ inputs.token }}
+#    - name: Checkout current module
+#      uses: actions/checkout@v3
+#      with:
+#        repository: ${{ inputs.git_module_url }}
+#        ref: ${{ inputs.git_module_ref }}
+#        path: source/${{ inputs.module_path }}
+#        token: ${{ inputs.token }}
 
     - name: Install module
       shell: bash
