@@ -96,15 +96,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Test parameter passing
-      shell: bash
-      run: |
-        if [ -z "${{inputs.token}}" ]; then
-          echo "Token is empty"
-        else
-          echo "Token is ${{inputs.token}}"
-        fi
-
 #    - name: Checkout current module
 #      uses: actions/checkout@v3
 #      with:
@@ -119,12 +110,12 @@ runs:
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container }} \
-          php composer config repositories.${{ inputs.package_name }} \
+          composer config repositories.${{ inputs.package_name }} \
           --json '{"type":"path", "url":"./${{ inputs.module_path }}", "options": {"symlink": true}}'
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container }} \
-          php composer require ${{ inputs.package_name }}:* --no-interaction --no-update
+          composer require ${{ inputs.package_name }}:* --no-interaction --no-update
 
     - name: Install dependencies and reset shop
       shell: bash
@@ -149,7 +140,8 @@ runs:
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container }} \
-          --workdir=/var/www/${{inputs.module_path}} php composer install
+          --workdir=/var/www/${{inputs.module_path}} \
+          composer install
 
     - name: Stop containers
       if: always()
