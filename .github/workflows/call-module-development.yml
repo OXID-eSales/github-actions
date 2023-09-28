@@ -179,6 +179,7 @@ jobs:
             install_module_cache_prefix: ${{ steps.calculate.outputs.install_module_cache_prefix}}
             install_module_cache_bucket: ${{ steps.yaml.outputs.install_module_cache_bucket}}
             install_module_package_name: ${{ steps.yaml.outputs.install_module_package_name}}
+            install_module_token: ${{ steps.yaml.outputs.install_module_token}}
           EOF
 
       - name: 'Print install_shop variables'
@@ -497,6 +498,7 @@ jobs:
       install_module_cache_prefix: ${{ steps.calculate.outputs.install_module_cache_prefix}}
       install_module_cache_bucket: ${{ steps.yaml.outputs.install_module_cache_bucket}}
       install_module_package_name: ${{ steps.yaml.outputs.install_module_package_name}}
+      install_module_token: ${{ steps.yaml.outputs.install_module_token}}
       # install_shop variables
       install_shop_matrix_mysql: ${{ steps.yaml.outputs.install_shop_matrix_mysql}}
       install_shop_matrix_php: ${{ steps.yaml.outputs.install_shop_matrix_php}}

@@ -272,8 +272,10 @@ outputs:
     value: ${{ steps.yaml.outputs.install_module_container_method}}
   install_module_cache_bucket:
     value: ${{ steps.yaml.outputs.install_module_cache_bucket}}
-  install_module_package:
-    value: ${{ steps.yaml.outputs.install_module_package}}
+  install_module_package_name:
+    value: ${{ steps.yaml.outputs.install_module_package_name}}
+  install_module_token:
+    value: ${{ steps.yaml.outputs.install_module_token}}
   # install_shop variables
   install_shop_matrix_mysql:
     value: ${{ steps.yaml.outputs.install_shop_matrix_mysql}}

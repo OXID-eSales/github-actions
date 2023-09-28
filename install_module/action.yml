@@ -61,7 +61,7 @@ inputs:
     required: false
     description: 'Github run artifact to put the output files in'
     default: 'install_module-artifacts'
-  enterprise_github_token:
+  token:
     type: string
     required: false
     description: 'OAuth token to access enterprise repos'
@@ -103,7 +103,7 @@ runs:
         repository: ${{ inputs.git_module_url }}
         ref: ${{ inputs.git_module_ref }}
         path: source/${{ inputs.module_path }}
-        token: ${{ inputs.enterprise_github_token }}
+        token: ${{ inputs.token }}
 
     - name: Install module
       shell: bash

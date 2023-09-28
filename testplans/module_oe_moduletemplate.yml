@@ -104,7 +104,6 @@ prepare_shop:
   git_sdk_url: *git_sdk_url
   git_sdk_ref: *git_sdk_ref
   git_shop_url: *git_shop_url
-  # yamllint disable-line rule:anchors
   git_shop_ref: b-7.0.x
   git_enterprise_ref: *git_enterprise_ref
   is_enterprise: *is_enterprise
@@ -129,6 +128,8 @@ install_module:
   container_method: *container_method
   cache_bucket: *cache_bucket
   package_name: *package_name
+  # yamllint disable-line rule:anchors
+  token: *github_token
 
 # See docs/actions/start_shop.md and docs/actions/install_shop.md for more information.
 install_shop:
@@ -141,7 +142,6 @@ install_shop:
   container: *container
   container_options: *container_options
   container_method: *container_method
-  # yamllint disable-line rule:anchors
   git_shop_ref: b-7.0.x
   git_enterprise_ref: *git_enterprise_ref
   is_enterprise: *is_enterprise
