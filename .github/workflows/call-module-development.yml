@@ -81,16 +81,23 @@ jobs:
             echo "install_shop_cache_prefix=shopInstallation-ce-${{ steps.yaml.outputs.prepare_shop_git_shop_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
             echo "install_module_cache_prefix=moduleInstallation-ce--${{inputs.module_ids}}-${{ steps.yaml.outputs.prepare_shop_git_shop_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
           fi
-        # yamllint enable rule:line-length
-
-      - name: 'Print Testplan'
-        run: |
           PURPLE=$(echo -e "\033[0;35m")
           NO_COLOR=$(echo -e "\033[0m")
+          echo "PURPLE=${PURPLE}" >>"${GITHUB_ENV}"
+          echo "NO_COLOR=${NO_COLOR}" >>"${GITHUB_ENV}"
+        # yamllint enable rule:line-length
+
+      - name: 'Print workflow variables'
+        run: |
           cat <<EOF
             ${PURPLE}### workflow variables${NO_COLOR}
             workflow_matrix_mysql: ${{ steps.yaml.outputs.workflow_matrix_mysql}}
             workflow_matrix_php: ${{ steps.yaml.outputs.workflow_matrix_php}}
+          EOF
+
+      - name: 'Print global variables'
+        run: |
+          cat <<EOF
             ${PURPLE}### global variables${NO_COLOR}
             global_git_sdk_url: ${{ steps.yaml.outputs.global_git_sdk_url}}
             global_git_sdk_ref: ${{ steps.yaml.outputs.global_git_sdk_ref}}
@@ -115,6 +122,11 @@ jobs:
             global_composer_require_options: ${{ steps.yaml.outputs.global_composer_require_options}}
             global_composer_require_update: ${{ steps.yaml.outputs.global_composer_require_update}}
             global_composer_require_update_options: ${{ steps.yaml.outputs.global_composer_require_update_options}}
+          EOF
+
+      - name: 'Print prepare_shop variables'
+        run: |
+          cat <<EOF
             ${PURPLE}### prepare_shop variables${NO_COLOR}
             prepare_shop_matrix_mysql: ${{ steps.yaml.outputs.prepare_shop_matrix_mysql}}
             prepare_shop_matrix_php: ${{ steps.yaml.outputs.prepare_shop_matrix_php}}
@@ -146,6 +158,11 @@ jobs:
             prepare_shop_composer_require_options: ${{ steps.yaml.outputs.prepare_shop_composer_require_options}}
             prepare_shop_composer_require_update: ${{ steps.yaml.outputs.prepare_shop_composer_require_update}}
             prepare_shop_composer_require_update_options: ${{ steps.yaml.outputs.prepare_shop_composer_require_update_options}}
+          EOF
+
+      - name: 'Print install_module variables'
+        run: |
+          cat <<EOF
             ${PURPLE}### install_module variables${NO_COLOR}
             install_module_matrix_mysql: ${{ steps.yaml.outputs.install_module_matrix_mysql}}
             install_module_matrix_php: ${{ steps.yaml.outputs.install_module_matrix_php}}
@@ -157,6 +174,11 @@ jobs:
             install_module_cache_prefix: ${{ steps.calculate.outputs.install_module_cache_prefix}}
             install_module_cache_bucket: ${{ steps.yaml.outputs.install_module_cache_bucket}}
             install_module_package: ${{ steps.yaml.outputs.install_module_package}}
+          EOF
+
+      - name: 'Print install_shop variables'
+        run: |
+          cat <<EOF
             ${PURPLE}### install_shop variables${NO_COLOR}
             install_shop_matrix_mysql: ${{ steps.yaml.outputs.install_shop_matrix_mysql}}
             install_shop_matrix_php: ${{ steps.yaml.outputs.install_shop_matrix_php}}
@@ -172,7 +194,12 @@ jobs:
             install_shop_cache_bucket: ${{ steps.yaml.outputs.install_shop_cache_bucket}}
             install_shop_config_idebug: ${{ steps.yaml.outputs.install_shop_config_idebug}}
             install_shop_output_files: ${{ steps.yaml.outputs.install_shop_output_files}}
-            ${PURPLE}### unit_test variables${NO_COLOR}
+          EOF
+
+      - name: 'Print unit_tests variables'
+        run: |
+          cat <<EOF
+            ${PURPLE}### unit_tests variables${NO_COLOR}
             unit_tests_skip: ${{ steps.yaml.outputs.unit_tests_skip}}
             unit_tests_matrix_mysql: ${{ steps.yaml.outputs.unit_tests_matrix_mysql}}
             unit_tests_matrix_php: ${{ steps.yaml.outputs.unit_tests_matrix_php}}
@@ -189,6 +216,11 @@ jobs:
             unit_tests_output_files: ${{ steps.yaml.outputs.unit_tests_output_files}}
             unit_tests_coverage_path: ${{ steps.yaml.outputs.unit_tests_coverage_path}}
             unit_tests_failure_pattern: ${{ steps.yaml.outputs.unit_tests_failure_pattern}}
+          EOF
+
+      - name: 'Print integration_test variables'
+        run: |
+          cat <<EOF
             ${PURPLE}### integration_tests variables${NO_COLOR}
             integration_tests_skip: ${{ steps.yaml.outputs.integration_tests_skip}}
             integration_tests_matrix_mysql: ${{ steps.yaml.outputs.integration_tests_matrix_mysql}}
@@ -206,6 +238,11 @@ jobs:
             integration_tests_output_files: ${{ steps.yaml.outputs.integration_tests_output_files}}
             integration_tests_coverage_path: ${{ steps.yaml.outputs.integration_tests_coverage_path}}
             integration_tests_failure_pattern: ${{ steps.yaml.outputs.integration_tests_failure_pattern}}
+          EOF
+
+      - name: 'Print codeception_test variables'
+        run: |
+          cat <<EOF
             ${PURPLE}### codeception_tests variables${NO_COLOR}
             codeception_tests_skip: ${{ steps.yaml.outputs.codeception_tests_skip}}
             codeception_tests_matrix_mysql: ${{ steps.yaml.outputs.codeception_tests_matrix_mysql}}
@@ -238,6 +275,11 @@ jobs:
             codeception_tests_output_files: ${{ steps.yaml.outputs.codeception_tests_output_files}}
             codeception_tests_coverage_path: ${{ steps.yaml.outputs.codeception_tests_coverage_path}}
             codeception_tests_failure_pattern: ${{ steps.yaml.outputs.codeception_tests_failure_pattern}}
+          EOF
+
+      - name: 'Print shop_setup_tests variables'
+        run: |
+          cat <<EOF
             ${PURPLE}### shop_setup_tests variables${NO_COLOR}
             shop_setup_tests_skip: ${{ steps.yaml.outputs.shop_setup_tests_skip}}
             shop_setup_tests_matrix_mysql: ${{ steps.yaml.outputs.shop_setup_tests_matrix_mysql}}
@@ -269,7 +311,12 @@ jobs:
             shop_setup_tests_output_files: ${{ steps.yaml.outputs.shop_setup_tests_output_files}}
             shop_setup_tests_coverage_path: ${{ steps.yaml.outputs.shop_setup_tests_coverage_path}}
             shop_setup_tests_failure_pattern: ${{ steps.yaml.outputs.shop_setup_tests_failure_pattern}}
-            ${PURPLE}### deprecated_test variables${NO_COLOR}
+          EOF
+
+      - name: 'Print deprecated_tests variables'
+        run: |
+          cat <<EOF
+            ${PURPLE}### deprecated_tests variables${NO_COLOR}
             deprecated_tests_skip: ${{ steps.yaml.outputs.deprecated_tests_skip}}
             deprecated_tests_matrix_mysql: ${{ steps.yaml.outputs.deprecated_tests_matrix_mysql}}
             deprecated_tests_matrix_php: ${{ steps.yaml.outputs.deprecated_tests_matrix_php}}
@@ -297,6 +344,11 @@ jobs:
             deprecated_tests_output_files: ${{ steps.yaml.outputs.deprecated_tests_output_files}}
             deprecated_tests_coverage_path: ${{ steps.yaml.outputs.deprecated_tests_coverage_path}}
             deprecated_tests_failure_pattern: ${{ steps.yaml.outputs.deprecated_tests_failure_pattern}}
+          EOF
+
+      - name: 'Print sonarcloud variables'
+        run: |
+          cat <<EOF
             ${PURPLE}### sonarcloud variables${NO_COLOR}
             sonarcloud_skip: ${{ steps.yaml.outputs.sonarcloud_skip}}
             sonarcloud_matrix_mysql: ${{ steps.yaml.outputs.sonarcloud_matrix_mysql}}
@@ -310,6 +362,11 @@ jobs:
             sonarcloud_parameters: ${{ steps.yaml.outputs.sonarcloud_parameters}}
             sonarcloud_internal_project_name: ${{ steps.yaml.outputs.sonarcloud_internal_project_name}}
             sonarcloud_internal_parameters: ${{ steps.yaml.outputs.sonarcloud_internal_parameters}}
+          EOF
+
+      - name: 'Print phpcs_tests variables'
+        run: |
+          cat <<EOF
             ${PURPLE}### phpcs_tests variables${NO_COLOR}
             phpcs_tests_skip: ${{ steps.yaml.outputs.phpcs_tests_skip}}
             phpcs_tests_matrix_mysql: ${{ steps.yaml.outputs.phpcs_tests_matrix_mysql}}
@@ -327,6 +384,11 @@ jobs:
             phpcs_tests_output_files: ${{ steps.yaml.outputs.phpcs_tests_output_files}}
             phpcs_tests_coverage_path: ${{ steps.yaml.outputs.phpcs_tests_coverage_path}}
             phpcs_tests_failure_pattern: ${{ steps.yaml.outputs.phpcs_tests_failure_pattern}}
+          EOF
+
+      - name: 'Print styles variables'
+        run: |
+          cat <<EOF
             ${PURPLE}### styles variables${NO_COLOR}
             styles_skip: ${{ steps.yaml.outputs.styles_skip}}
             styles_matrix_mysql: ${{ steps.yaml.outputs.styles_matrix_mysql}}
@@ -339,10 +401,20 @@ jobs:
             styles_cache_bucket: ${{ steps.yaml.outputs.styles_cache_bucket}}
             styles_module_path: ${{ steps.yaml.outputs.styles_module_path}}
             styles_output_files: ${{ steps.yaml.outputs.styles_output_files}}
+          EOF
+
+      - name: 'Print finish variables'
+        run: |
+          cat <<EOF
             ${PURPLE}### finish variables${NO_COLOR}
             finish_skip: ${{ steps.yaml.outputs.finish_skip}}
             finish_matrix_mysql: ${{ steps.yaml.outputs.finish_matrix_mysql}}
             finish_matrix_php: ${{ steps.yaml.outputs.finish_matrix_php}}
+          EOF
+
+      - name: 'Print module variables'
+        run: |
+          cat <<EOF
             ${PURPLE}### module variables${NO_COLOR}
             module_matrix_template_engine: ${{ steps.module.outputs.module_matrix_template_engine}}
             module_package_name: ${{ steps.module.outputs.module_package_name}}
