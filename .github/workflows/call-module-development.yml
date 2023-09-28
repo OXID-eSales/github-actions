@@ -18,10 +18,6 @@ on:
         type: string
         description: 'Testplan to run'
         required: true
-      module_ids:
-        type: string
-        description: 'Module to test'
-        required: true
       runs_on:
         type: string
         description: 'JSON string/array describing the runner'
@@ -61,12 +57,6 @@ jobs:
         uses: 'OXID-eSales/github-actions/load_testplan@v1'
         with:
           testplan: ${{ inputs.testplan }}
-
-      - name: Load module config
-        id: module
-        uses: 'OXID-eSales/github-actions/load_testplan@v0'
-        with:
-          testplan: ${{ inputs.module_ids }}
 
       - name: 'Calculate values'
         id: calculate
@@ -124,6 +114,21 @@ jobs:
             global_composer_require_update_options: ${{ steps.yaml.outputs.global_composer_require_update_options}}
           EOF
 
+      - name: 'Print module variables'
+        run: |
+          cat <<EOF
+            ${PURPLE}### module variables${NO_COLOR}
+            module_matrix_template_engine: ${{ steps.module.outputs.module_matrix_template_engine}}
+            module_ids: ${{ steps.module.outputs.module_ids}}
+            module_package_name: ${{ steps.module.outputs.module_package_name}}
+            module_git_module_url: ${{ steps.module.outputs.module_git_module_url}}
+            module_git_module_ref: ${{ steps.module.outputs.module_git_module_ref}}
+            module_sonarcloud_organization: ${{ steps.module.outputs.module_sonarcloud_organization}}
+            module_sonarcloud_project_key: ${{ steps.module.outputs.module_sonarcloud_project_key}}
+            module_path: ${{ steps.module.outputs.module_path}}
+            module_codecept_test_group: ${{ steps.module.outputs.module_codecept_test_group}}
+          EOF
+
       - name: 'Print prepare_shop variables'
         run: |
           cat <<EOF
@@ -173,7 +178,7 @@ jobs:
             install_module_container_method: ${{ steps.yaml.outputs.install_module_container_method}}
             install_module_cache_prefix: ${{ steps.calculate.outputs.install_module_cache_prefix}}
             install_module_cache_bucket: ${{ steps.yaml.outputs.install_module_cache_bucket}}
-            install_module_package: ${{ steps.yaml.outputs.install_module_package}}
+            install_module_package_name: ${{ steps.yaml.outputs.install_module_package_name}}
           EOF
 
       - name: 'Print install_shop variables'
@@ -412,20 +417,6 @@ jobs:
             finish_matrix_php: ${{ steps.yaml.outputs.finish_matrix_php}}
           EOF
 
-      - name: 'Print module variables'
-        run: |
-          cat <<EOF
-            ${PURPLE}### module variables${NO_COLOR}
-            module_matrix_template_engine: ${{ steps.module.outputs.module_matrix_template_engine}}
-            module_package_name: ${{ steps.module.outputs.module_package_name}}
-            module_git_module_url: ${{ steps.module.outputs.module_git_module_url}}
-            module_git_module_ref: ${{ steps.module.outputs.module_git_module_ref}}
-            module_sonarcloud_organization: ${{ steps.module.outputs.module_sonarcloud_organization}}
-            module_sonarcloud_project_key: ${{ steps.module.outputs.module_sonarcloud_project_key}}
-            module_path: ${{ steps.module.outputs.module_path}}
-            module_codecept_test_group: ${{ steps.module.outputs.module_codecept_test_group}}
-          EOF
-
     outputs:
       # workflow variables
       workflow_matrix_mysql: ${{ steps.yaml.outputs.workflow_matrix_mysql}}
@@ -454,6 +445,15 @@ jobs:
       global_composer_require_options: ${{ steps.yaml.outputs.global_composer_require_options}}
       global_composer_require_update: ${{ steps.yaml.outputs.global_composer_require_update}}
       global_composer_require_update_options: ${{ steps.yaml.outputs.global_composer_require_update_options}}
+      # module variables
+      module_matrix_template_engine: ${{ steps.module.outputs.module_matrix_template_engine}}
+      module_package_name: ${{ steps.module.outputs.module_package_name}}
+      module_git_module_url: ${{ steps.module.outputs.module_git_module_url}}
+      module_git_module_ref: ${{ steps.module.outputs.module_git_module_ref}}
+      module_sonarcloud_organization: ${{ steps.module.outputs.module_sonarcloud_organization}}
+      module_sonarcloud_project_key: ${{ steps.module.outputs.module_sonarcloud_project_key}}
+      module_path: ${{ steps.module.outputs.module_path}}
+      module_codecept_test_group: ${{ steps.module.outputs.module_codecept_test_group}}
       # prepare_shop variables
       prepare_shop_matrix_mysql: ${{ steps.yaml.outputs.prepare_shop_matrix_mysql}}
       prepare_shop_matrix_php: ${{ steps.yaml.outputs.prepare_shop_matrix_php}}
@@ -495,7 +495,7 @@ jobs:
       install_module_container_method: ${{ steps.yaml.outputs.install_module_container_method}}
       install_module_cache_prefix: ${{ steps.calculate.outputs.install_module_cache_prefix}}
       install_module_cache_bucket: ${{ steps.yaml.outputs.install_module_cache_bucket}}
-      install_module_package: ${{ steps.yaml.outputs.install_module_package}}
+      install_module_package_name: ${{ steps.yaml.outputs.install_module_package_name}}
       # install_shop variables
       install_shop_matrix_mysql: ${{ steps.yaml.outputs.install_shop_matrix_mysql}}
       install_shop_matrix_php: ${{ steps.yaml.outputs.install_shop_matrix_php}}
@@ -682,15 +682,6 @@ jobs:
       finish_skip: ${{ steps.yaml.outputs.finish_skip}}
       finish_matrix_mysql: ${{ steps.yaml.outputs.finish_matrix_mysql}}
       finish_matrix_php: ${{ steps.yaml.outputs.finish_matrix_php}}
-      # module variables
-      module_matrix_template_engine: ${{ steps.module.outputs.module_matrix_template_engine}}
-      module_package_name: ${{ steps.module.outputs.module_package_name}}
-      module_git_module_url: ${{ steps.module.outputs.module_git_module_url}}
-      module_git_module_ref: ${{ steps.module.outputs.module_git_module_ref}}
-      module_sonarcloud_organization: ${{ steps.module.outputs.module_sonarcloud_organization}}
-      module_sonarcloud_project_key: ${{ steps.module.outputs.module_sonarcloud_project_key}}
-      module_path: ${{ steps.module.outputs.module_path}}
-      module_codecept_test_group: ${{ steps.module.outputs.module_codecept_test_group}}
 
   prepare_shop:
     needs: init
@@ -779,7 +770,7 @@ jobs:
           container: ${{ needs.init.outputs.install_module_container }}
           container_options: ${{ needs.init.outputs.install_module_container_options }}
           container_method: ${{ needs.init.outputs.install_module_container_method }}
-          package_name: ${{ needs.init.outputs.install_module_package }}
+          package_name: ${{ needs.init.outputs.install_module_package_name }}
           module_ids: ${{ inputs.module_ids }}
           module_path: ${{ needs.init.outputs.module_path }}
           git_module_url: ${{ needs.init.outputs.module_git_module_url }}
