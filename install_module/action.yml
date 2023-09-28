@@ -106,6 +106,7 @@ runs:
         token: ${{ inputs.enterprise_github_token }}
 
     - name: Install module
+      shell: bash
       run: |
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
@@ -118,6 +119,7 @@ runs:
           php composer require ${{ inputs.package_name }}:* --no-interaction --no-update
 
     - name: Install dependencies and reset shop
+      shell: bash
       run: |
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
@@ -134,6 +136,7 @@ runs:
           bin/oe-console oe:module:activate ${{ inputs.module_ids }}
 
     - name: Install module dependencies
+      shell: bash
       run: |
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
@@ -148,6 +151,7 @@ runs:
 
     - name: Show docker log
       if: always()
+      shell: bash
       run: |
         docker-compose logs --tail=all
 
