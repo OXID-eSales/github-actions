@@ -63,9 +63,8 @@ inputs:
     default: 'install_module-artifacts'
   token:
     type: string
-    required: false
+    required: true
     description: 'OAuth token to access enterprise repos'
-    default: ''
   cache_name:
     type: string
     required: true
@@ -97,6 +96,15 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Test parameter passing
+      shell: bash
+      run: |
+        if [ -z "${{inputs.token}}" ]; then
+          echo "Token is empty"
+        else
+          echo "Token is ${{inputs.token}}"
+        fi
+
     - name: Checkout current module
       uses: actions/checkout@v3
       with:
