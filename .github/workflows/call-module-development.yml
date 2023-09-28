@@ -65,11 +65,11 @@ jobs:
           if [ '${{steps.yaml.outputs.global_is_enterprise}}' == 'true' ]; then
             echo "prepare_shop_cache_prefix=preparedShop-ee-${{ steps.yaml.outputs.prepare_shop_git_enterprise_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
             echo "install_shop_cache_prefix=shopInstallation-ee-${{ steps.yaml.outputs.install_shop_git_enterprise_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
-            echo "install_module_cache_prefix=moduleInstallation-ee-${{inputs.module_ids}}-${{ steps.yaml.outputs.install_shop_git_enterprise_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
+            echo "install_module_cache_prefix=moduleInstallation-ee-${{steps.yaml.outputs.module_ids}}-${{ steps.yaml.outputs.install_shop_git_enterprise_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
           else
             echo "prepare_shop_cache_prefix=preparedShop-ce-${{ steps.yaml.outputs.prepare_shop_git_shop_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
             echo "install_shop_cache_prefix=shopInstallation-ce-${{ steps.yaml.outputs.prepare_shop_git_shop_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
-            echo "install_module_cache_prefix=moduleInstallation-ce--${{inputs.module_ids}}-${{ steps.yaml.outputs.prepare_shop_git_shop_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
+            echo "install_module_cache_prefix=moduleInstallation-ce--${{steps.yaml.outputs.module_ids}}-${{ steps.yaml.outputs.prepare_shop_git_shop_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
           fi
           PURPLE=$(echo -e "\033[0;35m")
           NO_COLOR=$(echo -e "\033[0m")
@@ -446,14 +446,15 @@ jobs:
       global_composer_require_update: ${{ steps.yaml.outputs.global_composer_require_update}}
       global_composer_require_update_options: ${{ steps.yaml.outputs.global_composer_require_update_options}}
       # module variables
-      module_matrix_template_engine: ${{ steps.module.outputs.module_matrix_template_engine}}
-      module_package_name: ${{ steps.module.outputs.module_package_name}}
-      module_git_module_url: ${{ steps.module.outputs.module_git_module_url}}
-      module_git_module_ref: ${{ steps.module.outputs.module_git_module_ref}}
-      module_sonarcloud_organization: ${{ steps.module.outputs.module_sonarcloud_organization}}
-      module_sonarcloud_project_key: ${{ steps.module.outputs.module_sonarcloud_project_key}}
-      module_path: ${{ steps.module.outputs.module_path}}
-      module_codecept_test_group: ${{ steps.module.outputs.module_codecept_test_group}}
+      module_matrix_template_engine: ${{ steps.yaml.outputs.module_matrix_template_engine}}
+      module_ids: ${{ steps.yaml.outputs.module_ids}}
+      module_package_name: ${{ steps.yaml.outputs.module_package_name}}
+      module_git_module_url: ${{ steps.yaml.outputs.module_git_module_url}}
+      module_git_module_ref: ${{ steps.yaml.outputs.module_git_module_ref}}
+      module_sonarcloud_organization: ${{ steps.yaml.outputs.module_sonarcloud_organization}}
+      module_sonarcloud_project_key: ${{ steps.yaml.outputs.module_sonarcloud_project_key}}
+      module_path: ${{ steps.yaml.outputs.module_path}}
+      module_codecept_test_group: ${{ steps.yaml.outputs.module_codecept_test_group}}
       # prepare_shop variables
       prepare_shop_matrix_mysql: ${{ steps.yaml.outputs.prepare_shop_matrix_mysql}}
       prepare_shop_matrix_php: ${{ steps.yaml.outputs.prepare_shop_matrix_php}}
@@ -771,11 +772,11 @@ jobs:
           container_options: ${{ needs.init.outputs.install_module_container_options }}
           container_method: ${{ needs.init.outputs.install_module_container_method }}
           package_name: ${{ needs.init.outputs.install_module_package_name }}
-          module_ids: ${{ inputs.module_ids }}
+          module_ids: ${{ needs.init.outputs.module_ids }}
           module_path: ${{ needs.init.outputs.module_path }}
           git_module_url: ${{ needs.init.outputs.module_git_module_url }}
           git_module_ref: ${{ needs.init.outputs.module_git_module_ref }}
-          output_artifact: 'Configs-install_module-${{inputs.module_ids}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          output_artifact: 'Configs-install_module-${{needs.init.outputs.module_ids}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_name: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.install_module_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
@@ -970,12 +971,12 @@ jobs:
             -e 's#admin_twig#admin_smarty#g;' \
             -e 's#views/apex#views/flow/translations#g;' \
             'source/test-module/tests/Codeception/acceptance.suite.yml'
-          echo "CODECEPTION_CONTAINER_OPTIONS=-e THEME_ID=flow -e MODULE_IDS=${{ inputs.module_ids }}" | tee -a "$GITHUB_ENV"
+          echo "CODECEPTION_CONTAINER_OPTIONS=-e THEME_ID=flow -e MODULE_IDS=${{ needs.init.outputs.module_ids }}" | tee -a "$GITHUB_ENV"
 
       - name: 'Set options for twig'
         if: ${{ matrix.template_engine == 'twig' }}
         run: |
-          echo "CODECEPTION_CONTAINER_OPTIONS=-e THEME_ID=apex -e MODULE_IDS=${{ inputs.module_ids }}" | tee -a "$GITHUB_ENV"
+          echo "CODECEPTION_CONTAINER_OPTIONS=-e THEME_ID=apex -e MODULE_IDS=${{ needs.init.outputs.module_ids }}" | tee -a "$GITHUB_ENV"
 
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v1'

@@ -650,7 +650,7 @@ outputs:
   module_matrix_template_engine:
     value: ${{ steps.yaml.outputs.module_matrix_template_engine }}
   module_ids:
-    value: ${{ steps.module.outputs.module_ids}}
+    value: ${{ steps.yaml.outputs.module_ids}}
   module_package_name:
     value: ${{ steps.module.outputs.module_package_name}}
   module_git_module_url:
