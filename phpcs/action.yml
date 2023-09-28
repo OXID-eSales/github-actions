@@ -44,8 +44,24 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: 'List changed files'
+      id: diff
+      shell: bash
+      run: |
+        git diff --name-only --diff-filter=AM origin/${{ inputs.github_ref_name }} HEAD~1 | grep 'source/Internal/.*\.php$' | while read file; do
+          if [[ -f "$file" ]]; then
+            echo "$file"
+          fi
+        done >changed-files.txt || true
+        if [[ -f "source/changed-files.txt" && -s "source/changed-files.txt" ]]; then
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+        else
+          echo "skip=true" >> "$GITHUB_OUTPUT"
+        fi
+
     - name: Run PHP_CS check
       shell: bash
+      if: ${{ steps.diff.outputs.skip == 'false' }}
       run: |
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container }} \

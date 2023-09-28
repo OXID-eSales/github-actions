@@ -29,11 +29,6 @@ inputs:
     required: false
     description: 'Path for the checkout and url'
     default: 'test-module'
-  template_engine:
-    type: string
-    required: false
-    description: 'One of twig, smarty, both'
-    default: 'both'
   git_module_url:
     type: string
     required: true

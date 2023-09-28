@@ -21,14 +21,18 @@ inputs:
     required: false
     description: 'Path for the checkout and url'
     default: 'test-module'
-  php:
+  output_files:
     type: string
-    required: true
-    description: 'Version of PHP for this instance'
-outputs:
-  installed_shop_with_module:
-    description: 'Name of the cached shop installation'
-    value: ${{ steps.init.outputs.installed_shop_with_module }}
+    required: false
+    description: 'phpunit output and test settings'
+    default: |
+      source/test-module/tests/reports/phpstan.report.json
+      source/test-module/tests/reports/phpmd.report.json
+  output_artifact:
+    type: string
+    required: false
+    description: 'Github run artifact for the phpunit output'
+    default: 'StylesLog'
 runs:
   using: "composite"
   steps:
@@ -37,7 +41,7 @@ runs:
       if: always()
       run: |
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
-          --workdir=/var/www/${{ inputs.module_path }} \
+          --workdir=/var/www/test-module \
           ${{ inputs.container }} \
           bash -c "composer phpstan-report; composer phpstan"
 
@@ -47,7 +51,7 @@ runs:
       continue-on-error: true
       run: |
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
-          --workdir=/var/www/${{ inputs.module_path }} \
+          --workdir=/var/www/test-module \
           ${{ inputs.container }} \
           bash -c "composer phpmd-report; composer phpmd"
 
@@ -55,7 +59,7 @@ runs:
       if: always()
       run: |
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
-          --workdir=/var/www/${{ inputs.module_path }} \
+          --workdir=/var/www/test-module \
           ${{ inputs.container }} \
           php composer phpcs
 
@@ -68,7 +72,5 @@ runs:
       if: always()
       uses: actions/upload-artifact@v3
       with:
-        name: StylesLog-${{ inputs.php }}
-        path: |
-          source/${{ inputs.module_path }}/tests/reports/phpstan.report.json
-          source/${{ inputs.module_path }}/tests/reports/phpmd.report.json
+        name: ${{ inputs.output_artifact }}
+        path: ${{ inputs.output_files }}

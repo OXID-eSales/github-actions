@@ -1,0 +1,490 @@
+workflow:
+  # The variables "php" and "mysql" are used to run a matrix of all combinations
+  matrix:
+    # A json array of php versions to test
+    php: &matrix_php '["8.1","8.2"]'
+    # A json array of mysql versions to test
+    mysql: &matrix_mysql '["5.7","8.0"]'
+  max_parallel: &max_parallel 4
+global:
+  # URL for the docker-eshop sdk repo to clone
+  git_sdk_url: &git_sdk_url 'https://github.com/OXID-eSales/docker-eshop-sdk.git'
+  # Branch to check out for the SDK
+  git_sdk_ref: &git_sdk_ref 'master'
+  # URL for the oxidshop_ce repository
+  git_shop_url: &git_shop_url 'https://github.com/OXID-eSales/oxideshop_ce.git'
+  # Branch, tag or hash of the commit to check out
+  # yamllint disable-line rule:anchors
+  git_shop_ref: *github_ref_name
+
+  # This action can be used on the community edition (ce) and enterprise
+  # edition (ee) of the shop. On top of setting this to true, a few extra
+  # variables/secrets must be provided for using the action on ee.
+  is_enterprise: &is_enterprise false
+  # If is enterprise is set to true, you need to provide the following
+  # - secrets.enterprise_github_token
+  # - testplan entry global.git_enterprise_ref
+  # Branch to check out for the enterprise repos
+  git_enterprise_ref: &git_enterprise_ref 'b-8.0.x'
+
+  # When running on a self hosted runner with access to a local s3 cache:
+  # Set the following secrets:
+  # - secrets.CACHE_ENDPOINT
+  # - secrets.CACHE_ACCESS_KEY
+  # - secrets.CACHE_SECRET_KEY
+  cache_bucket: &cache_bucket 'oxideshop-ee'
+
+  # Should we log in to docker? If set to "true", you need to set the following secrets:
+  # - secrets.DOCKER_HUB_USER
+  # - secrets.DOCKER_HUB_TOKEN
+  docker_login: &docker_login true
+
+  # Name of the container running php
+  container: &container 'php'
+  # Additional options when running something in the the container
+  container_options: &container_options ''
+  # Method to execute the commands inside a container, either "run" or "exec"
+  container_method: &container_method 'exec'
+
+  # Composer steps
+  composer: &composer
+    # Enterprise repositories to configure (and require)
+    configure:
+      # Space separated list of repositories to configure
+      install: ''
+      # The organisation for the repositories
+      organisation: 'OXID-eSales'
+      # The git reference to install
+      ref: &dev_ref dev-b-8.0.x
+      # Options to pass along to composer when requiring the repositories
+      options: '--no-update'
+      # Run composer update after configuring all repositories
+      update: true
+      # Options to pass along to composer when running composer update
+      update_options: '--no-interaction'
+    require:
+      # Space separated list of repositories to require
+      install: 'twig-admin-theme apex-theme'
+      # The organisation for the repositories
+      organisation: 'OXID-eSales'
+      # The git reference to install
+      ref: *dev_ref
+      # Options to pass along to composer during install
+      options: '--with-all-dependencies'
+      # Run composer update after requiring all repositories
+      update: true
+      # Options to pass along to composer during install
+      update_options: '--no-interaction'
+
+# definition for module_ids: oe_moduletemplate
+module:
+  matrix:
+    template_engine: &template_engine '["smarty","twig"]'
+  package_name: &package_name 'oxid-esales/module-template'
+  git_module_url: &git_module_url 'https://github.com/OXID-eSales/module-template.git'
+  git_module_ref: &git_module_ref dev-b-7.0.x
+  sonarcloud:
+    organization: oxid-esales
+    project_key: 'OXID-eSales_module-template'
+  path: &module_path 'test-module'
+  codecept_test_group: 'oe_moduletemplate'
+
+# See docs/actions/prepare_shop.md for more information.
+prepare_shop:
+  # Using the global settings here
+  matrix:
+    php: *matrix_php
+    mysql: *matrix_mysql
+  max_parallel: *max_parallel
+  docker_login: *docker_login
+  container: *container
+  container_options: *container_options
+  container_method: *container_method
+  git_sdk_url: *git_sdk_url
+  git_sdk_ref: *git_sdk_ref
+  git_shop_url: *git_shop_url
+  # yamllint disable-line rule:anchors
+  git_shop_ref: *github_ref_name
+  git_enterprise_ref: *git_enterprise_ref
+  is_enterprise: *is_enterprise
+  cache_bucket: *cache_bucket
+  composer: *composer
+  # Error reporting settings for php custom.ini
+  custom_ini_error_reporting: 'E_ALL & ~E_DEPRECATED & ~E_NOTICE & ~E_WARNING'
+  # xdebug settings for php custom.ini
+  custom_ini_xdebug: 'xdebug.max_nesting_level=1000'
+  # Space separated list of extra services to add
+  add_services: 'selenium-chrome'
+
+# See docs/actions/start_shop.md and docs/actions/install_module.md for more information.
+install_module:
+  matrix:
+    php: *matrix_php
+    mysql: *matrix_mysql
+  max_parallel: *max_parallel
+  docker_login: *docker_login
+  container: *container
+  container_options: *container_options
+  container_method: *container_method
+  cache_bucket: *cache_bucket
+  package_name: *package_name
+
+# See docs/actions/start_shop.md and docs/actions/install_shop.md for more information.
+install_shop:
+  # Using the global settings here
+  matrix:
+    php: *matrix_php
+    mysql: *matrix_mysql
+  max_parallel: *max_parallel
+  docker_login: *docker_login
+  container: *container
+  container_options: *container_options
+  container_method: *container_method
+  # yamllint disable-line rule:anchors
+  git_shop_ref: *github_ref_name
+  git_enterprise_ref: *git_enterprise_ref
+  is_enterprise: *is_enterprise
+  cache_bucket: *cache_bucket
+  # Set iDebug in source/source/config.inc.php
+  config_idebug: false
+  # Configuration files for the shop setup'
+  output_files: |
+    docker-compose.yml
+    source/composer.json
+    source/composer.lock
+    source/source/config.inc.php
+  # Configuration file is dynamic, so we use the actions default
+  # output_artifact: 'Configs-<matrix.php>-<matrix.mysql>_install_shop'
+
+styles:
+  # Skip this part of the test run
+  skip: false
+  # Using the global settings here
+  matrix:
+    php: '"8.2"'
+    mysql: '"8.0"'
+  max_parallel: *max_parallel
+  docker_login: *docker_login
+  container: *container
+  container_options: *container_options
+  container_method: *container_method
+  cache_bucket: *cache_bucket
+  module_path: *module_path
+  output_files: |
+    source/test-module/tests/reports/phpstan.report.json
+    source/test-module/tests/reports/phpmd.report.json
+  # Configuration file is dynamic, so we use the actions default
+  # output_artifact: 'StylesLog-<matrix.php>'
+
+
+
+# See docs/actions/start_shop.md and docs/actions/phpunit.md for more information.
+unit_tests:
+  # Skip this part of the test run
+  skip: false
+  # Using the global settings here
+  matrix:
+    php: '"8.2"'
+    mysql: '"8.0"'
+  max_parallel: *max_parallel
+  docker_login: *docker_login
+  container: *container
+  container_method: *container_method
+  cache_bucket: *cache_bucket
+  # container options for coverage
+  container_options: '-e XDEBUG_MODE=coverage'
+  # Name of the configuration file
+  configuration: '/var/www/vendor/oxid-esales/module-template/tests/phpunit.xml'
+  # Name of the test or folder to run
+  test: 'Unit'
+  # Optional: Additional options to pass to phpunit
+  additional_options: '--coverage-text --coverage-php=/var/www/unit.cov'
+  # Name of the output logfile - This is dynamic, so we set it in the workflow
+  # logfile: 'unit_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt'
+  # Github run artifact to put the logfile in
+  logfile_artifact: 'phpunit-logs'
+  # phpunit output and test settings
+  output_files: |
+    source/unit.cov
+    source/source/log/oxideshop.log
+    data/php/logs/error_log.txt
+  # Github run artifact for the phpunit output - This is dynamic, so we set it in the workflow
+  # output_artifact: phpunit-artifacts_PHP<matrix.php>_MYSQL<matrix.mysql>
+  # Path for the coverage file, not uploaded if it is empty
+  coverage_path: 'source/tests_coverage.xml'
+  # Github run artifact for the coverage file - This is dynamic, so we set it in the workflow
+  # coverage_artifact: coverage-reports_PHP<matrix.php>_MYSQL<matrix.mysql>
+  # Grep pattern which indicate that the test failed
+  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error'
+
+# See docs/actions/start_shop.md and docs/actions/phpunit.md for more information.
+integration_tests:
+  # Skip this part of the test run
+  skip: false
+  # Using the global settings here
+  matrix:
+    php: '"8.2"'
+    mysql: '"8.0"'
+  max_parallel: *max_parallel
+  docker_login: *docker_login
+  container: *container
+  container_options: *container_options
+  container_method: *container_method
+  cache_bucket: *cache_bucket
+  # Name of the configuration file
+  configuration: '/var/www/vendor/oxid-esales/module-template/tests/phpunit.xml'
+  # Name of the test or folder to run
+  test: 'Integration'
+  # Optional: Additional options to pass to phpunit
+  additional_options: '--bootstrap /var/www/source/bootstrap.php --coverage-text --coverage-php=/var/www/integration.cov'
+  # Name of the output logfile - This is dynamic, so we set it in the workflow
+  # logfile: 'integration_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt'
+  # Github run artifact to put the logfile in
+  logfile_artifact: 'phpunit-logs'
+  # phpunit output and test settings
+  output_files: |
+    source/integration.cov
+    source/source/log/oxideshop.log
+    data/php/logs/error_log.txt
+  # Github run artifact for the phpunit output - This is dynamic, so we set it in the workflow
+  # output_artifact: phpunit-artifacts_PHP<matrix.php>_MYSQL<matrix.mysql>
+  # Path for the coverage file, not uploaded if it is empty
+  coverage_path: ''
+  # Github run artifact for the coverage file - This is dynamic, so we set it in the workflow
+  # coverage_artifact: coverage-reports_PHP<matrix.php>_MYSQL<matrix.mysql>
+  # Grep pattern which indicate that the test failed
+  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error'
+
+# See docs/actions/start_shop.md and docs/actions/codeception.md for more information.
+codeception_tests:
+  # Skip this part of the test run
+  skip: false
+  # Using the global settings here
+  matrix:
+    php: *matrix_php
+    mysql: *matrix_mysql
+    template_engine: *module_matrix_template_engine
+  max_parallel: &codeception_max_parallel 2
+  docker_login: *docker_login
+  container: *container
+  container_method: *container_method
+  cache_bucket: *cache_bucket
+  composer: *composer
+  # For codeception, we need different options than the empty default
+  container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex -e XDEBUG_MODE=coverage'
+  # Name of the configuration file
+  configuration: '/var/www/vendor/oxid-esales/module-template/tests/codeception.yml'
+  # Whether to run the build step before running codeception or not
+  build: true
+  # Name of the codeception test suite to run
+  suite: 'acceptance'
+  # Name of the test to run
+  test: ''
+  # Additional options to pass to codeception
+  additional_options: '-g oe_moduletemplate'
+  # Name of the output logfile - This is dynamic, so we set it in the workflow
+  # logfile: codeception_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt
+  # Github run artifact to put the logfile in
+  logfile_artifact: 'phpunit-logs'
+  # Output files of the codeception run to put into the output artifact
+  output_files: |
+      docker-compose.yml
+      source/composer.json
+      source/composer.lock
+      source/source/config.inc.php
+      source/source/log/oxideshop.log
+      data/php/logs/error_log.txt
+      source/tests/Codeception/_output
+  # Github run artifact to put the output files in - This is dynamic, so we set it in the workflow
+  # output_artifact: codeception-artifacts_PHP<matrix.php>_MYSQL<matrix.mysql>
+  # Path for the coverage file, not uploaded if it is empty
+  coverage_path: 'source/codeception_coverage.xml'
+  # Github run artifact for the coverage file - This is dynamic, so we set it in the workflow
+  # coverage_artifact: coverage-reports _PHP<matrix.php>_MYSQL<matrix.mysql>
+  # Grep pattern which indicate that the test failed
+  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH'
+
+# See docs/actions/start_shop.md, docs/actions/composer_configure.md,
+# docs/actions/composer_require.md and docs/actions/codeception.md for more information.
+shop_setup_tests:
+  # Skip this part of the test run
+  skip: false
+  # Using the global settings here
+  matrix:
+    php: *matrix_php
+    mysql: *matrix_mysql
+  max_parallel: *codeception_max_parallel
+  docker_login: *docker_login
+  container: *container
+  container_method: *container_method
+  cache_bucket: *cache_bucket
+  composer: *composer
+  # We pass the configuration parameters into the container here
+  # yamllint disable-line rule:line-length
+  container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e DB_NAME=setup_test -e DB_USERNAME=root -e DB_PASSWORD=root -e DB_HOST=mysql -e DB_PORT=3306 -e SHOP_URL=http://localhost.local/ -e SHOP_SOURCE_PATH=/var/www/source/'
+  # Name of the configuration file
+  configuration: 'tests/codeception.yml'
+  # Whether to run the build step before running codeception or not
+  build: true
+  # Name of the codeception test suite to run
+  suite: 'acceptanceSetup'
+  # Name of the test to run
+  test: ''
+  # Additional options to pass to codeception
+  additional_options: ''
+  # Name of the output logfile - This is dynamic, so we set it in the workflow
+  # logfile: codeception_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt
+  # Github run artifact to put the logfile in
+  logfile_artifact: 'phpunit-logs'
+  # Output files of the codeception run to put into the output artifact
+  output_files: |
+      docker-compose.yml
+      source/composer.json
+      source/composer.lock
+      source/source/config.inc.php
+      source/source/log/oxideshop.log
+      data/php/logs/error_log.txt
+      source/tests/Codeception/_output
+  # Github run artifact to put the output files in - This is dynamic, so we set it in the workflow
+  # output_artifact: codeception-artifacts_PHP<matrix.php>_MYSQL<matrix.mysql>
+  # Path for the coverage file, not uploaded if it is empty
+  coverage_path: ''
+  # Github run artifact for the coverage file - This is dynamic, so we set it in the workflow
+  # coverage_artifact: coverage-reports_PHP<matrix.php>_MYSQL<matrix.mysql>
+  # Grep pattern which indicate that the test failed
+  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH'
+
+deprecated_tests:
+  # Skip this part of the test run
+  skip: false
+  # Using the global settings here
+  matrix:
+    php: *matrix_php
+    mysql: *matrix_mysql
+  max_parallel: *max_parallel
+  docker_login: *docker_login
+  container: *container
+  cache_bucket: *cache_bucket
+  # container options for coverage
+  container_options: '-e XDEBUG_MODE=coverage'
+  # We use run here, too
+  container_method: 'run'
+  composer:
+    # Enterprise repositories to configure (and require)
+    configure:
+      # Space separated list of repositories to configure
+      install: ''
+      # The organisation for the repositories
+      organisation: 'OXID-eSales'
+      # The git reference to install
+      ref: &dev_ref dev-b-8.0.x
+      # Options to pass along to composer when requiring the repositories
+      options: '--no-update'
+      # Run composer update after configuring all repositories
+      update: true
+      # Options to pass along to composer when running composer update
+      update_options: '--no-interaction'
+    require:
+      # Space separated list of repositories to install
+      install: 'twig-admin-theme apex-theme tests-deprecated-ce'
+      # The organisation for the repositories
+      organisation: 'OXID-eSales'
+      # The git reference to install
+      ref: *dev_ref
+      # Options to pass along to composer during install
+      options: '--with-all-dependencies'
+      # Run composer update after requiring all repositories
+      update: true
+      # Options to pass along to composer during install
+      update_options: '--no-interaction'
+
+  # Name of the config file to copy
+  config_file: 'vendor/oxid-esales/testing-library/test_config.yml.dist'
+  # Name of the test or folder to run
+  test: 'AllTestsUnit'
+  # Optional: Additional options to pass to phpunit
+  additional_options: '--coverage-clover=/var/www/deprecated_tests_coverage.xml'
+  # Name of the output logfile - This is dynamic, so we set it in the workflow
+  # logfile: 'deprecated_tests_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt'
+  # Github run artifact to put the logfile in
+  logfile_artifact: 'phpunit-logs'
+  # phpunit output and test settings
+  output_files: |
+    source/unit.cov
+    source/source/log/oxideshop.log
+    data/php/logs/error_log.txt
+  # Github run artifact for the phpunit output - This is dynamic, so we set it in the workflow
+  # output_artifact: phpunit-artifacts_PHP<matrix.php>_MYSQL<matrix.mysql>
+  # Path for the coverage file, not uploaded if it is empty
+  coverage_path: 'source/deprecated_tests_coverage.xml'
+  # Github run artifact for the coverage file - This is dynamic, so we set it in the workflow
+  # coverage_artifact: coverage-reports_PHP<matrix.php>_MYSQL<matrix.mysql>
+  # Grep pattern which indicate that the test failed
+  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Fatal|Error|DID NOT FINISH'
+
+# Running sonarcloud
+sonarcloud:
+  # Skip this part of the test run
+  skip: false
+  # We only run sonarcloud for one combination ofo PHP/MySQL
+  matrix:
+    php: '["8.1"]'
+    mysql: '["5.7"]'
+  max_parallel: *max_parallel
+  docker_login: *docker_login
+  # Github run artifact for the coverage file - This is dynamic, so we set it in the workflow
+  # coverage_artifact: coverage-reports_PHP<matrix.php>_MYSQL<matrix.mysql>
+  # Target branch for the sonarcloud check. This will only be set if the branch is not the default branch
+  target_branch: b-8.0.x
+  # Sonarcloud settings
+  organization: 'oxid-esales'
+  project_key: 'OXID-eSales_oxideshop_ce'
+  project_name: 'oxideshop_ce'
+  # Parameters passed to the scanner
+  parameters: |
+    -Dsonar.language=php
+    -Dsonar.scm.provider=git
+    -Dsonar.sources=source
+    -Dsonar.tests=tests
+
+  # for the internal run
+  internal_project_name: 'oxideshop_ce_internal'
+  internal_parameters: |
+    -Dsonar.language=php
+    -Dsonar.scm.provider=git
+    -Dsonar.sources=source/Internal
+    -Dsonar.tests=tests
+
+# See docs/actions/start_shop.md and docs/actions/phpphpcs.md for more information.
+phpcs_tests:
+  # Skip this part of the test run
+  skip: false
+  # Using the global settings here
+  matrix:
+    php: *matrix_php
+    mysql: *matrix_mysql
+  max_parallel: *max_parallel
+  docker_login: *docker_login
+  container: *container
+  container_options: *container_options
+  container_method: *container_method
+  cache_bucket: *cache_bucket
+  # Name of the test or folder to run
+  test: 'source/Internal'
+  # Optional: Additional options to pass to phpcs
+  additional_options: '-vp --standard=PSR12'
+  # Name of the output logfile - This is dynamic, so we set it in the workflow
+  # logfile: 'phpcs_PHP<matrix.php>_MYSQL<matrix.mysql>_codesniffer_log.txt'
+  # Github run artifact to put the logfile in
+  logfile_artifact: 'phpunit-logs'
+  # Grep pattern which indicate that the test failed
+  failure_pattern: '[1-9][0-9]* error|[1-9][0-9]* warning'
+
+# This is the final cleanup at the end
+finish:
+  # Skip this part of the test run
+  skip: false
+  # Using the global settings here
+  matrix:
+    php: *matrix_php
+    mysql: *matrix_mysql
