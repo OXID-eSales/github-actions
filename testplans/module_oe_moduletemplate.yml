@@ -176,8 +176,6 @@ styles:
   # Configuration file is dynamic, so we use the actions default
   # output_artifact: 'StylesLog-<matrix.php>'
 
-
-
 # See docs/actions/start_shop.md and docs/actions/phpunit.md for more information.
 unit_tests:
   # Skip this part of the test run
@@ -263,7 +261,7 @@ codeception_tests:
   matrix:
     php: *matrix_php
     mysql: *matrix_mysql
-    template_engine: *module_matrix_template_engine
+    template_engine: *template_engine
   max_parallel: &codeception_max_parallel 2
   docker_login: *docker_login
   container: *container

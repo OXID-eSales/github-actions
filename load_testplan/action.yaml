@@ -273,7 +273,7 @@ outputs:
   install_module_cache_bucket:
     value: ${{ steps.yaml.outputs.install_module_cache_bucket}}
   install_module_package:
-    value: ${{ steps.yaml.outputs.install_module_package}}  
+    value: ${{ steps.yaml.outputs.install_module_package}}
   # install_shop variables
   install_shop_matrix_mysql:
     value: ${{ steps.yaml.outputs.install_shop_matrix_mysql}}
