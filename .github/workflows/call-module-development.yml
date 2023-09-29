@@ -65,11 +65,19 @@ jobs:
           if [ '${{steps.yaml.outputs.global_is_enterprise}}' == 'true' ]; then
             echo "prepare_shop_cache_prefix=preparedShop-ee-${{ steps.yaml.outputs.prepare_shop_git_enterprise_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
             echo "install_shop_cache_prefix=shopInstallation-ee-${{ steps.yaml.outputs.install_shop_git_enterprise_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
-            echo "install_module_cache_prefix=moduleInstallation-ee-${{steps.yaml.outputs.module_ids}}-${{ steps.yaml.outputs.install_shop_git_enterprise_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
+            if [ -z "${{steps.yaml.outputs.module_ids}}" ]; then
+              echo "install_module_cache_prefix=shopInstallation-ee-${{ steps.yaml.outputs.install_shop_git_enterprise_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
+            else
+              echo "install_module_cache_prefix=moduleInstallation-ee-${{steps.yaml.outputs.module_ids}}-${{ steps.yaml.outputs.install_shop_git_enterprise_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
+            fi
           else
             echo "prepare_shop_cache_prefix=preparedShop-ce-${{ steps.yaml.outputs.prepare_shop_git_shop_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
             echo "install_shop_cache_prefix=shopInstallation-ce-${{ steps.yaml.outputs.prepare_shop_git_shop_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
+            if [ -z "${{steps.yaml.outputs.module_ids}}" ]; then
+              echo "install_module_cache_prefix=shopInstallation-ce-${{ steps.yaml.outputs.prepare_shop_git_shop_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
+            else
             echo "install_module_cache_prefix=moduleInstallation-ce--${{steps.yaml.outputs.module_ids}}-${{ steps.yaml.outputs.prepare_shop_git_shop_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
+            fi
           fi
           PURPLE=$(echo -e "\033[0;35m")
           NO_COLOR=$(echo -e "\033[0m")
@@ -742,70 +750,8 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
-  install_module:
-    needs: ['init', 'prepare_shop']
-    strategy:
-      matrix:
-        php: ${{ fromJSON(needs.init.outputs.install_module_matrix_php) }}
-        mysql: ${{ fromJSON(needs.init.outputs.install_module_matrix_mysql) }}
-      fail-fast: false
-      max-parallel: ${{ fromJSON(needs.init.outputs.install_module_max_parallel) }}
-    runs-on: ${{ fromJSON(inputs.runs_on) }}
-    outputs:
-      shop_with_module: ${{ steps.install_module.outputs.shop_with_module }}
-    steps:
-      - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v0'
-        with:
-          cached_shop: '${{ needs.init.outputs.prepare_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
-          cache_bucket: ${{ needs.init.outputs.install_module_cache_bucket }}
-          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
-          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
-          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
-          docker_login: ${{ needs.init.outputs.install_module_docker_login }}
-          docker_user: ${{ secrets.DOCKER_HUB_USER }}
-          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
-
-      - name: Test token handling
-        run: |
-          if [ -z "${{ needs.init.outputs.install_module_token }}" ]; then
-            echo "Testplan token is empty"
-          else
-            echo "Testplan token is ${{ needs.init.outputs.install_module_token }}"
-          fi
-          if [ "${{ needs.init.outputs.install_module_token }}" == "${{ github.token }}" ]; then
-            echo "Testplan token matches github.token"
-          fi
-
-      - name: Checkout module
-        uses: actions/checkout@v3
-        with:
-          repository: ${{ needs.init.outputs.module_git_module_url }}
-          ref: ${{ needs.init.outputs.module_git_module_ref }}
-          path: source/test-module
-
-      - name: Install module
-        id: install_module
-        uses: 'OXID-eSales/github-actions/install_module@v0'
-        with:
-          container: ${{ needs.init.outputs.install_module_container }}
-          container_options: ${{ needs.init.outputs.install_module_container_options }}
-          container_method: ${{ needs.init.outputs.install_module_container_method }}
-          package_name: ${{ needs.init.outputs.install_module_package_name }}
-          module_ids: ${{ needs.init.outputs.module_ids }}
-          module_path: ${{ needs.init.outputs.module_path }}
-          git_module_url: ${{ needs.init.outputs.module_git_module_url }}
-          git_module_ref: ${{ needs.init.outputs.module_git_module_ref }}
-          output_artifact: 'Configs-install_module-${{needs.init.outputs.module_ids}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
-          token: '${{ needs.init.outputs.install_module_token }}'
-          cache_name: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
-          cache_bucket: ${{ needs.init.outputs.install_module_cache_bucket }}
-          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
-          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
-          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
-
   install_shop:
-    needs: ['init', 'install_module']
+    needs: ['init', 'prepare_shop']
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.install_shop_matrix_php) }}
@@ -851,8 +797,62 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
-  styles:
+  install_module:
     needs: ['init', 'install_shop']
+    strategy:
+      matrix:
+        php: ${{ fromJSON(needs.init.outputs.install_module_matrix_php) }}
+        mysql: ${{ fromJSON(needs.init.outputs.install_module_matrix_mysql) }}
+      fail-fast: false
+      max-parallel: ${{ fromJSON(needs.init.outputs.install_module_max_parallel) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    outputs:
+      shop_with_module: ${{ steps.install_module.outputs.shop_with_module }}
+    steps:
+      - name: 'Start shop'
+        if: ${{ needs.init.outputs.module_ids != '' }}
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
+        with:
+          cached_shop: '${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cache_bucket: ${{ needs.init.outputs.install_module_cache_bucket }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          docker_login: ${{ needs.init.outputs.install_module_docker_login }}
+          docker_user: ${{ secrets.DOCKER_HUB_USER }}
+          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Checkout module
+        if: ${{ needs.init.outputs.module_ids != '' }}
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ needs.init.outputs.module_git_module_url }}
+          ref: ${{ needs.init.outputs.module_git_module_ref }}
+          path: source/test-module
+
+      - name: Install module
+        id: install_module
+        if: ${{ needs.init.outputs.module_ids != '' }}
+        uses: 'OXID-eSales/github-actions/install_module@v0'
+        with:
+          container: ${{ needs.init.outputs.install_module_container }}
+          container_options: ${{ needs.init.outputs.install_module_container_options }}
+          container_method: ${{ needs.init.outputs.install_module_container_method }}
+          package_name: ${{ needs.init.outputs.install_module_package_name }}
+          module_ids: ${{ needs.init.outputs.module_ids }}
+          module_path: ${{ needs.init.outputs.module_path }}
+          git_module_url: ${{ needs.init.outputs.module_git_module_url }}
+          git_module_ref: ${{ needs.init.outputs.module_git_module_ref }}
+          output_artifact: 'Configs-install_module-${{needs.init.outputs.module_ids}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          token: '${{ needs.init.outputs.install_module_token }}'
+          cache_name: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cache_bucket: ${{ needs.init.outputs.install_module_cache_bucket }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+
+  styles:
+    needs: ['init', 'install_module']
     if: ${{ needs.init.outputs.styles_skip != 'true' }}
     strategy:
       matrix:
@@ -865,7 +865,7 @@ jobs:
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v1'
         with:
-          cached_shop: '${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.styles_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
@@ -888,7 +888,7 @@ jobs:
         uses: 'OXID-eSales/github-actions/stop_shop@v1'
 
   unit_tests:
-    needs: ['init', 'install_shop']
+    needs: ['init', 'install_module']
     if: ${{ needs.init.outputs.unit_tests_skip != 'true' }}
     strategy:
       matrix:
@@ -901,7 +901,7 @@ jobs:
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v1'
         with:
-          cached_shop: '${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.unit_tests_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
@@ -931,7 +931,7 @@ jobs:
         uses: 'OXID-eSales/github-actions/stop_shop@v1'
 
   integration_tests:
-    needs: ['init', 'install_shop']
+    needs: ['init', 'install_module']
     if: ${{ needs.init.outputs.unit_tests_skip != 'true' }}
     strategy:
       matrix:
@@ -944,7 +944,7 @@ jobs:
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v1'
         with:
-          cached_shop: '${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.integration_tests_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
@@ -974,7 +974,7 @@ jobs:
         uses: 'OXID-eSales/github-actions/stop_shop@v1'
 
   codeception_tests:
-    needs: ['init', 'install_shop', 'styles', 'unit_tests', 'integration_tests']
+    needs: ['init', 'install_module', 'styles', 'unit_tests', 'integration_tests']
     if: ${{ always() && needs.init.outputs.codeception_tests_skip != 'true' && needs.install_shop.result == 'success' }}
     strategy:
       matrix:
@@ -1002,7 +1002,7 @@ jobs:
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v1'
         with:
-          cached_shop: '${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.codeception_tests_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
@@ -1165,7 +1165,7 @@ jobs:
         uses: 'OXID-eSales/github-actions/stop_shop@v1'
 
   deprecated_tests:
-    needs: ['init', 'install_shop', 'shop_setup_tests']
+    needs: ['init', 'install_module', 'shop_setup_tests']
     if: ${{ always() && needs.init.outputs.deprecated_tests_skip != 'true' && needs.install_shop.result == 'success' }}
     strategy:
       matrix:
@@ -1185,7 +1185,7 @@ jobs:
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v1'
         with:
-          cached_shop: '${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.deprecated_tests_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
@@ -1251,6 +1251,7 @@ jobs:
       - init
       - prepare_shop
       - install_shop
+      - install_module
       - unit_tests
       - integration_tests
       - codeception_tests
@@ -1296,7 +1297,7 @@ jobs:
           github_token: ${{ github.token }}
 
   phpcs_tests:
-    needs: ['init', 'install_shop', 'sonarcloud']
+    needs: ['init', 'install_module', 'sonarcloud']
     if: ${{ always() && needs.init.outputs.phpcs_tests_skip != 'true' && needs.install_shop.result == 'success' }}
     strategy:
       matrix:
@@ -1309,7 +1310,7 @@ jobs:
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v1'
         with:
-          cached_shop: '${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.phpcs_tests_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
@@ -1338,8 +1339,8 @@ jobs:
     needs:
       - init
       - prepare_shop
-      - install_module
       - install_shop
+      - install_module
       - styles
       - unit_tests
       - integration_tests
