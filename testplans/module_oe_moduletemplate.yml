@@ -55,7 +55,7 @@ global:
       # The organisation for the repositories
       organisation: 'OXID-eSales'
       # The git reference to install
-      ref: &dev_ref dev-b-8.0.x
+      ref: &dev_ref dev-b-7.0.x
       # Options to pass along to composer when requiring the repositories
       options: '--no-update'
       # Run composer update after configuring all repositories
@@ -355,7 +355,7 @@ shop_setup_tests:
 
 deprecated_tests:
   # Skip this part of the test run
-  skip: false
+  skip: true
   # Using the global settings here
   matrix:
     php: *matrix_php
