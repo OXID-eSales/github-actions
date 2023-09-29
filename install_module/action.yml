@@ -139,8 +139,8 @@ runs:
       run: |
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
+          --workdir=/var/www/test-module \
           ${{ inputs.container }} \
-          --workdir=/var/www/${{inputs.module_path}} \
           composer install
 
     - name: Stop containers
