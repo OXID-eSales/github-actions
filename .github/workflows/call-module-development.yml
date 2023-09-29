@@ -975,7 +975,7 @@ jobs:
 
   codeception_tests:
     needs: ['init', 'install_module', 'styles', 'unit_tests', 'integration_tests']
-    if: ${{ always() && needs.init.outputs.codeception_tests_skip != 'true' && needs.install_shop.result == 'success' }}
+    if: ${{ always() && needs.init.outputs.codeception_tests_skip != 'true' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.codeception_tests_matrix_php) }}
@@ -1166,7 +1166,7 @@ jobs:
 
   deprecated_tests:
     needs: ['init', 'install_module', 'shop_setup_tests']
-    if: ${{ always() && needs.init.outputs.deprecated_tests_skip != 'true' && needs.install_shop.result == 'success' }}
+    if: ${{ always() && needs.init.outputs.deprecated_tests_skip != 'true' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.deprecated_tests_matrix_php) }}
@@ -1298,7 +1298,7 @@ jobs:
 
   phpcs_tests:
     needs: ['init', 'install_module', 'sonarcloud']
-    if: ${{ always() && needs.init.outputs.phpcs_tests_skip != 'true' && needs.install_shop.result == 'success' }}
+    if: ${{ always() && needs.init.outputs.phpcs_tests_skip != 'true' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.phpcs_tests_matrix_php) }}
