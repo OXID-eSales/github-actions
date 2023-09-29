@@ -167,7 +167,7 @@ runs:
       with:
         path: |
           ./*
-        key: ${{ steps.init.outputs.installed_shop_with_module }}
+        key: ${{ inputs.cache_name }}
         endpoint: ${{ inputs.cache_endpoint }}
         accessKey: ${{ inputs.cache_access_key }}
         secretKey: ${{ inputs.cache_secret_key }}
