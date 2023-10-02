@@ -159,8 +159,8 @@ styles:
   skip: false
   # Using the global settings here
   matrix:
-    php: '["8.2"]' &slim_matrix_php
-    mysql: '["8.0"]' &slim_matrix_mysql
+    php: &slim_matrix_php '["8.2"]'
+    mysql: &slim_matrix_mysql '["8.0"]'
   max_parallel: *max_parallel
   docker_login: *docker_login
   container: *container
