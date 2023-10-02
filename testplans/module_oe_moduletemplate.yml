@@ -188,7 +188,7 @@ unit_tests:
   container_method: *container_method
   cache_bucket: *cache_bucket
   # container options for coverage
-  container_options: '-e XDEBUG_MODE=coverage'
+  container_options: &phpunit_container_options '-e XDEBUG_MODE=coverage'
   # Name of the configuration file
   configuration: '/var/www/vendor/oxid-esales/module-template/tests/phpunit.xml'
   # Name of the test or folder to run
@@ -224,7 +224,7 @@ integration_tests:
   max_parallel: *max_parallel
   docker_login: *docker_login
   container: *container
-  container_options: *container_options
+  container_options: *phpunit_container_options
   container_method: *container_method
   cache_bucket: *cache_bucket
   # Name of the configuration file
