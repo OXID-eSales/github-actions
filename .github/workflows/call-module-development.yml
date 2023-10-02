@@ -928,6 +928,7 @@ jobs:
           failure_pattern: ${{ needs.init.outputs.unit_tests_failure_pattern }}
 
       - name: 'Debug'
+        if: always()
         run: |
           find source -type f
 
