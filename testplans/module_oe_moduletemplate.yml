@@ -435,7 +435,7 @@ sonarcloud:
   # Sonarcloud settings
   organization: 'oxid-esales'
   project_key: 'OXID-eSales_module-template'
-  project_name: *module_package_name
+  project_name: *package_name
   # Parameters passed to the scanner
   parameters: |
     -Dsonar.language=php
