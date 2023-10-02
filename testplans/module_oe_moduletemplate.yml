@@ -270,7 +270,7 @@ codeception_tests:
   cache_bucket: *cache_bucket
   composer: *composer
   # For codeception, we need different options than the empty default
-  container_options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex -e XDEBUG_MODE=coverage'
+  container_options: '-e THEME_ID=apex'
   # Name of the configuration file
   configuration: '/var/www/vendor/oxid-esales/module-template/tests/codeception.yml'
   # Whether to run the build step before running codeception or not
@@ -297,7 +297,7 @@ codeception_tests:
   # Github run artifact to put the output files in - This is dynamic, so we set it in the workflow
   # output_artifact: codeception-artifacts_PHP<matrix.php>_MYSQL<matrix.mysql>
   # Path for the coverage file, not uploaded if it is empty
-  coverage_path: 'source/codeception_coverage.xml'
+  coverage_path: ''
   # Github run artifact for the coverage file - This is dynamic, so we set it in the workflow
   # coverage_artifact: coverage-reports _PHP<matrix.php>_MYSQL<matrix.mysql>
   # Grep pattern which indicate that the test failed
