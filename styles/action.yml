@@ -64,7 +64,7 @@ runs:
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           --workdir=/var/www/test-module \
           ${{ inputs.container }} \
-          php composer phpcs
+          composer phpcs
 
     - name: Stop containers
       if: always()

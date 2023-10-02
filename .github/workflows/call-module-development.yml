@@ -927,6 +927,10 @@ jobs:
           coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
           failure_pattern: ${{ needs.init.outputs.unit_tests_failure_pattern }}
 
+      - name: 'Debug'
+        run: |
+          find source -type f
+
       - name: 'Stop shop'
         uses: 'OXID-eSales/github-actions/stop_shop@v1'
 
