@@ -84,9 +84,6 @@ module:
   package_name: &package_name 'oxid-esales/module-template'
   git_module_url: &git_module_url 'https://github.com/OXID-eSales/module-template.git'
   git_module_ref: &git_module_ref dev-b-7.0.x
-  sonarcloud:
-    organization: oxid-esales
-    project_key: 'OXID-eSales_module-template'
   path: &module_path 'test-module'
   codecept_test_group: 'oe_moduletemplate'
 
@@ -162,8 +159,8 @@ styles:
   skip: false
   # Using the global settings here
   matrix:
-    php: '"8.2"'
-    mysql: '"8.0"'
+    php: '["8.2"]' &slim_matrix_php
+    mysql: '["8.0"]' &slim_matrix_mysql
   max_parallel: *max_parallel
   docker_login: *docker_login
   container: *container
@@ -183,8 +180,8 @@ unit_tests:
   skip: false
   # Using the global settings here
   matrix:
-    php: '"8.2"'
-    mysql: '"8.0"'
+    php: *slim_matrix_php
+    mysql: *slim_matrix_mysql
   max_parallel: *max_parallel
   docker_login: *docker_login
   container: *container
@@ -197,7 +194,7 @@ unit_tests:
   # Name of the test or folder to run
   test: 'Unit'
   # Optional: Additional options to pass to phpunit
-  additional_options: '--coverage-text --coverage-php=/var/www/unit.cov'
+  additional_options: '--coverage-clover=/var/www/unit_coverage.xml'
   # Name of the output logfile - This is dynamic, so we set it in the workflow
   # logfile: 'unit_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt'
   # Github run artifact to put the logfile in
@@ -210,7 +207,7 @@ unit_tests:
   # Github run artifact for the phpunit output - This is dynamic, so we set it in the workflow
   # output_artifact: phpunit-artifacts_PHP<matrix.php>_MYSQL<matrix.mysql>
   # Path for the coverage file, not uploaded if it is empty
-  coverage_path: 'source/tests_coverage.xml'
+  coverage_path: 'source/unit_coverage.xml'
   # Github run artifact for the coverage file - This is dynamic, so we set it in the workflow
   # coverage_artifact: coverage-reports_PHP<matrix.php>_MYSQL<matrix.mysql>
   # Grep pattern which indicate that the test failed
@@ -222,8 +219,8 @@ integration_tests:
   skip: false
   # Using the global settings here
   matrix:
-    php: '"8.2"'
-    mysql: '"8.0"'
+    php: *slim_matrix_php
+    mysql: *slim_matrix_mysql
   max_parallel: *max_parallel
   docker_login: *docker_login
   container: *container
@@ -235,7 +232,7 @@ integration_tests:
   # Name of the test or folder to run
   test: 'Integration'
   # Optional: Additional options to pass to phpunit
-  additional_options: '--bootstrap /var/www/source/bootstrap.php --coverage-text --coverage-php=/var/www/integration.cov'
+  additional_options: '--bootstrap /var/www/source/bootstrap.php --coverage-clover=/var/www/integration_coverage.xml'
   # Name of the output logfile - This is dynamic, so we set it in the workflow
   # logfile: 'integration_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt'
   # Github run artifact to put the logfile in
@@ -248,7 +245,7 @@ integration_tests:
   # Github run artifact for the phpunit output - This is dynamic, so we set it in the workflow
   # output_artifact: phpunit-artifacts_PHP<matrix.php>_MYSQL<matrix.mysql>
   # Path for the coverage file, not uploaded if it is empty
-  coverage_path: ''
+  coverage_path: 'source/integration_coverage.xml'
   # Github run artifact for the coverage file - This is dynamic, so we set it in the workflow
   # coverage_artifact: coverage-reports_PHP<matrix.php>_MYSQL<matrix.mysql>
   # Grep pattern which indicate that the test failed
@@ -427,18 +424,18 @@ sonarcloud:
   skip: false
   # We only run sonarcloud for one combination ofo PHP/MySQL
   matrix:
-    php: '["8.1"]'
-    mysql: '["5.7"]'
+    php: *slim_matrix_php
+    mysql: *slim_matrix_mysql
   max_parallel: *max_parallel
   docker_login: *docker_login
   # Github run artifact for the coverage file - This is dynamic, so we set it in the workflow
   # coverage_artifact: coverage-reports_PHP<matrix.php>_MYSQL<matrix.mysql>
   # Target branch for the sonarcloud check. This will only be set if the branch is not the default branch
-  target_branch: b-8.0.x
+  target_branch: b-7.0.x
   # Sonarcloud settings
   organization: 'oxid-esales'
-  project_key: 'OXID-eSales_oxideshop_ce'
-  project_name: 'oxideshop_ce'
+  project_key: 'OXID-eSales_module-template'
+  project_name: *module_package_name
   # Parameters passed to the scanner
   parameters: |
     -Dsonar.language=php
@@ -446,13 +443,8 @@ sonarcloud:
     -Dsonar.sources=source
     -Dsonar.tests=tests
 
-  # for the internal run
-  internal_project_name: 'oxideshop_ce_internal'
-  internal_parameters: |
-    -Dsonar.language=php
-    -Dsonar.scm.provider=git
-    -Dsonar.sources=source/Internal
-    -Dsonar.tests=tests
+  # no internal run
+  internal_project_name: ''
 
 # See docs/actions/start_shop.md and docs/actions/phpphpcs.md for more information.
 phpcs_tests:

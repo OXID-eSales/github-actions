@@ -150,7 +150,7 @@ unit_tests:
   # Name of the test or folder to run
   test: 'tests/Unit'
   # Optional: Additional options to pass to phpunit
-  additional_options: '--bootstrap tests/bootstrap.php tests --coverage-clover=/var/www/tests_coverage.xml'
+  additional_options: '--bootstrap tests/bootstrap.php tests --coverage-clover=/var/www/unit_coverage.xml'
   # Name of the output logfile - This is dynamic, so we set it in the workflow
   # logfile: 'unit_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt'
   # Github run artifact to put the logfile in
@@ -163,7 +163,7 @@ unit_tests:
   # Github run artifact for the phpunit output - This is dynamic, so we set it in the workflow
   # output_artifact: phpunit-artifacts_PHP<matrix.php>_MYSQL<matrix.mysql>
   # Path for the coverage file, not uploaded if it is empty
-  coverage_path: 'source/tests_coverage.xml'
+  coverage_path: 'source/unit_coverage.xml'
   # Github run artifact for the coverage file - This is dynamic, so we set it in the workflow
   # coverage_artifact: coverage-reports_PHP<matrix.php>_MYSQL<matrix.mysql>
   # Grep pattern which indicate that the test failed

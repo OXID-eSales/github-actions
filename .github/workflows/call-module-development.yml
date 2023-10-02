@@ -1284,6 +1284,7 @@ jobs:
           github_token: ${{ github.token }}
 
       - name: 'SonarCloud Scan (oxideshop_ce_internal)'
+        if: ${{ needs.init.outputs.sonarcloud_internal_project_name != '' }}
         uses: 'OXID-eSales/github-actions/sonarcloud@v1'
         with:
           coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
