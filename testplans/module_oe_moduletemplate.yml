@@ -192,9 +192,9 @@ unit_tests:
   # Name of the configuration file
   configuration: '/var/www/vendor/oxid-esales/module-template/tests/phpunit.xml'
   # Name of the test or folder to run
-  test: 'Unit'
+  test: ''
   # Optional: Additional options to pass to phpunit
-  additional_options: '--bootstrap tests/bootstrap.php --coverage-clover=/var/www/unit_coverage.xml'
+  additional_options: '--bootstrap tests/bootstrap.php --coverage-clover=/var/www/unit_coverage.xml --testsuite=Unit'
   # Name of the output logfile - This is dynamic, so we set it in the workflow
   # logfile: 'unit_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt'
   # Github run artifact to put the logfile in
@@ -230,9 +230,9 @@ integration_tests:
   # Name of the configuration file
   configuration: '/var/www/vendor/oxid-esales/module-template/tests/phpunit.xml'
   # Name of the test or folder to run
-  test: 'Integration'
+  test: ''
   # Optional: Additional options to pass to phpunit
-  additional_options: '--bootstrap /var/www/source/bootstrap.php --coverage-clover=/var/www/integration_coverage.xml'
+  additional_options: '--bootstrap /var/www/source/bootstrap.php --coverage-clover=/var/www/integration_coverage.xml --testsuite=Integration'
   # Name of the output logfile - This is dynamic, so we set it in the workflow
   # logfile: 'integration_PHP<matrix.php>_MYSQL<matrix.mysql>_phpunit_log.txt'
   # Github run artifact to put the logfile in
