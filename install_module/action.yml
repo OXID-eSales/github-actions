@@ -61,10 +61,6 @@ inputs:
     required: false
     description: 'Github run artifact to put the output files in'
     default: 'install_module-artifacts'
-  token:
-    type: string
-    required: true
-    description: 'OAuth token to access enterprise repos'
   cache_name:
     type: string
     required: true

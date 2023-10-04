@@ -126,8 +126,6 @@ install_module:
   container_method: *container_method
   cache_bucket: *cache_bucket
   package_name: *package_name
-  # yamllint disable-line rule:anchors
-  token: *github_token
 
 # See docs/actions/start_shop.md and docs/actions/install_shop.md for more information.
 install_shop:

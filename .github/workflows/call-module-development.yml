@@ -187,7 +187,6 @@ jobs:
             install_module_cache_prefix: ${{ steps.calculate.outputs.install_module_cache_prefix}}
             install_module_cache_bucket: ${{ steps.yaml.outputs.install_module_cache_bucket}}
             install_module_package_name: ${{ steps.yaml.outputs.install_module_package_name}}
-            install_module_token: ${{ steps.yaml.outputs.install_module_token}}
           EOF
 
       - name: 'Print install_shop variables'
@@ -506,7 +505,6 @@ jobs:
       install_module_cache_prefix: ${{ steps.calculate.outputs.install_module_cache_prefix}}
       install_module_cache_bucket: ${{ steps.yaml.outputs.install_module_cache_bucket}}
       install_module_package_name: ${{ steps.yaml.outputs.install_module_package_name}}
-      install_module_token: ${{ steps.yaml.outputs.install_module_token}}
       # install_shop variables
       install_shop_matrix_mysql: ${{ steps.yaml.outputs.install_shop_matrix_mysql}}
       install_shop_matrix_php: ${{ steps.yaml.outputs.install_shop_matrix_php}}
@@ -844,7 +842,6 @@ jobs:
           git_module_url: ${{ needs.init.outputs.module_git_module_url }}
           git_module_ref: ${{ needs.init.outputs.module_git_module_ref }}
           output_artifact: 'Configs-install_module-${{needs.init.outputs.module_ids}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
-          token: '${{ needs.init.outputs.install_module_token }}'
           cache_name: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.install_module_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
