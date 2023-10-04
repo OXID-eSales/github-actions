@@ -57,26 +57,45 @@ jobs:
         uses: 'OXID-eSales/github-actions/load_testplan@v0'
         with:
           testplan: ${{ inputs.testplan }}
-      - name: 'Calculate values'
+
+          - name: 'Calculate values'
         id: calculate
         # yamllint disable rule:line-length
         run: |
           if [ '${{steps.yaml.outputs.global_is_enterprise}}' == 'true' ]; then
             echo "prepare_shop_cache_prefix=preparedShop-ee-${{ steps.yaml.outputs.prepare_shop_git_enterprise_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
             echo "install_shop_cache_prefix=shopInstallation-ee-${{ steps.yaml.outputs.install_shop_git_enterprise_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
+            if [ -z "${{steps.yaml.outputs.module_ids}}" ]; then
+              echo "install_module_cache_prefix=shopInstallation-ee-${{ steps.yaml.outputs.install_shop_git_enterprise_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
+            else
+              echo "install_module_cache_prefix=moduleInstallation-ee-${{steps.yaml.outputs.module_ids}}-${{ steps.yaml.outputs.install_shop_git_enterprise_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
+            fi
           else
             echo "prepare_shop_cache_prefix=preparedShop-ce-${{ steps.yaml.outputs.prepare_shop_git_shop_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
             echo "install_shop_cache_prefix=shopInstallation-ce-${{ steps.yaml.outputs.prepare_shop_git_shop_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
+            if [ -z "${{steps.yaml.outputs.module_ids}}" ]; then
+              echo "install_module_cache_prefix=shopInstallation-ce-${{ steps.yaml.outputs.prepare_shop_git_shop_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
+            else
+            echo "install_module_cache_prefix=moduleInstallation-ce--${{steps.yaml.outputs.module_ids}}-${{ steps.yaml.outputs.prepare_shop_git_shop_ref }}-${{ github.sha }}-${{ github.run_number }}-${{ github.run_attempt }}" | tee -a "$GITHUB_OUTPUT"
+            fi
           fi
-        # yamllint enable rule:line-length
-      - name: 'Print Testplan'
-        run: |
           PURPLE=$(echo -e "\033[0;35m")
           NO_COLOR=$(echo -e "\033[0m")
+          echo "PURPLE=${PURPLE}" >>"${GITHUB_ENV}"
+          echo "NO_COLOR=${NO_COLOR}" >>"${GITHUB_ENV}"
+        # yamllint enable rule:line-length
+
+      - name: 'Print workflow variables'
+        run: |
           cat <<EOF
             ${PURPLE}### workflow variables${NO_COLOR}
             workflow_matrix_mysql: ${{ steps.yaml.outputs.workflow_matrix_mysql}}
             workflow_matrix_php: ${{ steps.yaml.outputs.workflow_matrix_php}}
+          EOF
+
+      - name: 'Print global variables'
+        run: |
+          cat <<EOF
             ${PURPLE}### global variables${NO_COLOR}
             global_git_sdk_url: ${{ steps.yaml.outputs.global_git_sdk_url}}
             global_git_sdk_ref: ${{ steps.yaml.outputs.global_git_sdk_ref}}
@@ -101,6 +120,26 @@ jobs:
             global_composer_require_options: ${{ steps.yaml.outputs.global_composer_require_options}}
             global_composer_require_update: ${{ steps.yaml.outputs.global_composer_require_update}}
             global_composer_require_update_options: ${{ steps.yaml.outputs.global_composer_require_update_options}}
+          EOF
+
+      - name: 'Print module variables'
+        run: |
+          cat <<EOF
+            ${PURPLE}### module variables${NO_COLOR}
+            module_matrix_template_engine: ${{ steps.yaml.outputs.module_matrix_template_engine}}
+            module_ids: ${{ steps.yaml.outputs.module_ids}}
+            module_package_name: ${{ steps.yaml.outputs.module_package_name}}
+            module_git_module_url: ${{ steps.yaml.outputs.module_git_module_url}}
+            module_git_module_ref: ${{ steps.yaml.outputs.module_git_module_ref}}
+            module_sonarcloud_organization: ${{ steps.yaml.outputs.module_sonarcloud_organization}}
+            module_sonarcloud_project_key: ${{ steps.yaml.outputs.module_sonarcloud_project_key}}
+            module_path: ${{ steps.yaml.outputs.module_path}}
+            module_codecept_test_group: ${{ steps.yaml.outputs.module_codecept_test_group}}
+          EOF
+
+      - name: 'Print prepare_shop variables'
+        run: |
+          cat <<EOF
             ${PURPLE}### prepare_shop variables${NO_COLOR}
             prepare_shop_matrix_mysql: ${{ steps.yaml.outputs.prepare_shop_matrix_mysql}}
             prepare_shop_matrix_php: ${{ steps.yaml.outputs.prepare_shop_matrix_php}}
@@ -132,6 +171,27 @@ jobs:
             prepare_shop_composer_require_options: ${{ steps.yaml.outputs.prepare_shop_composer_require_options}}
             prepare_shop_composer_require_update: ${{ steps.yaml.outputs.prepare_shop_composer_require_update}}
             prepare_shop_composer_require_update_options: ${{ steps.yaml.outputs.prepare_shop_composer_require_update_options}}
+          EOF
+
+      - name: 'Print install_module variables'
+        run: |
+          cat <<EOF
+            ${PURPLE}### install_module variables${NO_COLOR}
+            install_module_matrix_mysql: ${{ steps.yaml.outputs.install_module_matrix_mysql}}
+            install_module_matrix_php: ${{ steps.yaml.outputs.install_module_matrix_php}}
+            install_module_max_parallel: ${{ steps.yaml.outputs.install_module_max_parallel}}
+            install_module_docker_login: ${{ steps.yaml.outputs.install_module_docker_login}}
+            install_module_container: ${{ steps.yaml.outputs.install_module_container}}
+            install_module_container_options: ${{ steps.yaml.outputs.install_module_container_options}}
+            install_module_container_method: ${{ steps.yaml.outputs.install_module_container_method}}
+            install_module_cache_prefix: ${{ steps.calculate.outputs.install_module_cache_prefix}}
+            install_module_cache_bucket: ${{ steps.yaml.outputs.install_module_cache_bucket}}
+            install_module_package_name: ${{ steps.yaml.outputs.install_module_package_name}}
+          EOF
+
+      - name: 'Print install_shop variables'
+        run: |
+          cat <<EOF
             ${PURPLE}### install_shop variables${NO_COLOR}
             install_shop_matrix_mysql: ${{ steps.yaml.outputs.install_shop_matrix_mysql}}
             install_shop_matrix_php: ${{ steps.yaml.outputs.install_shop_matrix_php}}
@@ -147,7 +207,12 @@ jobs:
             install_shop_cache_bucket: ${{ steps.yaml.outputs.install_shop_cache_bucket}}
             install_shop_config_idebug: ${{ steps.yaml.outputs.install_shop_config_idebug}}
             install_shop_output_files: ${{ steps.yaml.outputs.install_shop_output_files}}
-            ${PURPLE}### unit_test variables${NO_COLOR}
+          EOF
+
+      - name: 'Print unit_tests variables'
+        run: |
+          cat <<EOF
+            ${PURPLE}### unit_tests variables${NO_COLOR}
             unit_tests_skip: ${{ steps.yaml.outputs.unit_tests_skip}}
             unit_tests_matrix_mysql: ${{ steps.yaml.outputs.unit_tests_matrix_mysql}}
             unit_tests_matrix_php: ${{ steps.yaml.outputs.unit_tests_matrix_php}}
@@ -164,6 +229,11 @@ jobs:
             unit_tests_output_files: ${{ steps.yaml.outputs.unit_tests_output_files}}
             unit_tests_coverage_path: ${{ steps.yaml.outputs.unit_tests_coverage_path}}
             unit_tests_failure_pattern: ${{ steps.yaml.outputs.unit_tests_failure_pattern}}
+          EOF
+
+      - name: 'Print integration_test variables'
+        run: |
+          cat <<EOF
             ${PURPLE}### integration_tests variables${NO_COLOR}
             integration_tests_skip: ${{ steps.yaml.outputs.integration_tests_skip}}
             integration_tests_matrix_mysql: ${{ steps.yaml.outputs.integration_tests_matrix_mysql}}
@@ -181,10 +251,16 @@ jobs:
             integration_tests_output_files: ${{ steps.yaml.outputs.integration_tests_output_files}}
             integration_tests_coverage_path: ${{ steps.yaml.outputs.integration_tests_coverage_path}}
             integration_tests_failure_pattern: ${{ steps.yaml.outputs.integration_tests_failure_pattern}}
+          EOF
+
+      - name: 'Print codeception_test variables'
+        run: |
+          cat <<EOF
             ${PURPLE}### codeception_tests variables${NO_COLOR}
             codeception_tests_skip: ${{ steps.yaml.outputs.codeception_tests_skip}}
             codeception_tests_matrix_mysql: ${{ steps.yaml.outputs.codeception_tests_matrix_mysql}}
             codeception_tests_matrix_php: ${{ steps.yaml.outputs.codeception_tests_matrix_php}}
+            codeception_tests_matrix_template_engine: ${{ steps.yaml.outputs.codeception_tests_matrix_template_engine}}
             codeception_tests_max_parallel: ${{ steps.yaml.outputs.codeception_tests_max_parallel}}
             codeception_tests_docker_login: ${{ steps.yaml.outputs.codeception_tests_docker_login}}
             codeception_tests_container: ${{ steps.yaml.outputs.codeception_tests_container}}
@@ -212,6 +288,11 @@ jobs:
             codeception_tests_output_files: ${{ steps.yaml.outputs.codeception_tests_output_files}}
             codeception_tests_coverage_path: ${{ steps.yaml.outputs.codeception_tests_coverage_path}}
             codeception_tests_failure_pattern: ${{ steps.yaml.outputs.codeception_tests_failure_pattern}}
+          EOF
+
+      - name: 'Print shop_setup_tests variables'
+        run: |
+          cat <<EOF
             ${PURPLE}### shop_setup_tests variables${NO_COLOR}
             shop_setup_tests_skip: ${{ steps.yaml.outputs.shop_setup_tests_skip}}
             shop_setup_tests_matrix_mysql: ${{ steps.yaml.outputs.shop_setup_tests_matrix_mysql}}
@@ -243,7 +324,12 @@ jobs:
             shop_setup_tests_output_files: ${{ steps.yaml.outputs.shop_setup_tests_output_files}}
             shop_setup_tests_coverage_path: ${{ steps.yaml.outputs.shop_setup_tests_coverage_path}}
             shop_setup_tests_failure_pattern: ${{ steps.yaml.outputs.shop_setup_tests_failure_pattern}}
-            ${PURPLE}### deprecated_test variables${NO_COLOR}
+          EOF
+
+      - name: 'Print deprecated_tests variables'
+        run: |
+          cat <<EOF
+            ${PURPLE}### deprecated_tests variables${NO_COLOR}
             deprecated_tests_skip: ${{ steps.yaml.outputs.deprecated_tests_skip}}
             deprecated_tests_matrix_mysql: ${{ steps.yaml.outputs.deprecated_tests_matrix_mysql}}
             deprecated_tests_matrix_php: ${{ steps.yaml.outputs.deprecated_tests_matrix_php}}
@@ -271,6 +357,11 @@ jobs:
             deprecated_tests_output_files: ${{ steps.yaml.outputs.deprecated_tests_output_files}}
             deprecated_tests_coverage_path: ${{ steps.yaml.outputs.deprecated_tests_coverage_path}}
             deprecated_tests_failure_pattern: ${{ steps.yaml.outputs.deprecated_tests_failure_pattern}}
+          EOF
+
+      - name: 'Print sonarcloud variables'
+        run: |
+          cat <<EOF
             ${PURPLE}### sonarcloud variables${NO_COLOR}
             sonarcloud_skip: ${{ steps.yaml.outputs.sonarcloud_skip}}
             sonarcloud_matrix_mysql: ${{ steps.yaml.outputs.sonarcloud_matrix_mysql}}
@@ -284,6 +375,11 @@ jobs:
             sonarcloud_parameters: ${{ steps.yaml.outputs.sonarcloud_parameters}}
             sonarcloud_internal_project_name: ${{ steps.yaml.outputs.sonarcloud_internal_project_name}}
             sonarcloud_internal_parameters: ${{ steps.yaml.outputs.sonarcloud_internal_parameters}}
+          EOF
+
+      - name: 'Print phpcs_tests variables'
+        run: |
+          cat <<EOF
             ${PURPLE}### phpcs_tests variables${NO_COLOR}
             phpcs_tests_skip: ${{ steps.yaml.outputs.phpcs_tests_skip}}
             phpcs_tests_matrix_mysql: ${{ steps.yaml.outputs.phpcs_tests_matrix_mysql}}
@@ -301,6 +397,28 @@ jobs:
             phpcs_tests_output_files: ${{ steps.yaml.outputs.phpcs_tests_output_files}}
             phpcs_tests_coverage_path: ${{ steps.yaml.outputs.phpcs_tests_coverage_path}}
             phpcs_tests_failure_pattern: ${{ steps.yaml.outputs.phpcs_tests_failure_pattern}}
+          EOF
+
+      - name: 'Print styles variables'
+        run: |
+          cat <<EOF
+            ${PURPLE}### styles variables${NO_COLOR}
+            styles_skip: ${{ steps.yaml.outputs.styles_skip}}
+            styles_matrix_mysql: ${{ steps.yaml.outputs.styles_matrix_mysql}}
+            styles_matrix_php: ${{ steps.yaml.outputs.styles_matrix_php}}
+            styles_max_parallel: ${{ steps.yaml.outputs.styles_max_parallel}}
+            styles_docker_login: ${{ steps.yaml.outputs.styles_docker_login}}
+            styles_container: ${{ steps.yaml.outputs.styles_container}}
+            styles_container_options: ${{ steps.yaml.outputs.styles_container_options}}
+            styles_container_method: ${{ steps.yaml.outputs.styles_container_method}}
+            styles_cache_bucket: ${{ steps.yaml.outputs.styles_cache_bucket}}
+            styles_module_path: ${{ steps.yaml.outputs.styles_module_path}}
+            styles_output_files: ${{ steps.yaml.outputs.styles_output_files}}
+          EOF
+
+      - name: 'Print finish variables'
+        run: |
+          cat <<EOF
             ${PURPLE}### finish variables${NO_COLOR}
             finish_skip: ${{ steps.yaml.outputs.finish_skip}}
             finish_matrix_mysql: ${{ steps.yaml.outputs.finish_matrix_mysql}}
@@ -335,6 +453,14 @@ jobs:
       global_composer_require_options: ${{ steps.yaml.outputs.global_composer_require_options}}
       global_composer_require_update: ${{ steps.yaml.outputs.global_composer_require_update}}
       global_composer_require_update_options: ${{ steps.yaml.outputs.global_composer_require_update_options}}
+      # module variables
+      module_matrix_template_engine: ${{ steps.yaml.outputs.module_matrix_template_engine}}
+      module_ids: ${{ steps.yaml.outputs.module_ids}}
+      module_package_name: ${{ steps.yaml.outputs.module_package_name}}
+      module_git_module_url: ${{ steps.yaml.outputs.module_git_module_url}}
+      module_git_module_ref: ${{ steps.yaml.outputs.module_git_module_ref}}
+      module_path: ${{ steps.yaml.outputs.module_path}}
+      module_codecept_test_group: ${{ steps.yaml.outputs.module_codecept_test_group}}
       # prepare_shop variables
       prepare_shop_matrix_mysql: ${{ steps.yaml.outputs.prepare_shop_matrix_mysql}}
       prepare_shop_matrix_php: ${{ steps.yaml.outputs.prepare_shop_matrix_php}}
@@ -381,6 +507,17 @@ jobs:
       install_shop_cache_bucket: ${{ steps.yaml.outputs.install_shop_cache_bucket}}
       install_shop_config_idebug: ${{ steps.yaml.outputs.install_shop_config_idebug}}
       install_shop_output_files: ${{ steps.yaml.outputs.install_shop_output_files}}
+      # install_module variables
+      install_module_matrix_mysql: ${{ steps.yaml.outputs.install_module_matrix_mysql}}
+      install_module_matrix_php: ${{ steps.yaml.outputs.install_module_matrix_php}}
+      install_module_max_parallel: ${{ steps.yaml.outputs.install_module_max_parallel}}
+      install_module_docker_login: ${{ steps.yaml.outputs.install_module_docker_login}}
+      install_module_container: ${{ steps.yaml.outputs.install_module_container}}
+      install_module_container_options: ${{ steps.yaml.outputs.install_module_container_options}}
+      install_module_container_method: ${{ steps.yaml.outputs.install_module_container_method}}
+      install_module_cache_prefix: ${{ steps.calculate.outputs.install_module_cache_prefix}}
+      install_module_cache_bucket: ${{ steps.yaml.outputs.install_module_cache_bucket}}
+      install_module_package_name: ${{ steps.yaml.outputs.install_module_package_name}}
       # unit_test variables
       unit_tests_skip: ${{ steps.yaml.outputs.unit_tests_skip}}
       unit_tests_matrix_mysql: ${{ steps.yaml.outputs.unit_tests_matrix_mysql}}
@@ -419,6 +556,7 @@ jobs:
       codeception_tests_skip: ${{ steps.yaml.outputs.codeception_tests_skip}}
       codeception_tests_matrix_mysql: ${{ steps.yaml.outputs.codeception_tests_matrix_mysql}}
       codeception_tests_matrix_php: ${{ steps.yaml.outputs.codeception_tests_matrix_php}}
+      codeception_tests_matrix_template_engine: ${{ steps.yaml.outputs.codeception_tests_matrix_template_engine}}
       codeception_tests_max_parallel: ${{ steps.yaml.outputs.codeception_tests_max_parallel}}
       codeception_tests_docker_login: ${{ steps.yaml.outputs.codeception_tests_docker_login}}
       codeception_tests_container: ${{ steps.yaml.outputs.codeception_tests_container}}
@@ -535,6 +673,18 @@ jobs:
       phpcs_tests_output_files: ${{ steps.yaml.outputs.phpcs_tests_output_files}}
       phpcs_tests_coverage_path: ${{ steps.yaml.outputs.phpcs_tests_coverage_path}}
       phpcs_tests_failure_pattern: ${{ steps.yaml.outputs.phpcs_tests_failure_pattern}}
+      # styles variables
+      styles_skip: ${{ steps.yaml.outputs.styles_skip}}
+      styles_matrix_mysql: ${{ steps.yaml.outputs.styles_matrix_mysql}}
+      styles_matrix_php: ${{ steps.yaml.outputs.styles_matrix_php}}
+      styles_max_parallel: ${{ steps.yaml.outputs.styles_max_parallel}}
+      styles_docker_login: ${{ steps.yaml.outputs.styles_docker_login}}
+      styles_container: ${{ steps.yaml.outputs.styles_container}}
+      styles_container_options: ${{ steps.yaml.outputs.styles_container_options}}
+      styles_container_method: ${{ steps.yaml.outputs.styles_container_method}}
+      styles_cache_bucket: ${{ steps.yaml.outputs.styles_cache_bucket}}
+      styles_module_path: ${{ steps.yaml.outputs.styles_module_path}}
+      styles_output_files: ${{ steps.yaml.outputs.styles_output_files}}      
       # finish variables
       finish_skip: ${{ steps.yaml.outputs.finish_skip}}
       finish_matrix_mysql: ${{ steps.yaml.outputs.finish_matrix_mysql}}
@@ -642,8 +792,97 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
-  unit_tests:
+  install_module:
     needs: ['init', 'install_shop']
+    strategy:
+      matrix:
+        php: ${{ fromJSON(needs.init.outputs.install_module_matrix_php) }}
+        mysql: ${{ fromJSON(needs.init.outputs.install_module_matrix_mysql) }}
+      fail-fast: false
+      max-parallel: ${{ fromJSON(needs.init.outputs.install_module_max_parallel) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    outputs:
+      shop_with_module: ${{ steps.install_module.outputs.shop_with_module }}
+    steps:
+      - name: 'Start shop'
+        if: ${{ needs.init.outputs.module_ids != '' }}
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
+        with:
+          cached_shop: '${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cache_bucket: ${{ needs.init.outputs.install_module_cache_bucket }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          docker_login: ${{ needs.init.outputs.install_module_docker_login }}
+          docker_user: ${{ secrets.DOCKER_HUB_USER }}
+          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Checkout module
+        if: ${{ needs.init.outputs.module_ids != '' }}
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ needs.init.outputs.module_git_module_url }}
+          ref: ${{ needs.init.outputs.module_git_module_ref }}
+          path: source/test-module
+
+      - name: Install module
+        id: install_module
+        if: ${{ needs.init.outputs.module_ids != '' }}
+        uses: 'OXID-eSales/github-actions/install_module@v0'
+        with:
+          container: ${{ needs.init.outputs.install_module_container }}
+          container_options: ${{ needs.init.outputs.install_module_container_options }}
+          container_method: ${{ needs.init.outputs.install_module_container_method }}
+          package_name: ${{ needs.init.outputs.install_module_package_name }}
+          module_ids: ${{ needs.init.outputs.module_ids }}
+          module_path: ${{ needs.init.outputs.module_path }}
+          git_module_url: ${{ needs.init.outputs.module_git_module_url }}
+          git_module_ref: ${{ needs.init.outputs.module_git_module_ref }}
+          output_artifact: 'Configs-install_module-${{needs.init.outputs.module_ids}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cache_name: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cache_bucket: ${{ needs.init.outputs.install_module_cache_bucket }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+
+  styles:
+    needs: ['init', 'install_module']
+    if: ${{ needs.init.outputs.styles_skip != 'true' }}
+    strategy:
+      matrix:
+        php: ${{ fromJSON(needs.init.outputs.styles_matrix_php) }}
+        mysql: ${{ fromJSON(needs.init.outputs.styles_matrix_mysql) }}
+      fail-fast: false
+      max-parallel: ${{ fromJSON(needs.init.outputs.styles_max_parallel) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    steps:
+      - name: 'Start shop'
+        uses: 'OXID-eSales/github-actions/start_shop@v1'
+        with:
+          cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cache_bucket: ${{ needs.init.outputs.styles_cache_bucket }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          docker_login: ${{ needs.init.outputs.styles_docker_login }}
+          docker_user: ${{ secrets.DOCKER_HUB_USER }}
+          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: 'Run styles check'
+        uses: 'OXID-eSales/github-actions/styles@v0'
+        with:
+          container: ${{ needs.init.outputs.styles_container }}
+          container_options: ${{ needs.init.outputs.styles_container_options }}
+          container_method: ${{ needs.init.outputs.styles_container_method }}
+          module_path: ${{ needs.init.outputs.styles_module_path }}
+          output_files: ${{ needs.init.outputs.styles_output_files }}
+          output_artifact: StylesLog_PHP${{ matrix.php }}
+
+      - name: 'Stop shop'
+        uses: 'OXID-eSales/github-actions/stop_shop@v1'
+
+  unit_tests:
+    needs: ['init', 'install_module']
     if: ${{ needs.init.outputs.unit_tests_skip != 'true' }}
     strategy:
       matrix:
@@ -656,7 +895,7 @@ jobs:
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v1'
         with:
-          cached_shop: '${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.unit_tests_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
@@ -664,7 +903,6 @@ jobs:
           docker_login: ${{ needs.init.outputs.unit_tests_docker_login }}
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
-
 
       - name: 'Run unit tests'
         uses: 'OXID-eSales/github-actions/phpunit@v1'
@@ -687,7 +925,7 @@ jobs:
         uses: 'OXID-eSales/github-actions/stop_shop@v1'
 
   integration_tests:
-    needs: ['init', 'install_shop']
+    needs: ['init', 'install_module']
     if: ${{ needs.init.outputs.unit_tests_skip != 'true' }}
     strategy:
       matrix:
@@ -700,7 +938,7 @@ jobs:
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v1'
         with:
-          cached_shop: '${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.integration_tests_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
@@ -730,20 +968,31 @@ jobs:
         uses: 'OXID-eSales/github-actions/stop_shop@v1'
 
   codeception_tests:
-    needs: ['init', 'install_shop', 'unit_tests', 'integration_tests']
-    if: ${{ always() && needs.init.outputs.codeception_tests_skip != 'true' && needs.install_shop.result == 'success' }}
+    needs: ['init', 'install_module', 'styles', 'unit_tests', 'integration_tests']
+    if: ${{ always() && needs.init.outputs.codeception_tests_skip != 'true' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.codeception_tests_matrix_php) }}
         mysql: ${{ fromJSON(needs.init.outputs.codeception_tests_matrix_mysql) }}
+        template_engine: ${{ fromJSON(needs.init.outputs.codeception_tests_matrix_template_engine) }}
       fail-fast: false
       max-parallel: ${{ fromJSON(needs.init.outputs.codeception_tests_max_parallel) }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
+      - name: 'Set options for smarty'
+        if: ${{ matrix.template_engine == 'smarty' }}
+        run: |
+          echo "CODECEPTION_CONTAINER_OPTIONS=-e THEME_ID=flow -e MODULE_IDS=${{ needs.init.outputs.module_ids }}" | tee -a "$GITHUB_ENV"
+
+      - name: 'Set options for twig'
+        if: ${{ matrix.template_engine == 'twig' }}
+        run: |
+          echo "CODECEPTION_CONTAINER_OPTIONS=-e THEME_ID=apex -e MODULE_IDS=${{ needs.init.outputs.module_ids }}" | tee -a "$GITHUB_ENV"
+
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v1'
         with:
-          cached_shop: '${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.codeception_tests_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
@@ -751,13 +1000,48 @@ jobs:
           docker_login: ${{ needs.init.outputs.codeception_tests_docker_login }}
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+      - name: 'Reconfigure codeception for smarty themes'
+        if: ${{ matrix.template_engine == 'smarty' }}
+        run: |
+          perl -pi \
+            -e 's#admin_twig#admin_smarty#g;' \
+            -e 's#views/apex#views/flow/translations#g;' \
+            'source/test-module/tests/Codeception/acceptance.suite.yml'
 
+            - name: 'Install twig template engine and twig theme'
+            if: ${{ matrix.template_engine == 'twig' }}
+            uses: 'OXID-eSales/github-actions/composer_require@v1'
+            with:
+              container: ${{ needs.init.outputs.codeception_tests_container }}
+              container_options: '${{ needs.init.outputs.codeception_tests_container_options }} ${{ env.CODECEPTION_CONTAINER_OPTIONS }}'
+              container_method: 'exec'
+              organisation: ${{ needs.init.outputs.codeception_tests_composer_require_organisation }}
+              repositories: 'twig-component twig-admin-theme apex-theme'
+              ref: ${{ needs.init.outputs.codeception_tests_composer_require_ref }}
+              options: ${{ needs.init.outputs.codeception_tests_composer_require_options }}
+              update: ${{ needs.init.outputs.codeception_tests_composer_require_update }}
+              update_options: ${{ needs.init.outputs.codeception_tests_composer_require_update_options }}
+    
+          - name: 'Install smarty template engine and flow theme'
+            if: ${{ matrix.template_engine == 'smarty' }}
+            uses: 'OXID-eSales/github-actions/composer_require@v1'
+            with:
+              container: ${{ needs.init.outputs.codeception_tests_container }}
+              container_options: '${{ needs.init.outputs.codeception_tests_container_options }} ${{ env.CODECEPTION_CONTAINER_OPTIONS }}'
+              container_method: 'exec'
+              organisation: ${{ needs.init.outputs.codeception_tests_composer_require_organisation }}
+              repositories: 'smarty-component smarty-admin-theme flow-theme codeception-page-objects codeception-modules'
+              ref: ${{ needs.init.outputs.codeception_tests_composer_require_ref }}
+              options: ${{ needs.init.outputs.codeception_tests_composer_require_options }}
+              update: ${{ needs.init.outputs.codeception_tests_composer_require_update }}
+              update_options: ${{ needs.init.outputs.codeception_tests_composer_require_update_options }}
+    
       - name: 'Composer configure and require ${{ needs.init.outputs.codeception_tests_composer_configure_install }}'
         if: ${{ needs.init.outputs.codeception_tests_composer_configure_install != '' }}
         uses: 'OXID-eSales/github-actions/composer_configure@v1'
         with:
           container: ${{ needs.init.outputs.codeception_tests_container }}
-          container_options: ${{ needs.init.outputs.codeception_tests_container_options }}
+          container_options: '${{ needs.init.outputs.codeception_tests_container_options }} ${{ env.CODECEPTION_CONTAINER_OPTIONS }}'
           container_method: 'exec'
           organisation: ${{ needs.init.outputs.codeception_tests_composer_configure_organisation }}
           repositories: ${{ needs.init.outputs.codeception_tests_composer_configure_install }}
@@ -772,7 +1056,7 @@ jobs:
         uses: 'OXID-eSales/github-actions/composer_require@v1'
         with:
           container: ${{ needs.init.outputs.codeception_tests_container }}
-          container_options: ${{ needs.init.outputs.codeception_tests_container_options }}
+          container_options: '${{ needs.init.outputs.codeception_tests_container_options }} ${{ env.CODECEPTION_CONTAINER_OPTIONS }}'
           container_method: 'exec'
           organisation: ${{ needs.init.outputs.codeception_tests_composer_require_organisation }}
           repositories: ${{ needs.init.outputs.codeception_tests_composer_require_install }}
@@ -785,19 +1069,19 @@ jobs:
         uses: 'OXID-eSales/github-actions/codeception@v1'
         with:
           container: ${{ needs.init.outputs.codeception_tests_container }}
-          container_options: ${{ needs.init.outputs.codeception_tests_container_options }}
+          container_options: '${{ needs.init.outputs.codeception_tests_container_options }} ${{ env.CODECEPTION_CONTAINER_OPTIONS }}'
           container_method: ${{ needs.init.outputs.codeception_tests_container_method }}
           build: ${{ needs.init.outputs.codeception_tests_build }}
           configuration: ${{ needs.init.outputs.codeception_tests_configuration }}
           suite: ${{ needs.init.outputs.codeception_tests_suite }}
           test: ${{ needs.init.outputs.codeception_tests_test }}
           additional_options: ${{ needs.init.outputs.codeception_tests_additional_options }}
-          logfile: codeception_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_phpunit_log.txt
+          logfile: codeception_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_TE${{ matrix.template_engine}}_phpunit_log.txt
           logfile_artifact: ${{ needs.init.outputs.codeception_tests_logfile_artifact }}
           output_files: ${{ needs.init.outputs.codeception_tests_output_files }}
-          output_artifact: codeception-artifacts_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
+          output_artifact: codeception-artifacts_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_TE${{ matrix.template_engine}}
           coverage_path: ${{ needs.init.outputs.codeception_tests_coverage_path }}
-          coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
+          coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_TE${{ matrix.template_engine}}
           failure_pattern: ${{ needs.init.outputs.codeception_tests_failure_pattern }}
 
       - name: 'Stop shop'
@@ -878,8 +1162,8 @@ jobs:
         uses: 'OXID-eSales/github-actions/stop_shop@v1'
 
   deprecated_tests:
-    needs: ['init', 'install_shop', 'shop_setup_tests']
-    if: ${{ always() && needs.init.outputs.deprecated_tests_skip != 'true' }}
+    needs: ['init', 'install_module', 'shop_setup_tests']
+    if: ${{ always() && needs.init.outputs.deprecated_tests_skip != 'true' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.deprecated_tests_matrix_php) }}
@@ -898,7 +1182,7 @@ jobs:
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v1'
         with:
-          cached_shop: '${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.deprecated_tests_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
@@ -959,11 +1243,12 @@ jobs:
         uses: 'OXID-eSales/github-actions/stop_shop@v1'
 
   sonarcloud:
-    if: ${{ always() && needs.init.outputs.sonarcloud_skip != 'true' }}
+    if: ${{ always() && needs.init.outputs.sonarcloud_skip != 'true' && needs.install_shop.result == 'success' }}
     needs:
       - init
       - prepare_shop
       - install_shop
+      - install_module
       - unit_tests
       - integration_tests
       - codeception_tests
@@ -996,6 +1281,7 @@ jobs:
           github_token: ${{ github.token }}
 
       - name: 'SonarCloud Scan (oxideshop_ce_internal)'
+        if: ${{ needs.init.outputs.sonarcloud_internal_project_name != '' }}
         uses: 'OXID-eSales/github-actions/sonarcloud@v1'
         with:
           coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
@@ -1009,8 +1295,8 @@ jobs:
           github_token: ${{ github.token }}
 
   phpcs_tests:
-    needs: ['init', 'install_shop', 'sonarcloud']
-    if: ${{ always() && needs.init.outputs.phpcs_tests_skip != 'true' }}
+    needs: ['init', 'install_module', 'sonarcloud']
+    if: ${{ always() && needs.init.outputs.phpcs_tests_skip != 'true' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.phpcs_tests_matrix_php) }}
@@ -1022,7 +1308,7 @@ jobs:
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v1'
         with:
-          cached_shop: '${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.phpcs_tests_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
@@ -1052,6 +1338,8 @@ jobs:
       - init
       - prepare_shop
       - install_shop
+      - install_module
+      - styles
       - unit_tests
       - integration_tests
       - codeception_tests
@@ -1075,6 +1363,8 @@ jobs:
           job_list: |
             prepare_shop%${{ needs.prepare_shop.result }}
             install_shop%${{ needs.install_shop.result }}
+            install_module%${{ needs.install_module.result }}
+            styles%${{ needs.styles.result }}
             unit_tests%${{ needs.unit_tests.result }}
             integration_tests%${{ needs.integration_tests.result }}
             codeception_tests%${{ needs.codeception_tests.result }}

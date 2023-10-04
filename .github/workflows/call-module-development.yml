@@ -982,13 +982,9 @@ jobs:
       max-parallel: ${{ fromJSON(needs.init.outputs.codeception_tests_max_parallel) }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
-      - name: 'Reconfigure codeception for smarty themes'
+      - name: 'Set options for smarty'
         if: ${{ matrix.template_engine == 'smarty' }}
         run: |
-          perl -pi \
-            -e 's#admin_twig#admin_smarty#g;' \
-            -e 's#views/apex#views/flow/translations#g;' \
-            'source/test-module/tests/Codeception/acceptance.suite.yml'
           echo "CODECEPTION_CONTAINER_OPTIONS=-e THEME_ID=flow -e MODULE_IDS=${{ needs.init.outputs.module_ids }}" | tee -a "$GITHUB_ENV"
 
       - name: 'Set options for twig'
@@ -1008,6 +1004,14 @@ jobs:
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
+      - name: 'Reconfigure codeception for smarty themes'
+        if: ${{ matrix.template_engine == 'smarty' }}
+        run: |
+          perl -pi \
+            -e 's#admin_twig#admin_smarty#g;' \
+            -e 's#views/apex#views/flow/translations#g;' \
+            'source/test-module/tests/Codeception/acceptance.suite.yml'
+  
       - name: 'Install twig template engine and twig theme'
         if: ${{ matrix.template_engine == 'twig' }}
         uses: 'OXID-eSales/github-actions/composer_require@v1'
@@ -1076,7 +1080,7 @@ jobs:
           suite: ${{ needs.init.outputs.codeception_tests_suite }}
           test: ${{ needs.init.outputs.codeception_tests_test }}
           additional_options: ${{ needs.init.outputs.codeception_tests_additional_options }}
-          logfile: codeception_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_TE${{ matrix.template_engine}}phpunit_log.txt
+          logfile: codeception_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_TE${{ matrix.template_engine}}_phpunit_log.txt
           logfile_artifact: ${{ needs.init.outputs.codeception_tests_logfile_artifact }}
           output_files: ${{ needs.init.outputs.codeception_tests_output_files }}
           output_artifact: codeception-artifacts_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_TE${{ matrix.template_engine}}
@@ -1362,8 +1366,8 @@ jobs:
             Testplan%${{ inputs.testplan }}
           job_list: |
             prepare_shop%${{ needs.prepare_shop.result }}
-            install_module%${{ needs.install_module.result }}
             install_shop%${{ needs.install_shop.result }}
+            install_module%${{ needs.install_module.result }}
             styles%${{ needs.styles.result }}
             unit_tests%${{ needs.unit_tests.result }}
             integration_tests%${{ needs.integration_tests.result }}

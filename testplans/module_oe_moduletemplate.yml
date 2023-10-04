@@ -80,7 +80,7 @@ global:
 module:
   matrix:
     # Use '["smarty","twig"]' for both
-    template_engine: &template_engine '["twig"]'
+    template_engine: &template_engine '["smarty","twig"]'
   ids: 'oe_moduletemplate'
   package_name: &package_name 'oxid-esales/module-template'
   git_module_url: &git_module_url 'https://github.com/OXID-eSales/module-template.git'

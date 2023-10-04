@@ -5,6 +5,8 @@ workflow:
     php: &matrix_php '["8.2"]'
     # A json array of mysql versions to test
     mysql: &matrix_mysql '["8.0"]'
+    # A json array of template engines to test, use '["smarty","twig"]' for both
+    template_engine: &template_engine '["twig"]'
   max_parallel: &max_parallel 4
 global:
   # URL for the docker-eshop sdk repo to clone
@@ -222,6 +224,7 @@ codeception_tests:
   matrix:
     php: *matrix_php
     mysql: *matrix_mysql
+    template_engine: *template_engine
   max_parallel: *max_parallel
   docker_login: *docker_login
   container: *container
