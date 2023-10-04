@@ -26,7 +26,7 @@ global:
   # - secrets.enterprise_github_token
   # - testplan entry global.git_enterprise_ref
   # Branch to check out for the enterprise repos
-    # yamllint disable-line rule:anchors
+  # yamllint disable-line rule:anchors
   git_enterprise_ref: *github_ref_name
 
   # When running on a self hosted runner with access to a local s3 cache:

@@ -1011,7 +1011,7 @@ jobs:
             -e 's#admin_twig#admin_smarty#g;' \
             -e 's#views/apex#views/flow/translations#g;' \
             'source/test-module/tests/Codeception/acceptance.suite.yml'
-  
+
       - name: 'Install twig template engine and twig theme'
         if: ${{ matrix.template_engine == 'twig' }}
         uses: 'OXID-eSales/github-actions/composer_require@v1'
