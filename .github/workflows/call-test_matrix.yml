@@ -54,7 +54,7 @@ jobs:
     steps:
       - name: 'Load Testplan'
         id: yaml
-        uses: 'OXID-eSales/github-actions/load_testplan@v0'
+        uses: 'OXID-eSales/github-actions/load_testplan@v1'
         with:
           testplan: ${{ inputs.testplan }}
       - name: 'Calculate values'
@@ -554,7 +554,7 @@ jobs:
     steps:
       - name: 'Prepare Shop'
         id: prepare_shop
-        uses: 'OXID-eSales/github-actions/prepare_shop@v0'
+        uses: 'OXID-eSales/github-actions/prepare_shop@v1'
         with:
           container: ${{ needs.init.outputs.prepare_shop_container }}
           container_options: ${{ needs.init.outputs.prepare_shop_container_options }}
@@ -623,7 +623,7 @@ jobs:
 
       - name: 'Install shop'
         id: install_shop
-        uses: 'OXID-eSales/github-actions/install_shop@v0'
+        uses: 'OXID-eSales/github-actions/install_shop@v1'
         with:
           container: ${{ needs.init.outputs.install_shop_container }}
           container_options: ${{ needs.init.outputs.install_shop_container_options }}
