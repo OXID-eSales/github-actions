@@ -562,6 +562,8 @@ outputs:
     value: ${{ steps.yaml.outputs.sonarcloud_project_name}}
   sonarcloud_parameters:
     value: ${{ steps.yaml.outputs.sonarcloud_parameters}}
+  sonarcloud_internal_project_key:
+    value: ${{ steps.yaml.outputs.sonarcloud_internal_project_key}}
   sonarcloud_internal_project_name:
     value: ${{ steps.yaml.outputs.sonarcloud_internal_project_name}}
   sonarcloud_internal_parameters:

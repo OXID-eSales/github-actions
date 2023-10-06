@@ -399,6 +399,7 @@ sonarcloud:
     -Dsonar.tests=tests
 
   # for the internal run
+  internal_project_key: 'OXID-eSales_oxideshop_ce_internal'
   internal_project_name: 'oxideshop_ce_internal'
   internal_parameters: |
     -Dsonar.language=php
