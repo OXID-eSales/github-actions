@@ -54,7 +54,7 @@ jobs:
     steps:
       - name: 'Load Testplan'
         id: yaml
-        uses: 'OXID-eSales/github-actions/load_testplan@v0'
+        uses: 'OXID-eSales/github-actions/load_testplan@v1'
         with:
           testplan: ${{ inputs.testplan }}
 
@@ -373,6 +373,7 @@ jobs:
             sonarcloud_project_key: ${{ steps.yaml.outputs.sonarcloud_project_key}}
             sonarcloud_project_name: ${{ steps.yaml.outputs.sonarcloud_project_name}}
             sonarcloud_parameters: ${{ steps.yaml.outputs.sonarcloud_parameters}}
+            sonarcloud_internal_project_key: ${{ steps.yaml.outputs.sonarcloud_internal_project_key}}
             sonarcloud_internal_project_name: ${{ steps.yaml.outputs.sonarcloud_internal_project_name}}
             sonarcloud_internal_parameters: ${{ steps.yaml.outputs.sonarcloud_internal_parameters}}
           EOF
@@ -654,6 +655,7 @@ jobs:
       sonarcloud_project_key: ${{ steps.yaml.outputs.sonarcloud_project_key}}
       sonarcloud_project_name: ${{ steps.yaml.outputs.sonarcloud_project_name}}
       sonarcloud_parameters: ${{ steps.yaml.outputs.sonarcloud_parameters}}
+      sonarcloud_internal_project_key: ${{ steps.yaml.outputs.sonarcloud_internal_project_key}}
       sonarcloud_internal_project_name: ${{ steps.yaml.outputs.sonarcloud_internal_project_name}}
       sonarcloud_internal_parameters: ${{ steps.yaml.outputs.sonarcloud_internal_parameters}}
       # phpcs_tests variables
@@ -702,7 +704,7 @@ jobs:
     steps:
       - name: 'Prepare Shop'
         id: prepare_shop
-        uses: 'OXID-eSales/github-actions/prepare_shop@v0'
+        uses: 'OXID-eSales/github-actions/prepare_shop@v1'
         with:
           container: ${{ needs.init.outputs.prepare_shop_container }}
           container_options: ${{ needs.init.outputs.prepare_shop_container_options }}
@@ -771,7 +773,7 @@ jobs:
 
       - name: 'Install shop'
         id: install_shop
-        uses: 'OXID-eSales/github-actions/install_shop@v0'
+        uses: 'OXID-eSales/github-actions/install_shop@v1'
         with:
           container: ${{ needs.init.outputs.install_shop_container }}
           container_options: ${{ needs.init.outputs.install_shop_container_options }}
@@ -1289,7 +1291,7 @@ jobs:
           target_branch: ${{ needs.init.outputs.sonarcloud_target_branch }}
           github_ref_name: ${{ github.ref_name }}
           sonarcloud_organization: ${{ needs.init.outputs.sonarcloud_organization }}
-          sonarcloud_project_key: ${{ needs.init.outputs.sonarcloud_project_key }}
+          sonarcloud_project_key: ${{ needs.init.outputs.sonarcloud_internal_project_key }}
           sonarcloud_project_name: ${{ needs.init.outputs.sonarcloud_internal_project_name }}
           sonarcloud_parameters: ${{ needs.init.outputs.sonarcloud_internal_parameters }}
           sonar_token: ${{ secrets.SONAR_TOKEN }}
