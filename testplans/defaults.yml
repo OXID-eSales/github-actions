@@ -65,7 +65,7 @@ global:
   # This template variable must be set to "ce" if is_enterprise is false or "ee"
   # if is_enterprise is true. It will be used for determining object names
   # yamllint disable-line
-  {{ $shop_type := "ce" }}
+  {{- $shop_type := "ce" -}}
 
   # Repository related settings
   git:
