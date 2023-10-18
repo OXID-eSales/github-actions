@@ -1,7 +1,7 @@
 name: 'install_shop'
 description: 'Fetches the prepared shop from cache and installs it'
 inputs:
-  container:
+  container_name:
     type: string
     required: false
     description: 'Name of the container to run the test in'
@@ -108,7 +108,7 @@ runs:
       run: |
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
-          ${{ inputs.container }} \
+          ${{ inputs.container_name }} \
           bin/oe-console oe:setup:shop \
           --db-host mysql \
           --db-port 3306 \
@@ -131,7 +131,7 @@ runs:
       run: |
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
-          ${{ inputs.container }} \
+          ${{ inputs.container_name }} \
           bin/oe-console oe:theme:activate apex
 
     - name: Stop containers

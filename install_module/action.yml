@@ -1,7 +1,7 @@
 name: 'install_module'
 description: 'Fetches the module and installs it'
 inputs:
-  container:
+  container_name:
     type: string
     required: false
     description: 'Name of the container to run the test in'
@@ -97,12 +97,12 @@ runs:
       run: |
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
-          ${{ inputs.container }} \
+          ${{ inputs.container_name}} \
           composer config repositories.${{ inputs.package_name }} \
           --json '{"type":"path", "url":"./test-module", "options": {"symlink": true}}'
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
-          ${{ inputs.container }} \
+          ${{ inputs.container_name}} \
           composer require ${{ inputs.package_name }}:* --no-interaction --no-update
 
     - name: Install dependencies and reset shop
@@ -110,16 +110,16 @@ runs:
       run: |
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
-          ${{ inputs.container }} \
+          ${{ inputs.container_name}} \
           composer update --no-interaction
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
-          ${{ inputs.container }} \
+          ${{ inputs.container_name}} \
           bin/oe-console oe:database:reset \
           --db-host=mysql --db-port=3306 --db-name=example --db-user=root --db-password=root --force
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
-          ${{ inputs.container }} \
+          ${{ inputs.container_name}} \
           bin/oe-console oe:module:activate ${{ inputs.module_ids }}
 
     - name: Install module dependencies
@@ -128,7 +128,7 @@ runs:
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           --workdir=/var/www/test-module \
-          ${{ inputs.container }} \
+          ${{ inputs.container_name}} \
           composer install
 
     - name: Stop containers

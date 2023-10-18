@@ -62,6 +62,10 @@ global:
   # - secrets.enterprise_github_token
   # - testplan entry global.git_enterprise_ref
   is_enterprise: &is_enterprise false
+  # This template variable must be set to "ce" if is_enterprise is false or "ee"
+  # if is_enterprise is true. It will be used for determining object names
+  # yamllint disable-line
+  {{ $shop_type := "ce" }}
 
   # Repository related settings
   git:
@@ -172,7 +176,9 @@ prepare_shop:
   git_shop_ref: *git_shop_ref
   git_enterprise_ref: *git_enterprise_ref
   is_enterprise: *is_enterprise
-  cache_bucket: *cache_bucket
+  cache:
+    bucket: *cache_bucket
+    prefix: 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
   composer: *composer
 
   # These modify php "custom.ini"
@@ -198,7 +204,9 @@ install_shop:
   git_shop_ref: *git_shop_ref
   git_enterprise_ref: *git_enterprise_ref
   is_enterprise: *is_enterprise
-  cache_bucket: *cache_bucket
+  cache:
+    bucket: *cache_bucket
+    prefix: 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
 
   # Modifying source/source/config.inc.php
   config:
@@ -228,8 +236,20 @@ install_module:
   container: *container
   container_options: *container_options
   container_method: *container_method
-  cache_bucket: *cache_bucket
+  cache:
+    bucket: *cache_bucket
+    # If we don't install a module, keep it the same as the prefix for
+    # installed_shop. Otherwise set it to
+    # 'moduleInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
+    prefix: 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
 
+  output:
+    files: |
+      docker-compose.yml
+      source/composer.json
+      source/composer.lock
+      source/source/config.inc.php
+    artifact_prefix: 'configs_install_module'
   # Unique module id
   ids: ''
   # Git repository related settings
