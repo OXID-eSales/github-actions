@@ -46,8 +46,8 @@ workflow:
   # This matrix definition is used, when we only want one analysis done
   # It covers the recommended combination of PHP and MySQL
   matrix_slim: &matrix_slim
-        php: '["8.2"]'
-        mysql: '["8.0"]'
+    php: '["8.2"]'
+    mysql: '["8.0"]'
 
   # How many matrix tests should run in parallel. When running on our private runners, we need to
   # reduce this to get consistent test results
@@ -76,7 +76,7 @@ global:
     shop_url: &git_shop_url 'https://github.com/OXID-eSales/oxideshop_ce.git'
 
     # Branch, tag or hash of the commit to check out
-    shop_ref: &git_shop_ref {{ .Github.Ref }}
+    shop_ref: &git_shop_ref '{{ .Github.Ref }}'
 
     # Branch to check out for the enterprise repos
     enterprise_ref: &git_enterprise_ref 'b-8.0.x'
@@ -99,7 +99,7 @@ global:
   container: &container
 
     # Name of the container running php
-    name:  &container_name 'php'
+    name: &container_name 'php'
 
     # Additional options passed to docker-compose when running tests in
     # the the container
