@@ -1,7 +1,7 @@
 name: 'styles'
 description: 'Configures styles'
 inputs:
-  container:
+  container_name:
     type: string
     required: false
     description: 'Name of the container to run the test in'
@@ -43,7 +43,7 @@ runs:
       run: |
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           --workdir=/var/www/test-module \
-          ${{ inputs.container }} \
+          ${{ inputs.container_name}} \
           bash -c "composer phpstan-report; composer phpstan"
 
     - name: Run phpmd
@@ -54,7 +54,7 @@ runs:
       run: |
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           --workdir=/var/www/test-module \
-          ${{ inputs.container }} \
+          ${{ inputs.container_name}} \
           bash -c "composer phpmd-report; composer phpmd"
 
     - name: Run phpcs
@@ -63,7 +63,7 @@ runs:
       run: |
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           --workdir=/var/www/test-module \
-          ${{ inputs.container }} \
+          ${{ inputs.container_name}} \
           composer phpcs
 
     - name: Stop containers

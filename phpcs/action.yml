@@ -1,7 +1,7 @@
 name: 'phpcs'
 description: 'Executes phpcs tests in a running container and uploads the logs as artefacts'
 inputs:
-  container:
+  container_name:
     type: string
     required: false
     description: 'Name of the container to run the test in'
@@ -64,12 +64,12 @@ runs:
       if: ${{ steps.diff.outputs.skip == 'false' }}
       run: |
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
-          ${{ inputs.container }} \
+          ${{ inputs.container_name}} \
           php vendor/bin/phpcs --version \
           | tee "${{ inputs.logfile }}" 2>&1 || true
 
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
-          ${{ inputs.container }} \
+          ${{ inputs.container_name}} \
           php vendor/bin/phpcs \
             ${{ inputs.additional_options }} \
             ${{ inputs.test }} \

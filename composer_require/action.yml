@@ -30,7 +30,7 @@ inputs:
     required: false
     description: 'Options to pass along to composer when running composer update'
     default: '--no-interaction'
-  container:
+  container_name:
     type: string
     required: false
     description: 'Name of the container running PHP'
@@ -62,13 +62,13 @@ runs:
           echo -e "\033[0;35m### Requiring ${ORG}/${REPOSITORY}${REF} with ${{ inputs.options }}\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
-            ${{ inputs.container }} \
+            ${{ inputs.container_name}} \
             composer require "${ORG}/${REPOSITORY}${REF}" ${{ inputs.options }}
         done
         if [ '${{ inputs.update }}' == 'true' ]; then
           echo -e "\033[0;35m### Running composer update with ${{ inputs.update_options }}\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
-            ${{ inputs.container }} \
+            ${{ inputs.container_name}} \
             composer update ${{ inputs.update_options }}
         fi

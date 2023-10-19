@@ -1,7 +1,7 @@
 name: 'runtests'
 description: 'Executes vendor/bin/runtests in a running container and uploads the logs as artefacts'
 inputs:
-  container:
+  container_name:
     type: string
     required: false
     description: 'Name of the container to run the test in'
@@ -77,14 +77,14 @@ runs:
       shell: bash
       run: |
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
-          ${{ inputs.container }} \
+          ${{ inputs.container_name}} \
           php vendor/bin/reset-shop
 
     - name: Run PHPUnit Unit tests
       shell: bash
       run: |
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
-          ${{ inputs.container }} \
+          ${{ inputs.container_name}} \
           php vendor/bin/runtests \
             ${{ inputs.additional_options }} \
             "${{ inputs.test }}" \

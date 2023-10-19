@@ -476,42 +476,6 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
-  styles:
-    needs: ['init', 'install_module']
-    if: ${{ needs.init.outputs.styles_skip != 'true' }}
-    strategy:
-      matrix:
-        php: ${{ fromJSON(needs.init.outputs.styles_matrix_php) }}
-        mysql: ${{ fromJSON(needs.init.outputs.styles_matrix_mysql) }}
-      fail-fast: false
-      max-parallel: ${{ fromJSON(needs.init.outputs.styles_max_parallel) }}
-    runs-on: ${{ fromJSON(inputs.runs_on) }}
-    steps:
-      - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v1'
-        with:
-          cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
-          cache_bucket: ${{ needs.init.outputs.styles_cache_bucket }}
-          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
-          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
-          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
-          docker_login: ${{ needs.init.outputs.styles_docker_login }}
-          docker_user: ${{ secrets.DOCKER_HUB_USER }}
-          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
-
-      - name: 'Run styles check'
-        uses: 'OXID-eSales/github-actions/styles@v0'
-        with:
-          container: ${{ needs.init.outputs.styles_container }}
-          container_options: ${{ needs.init.outputs.styles_container_options }}
-          container_method: ${{ needs.init.outputs.styles_container_method }}
-          module_path: ${{ needs.init.outputs.styles_module_path }}
-          output_files: ${{ needs.init.outputs.styles_output_files }}
-          output_artifact: StylesLog_PHP${{ matrix.php }}
-
-      - name: 'Stop shop'
-        uses: 'OXID-eSales/github-actions/stop_shop@v1'
-
   unit_tests:
     needs: ['init', 'install_module']
     if: ${{ needs.init.outputs.unit_tests_skip != 'true' }}
@@ -524,7 +488,7 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v1'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.unit_tests_cache_bucket }}
@@ -536,9 +500,9 @@ jobs:
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: 'Run unit tests'
-        uses: 'OXID-eSales/github-actions/phpunit@v1'
+        uses: 'OXID-eSales/github-actions/phpunit@v0'
         with:
-          container: ${{ needs.init.outputs.unit_tests_container }}
+          container_name: ${{ needs.init.outputs.unit_tests_container_name }}
           container_options: ${{ needs.init.outputs.unit_tests_container_options }}
           container_method: ${{ needs.init.outputs.unit_tests_container_method }}
           configuration: ${{ needs.init.outputs.unit_tests_configuration }}
@@ -567,7 +531,7 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v1'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.integration_tests_cache_bucket }}
@@ -579,9 +543,9 @@ jobs:
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: 'Run integration tests'
-        uses: 'OXID-eSales/github-actions/phpunit@v1'
+        uses: 'OXID-eSales/github-actions/phpunit@v0'
         with:
-          container: ${{ needs.init.outputs.integration_tests_container }}
+          container_name: ${{ needs.init.outputs.integration_tests_container_name }}
           container_options: ${{ needs.init.outputs.integration_tests_container_options }}
           container_method: ${{ needs.init.outputs.integration_tests_container_method }}
           configuration: ${{ needs.init.outputs.integration_tests_configuration }}
@@ -599,7 +563,7 @@ jobs:
         uses: 'OXID-eSales/github-actions/stop_shop@v1'
 
   codeception_tests:
-    needs: ['init', 'install_module', 'styles', 'unit_tests', 'integration_tests']
+    needs: ['init', 'install_module', 'unit_tests', 'integration_tests']
     if: ${{ always() && needs.init.outputs.codeception_tests_skip != 'true' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
@@ -613,15 +577,23 @@ jobs:
       - name: 'Set options for smarty'
         if: ${{ matrix.template_engine == 'smarty' }}
         run: |
-          echo "CODECEPTION_CONTAINER_OPTIONS=-e THEME_ID=flow -e MODULE_IDS=${{ needs.init.outputs.module_ids }}" | tee -a "$GITHUB_ENV"
+          MODULE_OPTIONS=""
+          if [ "${{ needs.init.outputs.install_module_ids }}" != "" ]; then
+            MODULE_OPTIONS="-e MODULE_IDS=${{ needs.init.outputs.install_module_ids }}"
+          fi
+          echo "CODECEPTION_CONTAINER_OPTIONS=-e THEME_ID=flow ${MODULE_OPTIONS}" | tee -a "$GITHUB_ENV"
 
       - name: 'Set options for twig'
         if: ${{ matrix.template_engine == 'twig' }}
         run: |
-          echo "CODECEPTION_CONTAINER_OPTIONS=-e THEME_ID=apex -e MODULE_IDS=${{ needs.init.outputs.module_ids }}" | tee -a "$GITHUB_ENV"
+          MODULE_OPTIONS=""
+          if [ "${{ needs.init.outputs.install_module_ids }}" != "" ]; then
+            MODULE_OPTIONS="-e MODULE_IDS=${{ needs.init.outputs.install_module_ids }}"
+          fi
+          echo "CODECEPTION_CONTAINER_OPTIONS=-e THEME_ID=apex ${MODULE_OPTIONS}" | tee -a "$GITHUB_ENV"
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v1'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.codeception_tests_cache_bucket }}
@@ -642,9 +614,9 @@ jobs:
 
       - name: 'Install twig template engine and twig theme'
         if: ${{ matrix.template_engine == 'twig' }}
-        uses: 'OXID-eSales/github-actions/composer_require@v1'
+        uses: 'OXID-eSales/github-actions/composer_require@v0'
         with:
-          container: ${{ needs.init.outputs.codeception_tests_container }}
+          container_name: ${{ needs.init.outputs.codeception_tests_container_name }}
           container_options: '${{ needs.init.outputs.codeception_tests_container_options }} ${{ env.CODECEPTION_CONTAINER_OPTIONS }}'
           container_method: 'exec'
           organisation: ${{ needs.init.outputs.codeception_tests_composer_require_organisation }}
@@ -656,9 +628,9 @@ jobs:
 
       - name: 'Install smarty template engine and flow theme'
         if: ${{ matrix.template_engine == 'smarty' }}
-        uses: 'OXID-eSales/github-actions/composer_require@v1'
+        uses: 'OXID-eSales/github-actions/composer_require@v0'
         with:
-          container: ${{ needs.init.outputs.codeception_tests_container }}
+          container_name: ${{ needs.init.outputs.codeception_tests_container_name }}
           container_options: '${{ needs.init.outputs.codeception_tests_container_options }} ${{ env.CODECEPTION_CONTAINER_OPTIONS }}'
           container_method: 'exec'
           organisation: ${{ needs.init.outputs.codeception_tests_composer_require_organisation }}
@@ -670,9 +642,9 @@ jobs:
 
       - name: 'Composer configure and require ${{ needs.init.outputs.codeception_tests_composer_configure_install }}'
         if: ${{ needs.init.outputs.codeception_tests_composer_configure_install != '' }}
-        uses: 'OXID-eSales/github-actions/composer_configure@v1'
+        uses: 'OXID-eSales/github-actions/composer_configure@v0'
         with:
-          container: ${{ needs.init.outputs.codeception_tests_container }}
+          container_name: ${{ needs.init.outputs.codeception_tests_container_name }}
           container_options: '${{ needs.init.outputs.codeception_tests_container_options }} ${{ env.CODECEPTION_CONTAINER_OPTIONS }}'
           container_method: 'exec'
           organisation: ${{ needs.init.outputs.codeception_tests_composer_configure_organisation }}
@@ -685,9 +657,9 @@ jobs:
 
       - name: 'Composer require ${{ needs.init.outputs.codeception_tests_composer_require_install }}'
         if: ${{ needs.init.outputs.codeception_tests_composer_require_install != '' }}
-        uses: 'OXID-eSales/github-actions/composer_require@v1'
+        uses: 'OXID-eSales/github-actions/composer_require@v0'
         with:
-          container: ${{ needs.init.outputs.codeception_tests_container }}
+          container_name: ${{ needs.init.outputs.codeception_tests_container_name }}
           container_options: '${{ needs.init.outputs.codeception_tests_container_options }} ${{ env.CODECEPTION_CONTAINER_OPTIONS }}'
           container_method: 'exec'
           organisation: ${{ needs.init.outputs.codeception_tests_composer_require_organisation }}
@@ -698,9 +670,9 @@ jobs:
           update_options: ${{ needs.init.outputs.codeception_tests_composer_require_update_options }}
 
       - name: 'Run codeception tests'
-        uses: 'OXID-eSales/github-actions/codeception@v1'
+        uses: 'OXID-eSales/github-actions/codeception@v0'
         with:
-          container: ${{ needs.init.outputs.codeception_tests_container }}
+          container_name: ${{ needs.init.outputs.codeception_tests_container_name }}
           container_options: '${{ needs.init.outputs.codeception_tests_container_options }} ${{ env.CODECEPTION_CONTAINER_OPTIONS }}'
           container_method: ${{ needs.init.outputs.codeception_tests_container_method }}
           build: ${{ needs.init.outputs.codeception_tests_build }}
@@ -731,7 +703,7 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v1'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: '${{ needs.init.outputs.prepare_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.shop_setup_tests_cache_bucket }}
@@ -744,9 +716,9 @@ jobs:
 
       - name: 'Composer configure and require ${{ needs.init.outputs.shop_setup_tests_composer_configure_install }}'
         if: ${{ needs.init.outputs.shop_setup_tests_composer_configure_install != '' }}
-        uses: 'OXID-eSales/github-actions/composer_configure@v1'
+        uses: 'OXID-eSales/github-actions/composer_configure@v0'
         with:
-          container: ${{ needs.init.outputs.shop_setup_tests_container }}
+          container_name: ${{ needs.init.outputs.shop_setup_tests_container_name }}
           container_options: ${{ needs.init.outputs.shop_setup_tests_container_options }}
           container_method: 'exec'
           organisation: ${{ needs.init.outputs.shop_setup_tests_composer_configure_organisation }}
@@ -759,9 +731,9 @@ jobs:
 
       - name: 'Composer require ${{ needs.init.outputs.shop_setup_tests_composer_require_install }}'
         if: ${{ needs.init.outputs.shop_setup_tests_composer_require_install != '' }}
-        uses: 'OXID-eSales/github-actions/composer_require@v1'
+        uses: 'OXID-eSales/github-actions/composer_require@v0'
         with:
-          container: ${{ needs.init.outputs.shop_setup_tests_container }}
+          container_name: ${{ needs.init.outputs.shop_setup_tests_container_name }}
           container_options: ${{ needs.init.outputs.shop_setup_tests_container_options }}
           container_method: 'exec'
           organisation: ${{ needs.init.outputs.shop_setup_tests_composer_require_organisation }}
@@ -772,9 +744,9 @@ jobs:
           update_options: ${{ needs.init.outputs.shop_setup_tests_composer_require_update_options }}
 
       - name: 'Run codeception tests'
-        uses: 'OXID-eSales/github-actions/codeception@v1'
+        uses: 'OXID-eSales/github-actions/codeception@v0'
         with:
-          container: ${{ needs.init.outputs.shop_setup_tests_container }}
+          container_name: ${{ needs.init.outputs.shop_setup_tests_container_name }}
           container_options: ${{ needs.init.outputs.shop_setup_tests_container_options }}
           container_method: ${{ needs.init.outputs.shop_setup_tests_container_method }}
           build: ${{ needs.init.outputs.shop_setup_tests_build }}
@@ -812,7 +784,7 @@ jobs:
           path: swapfile
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v1'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.deprecated_tests_cache_bucket }}
@@ -825,9 +797,9 @@ jobs:
 
       - name: 'Composer configure and require ${{ needs.init.outputs.deprecated_tests_composer_configure_install }}'
         if: ${{ needs.init.outputs.deprecated_tests_composer_configure_install != '' }}
-        uses: 'OXID-eSales/github-actions/composer_configure@v1'
+        uses: 'OXID-eSales/github-actions/composer_configure@v0'
         with:
-          container: ${{ needs.init.outputs.deprecated_tests_container }}
+          container_name: ${{ needs.init.outputs.deprecated_tests_container_name }}
           container_options: ${{ needs.init.outputs.deprecated_tests_container_options }}
           container_method: 'exec'
           organisation: ${{ needs.init.outputs.deprecated_tests_composer_configure_organisation }}
@@ -840,9 +812,9 @@ jobs:
 
       - name: 'Composer require ${{ needs.init.outputs.deprecated_tests_composer_require_install }}'
         if: ${{ needs.init.outputs.deprecated_tests_composer_require_install != '' }}
-        uses: 'OXID-eSales/github-actions/composer_require@v1'
+        uses: 'OXID-eSales/github-actions/composer_require@v0'
         with:
-          container: ${{ needs.init.outputs.deprecated_tests_container }}
+          container_name: ${{ needs.init.outputs.deprecated_tests_container_name }}
           container_options: ${{ needs.init.outputs.deprecated_tests_container_options }}
           container_method: 'exec'
           organisation: ${{ needs.init.outputs.deprecated_tests_composer_require_organisation }}
@@ -856,9 +828,9 @@ jobs:
         run: cp source/vendor/oxid-esales/testing-library/test_config.yml.dist source/test_config.yml
 
       - name: 'Run deprecated tests'
-        uses: 'OXID-eSales/github-actions/runtests@v1'
+        uses: 'OXID-eSales/github-actions/runtests@v0'
         with:
-          container: ${{ needs.init.outputs.deprecated_tests_container }}
+          container_name: ${{ needs.init.outputs.deprecated_tests_container_name }}
           container_options: ${{ needs.init.outputs.deprecated_tests_container_options }}
           container_method: ${{ needs.init.outputs.deprecated_tests_container_method }}
           test: ${{ needs.init.outputs.deprecated_tests_test }}
@@ -899,7 +871,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 'SonarCloud Scan (oxideshop_ce)'
+      - name: 'SonarCloud Scan'
         uses: 'OXID-eSales/github-actions/sonarcloud@v1'
         with:
           coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
@@ -912,7 +884,7 @@ jobs:
           sonar_token: ${{ secrets.SONAR_TOKEN }}
           github_token: ${{ github.token }}
 
-      - name: 'SonarCloud Scan (oxideshop_ce_internal)'
+      - name: 'SonarCloud Scan (internal)'
         if: ${{ needs.init.outputs.sonarcloud_internal_project_name != '' }}
         uses: 'OXID-eSales/github-actions/sonarcloud@v1'
         with:
@@ -938,7 +910,7 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v1'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.phpcs_tests_cache_bucket }}
@@ -950,9 +922,9 @@ jobs:
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: 'Run phpcs tests'
-        uses: 'OXID-eSales/github-actions/phpcs@v1'
+        uses: 'OXID-eSales/github-actions/phpcs@v0'
         with:
-          container: ${{ needs.init.outputs.phpcs_tests_container }}
+          container_name: ${{ needs.init.outputs.phpcs_tests_container_name }}
           container_options: ${{ needs.init.outputs.phpcs_tests_container_options }}
           container_method: ${{ needs.init.outputs.phpcs_tests_container_method }}
           test: ${{ needs.init.outputs.phpcs_tests_test }}
@@ -964,6 +936,42 @@ jobs:
       - name: 'Stop shop'
         uses: 'OXID-eSales/github-actions/stop_shop@v1'
 
+  styles:
+    needs: ['init', 'install_module', 'sonarcloud']
+    if: ${{ needs.init.outputs.styles_skip != 'true' }}
+    strategy:
+      matrix:
+        php: ${{ fromJSON(needs.init.outputs.styles_matrix_php) }}
+        mysql: ${{ fromJSON(needs.init.outputs.styles_matrix_mysql) }}
+      fail-fast: false
+      max-parallel: ${{ fromJSON(needs.init.outputs.styles_max_parallel) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    steps:
+      - name: 'Start shop'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
+        with:
+          cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cache_bucket: ${{ needs.init.outputs.styles_cache_bucket }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          docker_login: ${{ needs.init.outputs.styles_docker_login }}
+          docker_user: ${{ secrets.DOCKER_HUB_USER }}
+          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: 'Run styles check'
+        uses: 'OXID-eSales/github-actions/styles@v0'
+        with:
+          container_name: ${{ needs.init.outputs.styles_container_name }}
+          container_options: ${{ needs.init.outputs.styles_container_options }}
+          container_method: ${{ needs.init.outputs.styles_container_method }}
+          module_path: ${{ needs.init.outputs.styles_module_path }}
+          output_files: ${{ needs.init.outputs.styles_output_files }}
+          output_artifact: ${{ needs.init.outputs.styles_output_prefix}}_PHP${{ matrix.php }}
+
+      - name: 'Stop shop'
+        uses: 'OXID-eSales/github-actions/stop_shop@v1'
+
   finish:
     if: ${{ always() && needs.init.outputs.finish_skip != 'true' }}
     needs:
@@ -971,7 +979,6 @@ jobs:
       - prepare_shop
       - install_shop
       - install_module
-      - styles
       - unit_tests
       - integration_tests
       - codeception_tests
@@ -979,6 +986,7 @@ jobs:
       - deprecated_tests
       - sonarcloud
       - phpcs_tests
+      - styles
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     env:
       SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"
@@ -996,7 +1004,6 @@ jobs:
             prepare_shop%${{ needs.prepare_shop.result }}
             install_shop%${{ needs.install_shop.result }}
             install_module%${{ needs.install_module.result }}
-            styles%${{ needs.styles.result }}
             unit_tests%${{ needs.unit_tests.result }}
             integration_tests%${{ needs.integration_tests.result }}
             codeception_tests%${{ needs.codeception_tests.result }}
@@ -1004,3 +1011,4 @@ jobs:
             deprecated_tests%${{ needs.deprecated_tests.result }}
             sonarcloud%${{ needs.sonarcloud.result }}
             phpcs_tests%${{ needs.phpcs_tests.result }}
+            styles%${{ needs.styles.result }}

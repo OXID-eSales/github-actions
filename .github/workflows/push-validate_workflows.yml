@@ -8,7 +8,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     env:
       SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"
-      # yamllint disable-line rule:line-length
+      ACTIONLINT_ACTION_FIXED: false
     steps:
       - name: Checkout
         id: checkout
@@ -33,12 +33,13 @@ jobs:
 
       - name: Run actionlint
         id: actionlint
+        if: ${{ env.ACTIONLINT_ACTION_FIXED == 'true' }}
         uses: raven-actions/actionlint@v1
         with:
           flags: '-ignore "property \".+\" is not defined in object type"'
 
       - name: actionlint Summary
-        if: always()
+        if: if: ${{ always() && env.ACTIONLINT_ACTION_FIXED == 'true' }}
         run: |
           echo "Used actionlint version ${{ steps.actionlint.outputs.version-semver }}"
           echo "Used actionlint release ${{ steps.actionlint.outputs.version-tag }}"
