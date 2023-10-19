@@ -1,5 +1,5 @@
 workflow:
-  matrix:
+  matrix: &matrix
     # We only test the latest recommended versions here but both template engines
     php: &matrix_php '["8.1","8.2"]'
     mysql: &matrix_mysql '["5.7","8.0"]'
@@ -27,8 +27,8 @@ install_shop:
 
 install_module:
   matrix: *matrix
-  cache: 'moduleInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
-    prefix:
+  cache:
+    prefix: 'moduleInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
   ids: 'oe_moduletemplate'
   git:
     module:

@@ -2,9 +2,9 @@
 # Only diverging settings are defined here
 
 global:
-# {{ $shop_type := "ee" }}$shop_type: {{ $shop_type }}
+  # {{ $shop_type := "ee" }}$shop_type: {{ $shop_type }}
   is_enterprise: &is_enterprise true
-  
+
   git: &git
     # Using the stable branch for the ce shop here, and .Github.Ref refers to
     # the ee shop commit/tag/branch
@@ -47,7 +47,6 @@ integration_tests:
 
 codeception_tests:
   container:
-    # yamllint disable-line rule:line-length
     options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex'
     method: &selenium_container_method 'run'
   composer: *composer
@@ -95,6 +94,7 @@ deprecated_tests:
       install: 'oxideshop_pe oxideshop_ee twig-component-pe twig-component-ee tests-deprecated-pe tests-deprecated-ee'
     require:
       install: 'twig-admin-theme apex-theme tests-deprecated-ce'
+  # yamllint disable-line rule:line-length
   additional_options: '--filter "/^((?!(testFrontendVAT)).)*$/" --exclude-group quarantine,varnish,paypal_buyerlogin,paypal_external,paypal_graphql,adminFunctionality,flow_theme'
   coverage:
     path: ''
