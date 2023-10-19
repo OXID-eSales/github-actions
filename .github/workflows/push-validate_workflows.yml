@@ -39,7 +39,7 @@ jobs:
           flags: '-ignore "property \".+\" is not defined in object type"'
 
       - name: actionlint Summary
-        if: if: ${{ always() && env.ACTIONLINT_ACTION_FIXED == 'true' }}
+        if: ${{ always() && env.ACTIONLINT_ACTION_FIXED == 'true' }}
         run: |
           echo "Used actionlint version ${{ steps.actionlint.outputs.version-semver }}"
           echo "Used actionlint release ${{ steps.actionlint.outputs.version-tag }}"
