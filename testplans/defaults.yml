@@ -64,10 +64,10 @@ global:
   is_enterprise: &is_enterprise false
   # This template variable must be set to "ce" if is_enterprise is false or "ee"
   # if is_enterprise is true. It will be used for determining object names
-  # {{ $shop_type := "ce" }}
+  # {{ $shop_type := "ce" }}$shop_type: {{ $shop_type }}
 
   # Repository related settings
-  git:
+  git: &git
 
     # URL for the docker-eshop sdk repository to clone
     sdk_url: &git_sdk_url 'https://github.com/OXID-eSales/docker-eshop-sdk.git'
@@ -169,11 +169,7 @@ prepare_shop:
   max_parallel: *max_parallel
   docker_login: *docker_login
   container: *container
-  git_sdk_url: *git_sdk_url
-  git_sdk_ref: *git_sdk_ref
-  git_shop_url: *git_shop_url
-  git_shop_ref: *git_shop_ref
-  git_enterprise_ref: *git_enterprise_ref
+  git: *git
   is_enterprise: *is_enterprise
   cache:
     bucket: *cache_bucket
@@ -363,7 +359,7 @@ codeception_tests:
   skip: false
   matrix: *matrix
   # More parallelism causes instability on the private runners, so we reduce it here
-  max_parallel: &codeception_max_parallel 2
+  max_parallel: &codeception_max_parallel 1
   docker_login: *docker_login
   container:
     name: *container_name
