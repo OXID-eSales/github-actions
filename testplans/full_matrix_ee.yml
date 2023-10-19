@@ -25,7 +25,6 @@ prepare_shop:
   cache:
     # Needs to be here as $shop_type is different
     prefix: 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
-  composer: *composer
 
 # See docs/actions/start_shop.md and docs/actions/install_shop.md for more information.
 install_shop:
@@ -52,7 +51,7 @@ codeception_tests:
   composer: *composer
   configuration: 'vendor/oxid-esales/oxideshop-ee/Tests/codeception.yml'
   additional_options: ''
-  output
+  output:
     files: |
       docker-compose.yml
       source/composer.json
