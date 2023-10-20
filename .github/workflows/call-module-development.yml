@@ -64,6 +64,7 @@ jobs:
       - name: 'Prepare artifact'
         if: always()
         run: |
+          echo "prepare_shop_matrix_php: ${{ steps.ltp.prepare_shop_matrix_php }}"
           cp "${GITHUB_OUTPUT}" generated_output.txt
           cp "${GITHUB_ENV}" generated_env.txt
 
