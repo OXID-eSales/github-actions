@@ -32,7 +32,7 @@ install_module:
   ids: 'oe_moduletemplate'
   git:
     module:
-      url: &git_module_url 'https://github.com/OXID-eSales/module-template.git'
+      url: &git_module_url '{{ .Github.Repository }}'
       ref: '{{ .Github.Ref }}'
   package_name: &package_name 'oxid-esales/module-template'
 
