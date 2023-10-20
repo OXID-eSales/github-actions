@@ -54,11 +54,13 @@ jobs:
     steps:
       - name: 'Load Testplan'
         id: ltp
-        uses: 'joernott/load_testplan@v1'
+        uses: 'joernott/load_testplan@b7616fd0649ce816de0501175fe26fb428dd9d85'
         with:
           files: 'https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml,${{ inputs.testplan }}'
           set_output: true
           set_print: true
+          loglevel: trace
+          logfile: load_testplan.log
           yaml: generated_testplan.yaml
 
       - name: 'Prepare artifact'
@@ -77,6 +79,7 @@ jobs:
             generated_testplan.yaml
             generated_output.txt
             generated_env.txt
+            load_testplan.log
           retention-days: 7
 
     outputs:
