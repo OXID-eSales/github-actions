@@ -64,7 +64,7 @@ jobs:
       - name: 'Prepare artifact'
         if: always()
         run: |
-          cp "${GITHUB_OUTPUT}" generated_outputs.txt
+          cp "${GITHUB_OUTPUT}" generated_output.txt
           cp "${GITHUB_ENV}" generated_env.txt
 
       - name: 'Upload generated test plan'
