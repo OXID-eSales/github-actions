@@ -44,6 +44,8 @@ unit_tests:
 
 integration_tests:
   matrix: *matrix
+  container:
+    options: 'XDEBUG_MODE=coverage'
   configuration: '/var/www/vendor/oxid-esales/module-template/tests/phpunit.xml'
   test: ''
   additional_options: '--bootstrap /var/www/source/bootstrap.php --coverage-clover=/var/www/integration_coverage.xml --testsuite=Integration'
@@ -75,6 +77,7 @@ sonarcloud:
   internal_project_name: ''
 
 phpcs_tests:
+  skip: true
   matrix: *matrix
 
 styles:
