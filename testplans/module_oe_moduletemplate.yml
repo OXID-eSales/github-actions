@@ -28,7 +28,7 @@ install_shop:
 install_module:
   matrix: *matrix
   cache:
-    prefix: 'moduleInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
+    prefix: 'moduleInstallation-ce-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
   ids: 'oe_moduletemplate'
   git:
     module:

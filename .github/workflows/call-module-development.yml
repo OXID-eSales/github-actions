@@ -59,7 +59,7 @@ jobs:
           files: 'https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml,${{ inputs.testplan }}'
           set_output: true
           set_print: true
-          yaml: generated_testplan.yaml^
+          yaml: generated_testplan.yaml
 
       - name: 'Prepare artifact'
         if: always()

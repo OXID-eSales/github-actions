@@ -2,7 +2,7 @@
 # Only diverging settings are defined here
 
 global:
-  # {{ $shop_type := "ee" }}$shop_type: {{ $shop_type }}
+  # {{ $shop_type := "ee" }}$shop_type: {{ printf "%q" $shop_type }}
   is_enterprise: &is_enterprise true
 
   git: &git
@@ -65,8 +65,6 @@ codeception_tests:
 
 shop_setup_tests:
   container:
-    # yamllint disable-line rule:line-length
-    options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e DB_NAME=setup_test -e DB_USERNAME=root -e DB_PASSWORD=root -e DB_HOST=mysql -e DB_PORT=3306 -e SHOP_URL=http://localhost.local/ -e SHOP_SOURCE_PATH=/var/www/source/'
     method: *selenium_container_method
   composer: *composer
   configuration: 'vendor/oxid-esales/oxideshop-ee/Tests/codeception.yml'
