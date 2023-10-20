@@ -59,6 +59,24 @@ jobs:
           files: 'https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml,${{ inputs.testplan }}'
           set_output: true
           set_print: true
+          yaml: generated_testplan.yaml^
+
+      - name: 'Prepare artifact'
+        if: always()
+        run: |
+          cp "${GITHUB_OUTPUT}" generated_outputs.txt
+          cp "${GITHUB_ENV}" generated_env.txt
+
+      - name: 'Upload generated test plan'
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'testplan'
+          path: |
+            generated_testplan.yaml
+            generated_output.txt
+            generated_env.txt
+          retention-days: 7
 
     outputs:
       # prepare_shop variables
