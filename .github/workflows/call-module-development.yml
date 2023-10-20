@@ -426,7 +426,7 @@ jobs:
         id: install_shop
         uses: 'OXID-eSales/github-actions/install_shop@v0'
         with:
-          container_name: ${{ needs.init.outputs.install_shop_container }}
+          container_name: ${{ needs.init.outputs.install_shop_container_name }}
           container_options: ${{ needs.init.outputs.install_shop_container_options }}
           container_method: ${{ needs.init.outputs.install_shop_container_method }}
           git_shop_ref: ${{ needs.init.outputs.install_shop_git_shop_ref }}
