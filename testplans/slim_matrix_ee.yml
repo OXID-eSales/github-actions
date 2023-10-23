@@ -37,6 +37,9 @@ install_shop:
 
 install_module:
   matrix: *matrix
+  cache:
+    # Need to set this as we don't install a module
+    prefix: 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
 
 unit_tests:
   matrix: *matrix

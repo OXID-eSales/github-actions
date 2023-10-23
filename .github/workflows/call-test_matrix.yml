@@ -54,7 +54,7 @@ jobs:
     steps:
       - name: 'Load Testplan'
         id: ltp
-        uses: 'joernott/load_testplan@8221efd10c9ea533685aa6bad8d767c211995e89'
+        uses: 'joernott/load_testplan@v1'
         with:
           files: 'https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml,${{ inputs.testplan }}'
           set_output: true
@@ -453,8 +453,6 @@ jobs:
       fail-fast: false
       max-parallel: ${{ fromJSON(needs.init.outputs.install_module_max_parallel) }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
-    outputs:
-      shop_with_module: ${{ steps.install_module.outputs.shop_with_module }}
     steps:
       - name: 'Start shop'
         if: ${{ needs.init.outputs.install_module_ids != '' }}
