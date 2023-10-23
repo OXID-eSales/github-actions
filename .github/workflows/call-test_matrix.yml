@@ -317,6 +317,7 @@ jobs:
       phpcs_tests_container_options: ${{ steps.ltp.outputs.phpcs_tests_container_options }}
       phpcs_tests_docker_login: ${{ steps.ltp.outputs.phpcs_tests_docker_login }}
       phpcs_tests_failure_pattern: ${{ steps.ltp.outputs.phpcs_tests_failure_pattern }}
+      phpcs_tests_github_ref_name: ${{ steps.ltp.outputs.phpcs_tests_github_ref_name }}
       phpcs_tests_logfile_artifact: ${{ steps.ltp.outputs.phpcs_tests_logfile_artifact }}
       phpcs_tests_logfile_prefix: ${{ steps.ltp.outputs.phpcs_tests_logfile_prefix }}
       phpcs_tests_matrix_mysql: ${{ steps.ltp.outputs.phpcs_tests_matrix_mysql }}
@@ -946,6 +947,7 @@ jobs:
           container_name: ${{ needs.init.outputs.phpcs_tests_container_name }}
           container_options: ${{ needs.init.outputs.phpcs_tests_container_options }}
           container_method: ${{ needs.init.outputs.phpcs_tests_container_method }}
+          github_ref_name: ${{ needs.init.outputs.phpcs_tests_github_ref_name }}
           test: ${{ needs.init.outputs.phpcs_tests_test }}
           additional_options: ${{ needs.init.outputs.phpcs_tests_additional_options }}
           logfile: phpcs_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_codesniff_log.txt

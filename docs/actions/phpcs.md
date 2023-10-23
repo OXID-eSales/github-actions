@@ -11,6 +11,9 @@ Options to pass to the container start.
 **container_method:** *not required*, *default*: 'exec'  
 Whether we use exec to run the command in the existing php container or run to spin up a new one.
 
+**github_ref_name:** *not required*, *default:* 'main'  
+Reference for comparing with the base reference to get a list of changed files.
+
 **test:** *not required*, *default:*  source/Internal
 Name of the test or folder to run.
 

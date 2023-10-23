@@ -552,6 +552,9 @@ phpcs_tests:
   container: *container
   cache:
     bucket: *cache_bucket
+  # Name of the branch/commit to gather the list of changed files
+  github:
+    ref_name: '{{ .Github.RefName }}'
   # Name of the test or folder to run
   test: 'source/Internal'
   # Optional: Additional options to pass to phpcs

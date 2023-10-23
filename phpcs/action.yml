@@ -16,6 +16,11 @@ inputs:
     required: false
     description: 'Method to execute the commands inside a container, either "run" or "exec"'
     default: 'exec'
+  github_ref_name:
+    type: string
+    required: false
+    description: 'Name of the branch to check out'
+    default: 'main'
   test:
     type: string
     required: false
