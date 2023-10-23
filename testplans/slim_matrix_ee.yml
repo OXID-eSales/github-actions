@@ -12,7 +12,7 @@ global:
   is_enterprise: &is_enterprise true
   git: &git
     shop_ref: &git_shop_ref 'b-8.0.x'
-    enterprise_ref: '{{ .Github.Ref }}'
+    enterprise_ref: '{{ .Github.RefName }}'
 
   composer: &composer
     configure:

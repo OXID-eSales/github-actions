@@ -79,7 +79,7 @@ global:
     shop_url: &git_shop_url 'https://github.com/OXID-eSales/oxideshop_ce.git'
 
     # Branch, tag or hash of the commit to check out
-    shop_ref: &git_shop_ref '{{ .Github.Ref }}'
+    shop_ref: &git_shop_ref '{{ .Github.RefName }}'
 
     # Branch to check out for the enterprise repos
     enterprise_ref: &git_enterprise_ref 'b-8.0.x'
