@@ -1,5 +1,4 @@
 name: call-test_matrix
-name: call-module_development
 # Full test matrix for oxidshop_ce and oxidshop_ee
 # This matrix runs the following jobs:
 # - output parameters
