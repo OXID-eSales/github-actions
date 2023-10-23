@@ -3,7 +3,7 @@ workflow:
     # We only test the latest recommended versions here but both template engines
     php: &matrix_php '["8.1","8.2"]'
     mysql: &matrix_mysql '["5.7","8.0"]'
-    template_engine: &template_engine '["smarty","twig"]'
+    # currently, only twig works for oe_moduletemplate template_engine: &template_engine '["smarty","twig"]'
 
 global:
   git: &git
@@ -45,7 +45,7 @@ unit_tests:
 integration_tests:
   matrix: *matrix
   container:
-    options: 'XDEBUG_MODE=coverage'
+    options: '-e XDEBUG_MODE=coverage'
   configuration: '/var/www/vendor/oxid-esales/module-template/tests/phpunit.xml'
   test: ''
   additional_options: '--bootstrap /var/www/source/bootstrap.php --coverage-clover=/var/www/integration_coverage.xml --testsuite=Integration'

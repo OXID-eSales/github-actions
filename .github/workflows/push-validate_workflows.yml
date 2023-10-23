@@ -8,7 +8,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     env:
       SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"
-      ACTIONLINT_ACTION_FIXED: false
+      ACTIONLINT_ACTION_FIXED: true
     steps:
       - name: Checkout
         id: checkout
