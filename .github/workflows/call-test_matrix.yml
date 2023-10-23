@@ -54,7 +54,7 @@ jobs:
     steps:
       - name: 'Load Testplan'
         id: ltp
-        uses: 'joernott/load_testplan@v1'
+        uses: 'joernott/load_testplan@b6440e5738448eb84e7a5f57015a0566df7fa113'
         with:
           files: 'https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml,${{ inputs.testplan }}'
           set_output: true
