@@ -295,6 +295,7 @@ jobs:
       deprecated_tests_skip: ${{ steps.ltp.outputs.deprecated_tests_skip }}
       deprecated_tests_test: ${{ steps.ltp.outputs.deprecated_tests_test }}
       # sonarcloud variables
+      sonarcloud_coverage_prefix: ${{ steps.ltp.outputs.sonarcloud_coverage_prefix }}
       sonarcloud_docker_login: ${{ steps.ltp.outputs.sonarcloud_docker_login }}
       sonarcloud_internal_parameters: ${{ steps.ltp.outputs.sonarcloud_internal_parameters }}
       sonarcloud_internal_project_key: ${{ steps.ltp.outputs.sonarcloud_internal_project_key }}
@@ -535,7 +536,7 @@ jobs:
           output_files: ${{ needs.init.outputs.unit_tests_output_files }}
           output_artifact: unit-artifacts_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
           coverage_path: ${{ needs.init.outputs.unit_tests_coverage_path }}
-          coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
+          coverage_artifact: ${{ needs.init.outputs.unit_tests_coverage_prefix }}_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
           failure_pattern: ${{ needs.init.outputs.unit_tests_failure_pattern }}
 
       - name: 'Stop shop'
@@ -578,7 +579,7 @@ jobs:
           output_files: ${{ needs.init.outputs.integration_tests_output_files }}
           output_artifact: integration-artifacts_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
           coverage_path: ${{ needs.init.outputs.integration_tests_coverage_path }}
-          coverage_artifact: integration-coverage-reports _PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
+          coverage_artifact: ${{ needs.init.outputs.integration_tests_coverage_prefix }}_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
           failure_pattern: ${{ needs.init.outputs.integration_tests_failure_pattern }}
 
       - name: 'Stop shop'
@@ -707,7 +708,7 @@ jobs:
           output_files: ${{ needs.init.outputs.codeception_tests_output_files }}
           output_artifact: codeception-artifacts_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_TE${{ matrix.template_engine}}
           coverage_path: ${{ needs.init.outputs.codeception_tests_coverage_path }}
-          coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_TE${{ matrix.template_engine}}
+          coverage_artifact: ${{ needs.init.outputs.codeception_tests_coverage_prefix }}_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
           failure_pattern: ${{ needs.init.outputs.codeception_tests_failure_pattern }}
 
       - name: 'Stop shop'
@@ -781,7 +782,7 @@ jobs:
           output_files: ${{ needs.init.outputs.shop_setup_tests_output_files }}
           output_artifact: shop_setup-artifacts_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
           coverage_path: ${{ needs.init.outputs.shop_setup_tests_coverage_path }}
-          coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
+          coverage_artifact: ${{ needs.init.outputs.shop_setup_tests_coverage_prefix }}_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
           failure_pattern: ${{ needs.init.outputs.shop_setup_tests_failure_pattern }}
 
       - name: 'Stop shop'
@@ -862,7 +863,7 @@ jobs:
           output_files: ${{ needs.init.outputs.deprecated_tests_output_files }}
           output_artifact: deprecated-artifacts_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
           coverage_path: ${{ needs.init.outputs.deprecated_tests_coverage_path }}
-          coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
+          coverage_artifact: ${{ needs.init.outputs.deprecated_tests_coverage_prefix }}_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
           failure_pattern: ${{ needs.init.outputs.deprecated_tests_failure_pattern }}
 
       - name: 'Stop shop'
@@ -910,7 +911,7 @@ jobs:
         if: ${{ needs.init.outputs.sonarcloud_internal_project_name != '' }}
         uses: 'OXID-eSales/github-actions/sonarcloud@v1'
         with:
-          coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
+          coverage_artifact: ${{ needs.init.outputs.sonarcloud_coverage_prefix }}_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
           target_branch: ${{ needs.init.outputs.sonarcloud_target_branch }}
           github_ref_name: ${{ github.ref_name }}
           sonarcloud_organization: ${{ needs.init.outputs.sonarcloud_organization }}

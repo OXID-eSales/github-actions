@@ -35,8 +35,8 @@ jobs:
         id: actionlint
         if: ${{ env.ACTIONLINT_ACTION_FIXED == 'true' }}
         uses: raven-actions/actionlint@v1
-        with:
-          flags: '-ignore "property \".+\" is not defined in object type"'
+        # with:
+        #   flags: '-ignore "property \".+\" is not defined in object type"'
 
       - name: actionlint Summary
         if: ${{ always() && env.ACTIONLINT_ACTION_FIXED == 'true' }}

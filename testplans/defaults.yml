@@ -319,7 +319,7 @@ unit_tests:
     # in the workflow to <prefix>_PHP<matrix.php>_MYSQL<matrix.mysql>.
     # Currently, we put all log files across all steps into one artifact per
     # matrix combination.
-    prefix: coverage-reports
+    prefix: &coverage_prefix coverage-reports
 
   # This grep pattern is applied to the generated phpunit log file. If we have
   # a hit matching the pattern below, the step will fail.
@@ -349,7 +349,7 @@ integration_tests:
     prefix: 'integration_artifacts'
   coverage:
     path: ''
-    prefix: 'coverage-reports'
+    prefix: *coverage_prefix
   failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error'
 
 # This step usesd the codeception custom action. Many inputs are similar to the
@@ -402,7 +402,7 @@ codeception_tests:
     # Must math the value of --coverage-xml in 'additional_options'. If empty,
     # nothing will be added to the codeception artifact
     path: 'source/codeception_coverage.xml'
-    prefix: 'coverage-reports'
+    prefix: *coverage_prefix
   failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH'
 
 # The shop setup tests also use codeception but start from the prepared_shop
@@ -443,7 +443,7 @@ shop_setup_tests:
   coverage:
     # No coverage report for shop_setup
     path: ''
-    prefix: 'coverage-reports'
+    prefix: *coverage_prefix
   failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH'
 
 # These deprecated tests use the runtests action. Many options are similar to
@@ -506,7 +506,7 @@ deprecated_tests:
     prefix: 'deprecated_tests_artifacts'
   coverage:
     path: 'source/deprecated_tests_coverage.xml'
-    prefix: 'coverage-reports'
+    prefix: *coverage_prefix
   failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Fatal|Error|DID NOT FINISH'
 
 # Running the sonarcloud scanner on the gathered coverage reports
@@ -519,6 +519,8 @@ sonarcloud:
   # There is only one matrix combination
   max_parallel: 1
   docker_login: *docker_login
+  coverage:
+    prefix: *coverage_prefix
   target_branch: b-8.0.x
   # Sonarcloud settings, get them from https://sonarcloud.io/organizations/oxid-esales/projects
   organization: 'oxid-esales'
@@ -544,7 +546,7 @@ sonarcloud:
 # See docs/actions/start_shop.md and docs/actions/phpphpcs.md for more information.
 phpcs_tests:
   skip: false
-  matrix: *matrix
+  matrix: *matrix_slim
   max_parallel: *max_parallel
   docker_login: *docker_login
   container: *container
