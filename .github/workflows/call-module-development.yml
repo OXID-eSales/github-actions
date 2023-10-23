@@ -408,8 +408,6 @@ jobs:
       fail-fast: false
       max-parallel: ${{ fromJSON(needs.init.outputs.install_shop_max_parallel) }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
-    outputs:
-      installed_shop: ${{ steps.install_shop.outputs.installed_shop }}
     steps:
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v1'
