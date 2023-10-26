@@ -18,7 +18,7 @@ prepare_shop:
         codeception/codeception:^5.0
         codeception/module-asserts:^3.0
         codeception/module-db:^3.0
-        codeception/module-filesystem:^3.04
+        codeception/module-filesystem:^3.0
         codeception/module-webdriver:^3.1
         composer/composer:^2.0
         incenteev/composer-parameter-handler:^v2.1.4
