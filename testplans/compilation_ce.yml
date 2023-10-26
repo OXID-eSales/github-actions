@@ -23,10 +23,10 @@ prepare_shop:
           composer/composer:^2.0
           incenteev/composer-parameter-handler:^v2.1.4
           mikey179/vfsstream:~1.6.8
-          oxid-esales/codeception-modules:dev-b-8.0.x
-          oxid-esales/codeception-page-objects:dev-b-8.0.x
-          oxid-esales/developer-tools:dev-b-8.0.x
-          oxid-esales/oxideshop-ide-helper:dev-b-8.0.x
+          codeception-modules
+          codeception-page-objects
+          developer-tools
+          oxideshop-ide-helper
           phpspec/prophecy-phpunit:^v2.0.1
           phpunit/phpunit:^9.1.1
           squizlabs/php_codesniffer:^3.5.4

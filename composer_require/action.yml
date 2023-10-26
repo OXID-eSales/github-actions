@@ -61,11 +61,11 @@ runs:
         ORGANIZATION=$(echo "${{ inputs.organisation }}" | tr '[:upper:]' '[:lower:]')
         for REPOSITORY in ${REPOSITORIES}; do
           ORG=$(echo "${REPOSITORY}"|sed -e 's|/.*||')
-          if [ -z "${ORG}" ]; then
+          if [[ -z "${ORG}" || "${ORG}" == "${REPOSITORY}" ]]; then
             ORG="${ORGANIZATION}"
           fi
           REF=$(echo "${REPOSITORY}"|sed -e 's|.*:||')
-          if [ -z "${REF}" ]; then
+          if [[ -z "${REF}" || "${REF}" == "${REPOSITORY}" ]]; then
             REF="${REFERENCE}"
           else
             REF=":${REF}"
