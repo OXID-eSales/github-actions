@@ -4,7 +4,7 @@
 prepare_shop:
   git:
     shop_url: https://github.com/OXID-eSales/oxideshop_metapackage_ce.git
-    shop_ref: &git_shop_ref '{{ .Github.RefName }}'
+    shop_ref: &git_shop_ref 'b-8.0'
 
 install_shop:
   git:
