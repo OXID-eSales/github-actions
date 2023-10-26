@@ -7,7 +7,9 @@ prepare_shop:
     shop_ref: &git_shop_ref 'b-8.0'
   composer:
     allow_plugins:
-      repositories: 'oxid-esales/oxideshop-unified-namespace-generator:true'
+      repositories: |
+        oxid-esales/oxideshop-unified-namespace-generator:true
+        oxid-esales/oxideshop-composer-plugin:true
 
 install_shop:
   git:
