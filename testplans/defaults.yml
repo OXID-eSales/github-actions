@@ -116,6 +116,12 @@ global:
   # These defaults are used when running the composer_configure and
   # composer_require actions
   composer: &composer
+    # Set the allow-plugins
+    allow_plugins:
+
+      # Space separated list of repositories
+      repositories: ''
+
     # Enterprise repositories to configure, this action also contains
     # the require part
     configure:
@@ -554,8 +560,8 @@ phpcs_tests:
   cache:
     bucket: *cache_bucket
   # Name of the branch/commit to gather the list of changed files
-  github:
-    ref_name: '{{ .Github.RefName }}'
+  git:
+    ref: '{{ .Github.Ref }}'
   # Name of the test or folder to run
   test: 'source/Internal'
   # Optional: Additional options to pass to phpcs

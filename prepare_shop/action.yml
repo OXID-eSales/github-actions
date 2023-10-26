@@ -99,6 +99,11 @@ inputs:
     required: false
     description: 'Space separated list of extra services to add'
     default: 'selenium-chrome'
+  composer_allow_plugins_repositories:
+    type: string
+    required: false
+    description: 'Space separated list of repository:value pairs to manage allow-plugins'
+    default: ''  
   composer_configure_install:
     type: string
     required: false
@@ -285,6 +290,15 @@ runs:
           echo -e "\033[0;35m###  Logs for $c ###\033[0m"
           docker logs -n 200 $c
         done
+
+    - name: 'Composer allow plugins ${{ inputs.composer_allow_plugins_repositories }}'
+      if: ${{ inputs.composer_allow_plugins_repositories != '' }}
+      uses: 'OXID-eSales/github-actions/composer_allow_plugins@v0'
+      with:
+        container_name: ${{ inputs.container_name }}
+        container_options: ${{ inputs.container_options }}
+        container_method: 'exec'
+        repositories: ${{ inputs.composer_allow_plugins_repositories }}
 
     - name: 'Composer configure and require ${{ inputs.composer_configure_install }}'
       if: ${{ inputs.composer_configure_install != '' }}

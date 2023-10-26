@@ -5,6 +5,9 @@ prepare_shop:
   git:
     shop_url: https://github.com/OXID-eSales/oxideshop_metapackage_ce.git
     shop_ref: &git_shop_ref 'b-8.0'
+  composer:
+    allow_plugins:
+      repositories: 'oxid-esales/oxideshop-unified-namespace-generator:true'
 
 install_shop:
   git:

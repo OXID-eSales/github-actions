@@ -16,10 +16,10 @@ inputs:
     required: false
     description: 'Method to execute the commands inside a container, either "run" or "exec"'
     default: 'exec'
-  github_ref_name:
+  git_ref:
     type: string
     required: false
-    description: 'Name of the branch to check out'
+    description: 'Reference to check out'
     default: 'main'
   test:
     type: string
@@ -53,7 +53,7 @@ runs:
       id: diff
       shell: bash
       run: |
-        git diff --name-only --diff-filter=AM origin/${{ inputs.github_ref_name }} HEAD~1 | grep 'source/Internal/.*\.php$' | while read file; do
+        git diff --name-only --diff-filter=AM ${{ inputs.git_ref }} HEAD~1 | grep 'source/Internal/.*\.php$' | while read file; do
           if [[ -f "$file" ]]; then
             echo "$file"
           fi

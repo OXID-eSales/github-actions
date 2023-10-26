@@ -87,6 +87,7 @@ jobs:
       prepare_shop_add_services: ${{ steps.ltp.outputs.prepare_shop_add_services }}
       prepare_shop_cache_bucket: ${{ steps.ltp.outputs.prepare_shop_cache_bucket }}
       prepare_shop_cache_prefix: ${{ steps.ltp.outputs.prepare_shop_cache_prefix }}
+      prepare_shop_composer_allow_plugins_repositories: ${{ steps.ltp.outputs.prepare_shop_composer_allow_plugins_repositories }}
       prepare_shop_composer_configure_install: ${{ steps.ltp.outputs.prepare_shop_composer_configure_install }}
       prepare_shop_composer_configure_options: ${{ steps.ltp.outputs.prepare_shop_composer_configure_options }}
       prepare_shop_composer_configure_organisation: ${{ steps.ltp.outputs.prepare_shop_composer_configure_organisation }}
@@ -317,7 +318,7 @@ jobs:
       phpcs_tests_container_options: ${{ steps.ltp.outputs.phpcs_tests_container_options }}
       phpcs_tests_docker_login: ${{ steps.ltp.outputs.phpcs_tests_docker_login }}
       phpcs_tests_failure_pattern: ${{ steps.ltp.outputs.phpcs_tests_failure_pattern }}
-      phpcs_tests_github_ref_name: ${{ steps.ltp.outputs.phpcs_tests_github_ref_name }}
+      phpcs_tests_git_ref: ${{ steps.ltp.outputs.phpcs_tests_git_ref }}
       phpcs_tests_logfile_artifact: ${{ steps.ltp.outputs.phpcs_tests_logfile_artifact }}
       phpcs_tests_logfile_prefix: ${{ steps.ltp.outputs.phpcs_tests_logfile_prefix }}
       phpcs_tests_matrix_mysql: ${{ steps.ltp.outputs.phpcs_tests_matrix_mysql }}
@@ -381,14 +382,15 @@ jobs:
           custom_ini_error_reporting: ${{ needs.init.outputs.prepare_shop_custom_ini_error_reporting }}
           custom_ini_xdebug: ${{ needs.init.outputs.prepare_shop_custom_ini_xdebug }}
           add_services: ${{ needs.init.outputs.prepare_shop_add_services }}
+          composer_allow_plugins_repositories: '${{ needs.init.outputs.prepare_shop_composer_allow_plugins_repositories }}'
           composer_configure_organisation: ${{ needs.init.outputs.prepare_shop_composer_configure_organisation}}
-          composer_configure_install: ${{ needs.init.outputs.prepare_shop_composer_configure_install}}
+          composer_configure_install: '${{ needs.init.outputs.prepare_shop_composer_configure_install}}'
           composer_configure_ref: ${{ needs.init.outputs.prepare_shop_composer_configure_ref}}
           composer_configure_options: ${{ needs.init.outputs.prepare_shop_composer_configure_options}}
           composer_configure_update: ${{ needs.init.outputs.prepare_shop_composer_configure_update}}
           composer_configure_update_options: ${{ needs.init.outputs.prepare_shop_composer_configure_update_options}}
           composer_require_organisation: ${{ needs.init.outputs.prepare_shop_composer_require_organisation}}
-          composer_require_install: ${{ needs.init.outputs.prepare_shop_composer_require_install}}
+          composer_require_install: '${{ needs.init.outputs.prepare_shop_composer_require_install}}'
           composer_require_ref: ${{ needs.init.outputs.prepare_shop_composer_require_ref}}
           composer_require_options: ${{ needs.init.outputs.prepare_shop_composer_require_options}}
           composer_require_update: ${{ needs.init.outputs.prepare_shop_composer_require_update}}
@@ -947,7 +949,7 @@ jobs:
           container_name: ${{ needs.init.outputs.phpcs_tests_container_name }}
           container_options: ${{ needs.init.outputs.phpcs_tests_container_options }}
           container_method: ${{ needs.init.outputs.phpcs_tests_container_method }}
-          github_ref_name: ${{ needs.init.outputs.phpcs_tests_github_ref_name }}
+          git_ref: ${{ needs.init.outputs.phpcs_tests_git_ref }}
           test: ${{ needs.init.outputs.phpcs_tests_test }}
           additional_options: ${{ needs.init.outputs.phpcs_tests_additional_options }}
           logfile: phpcs_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_codesniff_log.txt
