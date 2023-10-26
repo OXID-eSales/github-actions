@@ -10,6 +10,10 @@ prepare_shop:
       repositories: >
         oxid-esales/oxideshop-unified-namespace-generator:true
         oxid-esales/oxideshop-composer-plugin:true
+      configure:
+        ref: &dev_ref 'dev-b-8.0'
+      require:
+        ref: *dev_ref
 
 install_shop:
   git:
