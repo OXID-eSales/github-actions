@@ -104,6 +104,7 @@ runs:
   using: "composite"
   steps:
     - name: Locate Console
+      shell: bash
       run: |
         cd source
         OE_CONSOLE=$(find . -iname "oe-console" -type f|head -1|sed -e "s|^$(pwd)/||")
