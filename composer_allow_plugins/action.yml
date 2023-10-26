@@ -50,7 +50,7 @@ runs:
         for REPOSITORY in ${{ inputs.repositories }}; do
           # compensate for repos with _ and config with -
           DASHED_REPO=$(echo "${REPOSITORY}"|tr '_', '-'|sed -e 's|:.*||')
-          VALUE=$(echo "${REPOSITORY}"sed -e 's|.*:||')
+          VALUE=$(echo "${REPOSITORY}"|sed -e 's|.*:||')
           echo -e "\033[0;35m###  configure allow-plugins.${DASHED_REPO} '${VALUE}'' ###\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
