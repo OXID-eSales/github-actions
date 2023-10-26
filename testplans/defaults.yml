@@ -196,8 +196,9 @@ install_shop:
   max_parallel: *max_parallel
   docker_login: *docker_login
   container: *container
-  git_shop_ref: *git_shop_ref
-  git_enterprise_ref: *git_enterprise_ref
+  git:
+    shop_ref: *git_shop_ref
+    enterprise_ref: *git_enterprise_ref
   is_enterprise: *is_enterprise
   cache:
     bucket: *cache_bucket

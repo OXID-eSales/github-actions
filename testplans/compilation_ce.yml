@@ -1,0 +1,18 @@
+# This config depends on the defaults.yml testplan
+# Only diverging settings are defined here
+
+prepare_shop:
+  git:
+    shop_url: https://github.com/OXID-eSales/oxideshop_metapackage_ce.git
+    shop_ref: &git_shop_ref '{{ .Github.RefName }}'
+
+install_shop:
+  git:
+    shop_ref: *git_shop_ref
+
+codeception_tests:
+  # Running on public runners, this should pose no problem
+  max_parallel: &codeception_max_parallel 4
+
+shop_setup_tests:
+  max_parallel: *codeception_max_parallel
