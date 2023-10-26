@@ -402,6 +402,10 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
+      - name: 'List files'
+        run: |
+          find /var/www |sort
+         
   install_shop:
     needs: ['init', 'prepare_shop']
     strategy:
