@@ -52,13 +52,24 @@ runs:
     - name: Require Repositories
       shell: bash
       run: |
+        REPOSITORIES=$(echo -n "${{ inputs.repositories }}"| tr -d '\n')
         if [ -z "${{ inputs.ref }}" ]; then
-          REF=""
+          REFERENCE=""
         else
-          REF=":${{ inputs.ref }}"
+          REFERENCE=":${{ inputs.ref }}"
         fi
-        ORG=$(echo "${{ inputs.organisation }}" | tr '[:upper:]' '[:lower:]')
-        for REPOSITORY in ${{ inputs.repositories }}; do
+        ORGANIZATION=$(echo "${{ inputs.organisation }}" | tr '[:upper:]' '[:lower:]')
+        for REPOSITORY in ${REPOSITORIES}; do
+          ORG=$(echo "${REPOSITORY}"|sed -e 's|/.*||')
+          if [ -z "${ORG}" ]; then
+            ORG="${ORGANIZATION}"
+          fi
+          REF=$(echo "${REPOSITORY}"|sed -e 's|.*:||')
+          if [ -z "${REF}" ]; then
+            REF="${REFERENCE}"
+          else
+            REF=":${REF}"
+          fi
           echo -e "\033[0;35m### Requiring ${ORG}/${REPOSITORY}${REF} with ${{ inputs.options }}\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \

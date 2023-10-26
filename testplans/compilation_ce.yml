@@ -12,7 +12,24 @@ prepare_shop:
         oxid-esales/oxideshop-composer-plugin:true
       configure:
       require:
-        install: 'oxideshop-ce twig-admin-theme apex-theme'
+        install: ^
+          twig-admin-theme
+          apex-theme
+          codeception/codeception:^5.0
+          codeception/module-asserts^3.0
+          codeception/module-db:^3.0
+          codeception/module-filesystem:^3.04
+          codeception/module-webdriver:^3.1
+          composer/composer:^2.0
+          incenteev/composer-parameter-handler:^v2.1.4
+          mikey179/vfsstream:~1.6.8
+          oxid-esales/codeception-modules:dev-b-8.0.x
+          oxid-esales/codeception-page-objects:dev-b-8.0.x
+          oxid-esales/developer-tools:dev-b-8.0.x
+          oxid-esales/oxideshop-ide-helper:dev-b-8.0.x
+          phpspec/prophecy-phpunit:^v2.0.1
+          phpunit/phpunit:^9.1.1
+          squizlabs/php_codesniffer:^3.5.4
 
 install_shop:
   git:
