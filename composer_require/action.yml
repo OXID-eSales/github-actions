@@ -63,12 +63,15 @@ runs:
           ORG=$(echo "${REPOSITORY}"|sed -e 's|/.*||')
           if [[ -z "${ORG}" || "${ORG}" == "${REPOSITORY}" ]]; then
             ORG="${ORGANIZATION}"
+          else
+            REPOSITORY=$(echo "${REPOSITORY}"|sed -e 's|.*/||')
           fi
           REF=$(echo "${REPOSITORY}"|sed -e 's|.*:||')
           if [[ -z "${REF}" || "${REF}" == "${REPOSITORY}" ]]; then
             REF="${REFERENCE}"
           else
             REF=":${REF}"
+            REPOSITORY=$(echo "${REPOSITORY}"|sed -e 's|:.*||')
           fi
           echo -e "\033[0;35m### Requiring ${ORG}/${REPOSITORY}${REF} with ${{ inputs.options }}\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
