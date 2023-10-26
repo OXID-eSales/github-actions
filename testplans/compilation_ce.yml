@@ -12,7 +12,7 @@ prepare_shop:
         oxid-esales/oxideshop-composer-plugin:true
     configure:
     require:
-      install: ^
+      install: >
         twig-admin-theme
         apex-theme
         codeception/codeception:^5.0
