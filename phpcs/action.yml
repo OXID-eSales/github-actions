@@ -53,12 +53,14 @@ runs:
       id: diff
       shell: bash
       run: |
+        cd source
+        git status
         git diff --name-only --diff-filter=AM ${{ inputs.git_ref }} HEAD~1 | grep 'source/Internal/.*\.php$' | while read file; do
           if [[ -f "$file" ]]; then
             echo "$file"
           fi
-        done >source/changed-files.txt || true
-        if [[ -f "source/changed-files.txt" && -s "source/changed-files.txt" ]]; then
+        done >changed-files.txt || true
+        if [[ -f "changed-files.txt" && -s "changed-files.txt" ]]; then
           echo "skip=false" >> "$GITHUB_OUTPUT"
         else
           echo "skip=true" >> "$GITHUB_OUTPUT"

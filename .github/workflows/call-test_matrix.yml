@@ -404,7 +404,7 @@ jobs:
 
       - name: 'List files'
         run: |
-          find /var/www |sort
+          find . |sort
          
   install_shop:
     needs: ['init', 'prepare_shop']
