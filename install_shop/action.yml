@@ -103,13 +103,19 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Locate Console
+      run: |
+        cd source
+        OE_CONSOLE=$(find . -iname "oe-console" -type f|head -1|sed -e "s|^$(pwd)/||")
+        echo "OE_CONSOLE=${OE_CONSOLE}"|tee -a "${GITHUB_ENV}"
+
     - name: Run Install Shop
       shell: bash
       run: |
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
-          bin/oe-console oe:setup:shop \
+          ${{ env.OE_CONSOLE }} oe:setup:shop \
           --db-host mysql \
           --db-port 3306 \
           --db-name example \
