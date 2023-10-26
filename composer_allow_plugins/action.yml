@@ -47,7 +47,8 @@ runs:
     - name: Configure allow-plugins
       shell: bash
       run: |
-        for REPOSITORY in ${{ inputs.repositories }}; do
+        REPOSITORIES=$(echo -n "${{ inputs.repositories }}"| tr -d '\n')
+        for REPOSITORY in ${REPOSITORIES}; do
           # compensate for repos with _ and config with -
           DASHED_REPO=$(echo "${REPOSITORY}"|tr '_', '-'|sed -e 's|:.*||')
           VALUE=$(echo "${REPOSITORY}"|sed -e 's|.*:||')
