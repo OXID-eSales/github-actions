@@ -57,7 +57,7 @@ runs:
           if [[ -f "$file" ]]; then
             echo "$file"
           fi
-        done >changed-files.txt || true
+        done >source/changed-files.txt || true
         if [[ -f "source/changed-files.txt" && -s "source/changed-files.txt" ]]; then
           echo "skip=false" >> "$GITHUB_OUTPUT"
         else

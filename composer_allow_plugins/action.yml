@@ -55,7 +55,7 @@ runs:
           docker-compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
             ${{ inputs.container_name}} \
-            composer config allow-plugins.${DASHED_REPO} '${VALUE}'"
+            composer config allow-plugins.${DASHED_REPO} "${VALUE}"
         done
 
         if [ '${{ inputs.update }}' == 'true' ]; then
