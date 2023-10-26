@@ -15,6 +15,14 @@ install_shop:
   git:
     shop_ref: *git_shop_ref
 
+unit_tests:
+  configuration: &phpunit_configuration 'vendor/oxid-esales/oxideshop-ce/phpunit.xml'
+  additional_options: '--bootstrap vendor/oxid-esales/oxideshop-ce/tests/bootstrap.php tests --coverage-clover=/var/www/unit_coverage.xml'
+
+integration_tests:
+  configuration: *phpunit_configuration
+  additional_options: '--bootstrap vendor/oxid-esales/oxideshop-ce/tests/bootstrap.php'
+
 codeception_tests:
   # Running on public runners, this should pose no problem
   max_parallel: &codeception_max_parallel 4
