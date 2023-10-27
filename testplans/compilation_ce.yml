@@ -39,14 +39,18 @@ install_shop:
 unit_tests:
   configuration: &phpunit_configuration 'vendor/oxid-esales/oxideshop-ce/phpunit.xml'
   additional_options: '--bootstrap vendor/oxid-esales/oxideshop-ce/tests/bootstrap.php tests --coverage-clover=/var/www/unit_coverage.xml'
+  test: 'vendor/oxid-esales/oxideshop-ce/tests/Unit'
 
 integration_tests:
   configuration: *phpunit_configuration
   additional_options: '--bootstrap vendor/oxid-esales/oxideshop-ce/tests/bootstrap.php'
+  test: 'vendor/oxid-esales/oxideshop-ce/tests/Integration'
 
 codeception_tests:
   # Running on public runners, this should pose no problem
   max_parallel: &codeception_max_parallel 4
+  configuration: &codeception_configuration 'vendor/oxid-esales/oxideshop-ce/tests/codeception.yml'
 
 shop_setup_tests:
   max_parallel: *codeception_max_parallel
+  configuration: *codeception_configuration
