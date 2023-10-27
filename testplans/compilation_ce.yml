@@ -60,4 +60,4 @@ sonarcloud:
 
 phpcs_tests:
   git:
-    ref: '{{ .Github.Ref }}'
+    ref: 'refs/heads/b-8.0'
