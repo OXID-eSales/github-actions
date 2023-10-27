@@ -38,7 +38,7 @@ install_shop:
 
 unit_tests:
   configuration: &phpunit_configuration 'vendor/oxid-esales/oxideshop-ce/phpunit.xml'
-  additional_options: '--bootstrap vendor/oxid-esales/oxideshop-ce/tests/bootstrap.php tests --coverage-clover=/var/www/unit_coverage.xml'
+  additional_options: '--bootstrap vendor/oxid-esales/oxideshop-ce/tests/bootstrap.php vendor/oxid-esales/oxideshop-ce/tests --coverage-clover=/var/www/unit_coverage.xml'
   test: 'vendor/oxid-esales/oxideshop-ce/tests/Unit'
 
 integration_tests:
@@ -54,3 +54,10 @@ codeception_tests:
 shop_setup_tests:
   max_parallel: *codeception_max_parallel
   configuration: *codeception_configuration
+
+sonarcloud:
+  skip: true
+
+phpcs_tests:
+  git:
+    ref: '{{ .Github.Ref }}'
