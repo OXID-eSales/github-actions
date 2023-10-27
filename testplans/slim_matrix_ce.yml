@@ -27,7 +27,6 @@ integration_tests:
 
 codeception_tests:
   matrix: *matrix
-  additional_options: '--skip-group flow_theme'
   coverage:
     path: ''
 

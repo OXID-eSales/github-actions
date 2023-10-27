@@ -384,12 +384,12 @@ codeception_tests:
   build: true
 
   # Name of the codeception test suite to run
-  suite: 'acceptance,acceptanceAdmin'
+  suite: 'Acceptance'
 
   # Name of the test to run
   test: ''
   # Additional options to pass to codeception
-  additional_options: '--coverage-xml=/var/www/codeception_coverage.xml --skip-group flow_theme'
+  additional_options: '--coverage-xml=/var/www/codeception_coverage.xml'
 
   logfile:
     prefix: 'codeception'
@@ -431,7 +431,7 @@ shop_setup_tests:
   composer: *composer
   configuration: 'tests/codeception.yml'
   build: true
-  suite: 'acceptanceSetup'
+  suite: 'AcceptanceSetup'
   test: ''
   additional_options: ''
   logfile:
