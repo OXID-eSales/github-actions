@@ -235,7 +235,7 @@ codeception_tests:
   # Whether to run the build step before running codeception or not
   build: true
   # Name of the codeception test suite to run
-  suite: 'acceptance,acceptanceAdmin'
+  suite: 'Acceptance'
   # Name of the test to run
   test: ''
   # Additional options to pass to codeception
@@ -285,7 +285,7 @@ shop_setup_tests:
   # Whether to run the build step before running codeception or not
   build: true
   # Name of the codeception test suite to run
-  suite: 'acceptanceSetup'
+  suite: 'AcceptanceSetup'
   # Name of the test to run
   test: ''
   # Additional options to pass to codeception
