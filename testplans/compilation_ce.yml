@@ -28,8 +28,8 @@ prepare_shop:
         developer-tools
         oxideshop-ide-helper
         phpspec/prophecy-phpunit:^v2.0.1
-        phpunit/php-file-iterator:^3.0.5
-        phpunit/phpunit:^9.1.1
+        phpunit/php-file-iterator:^4.0
+        phpunit/phpunit:^10.0
         squizlabs/php_codesniffer:^3.5.4
 
 install_shop:
