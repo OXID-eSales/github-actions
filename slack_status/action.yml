@@ -59,7 +59,6 @@ runs:
           { \"type\": \"mrkdwn\", \"text\": \"${NAME}: ${EMOJI[SNUM]} ${STATUS[SNUM]}\"}"
           done
           if [ -n "${PAYLOAD}" ]; then
-            PAYLOAD=$(cat <<EOF
             PAYLOAD=$( echo -e "              {\"type\": \"divider\"},\n              { \"type\": \"context\",\n                \"elements\": [${PAYLOAD:1}\n                ]\n              },")
         }
 
