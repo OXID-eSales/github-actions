@@ -8,6 +8,6 @@ codeception_tests:
 shop_setup_tests:
   max_parallel: *codeception_max_parallel
 
-phpcs_test:
+phpcs_tests:
   # Check all files in the full check
   diff_only: false
