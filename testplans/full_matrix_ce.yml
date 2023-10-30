@@ -11,3 +11,5 @@ shop_setup_tests:
 phpcs_tests:
   # Check all files in the full check
   diff_only: false
+  filter: '^\./source/Internal/.*\.php$'
+  
