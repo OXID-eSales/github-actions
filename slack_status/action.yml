@@ -56,9 +56,20 @@ runs:
               OVERALL_STATUS=$SNUM
               echo -e "\033[0;35m### changed overall job status to ${OVERALL_STATUS} \033[0m"
             fi
-            PAYLOAD="${JOB_PAYLOAD},
+            PAYLOAD="${PAYLOAD},
           { \"type\": \"mrkdwn\", \"text\": \"${NAME}: ${EMOJI[SNUM]} ${STATUS[SNUM]}\"}"
           done
+          if [ -n "${PAYLOAD}" ]; then
+            PAYLOAD=$(cat <<EOF
+              {
+              "type": "divider"
+              },
+              { "type": "context",
+                "elements": [${PAYLOAD:1}
+                ]
+              },
+        EOF
+            )
         }
 
         STATUS=(Skipped Success Cancelled Failure)
@@ -97,26 +108,11 @@ runs:
                 "elements": [${SUMMARY_PAYLOAD:1}
                 ]
               },
+        ${INSTALL_PAYLOAD}
+        ${TEST_PAYLOAD}
+        ${REPORT_PAYLOAD}
               {
               "type": "divider"
-              },
-              { "type": "section",
-                "fields": [${INSTALL_PAYLOAD:1}
-                ]
-              },
-              {
-              "type": "divider"
-              },
-              { "type": "section",
-                "fields": [${TEST_PAYLOAD:1}
-                ]
-              },
-              {
-              "type": "divider"
-              },
-              { "type": "section",
-                "fields": [${REPORT_PAYLOAD:1}
-                ]
               }
             ]
           }
