@@ -503,7 +503,7 @@ deprecated_tests:
   additional_options: '--coverage-clover=/var/www/deprecated_tests_coverage.xml'
   logfile:
     prefix: 'deprecated_tests'
-    artifact: 'phpunit-logs'
+    artifact: 'logs'
   # phpunit output and test settings
   output:
     files: |

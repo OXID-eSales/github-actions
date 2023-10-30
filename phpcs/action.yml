@@ -74,6 +74,11 @@ runs:
         else
           echo "skip=true" >> "$GITHUB_OUTPUT"
         fi
+        FILES=""
+        for FILE in $(cat changed-files.txt); do
+          FILES="${FILES} ${FILE}"
+        done
+        echo "files=${FILES}" >>"${GITHUB_OUTPUT}"
 
     - name: Run PHP_CS check
       shell: bash
@@ -88,7 +93,7 @@ runs:
           ${{ inputs.container_name}} \
           php vendor/bin/phpcs \
             ${{ inputs.additional_options }} \
-            ${{ inputs.test }} \
+            ${{ steps.diff.outputs.files }} \
           | tee "${{ inputs.logfile }}" 2>&1 || true
 
     - name: Upload Log

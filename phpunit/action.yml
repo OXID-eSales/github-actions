@@ -114,6 +114,7 @@ runs:
     - name: Check results
       shell: bash
       run: |
+      
         PURPLE=$(echo -e "\033[0;31m")
         NOCOLOR=$(echo -e "\033[0m")
         if [ ! -s "${{ inputs.logfile }}" ]; then
