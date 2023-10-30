@@ -11,11 +11,14 @@ Options to pass to the container start.
 **container_method:** *not required*, *default*: 'exec'  
 Whether we use exec to run the command in the existing php container or run to spin up a new one.
 
-**github_ref_name:** *not required*, *default:* 'main'  
-Reference for comparing with the base reference to get a list of changed files.
+**diff_only:** *not required*, *default:*  true
+Check only the files changed between the actual ref and the previous commit.
 
-**test:** *not required*, *default:*  source/Internal
-Name of the test or folder to run.
+**git_ref:** *not required*, *default:* 'main'  
+Reference for comparing with the base reference to get a list of changed files. Use ${{ github.ref }} to check files changed in your PR/Commit.
+
+**filter:** *not required*, *default:*  '\.php$'
+Filter the file names against this regex.
 
 **additional_options:** *not required*, *default:*  '-q --standard=PSR12'  
 Optional: Additional options to pass to phpcs. Example: "-q --standard=PSR12".

@@ -16,16 +16,21 @@ inputs:
     required: false
     description: 'Method to execute the commands inside a container, either "run" or "exec"'
     default: 'exec'
+  diff_only:
+    type: boolean
+    required: false
+    description: 'Run phpcs only on changed files between this and the last commit'
+    default: true
   git_ref:
     type: string
     required: false
     description: 'Reference to check out'
     default: 'main'
-  test:
+  filter:
     type: string
     required: false
-    description: 'Name of the test or folder to run'
-    default: 'source/Internal'
+    description: 'Filter the file names against this regex'
+    default: '\.php$'
   additional_options:
     type: string
     required: false
@@ -55,11 +60,15 @@ runs:
       run: |
         cd source
         git status
-        git diff --name-only --diff-filter=AM ${{ inputs.git_ref }} HEAD~1 | grep 'source/Internal/.*\.php$' | while read file; do
-          if [[ -f "$file" ]]; then
-            echo "$file"
-          fi
-        done >changed-files.txt || true
+        if [ "${{ inputs.diff_only }}" == "true" ]; then
+          git diff --name-only --diff-filter=AM ${{ inputs.git_ref }} HEAD~1 | grep '${{ inputs.filter }}' | while read file; do
+            if [[ -f "$file" ]]; then
+              echo "$file"
+            fi
+          done >changed-files.txt || true
+        else
+          find . -type f|grep'${{ inputs.filter }}' >changed-files.txt
+        fi
         if [[ -f "changed-files.txt" && -s "changed-files.txt" ]]; then
           echo "skip=false" >> "$GITHUB_OUTPUT"
         else
@@ -83,7 +92,7 @@ runs:
           | tee "${{ inputs.logfile }}" 2>&1 || true
 
     - name: Upload Log
-      if: always()
+      if: ${{ always() && steps.diff.outputs.skip == 'false' }}
       uses: actions/upload-artifact@v3
       with:
         name: ${{ inputs.logfile_artifact }}

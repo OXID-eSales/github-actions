@@ -562,8 +562,10 @@ phpcs_tests:
   # Name of the branch/commit to gather the list of changed files
   git:
     ref: '{{ .Github.Ref }}'
-  # Name of the test or folder to run
-  test: 'source/Internal'
+  # Should we use git diff or check all files
+  diff_only: true
+  # Filter the file n ames against this regex
+  filter: '\.php$'
   # Optional: Additional options to pass to phpcs
   additional_options: '-vp --standard=PSR12'
   logfile:

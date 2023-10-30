@@ -317,7 +317,9 @@ jobs:
       phpcs_tests_container_name: ${{ steps.ltp.outputs.phpcs_tests_container_name }}
       phpcs_tests_container_options: ${{ steps.ltp.outputs.phpcs_tests_container_options }}
       phpcs_tests_docker_login: ${{ steps.ltp.outputs.phpcs_tests_docker_login }}
+      phpcs_tests_diff_only: ${{ steps.ltp.outputs.phpcs_tests_diff_only }}
       phpcs_tests_failure_pattern: ${{ steps.ltp.outputs.phpcs_tests_failure_pattern }}
+      phpcs_tests_filter: ${{ steps.ltp.outputs.phpcs_tests_filter }}
       phpcs_tests_git_ref: ${{ steps.ltp.outputs.phpcs_tests_git_ref }}
       phpcs_tests_logfile_artifact: ${{ steps.ltp.outputs.phpcs_tests_logfile_artifact }}
       phpcs_tests_logfile_prefix: ${{ steps.ltp.outputs.phpcs_tests_logfile_prefix }}
@@ -326,7 +328,6 @@ jobs:
       phpcs_tests_matrix_template_engine: ${{ steps.ltp.outputs.phpcs_tests_matrix_template_engine }}
       phpcs_tests_max_parallel: ${{ steps.ltp.outputs.phpcs_tests_max_parallel }}
       phpcs_tests_skip: ${{ steps.ltp.outputs.phpcs_tests_skip }}
-      phpcs_tests_test: ${{ steps.ltp.outputs.phpcs_tests_test }}
       # styles variables
       styles_cache_bucket: ${{ steps.ltp.outputs.styles_cache_bucket }}
       styles_container_method: ${{ steps.ltp.outputs.styles_container_method }}
@@ -954,7 +955,8 @@ jobs:
           container_options: ${{ needs.init.outputs.phpcs_tests_container_options }}
           container_method: ${{ needs.init.outputs.phpcs_tests_container_method }}
           git_ref: ${{ needs.init.outputs.phpcs_tests_git_ref }}
-          test: ${{ needs.init.outputs.phpcs_tests_test }}
+          diff_only: ${{ needs.init.outputs.phpcs_tests_diff_only}}
+          filter: ${{ needs.init.outputs.phpcs_tests_filter}}
           additional_options: ${{ needs.init.outputs.phpcs_tests_additional_options }}
           logfile: phpcs_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_codesniff_log.txt
           logfile_artifact: ${{ needs.init.outputs.phpcs_tests_logfile_artifact }}
