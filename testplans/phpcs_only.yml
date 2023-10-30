@@ -9,12 +9,12 @@ integration_tests:
 
 codeception_tests:
   skip: true
-  # Running on public runners, this should pose no problem
-  max_parallel: &codeception_max_parallel 4
 
 shop_setup_tests:
   skip: true
-  max_parallel: *codeception_max_parallel
+
+deprecated_tests:
+  skip: true
 
 sonarcloud:
   skip: true
@@ -23,4 +23,3 @@ phpcs_tests:
   # Check all files in the full check
   diff_only: false
   filter: '^\./source/Internal/.*\.php$'
-  
