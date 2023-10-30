@@ -36,7 +36,6 @@ runs:
     - name: Prepare payload
       shell: bash
       run: |
-
         function generate_list() {
           local PAYLOAD=""
           local JOB=""
@@ -61,15 +60,7 @@ runs:
           done
           if [ -n "${PAYLOAD}" ]; then
             PAYLOAD=$(cat <<EOF
-              {
-              "type": "divider"
-              },
-              { "type": "context",
-                "elements": [${PAYLOAD:1}
-                ]
-              },
-        EOF
-            )
+            PAYLOAD=$( echo -e "              {\"type\": \"divider\"},\n              { \"type\": \"context\",\n                \"elements\": [${PAYLOAD:1}\n                ]\n              },")
         }
 
         STATUS=(Skipped Success Cancelled Failure)
