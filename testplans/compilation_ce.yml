@@ -69,9 +69,13 @@ shop_setup_tests:
   max_parallel: *codeception_max_parallel
   configuration: *codeception_configuration
 
+deprecated_tests:
+  matrix: *matrix
+
 sonarcloud:
   skip: true
 
 phpcs_tests:
+  matrix: *matrix
   git:
     ref: 'refs/heads/b-8.0'
