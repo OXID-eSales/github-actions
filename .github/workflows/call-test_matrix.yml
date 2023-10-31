@@ -406,7 +406,7 @@ jobs:
       - name: 'List files'
         run: |
           find . |sort
-         
+
   install_shop:
     needs: ['init', 'prepare_shop']
     strategy:

@@ -103,7 +103,7 @@ inputs:
     type: string
     required: false
     description: 'Space separated list of repository:value pairs to manage allow-plugins'
-    default: ''  
+    default: ''
   composer_configure_install:
     type: string
     required: false

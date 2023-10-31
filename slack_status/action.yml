@@ -118,8 +118,7 @@ runs:
 EOF
         cat payload.yaml
 
-      # Workaround for https://github.com/actions/runner/issues/665
-      env:
+      env: # Workaround for https://github.com/actions/runner/issues/665
         INPUT_SUMMARY_LIST: ${{ inputs.summary_list }}
         INPUT_INSTALL_LIST: ${{ inputs.install_list }}
         INPUT_TEST_LIST: ${{ inputs.test_list }}
