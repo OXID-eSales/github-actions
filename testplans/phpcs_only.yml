@@ -1,6 +1,17 @@
 # This config depends on the defaults.yml testplan
 # Only diverging settings are defined here
 
+prepare_shop:
+  matrix: & matrix
+    php: '["8.2"]'
+    mysql: '["8.0"]'
+
+install_shop:
+  matrix: *matrix
+
+install_module:
+  matrix: *matrix
+
 unit_tests:
   skip: true
 

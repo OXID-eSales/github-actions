@@ -37,7 +37,6 @@ runs:
       shell: bash
       run: |
         function generate_list() {
-          local PAYLOAD=""
           local JOB=""
           local SNUM=3
           local LEFT=""
@@ -100,13 +99,7 @@ runs:
                     "text": "${EMOJI[OVERALL_STATUS]} ${INPUT_TITLE} ${STATUS[OVERALL_STATUS]}"
                   }
               },
-              {
-              "type": "divider"
-              },
-              { "type": "context",
-                "elements": [${SUMMARY_PAYLOAD:1}
-                ]
-              },
+        ${SUMMARY_PAYLOAD}
         ${INSTALL_PAYLOAD}
         ${TEST_PAYLOAD}
         ${REPORT_PAYLOAD}
