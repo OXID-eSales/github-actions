@@ -40,7 +40,7 @@ install_shop:
 
 unit_tests:
   configuration: &phpunit_configuration 'vendor/oxid-esales/oxideshop-ce/phpunit.xml'
-  # yamllint disable-line rule: line-length
+  # yamllint disable-line rule:line-length
   additional_options: '--bootstrap vendor/oxid-esales/oxideshop-ce/tests/bootstrap.php vendor/oxid-esales/oxideshop-ce/tests --coverage-clover=/var/www/unit_coverage.xml'
   test: 'vendor/oxid-esales/oxideshop-ce/tests/Unit'
 
