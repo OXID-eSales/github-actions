@@ -30,6 +30,16 @@ inputs:
     required: false
     description: 'Options to pass along to composer when running composer update'
     default: '--no-interaction'
+  dumpautoload:
+    type: boolean
+    required: false
+    description: 'Run composer dumpautoload after installing all repos'
+    default: true
+  dumpautoload_options:
+    type: string
+    required: false
+    description: 'Options to pass along to composer when running composer dumpautoload'
+    default: '--dev'
   container_name:
     type: string
     required: false
@@ -79,6 +89,13 @@ runs:
             ${{ inputs.container_name}} \
             composer require "${ORG}/${REPOSITORY}${REF}" ${{ inputs.options }}
         done
+        if [ '${{ inputs.dumpautoload }}' == 'true' ]; then
+          echo -e "\033[0;35m### Running composer dumpautoload with ${{ inputs.dumpautoload_options }}\033[0m"
+          docker-compose ${{ inputs.container_method }} -T \
+            ${{ inputs.container_options }} \
+            ${{ inputs.container_name}} \
+            composer dumpautoload ${{ inputs.dumpautoload_options }}
+        fi
         if [ '${{ inputs.update }}' == 'true' ]; then
           echo -e "\033[0;35m### Running composer update with ${{ inputs.update_options }}\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
