@@ -35,7 +35,7 @@ runs:
   steps:
     - name: Prepare payload
       shell: bash
-      run: prepare_payload.sh
+      run: slack_status/prepare_payload.sh
       # Workaround for https://github.com/actions/runner/issues/665
       env:
         INPUT_SUMMARY_LIST: ${{ inputs.summary_list }}
