@@ -36,6 +36,14 @@ runs:
     - name: Prepare payload
       shell: bash
       run: prepare_payload.sh
+      # Workaround for https://github.com/actions/runner/issues/665
+      env:
+        INPUT_SUMMARY_LIST: ${{ inputs.summary_list }}
+        INPUT_INSTALL_LIST: ${{ inputs.install_list }}
+        INPUT_TEST_LIST: ${{ inputs.test_list }}
+        INPUT_REPORT_LIST: ${{ inputs.report_list }}
+        INPUT_TITLE: ${{ inputs.title }}
+
 
     - name: Send custom JSON data to Slack workflow
       uses: slackapi/slack-github-action@v1
