@@ -2,7 +2,7 @@
 # Only diverging settings are defined here
 
 prepare_shop:
-  matrix: & matrix
+  matrix: &matrix
     php: '["8.2"]'
     mysql: '["8.0"]'
 
