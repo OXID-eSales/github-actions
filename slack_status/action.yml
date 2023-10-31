@@ -51,10 +51,10 @@ runs:
             local S=$(echo ${JOB}|sed -e 's|.*%||')
             if [ -z "${2}" ]; then
                 case ${S} in
-                skipped) STATUS=0 ;;
-                success) STATUS=1 ;;
-                cancelled) STATUS=2 ;;
-                *) STATUS=3 ;;
+                skipped) SNUM=0 ;;
+                success) SNUM=1 ;;
+                sancelled) SNUM=2 ;;
+                *) SNUM=3 ;;
                 esac
                 echo -e "\033[0;35m### job '${NAME}' status '${S}' (${SNUM}) \033[0m"
                 if [ ${SNUM} -gt ${OVERALL_STATUS} ]; then
