@@ -78,5 +78,5 @@
               }
             ]
           }
-        EOF
+EOF
         cat payload.yaml
