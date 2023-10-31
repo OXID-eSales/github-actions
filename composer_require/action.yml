@@ -34,7 +34,7 @@ inputs:
     type: boolean
     required: false
     description: 'Run composer dumpautoload after installing all repos'
-    default: true
+    default: false
   dumpautoload_options:
     type: string
     required: false
