@@ -39,7 +39,7 @@ inputs:
     type: string
     required: false
     description: 'Options to pass along to composer when running composer dumpautoload'
-    default: '--dev -d vendor/oxid-esales/oxideshop-ce'
+    default: '--dev'
   container_name:
     type: string
     required: false
