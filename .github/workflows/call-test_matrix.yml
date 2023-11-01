@@ -919,7 +919,7 @@ jobs:
           target_branch: ${{ needs.init.outputs.sonarcloud_target_branch }}
           github_ref_name: ${{ github.ref_name }}
           sonarcloud_organization: ${{ needs.init.outputs.sonarcloud_organization }}
-          sonarcloud_project_key: ${{ needs.init.outputs.sonarcloud_project_key }}
+          sonarcloud_project_key: ${{ needs.init.outputs.sonarcloud_internal_project_key }}
           sonarcloud_project_name: ${{ needs.init.outputs.sonarcloud_internal_project_name }}
           sonarcloud_parameters: ${{ needs.init.outputs.sonarcloud_internal_parameters }}
           sonar_token: ${{ secrets.SONAR_TOKEN }}
