@@ -7,7 +7,7 @@ prepare_shop:
       install: 'testing_library'
       update_options: '--no-interaction --no-dev'
     require:
-      options: '--with-all-dependencies'
+      options: '--no-update'
       update_options: '--no-interaction --no-dev'
 unit_tests:
   skip: true
