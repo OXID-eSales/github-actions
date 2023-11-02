@@ -5,10 +5,9 @@ prepare_shop:
   composer:
     configure:
       install: 'testing_library'
-      options: '--no-dev'
       update_options: '--no-interaction --no-dev'
     require:
-      options: '--with-all-dependencies --no-dev'
+      options: '--with-all-dependencies'
       update_options: '--no-interaction --no-dev'
 unit_tests:
   skip: true
