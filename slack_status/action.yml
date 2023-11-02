@@ -14,7 +14,17 @@ inputs:
     required: false
     description: 'Multiple lines with Name and URL separated by a %'
     default: ''
-  job_list:
+  install_list:
+    type: string
+    required: false
+    description: 'Name of the install job and its outcome or result separated by a %'
+    default: ''
+  test_list:
+    type: string
+    required: false
+    description: 'Name of the job and its outcome or result separated by a %'
+    default: ''
+  report_list:
     type: string
     required: false
     description: 'Name of the job and its outcome or result separated by a %'
@@ -26,37 +36,59 @@ runs:
     - name: Prepare payload
       shell: bash
       run: |
+        function generate_list() {
+          local JOB=""
+          local SNUM=3
+          local LEFT=""
+          local RIGHT=""
+          if [ -n "${2}" ]; then
+            LEFT="<"
+            RIGHT=">"
+          fi
+          PAYLOAD=""
+          for JOB in ${1}; do
+            local NAME=$(echo ${JOB}|sed -e 's|%.*||')
+            local S=$(echo ${JOB}|sed -e 's|.*%||')
+            if [ -z "${2}" ]; then
+                case ${S} in
+                skipped) SNUM=0 ;;
+                success) SNUM=1 ;;
+                sancelled) SNUM=2 ;;
+                *) SNUM=3 ;;
+                esac
+                echo -e "\033[0;35m### job '${NAME}' status '${S}' (${SNUM}) \033[0m"
+                if [ ${SNUM} -gt ${OVERALL_STATUS} ]; then
+                OVERALL_STATUS=$SNUM
+                echo -e "\033[0;35m### changed overall job status to ${OVERALL_STATUS} \033[0m"
+                fi
+                PAYLOAD="${PAYLOAD},
+          { \"type\": \"mrkdwn\", \"text\": \"${NAME}: ${EMOJI[SNUM]} ${STATUS[SNUM]}\"}"
+            else
+                PAYLOAD="${PAYLOAD},
+          { \"type\": \"mrkdwn\", \"text\": \"*${NAME}:* <${S}>\\n\" }"
+            fi
+          done
+          if [ -n "${PAYLOAD}" ]; then
+            PAYLOAD="              {\"type\": \"divider\"},
+              { \"type\": \"context\",
+                \"elements\": [${PAYLOAD:1}
+                ]
+              },"
+          fi
+        }
+
         STATUS=(Skipped Success Cancelled Failure)
         EMOJI=(':white_circle:' ':white_check_mark:' ':black_circle:' ':x:')
         OVERALL_STATUS=0
-        SUMMARY_LIST=$(echo "${{ inputs.summary_list }}"|tr '\n' ' ')
-        SUMMARY_PAYLOAD=""
-        for SUMMARY in ${SUMMARY_LIST}; do
-          SUMMARY_NAME=$(echo ${SUMMARY}|sed -e 's|%.*||')
-          SUMMARY_URL=$(echo ${SUMMARY}|sed -e 's|.*%||')
-          echo -e "\033[0;35m### summary '${SUMMARY_NAME}' url '${SUMMARY_URL}' \033[0m"
-          SUMMARY_PAYLOAD="${SUMMARY_PAYLOAD},
-        { \"type\": \"mrkdwn\", \"text\": \"*${SUMMARY_NAME}:* <${SUMMARY_URL}>\\n\" }"
-        done
-        JOB_LIST=$(echo "${{ inputs.job_list }}"|tr '\n' ' ')
-        JOB_PAYLOAD=""
-        for JOB in ${JOB_LIST}; do
-          JOB_NAME=$(echo ${JOB}|sed -e 's|%.*||')
-          J=$(echo ${JOB}|sed -e 's|.*%||')
-          case $J in
-            skipped) JOB_STATUS=0 ;;
-            success) JOB_STATUS=1 ;;
-            cancelled) JOB_STATUS=2 ;;
-            *) JOB_STATUS=3 ;;
-          esac
-          echo -e "\033[0;35m### job '${JOB_NAME}' status '${J}' (${JOB_STATUS}) \033[0m"
-          if [ ${JOB_STATUS} -gt ${OVERALL_STATUS} ]; then
-            OVERALL_STATUS=$JOB_STATUS
-            echo -e "\033[0;35m### changed overall job status to ${OVERALL_STATUS} \033[0m"
-          fi
-          JOB_PAYLOAD="${JOB_PAYLOAD},
-        { \"type\": \"mrkdwn\", \"text\": \"${JOB_NAME}: ${EMOJI[JOB_STATUS]} ${STATUS[JOB_STATUS]}\"}"
-        done
+        generate_list "$(echo "${INPUT_SUMMARY_LIST}"|tr '\n' ' ')" true
+        SUMMARY_PAYLOAD="${PAYLOAD}"
+        generate_list "$(echo "${INPUT_INSTALL_LIST}"|tr '\n' ' ')"
+        INSTALL_PAYLOAD="${PAYLOAD}"
+        generate_list "$(echo "${INPUT_TEST_LIST}"|tr '\n' ' ')"
+        TEST_PAYLOAD="${PAYLOAD}"
+        generate_list "$(echo "${INPUT_REPORT_LIST}"|tr '\n' ' ')"
+        REPORT_PAYLOAD="${PAYLOAD}"
+
         cat >'payload.yaml' <<EOF
           {
             "blocks": [
@@ -64,27 +96,29 @@ runs:
                 "text":
                   { "type": "plain_text",
                     "emoji": true,
-                    "text": "${EMOJI[OVERALL_STATUS]} ${{ inputs.title }} ${STATUS[OVERALL_STATUS]}"
+                    "text": "${EMOJI[OVERALL_STATUS]} ${INPUT_TITLE} ${STATUS[OVERALL_STATUS]}"
                   }
               },
+        ${SUMMARY_PAYLOAD}
+        ${INSTALL_PAYLOAD}
+        ${TEST_PAYLOAD}
+        ${REPORT_PAYLOAD}
               {
               "type": "divider"
-              },
-              { "type": "context",
-                "elements": [${SUMMARY_PAYLOAD:1}
-                ]
-              },
-              {
-              "type": "divider"
-              },
-              { "type": "section",
-                "fields": [${JOB_PAYLOAD:1}
-                ]
               }
             ]
           }
         EOF
         cat payload.yaml
+
+      env:
+        # Workaround for https://github.com/actions/runner/issues/665
+        INPUT_SUMMARY_LIST: ${{ inputs.summary_list }}
+        INPUT_INSTALL_LIST: ${{ inputs.install_list }}
+        INPUT_TEST_LIST: ${{ inputs.test_list }}
+        INPUT_REPORT_LIST: ${{ inputs.report_list }}
+        INPUT_TITLE: ${{ inputs.title }}
+
 
     - name: Send custom JSON data to Slack workflow
       uses: slackapi/slack-github-action@v1

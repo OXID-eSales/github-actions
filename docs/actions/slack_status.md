@@ -13,7 +13,17 @@ Title for the message, an emoji in front and the overall status at the end will 
 **summary_list:** *not required*, *default:* ''  
 A list of short captions (without spaces) separated from an URL by a %. These will be printed directly below the title
 
-**job_list:** *not required*, *default:* ''  
+**install_list:** *not required*, *default:* ''  
+A list of short job names (without spaces) separated from the jobs result by a %. These will be printed in two columns below
+the summary. Use either ${{ steps.step_name.outcome }} for the results of other steps within the same job or ${{ needs.job_name.result }}
+for the results of another job. Don't forget to add that job to "needs" for the current one.
+
+**test_list:** *not required*, *default:* ''  
+A list of short job names (without spaces) separated from the jobs result by a %. These will be printed in two columns below
+the summary. Use either ${{ steps.step_name.outcome }} for the results of other steps within the same job or ${{ needs.job_name.result }}
+for the results of another job. Don't forget to add that job to "needs" for the current one.
+
+**report_list:** *not required*, *default:* ''  
 A list of short job names (without spaces) separated from the jobs result by a %. These will be printed in two columns below
 the summary. Use either ${{ steps.step_name.outcome }} for the results of other steps within the same job or ${{ needs.job_name.result }}
 for the results of another job. Don't forget to add that job to "needs" for the current one.

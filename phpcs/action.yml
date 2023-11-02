@@ -1,7 +1,7 @@
 name: 'phpcs'
 description: 'Executes phpcs tests in a running container and uploads the logs as artefacts'
 inputs:
-  container:
+  container_name:
     type: string
     required: false
     description: 'Name of the container to run the test in'
@@ -16,11 +16,21 @@ inputs:
     required: false
     description: 'Method to execute the commands inside a container, either "run" or "exec"'
     default: 'exec'
-  test:
+  diff_only:
+    type: boolean
+    required: false
+    description: 'Run phpcs only on changed files between this and the last commit'
+    default: true
+  git_ref:
     type: string
     required: false
-    description: 'Name of the test or folder to run'
-    default: 'source/Internal'
+    description: 'Reference to check out'
+    default: 'main'
+  filter:
+    type: string
+    required: false
+    description: 'Filter the file names against this regex'
+    default: '\.php$'
   additional_options:
     type: string
     required: false
@@ -44,27 +54,56 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Run PHP_CS check
+    - name: 'List changed files'
+      id: diff
       shell: bash
       run: |
+        cd source
+        git status
+        if [ "${{ inputs.diff_only }}" == "true" ]; then
+          git diff --name-only --diff-filter=AM ${{ inputs.git_ref }} HEAD~1 | grep '${{ inputs.filter }}' | while read file; do
+            if [[ -f "$file" ]]; then
+              echo "$file"
+            fi
+          done >changed-files.txt || true
+        else
+          find . -type f|grep '${{ inputs.filter }}' >changed-files.txt
+        fi
+        if [[ -f "changed-files.txt" && -s "changed-files.txt" ]]; then
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+        else
+          echo "skip=true" >> "$GITHUB_OUTPUT"
+        fi
+        FILES=""
+        for FILE in $(cat changed-files.txt); do
+          FILES="${FILES} ${FILE}"
+        done
+        echo "files=${FILES}" >>"${GITHUB_OUTPUT}"
+
+    - name: Run PHP_CS check
+      shell: bash
+      if: ${{ steps.diff.outputs.skip == 'false' }}
+      run: |
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
-          ${{ inputs.container }} \
+          ${{ inputs.container_name}} \
           php vendor/bin/phpcs --version \
           | tee "${{ inputs.logfile }}" 2>&1 || true
 
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
-          ${{ inputs.container }} \
+          ${{ inputs.container_name}} \
           php vendor/bin/phpcs \
             ${{ inputs.additional_options }} \
-            ${{ inputs.test }} \
+            ${{ steps.diff.outputs.files }} \
           | tee "${{ inputs.logfile }}" 2>&1 || true
 
     - name: Upload Log
-      if: always()
+      if: ${{ always() && steps.diff.outputs.skip == 'false' }}
       uses: actions/upload-artifact@v3
       with:
         name: ${{ inputs.logfile_artifact }}
-        path: ${{ inputs.logfile }}
+        path: |
+          ${{ inputs.logfile }}
+          changed-files.txt
         if-no-files-found: error
         retention-days: 7
 
@@ -73,6 +112,14 @@ runs:
       run: |
         PURPLE=$(echo -e "\033[0;31m")
         NOCOLOR=$(echo -e "\033[0m")
+        if [ '${{steps.diff.outputs.skip}}' == 'true' ]; then
+          cat <<EOF
+        ${PURPLE}###############################################################################
+        ### There were no files to check
+        ###############################################################################${NOCOLOR}
+        EOF
+          exit 0
+        fi
         if [ ! -s "${{ inputs.logfile }}" ]; then
           cat <<EOF
         ${PURPLE}###############################################################################

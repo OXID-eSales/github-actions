@@ -1,7 +1,7 @@
 name: 'prepare_shop'
 description: 'Prepares the shop and creates a cache for it'
 inputs:
-  container:
+  container_name:
     type: string
     required: false
     description: 'Name of the container running php'
@@ -99,6 +99,11 @@ inputs:
     required: false
     description: 'Space separated list of extra services to add'
     default: 'selenium-chrome'
+  composer_allow_plugins_repositories:
+    type: string
+    required: false
+    description: 'Space separated list of repository:value pairs to manage allow-plugins'
+    default: ''
   composer_configure_install:
     type: string
     required: false
@@ -209,14 +214,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Initialize
-      id: init
-      shell: bash
-      # yamllint disable rule:line-length
-      run: |
-        echo "EXEC_PHP=docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} ${{ inputs.container }}" | tee -a $GITHUB_ENV
-        echo "\033[0;35m### Caching the installation as ${CACHED_NAME}\033[0m"
-      # yamllint enable rule:line-length
     - name: Clone testing environment master
       shell: bash
       run: git clone --depth 1 ${{ inputs.git_sdk_url }} --branch ${{ inputs.git_sdk_ref }} --single-branch .
@@ -224,13 +221,13 @@ runs:
     - name: Clone the shop  (${{ inputs.git_shop_ref }})
       if: inputs.github_event_name != 'pull_request'
       shell: bash
-      run: git clone --depth 1 ${{ inputs.git_shop_url }} --branch ${{ inputs.git_shop_ref }} --single-branch source
+      run: git clone --depth 2 ${{ inputs.git_shop_url }} --branch ${{ inputs.git_shop_ref }} --single-branch source
 
     - name: Clone the shop (PR ${{ inputs.github_event_number }})
       if: inputs.github_event_name == 'pull_request'
       shell: bash
       run: |
-        git clone --depth 1 ${{ inputs.git_shop_url }} --branch ${{ inputs.github_base_ref }} --single-branch source
+        git clone --depth 2 ${{ inputs.git_shop_url }} --branch ${{ inputs.github_base_ref }} --single-branch source
         git -C source fetch origin refs/pull/${{ inputs.github_event_number }}/head:pr_${{ inputs.github_event_number }}
         git -C source checkout pr_${{ inputs.github_event_number }}
 
@@ -294,11 +291,20 @@ runs:
           docker logs -n 200 $c
         done
 
+    - name: 'Composer allow plugins ${{ inputs.composer_allow_plugins_repositories }}'
+      if: ${{ inputs.composer_allow_plugins_repositories != '' }}
+      uses: 'OXID-eSales/github-actions/composer_allow_plugins@v2'
+      with:
+        container_name: ${{ inputs.container_name }}
+        container_options: ${{ inputs.container_options }}
+        container_method: 'exec'
+        repositories: ${{ inputs.composer_allow_plugins_repositories }}
+
     - name: 'Composer configure and require ${{ inputs.composer_configure_install }}'
       if: ${{ inputs.composer_configure_install != '' }}
-      uses: 'OXID-eSales/github-actions/composer_configure@v1'
+      uses: 'OXID-eSales/github-actions/composer_configure@v2'
       with:
-        container: ${{ inputs.container }}
+        container_name: ${{ inputs.container_name }}
         container_options: ${{ inputs.container_options }}
         container_method: 'exec'
         organisation: ${{ inputs.composer_configure_organisation }}
@@ -311,9 +317,9 @@ runs:
 
     - name: 'Composer require ${{ inputs.composer_require_install }}'
       if: ${{ inputs.composer_require_install != '' }}
-      uses: 'OXID-eSales/github-actions/composer_require@v1'
+      uses: 'OXID-eSales/github-actions/composer_require@v2'
       with:
-        container: ${{ inputs.container }}
+        container_name: ${{ inputs.container_name }}
         container_options: ${{ inputs.container_options }}
         container_method: 'exec'
         organisation: ${{ inputs.composer_require_organisation }}
@@ -329,7 +335,7 @@ runs:
       run: |
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
-          ${{ inputs.container }} \
+          ${{ inputs.container_name }} \
           composer update --no-interaction
 
     - name: Setup config inc file
@@ -337,7 +343,7 @@ runs:
       run: |
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
-          ${{ inputs.container }} \
+          ${{ inputs.container_name }} \
           cp source/config.inc.php.dist source/config.inc.php
 
     - name: Stop containers

@@ -1,7 +1,7 @@
 name: 'codeception'
 description: 'Executes codeception tests in a running shop and uploads the logs and outputs as artifacts'
 inputs:
-  container:
+  container_name:
     type: string
     required: false
     description: 'Name of the container to run the test in'
@@ -92,7 +92,7 @@ runs:
       run: |
         docker-compose exec -T \
           ${{ inputs. container_options }} \
-          ${{ inputs.container }} \
+          ${{ inputs.container_name}} \
           php vendor/bin/codecept build \
           -c ${{ inputs.configuration }}
 
@@ -101,7 +101,7 @@ runs:
       run: |
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
-           ${{ inputs.container }} \
+           ${{ inputs.container_name}} \
            vendor/bin/codecept run ${{ inputs.suite }} ${{ inputs.test }} \
             -c ${{ inputs.configuration }} \
             --ext DotReporter \

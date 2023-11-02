@@ -5,7 +5,7 @@ Fetches the module and installs it.
 **cached_shop:** *required*, *no default*  
 Name of the cached object from [prepare_shop](prepare_shop.md)/[install_shop](install_shop.md) or a previous install_module.
 
-**container:** *not required*, *default:*  php  
+**container_name:** *not required*, *default:*  php  
 Name of the container to run the test in.
 
 **container_options:** *not required*, *default:*  ''  

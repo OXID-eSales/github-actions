@@ -1,16 +1,14 @@
-# install_themes
-This action installs one or more themes using the composer inside the
-given container (default 'php') and runs composer update at the end.
+# composer_require
+This action runs composer config.allow-plugins for a list of modules in the
+format module:value in a given container (default 'php') and optionally runs
+composer update at the end.
 
 ## Inputs:
-**themes:** *required*, *no default*  
-Space separated list of themes to install.
+**repositories:** *required*, *no default*  
+Space separated list of repository:value pairs to configure.
 
-**options:** *not required*, *default*: '--with-all-dependencies'  
-Options to pass along to composer when installing themes.
-
-**update:** *not required*, *default*: true  
-Run composer update after instaling the themes
+**update:** *not required*, *default*: false  
+Run composer update after configuring all repositories.
 
 **update_options:** *not required*, *default*: '--no-interaction'  
 Options to pass along to composer when running composer update.

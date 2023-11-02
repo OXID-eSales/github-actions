@@ -30,7 +30,7 @@ inputs:
     required: false
     description: 'Options to pass along to composer when running composer update'
     default: '--no-interaction'
-  container:
+  container_name:
     type: string
     required: false
     description: 'Name of the container to run the test in'
@@ -67,11 +67,11 @@ runs:
           echo -e "\033[0;35m###  configure github access ###\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
-            ${{ inputs.container }} \
+            ${{ inputs.container_name}} \
             composer config github-protocols https
           docker-compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
-            ${{ inputs.container }} \
+            ${{ inputs.container_name}} \
             composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
         fi
 
@@ -81,12 +81,12 @@ runs:
           echo -e "\033[0;35m###  configure ${ORG}/${DASHED_REPO} ###\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
-            ${{ inputs.container }} \
+            ${{ inputs.container_name}} \
             composer config repositories.${ORG}/${DASHED_REPO} git "https://github.com/${{ inputs.organisation }}/${REPOSITORY}.git"
           echo -e "\033[0;35m###  require "${ORG}/${DASHED_REPO}${REF} with ${{ inputs.options }} ###\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
-            ${{ inputs.container }} \
+            ${{ inputs.container_name}} \
             composer require "${ORG}/${DASHED_REPO}${REF}" ${{ inputs.options }}
         done
 
@@ -94,6 +94,6 @@ runs:
           echo -e "\033[0;35m### Running composer update with ${{ inputs.update_options }}\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
-            ${{ inputs.container }} \
+            ${{ inputs.container_name}} \
             composer update ${{ inputs.update_options }}
         fi

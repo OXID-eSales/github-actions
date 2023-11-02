@@ -1,4 +1,4 @@
-name: call-test_matrix
+name: call-module_development
 # Full test matrix for oxidshop_ce and oxidshop_ee
 # This matrix runs the following jobs:
 # - output parameters
@@ -87,7 +87,6 @@ jobs:
       prepare_shop_add_services: ${{ steps.ltp.outputs.prepare_shop_add_services }}
       prepare_shop_cache_bucket: ${{ steps.ltp.outputs.prepare_shop_cache_bucket }}
       prepare_shop_cache_prefix: ${{ steps.ltp.outputs.prepare_shop_cache_prefix }}
-      prepare_shop_composer_allow_plugins_repositories: ${{ steps.ltp.outputs.prepare_shop_composer_allow_plugins_repositories }}
       prepare_shop_composer_configure_install: ${{ steps.ltp.outputs.prepare_shop_composer_configure_install }}
       prepare_shop_composer_configure_options: ${{ steps.ltp.outputs.prepare_shop_composer_configure_options }}
       prepare_shop_composer_configure_organisation: ${{ steps.ltp.outputs.prepare_shop_composer_configure_organisation }}
@@ -317,10 +316,7 @@ jobs:
       phpcs_tests_container_name: ${{ steps.ltp.outputs.phpcs_tests_container_name }}
       phpcs_tests_container_options: ${{ steps.ltp.outputs.phpcs_tests_container_options }}
       phpcs_tests_docker_login: ${{ steps.ltp.outputs.phpcs_tests_docker_login }}
-      phpcs_tests_diff_only: ${{ steps.ltp.outputs.phpcs_tests_diff_only }}
       phpcs_tests_failure_pattern: ${{ steps.ltp.outputs.phpcs_tests_failure_pattern }}
-      phpcs_tests_filter: ${{ steps.ltp.outputs.phpcs_tests_filter }}
-      phpcs_tests_git_ref: ${{ steps.ltp.outputs.phpcs_tests_git_ref }}
       phpcs_tests_logfile_artifact: ${{ steps.ltp.outputs.phpcs_tests_logfile_artifact }}
       phpcs_tests_logfile_prefix: ${{ steps.ltp.outputs.phpcs_tests_logfile_prefix }}
       phpcs_tests_matrix_mysql: ${{ steps.ltp.outputs.phpcs_tests_matrix_mysql }}
@@ -328,6 +324,7 @@ jobs:
       phpcs_tests_matrix_template_engine: ${{ steps.ltp.outputs.phpcs_tests_matrix_template_engine }}
       phpcs_tests_max_parallel: ${{ steps.ltp.outputs.phpcs_tests_max_parallel }}
       phpcs_tests_skip: ${{ steps.ltp.outputs.phpcs_tests_skip }}
+      phpcs_tests_test: ${{ steps.ltp.outputs.phpcs_tests_test }}
       # styles variables
       styles_cache_bucket: ${{ steps.ltp.outputs.styles_cache_bucket }}
       styles_container_method: ${{ steps.ltp.outputs.styles_container_method }}
@@ -345,7 +342,6 @@ jobs:
       finish_matrix_mysql: ${{ steps.ltp.outputs.finish_matrix_mysql }}
       finish_matrix_php: ${{ steps.ltp.outputs.finish_matrix_php }}
       finish_skip: ${{ steps.ltp.outputs.finish_skip }}
-      finish_slack_title: ${{ steps.ltp.outputs.finish_slack_title }}
 
   prepare_shop:
     needs: init
@@ -384,15 +380,14 @@ jobs:
           custom_ini_error_reporting: ${{ needs.init.outputs.prepare_shop_custom_ini_error_reporting }}
           custom_ini_xdebug: ${{ needs.init.outputs.prepare_shop_custom_ini_xdebug }}
           add_services: ${{ needs.init.outputs.prepare_shop_add_services }}
-          composer_allow_plugins_repositories: '${{ needs.init.outputs.prepare_shop_composer_allow_plugins_repositories }}'
           composer_configure_organisation: ${{ needs.init.outputs.prepare_shop_composer_configure_organisation}}
-          composer_configure_install: '${{ needs.init.outputs.prepare_shop_composer_configure_install}}'
+          composer_configure_install: ${{ needs.init.outputs.prepare_shop_composer_configure_install}}
           composer_configure_ref: ${{ needs.init.outputs.prepare_shop_composer_configure_ref}}
           composer_configure_options: ${{ needs.init.outputs.prepare_shop_composer_configure_options}}
           composer_configure_update: ${{ needs.init.outputs.prepare_shop_composer_configure_update}}
           composer_configure_update_options: ${{ needs.init.outputs.prepare_shop_composer_configure_update_options}}
           composer_require_organisation: ${{ needs.init.outputs.prepare_shop_composer_require_organisation}}
-          composer_require_install: '${{ needs.init.outputs.prepare_shop_composer_require_install}}'
+          composer_require_install: ${{ needs.init.outputs.prepare_shop_composer_require_install}}
           composer_require_ref: ${{ needs.init.outputs.prepare_shop_composer_require_ref}}
           composer_require_options: ${{ needs.init.outputs.prepare_shop_composer_require_options}}
           composer_require_update: ${{ needs.init.outputs.prepare_shop_composer_require_update}}
@@ -403,10 +398,6 @@ jobs:
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
-
-      - name: 'List files'
-        run: |
-          find . |sort
 
   install_shop:
     needs: ['init', 'prepare_shop']
@@ -462,6 +453,8 @@ jobs:
       fail-fast: false
       max-parallel: ${{ fromJSON(needs.init.outputs.install_module_max_parallel) }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
+    outputs:
+      shop_with_module: ${{ steps.install_module.outputs.shop_with_module }}
     steps:
       - name: 'Start shop'
         if: ${{ needs.init.outputs.install_module_ids != '' }}
@@ -920,7 +913,7 @@ jobs:
           target_branch: ${{ needs.init.outputs.sonarcloud_target_branch }}
           github_ref_name: ${{ github.ref_name }}
           sonarcloud_organization: ${{ needs.init.outputs.sonarcloud_organization }}
-          sonarcloud_project_key: ${{ needs.init.outputs.sonarcloud_internal_project_key }}
+          sonarcloud_project_key: ${{ needs.init.outputs.sonarcloud_project_key }}
           sonarcloud_project_name: ${{ needs.init.outputs.sonarcloud_internal_project_name }}
           sonarcloud_parameters: ${{ needs.init.outputs.sonarcloud_internal_parameters }}
           sonar_token: ${{ secrets.SONAR_TOKEN }}
@@ -955,9 +948,7 @@ jobs:
           container_name: ${{ needs.init.outputs.phpcs_tests_container_name }}
           container_options: ${{ needs.init.outputs.phpcs_tests_container_options }}
           container_method: ${{ needs.init.outputs.phpcs_tests_container_method }}
-          git_ref: ${{ needs.init.outputs.phpcs_tests_git_ref }}
-          diff_only: ${{ needs.init.outputs.phpcs_tests_diff_only}}
-          filter: ${{ needs.init.outputs.phpcs_tests_filter}}
+          test: ${{ needs.init.outputs.phpcs_tests_test }}
           additional_options: ${{ needs.init.outputs.phpcs_tests_additional_options }}
           logfile: phpcs_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_codesniff_log.txt
           logfile_artifact: ${{ needs.init.outputs.phpcs_tests_logfile_artifact }}
@@ -1023,25 +1014,22 @@ jobs:
     steps:
       - name: Send custom JSON data to Slack workflow
         if: ${{ always() && env.SLACK_WEBHOOK != '' }}
-        uses: 'OXID-eSales/github-actions/slack_status@v2'
+        uses: 'OXID-eSales/github-actions/slack_status@v1'
         with:
           slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-          title: '${{ needs.init.outputs.finish_slack_title }}'
+          title: '${{ github.workflow }} on ${{ github.repository }} by ${{ github.actor }}'
           summary_list: |
-            Repository%${{ github.server_url }}/${{ github.repository }}
-            Job%${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Repository%${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
             Testplan%${{ inputs.testplan }}
-          install_list: |
+          job_list: |
             prepare_shop%${{ needs.prepare_shop.result }}
             install_shop%${{ needs.install_shop.result }}
             install_module%${{ needs.install_module.result }}
-          test_list: |
             unit_tests%${{ needs.unit_tests.result }}
             integration_tests%${{ needs.integration_tests.result }}
             codeception_tests%${{ needs.codeception_tests.result }}
             shop_setup_tests%${{ needs.shop_setup_tests.result }}
             deprecated_tests%${{ needs.deprecated_tests.result }}
-          report_list: |
             sonarcloud%${{ needs.sonarcloud.result }}
             phpcs_tests%${{ needs.phpcs_tests.result }}
             styles%${{ needs.styles.result }}

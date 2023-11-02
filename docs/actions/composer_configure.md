@@ -21,7 +21,7 @@ Run composer update after configuring all repositories.
 **update_options:** *not required*, *default*: '--no-interaction'  
 Options to pass along to composer when running composer update.
 
-**container:** *not required*, *default*: 'php'  
+**container_name:** *not required*, *default*: 'php'  
 Name of the container to run composer in, defaults to 'php'.
 
 **container_options:** *not required*, *default*: ''  

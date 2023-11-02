@@ -1,7 +1,7 @@
 name: 'install_module'
 description: 'Fetches the module and installs it'
 inputs:
-  container:
+  container_name:
     type: string
     required: false
     description: 'Name of the container to run the test in'
@@ -29,11 +29,6 @@ inputs:
     required: false
     description: 'Path for the checkout and url'
     default: 'test-module'
-  template_engine:
-    type: string
-    required: false
-    description: 'One of twig, smarty, both'
-    default: 'both'
   git_module_url:
     type: string
     required: true
@@ -66,11 +61,6 @@ inputs:
     required: false
     description: 'Github run artifact to put the output files in'
     default: 'install_module-artifacts'
-  enterprise_github_token:
-    type: string
-    required: false
-    description: 'OAuth token to access enterprise repos'
-    default: ''
   cache_name:
     type: string
     required: true
@@ -102,48 +92,44 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Checkout current module
-      uses: actions/checkout@v3
-      with:
-        repository: ${{ inputs.git_module_url }}
-        ref: ${{ inputs.git_module_ref }}
-        path: source/${{ inputs.module_path }}
-        token: ${{ inputs.enterprise_github_token }}
-
     - name: Install module
+      shell: bash
       run: |
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
-          ${{ inputs.container }} \
-          php composer config repositories.${{ inputs.package_name }} \
-          --json '{"type":"path", "url":"./${{ inputs.module_path }}", "options": {"symlink": true}}'
+          ${{ inputs.container_name}} \
+          composer config repositories.${{ inputs.package_name }} \
+          --json '{"type":"path", "url":"./test-module", "options": {"symlink": true}}'
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
-          ${{ inputs.container }} \
-          php composer require ${{ inputs.package_name }}:* --no-interaction --no-update
+          ${{ inputs.container_name}} \
+          composer require ${{ inputs.package_name }}:* --no-interaction --no-update
 
     - name: Install dependencies and reset shop
+      shell: bash
       run: |
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
-          ${{ inputs.container }} \
+          ${{ inputs.container_name}} \
           composer update --no-interaction
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
-          ${{ inputs.container }} \
+          ${{ inputs.container_name}} \
           bin/oe-console oe:database:reset \
           --db-host=mysql --db-port=3306 --db-name=example --db-user=root --db-password=root --force
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
-          ${{ inputs.container }} \
+          ${{ inputs.container_name}} \
           bin/oe-console oe:module:activate ${{ inputs.module_ids }}
 
     - name: Install module dependencies
+      shell: bash
       run: |
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
-          ${{ inputs.container }} \
-          --workdir=/var/www/${{inputs.module_path}} php composer install
+          --workdir=/var/www/test-module \
+          ${{ inputs.container_name}} \
+          composer install
 
     - name: Stop containers
       if: always()
@@ -153,6 +139,7 @@ runs:
 
     - name: Show docker log
       if: always()
+      shell: bash
       run: |
         docker-compose logs --tail=all
 
@@ -168,7 +155,7 @@ runs:
       with:
         path: |
           ./*
-        key: ${{ steps.init.outputs.installed_shop_with_module }}
+        key: ${{ inputs.cache_name }}
         endpoint: ${{ inputs.cache_endpoint }}
         accessKey: ${{ inputs.cache_access_key }}
         secretKey: ${{ inputs.cache_secret_key }}

@@ -2,7 +2,7 @@
 Executes vendor/bin/runtests tests in a running container and uploads the logs as artefacts.
 
 ## Inputs:
-**container:** *not required*, *default:*  php  
+**container_name:** *not required*, *default:*  php  
 Name of the container to run the test in.
 
 **container_options:** *not required*, *default:*  ''  

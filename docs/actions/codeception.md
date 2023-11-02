@@ -2,7 +2,7 @@
 Executes codeception tests in a running container and uploads the logs and outputs as artifacts.
 
 ## Inputs:
-**container:** *not required*, *default:*  php  
+**container_name:** *not required*, *default:*  php  
 Name of the container to run the test in.
 
 **container_options:** *not required*, *default:*  -e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex  

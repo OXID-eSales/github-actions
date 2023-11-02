@@ -1,7 +1,7 @@
 name: 'phpunit'
 description: 'Executes phpunit tests in a running container and uploads the logs as artefacts'
 inputs:
-  container:
+  container_name:
     type: string
     required: false
     description: 'Name of the container to run the test in'
@@ -76,7 +76,7 @@ runs:
       shell: bash
       run: |
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
-          ${{ inputs.container }} \
+          ${{ inputs.container_name}} \
           php vendor/bin/phpunit \
             -c "${{ inputs.configuration }}" \
             ${{ inputs.additional_options }} \

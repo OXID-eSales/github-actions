@@ -2,7 +2,7 @@
 Runs sonarcloud in the given container
 
 ## inputs
-**container:** *not required*, *default:*  php  
+**container_name:** *not required*, *default:*  php  
 Name of the container to run the test in.
 
 **container_options:** *not required*, *default:*  ''  

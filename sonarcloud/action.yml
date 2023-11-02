@@ -67,16 +67,16 @@ runs:
       uses: actions/download-artifact@v3
       with:
         name: ${{ inputs.coverage_artifact }}
-        path: ./source/coverage/
+        path: coverage-reports
 
     - name: Fix Paths In Coverage Reports
       shell: bash
       run: |
           COVERAGE_FILES=""
-          for FILE in $(find ./source/coverage -iname '*_coverage.xml'); do
+          for FILE in $(find coverage-reports -iname '*_coverage.xml'); do
             echo -e "\033[0;35mFixing paths in ${FILE}\033[0m"
             sed -e 's#/var/www/##' -i ${FILE}
-            COVERAGE_FILES="${COVERAGE_FILES},${FILE}"
+            COVERAGE_FILES="${COVERAGE_FILES},${FILE:2}"
           done
           # remove leading comma when adding this
           echo "COVERAGE_FILES=${COVERAGE_FILES:1}" | tee -a $GITHUB_ENV

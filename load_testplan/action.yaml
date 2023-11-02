@@ -255,6 +255,26 @@ outputs:
     value: ${{ steps.yaml.outputs.prepare_shop_composer_require_update}}
   prepare_shop_composer_require_update_options:
     value: ${{ steps.yaml.outputs.prepare_shop_composer_require_update_options}}
+  # install_module variables
+  install_module_matrix_mysql:
+    value: ${{ steps.yaml.outputs.install_module_matrix_mysql}}
+  install_module_matrix_php:
+    value: ${{ steps.yaml.outputs.install_module_matrix_php}}
+  install_module_max_parallel:
+    value: ${{ steps.yaml.outputs.install_module_max_parallel}}
+  install_module_docker_login:
+    value: ${{ steps.yaml.outputs.install_module_docker_login}}
+  install_module_container:
+    value: ${{ steps.yaml.outputs.install_module_container}}
+  install_module_container_options:
+    value: ${{ steps.yaml.outputs.install_module_container_options}}
+  install_module_container_method:
+    value: ${{ steps.yaml.outputs.install_module_container_method}}
+  install_module_cache_bucket:
+    value: ${{ steps.yaml.outputs.install_module_cache_bucket}}
+  install_module_package_name:
+    value: ${{ steps.yaml.outputs.install_module_package_name}}
+
   # install_shop variables
   install_shop_matrix_mysql:
     value: ${{ steps.yaml.outputs.install_shop_matrix_mysql}}
@@ -355,6 +375,8 @@ outputs:
     value: ${{ steps.yaml.outputs.codeception_tests_matrix_mysql}}
   codeception_tests_matrix_php:
     value: ${{ steps.yaml.outputs.codeception_tests_matrix_php}}
+  codeception_tests_matrix_template_engine:
+    value: ${{ steps.yaml.outputs.codeception_tests_matrix_template_engine}}
   codeception_tests_max_parallel:
     value: ${{ steps.yaml.outputs.codeception_tests_max_parallel}}
   codeception_tests_docker_login:
@@ -597,6 +619,29 @@ outputs:
     value: ${{ steps.yaml.outputs.phpcs_tests_logfile_artifact}}
   phpcs_tests_failure_pattern:
     value: ${{ steps.yaml.outputs.phpcs_tests_failure_pattern}}
+  # styles variables
+  styles_skip:
+    value: ${{ steps.yaml.outputs.styles_skip}}
+  styles_matrix_mysql:
+    value: ${{ steps.yaml.outputs.styles_matrix_mysql}}
+  styles_matrix_php:
+    value: ${{ steps.yaml.outputs.styles_matrix_php}}
+  styles_max_parallel:
+    value: ${{ steps.yaml.outputs.styles_max_parallel}}
+  styles_docker_login:
+    value: ${{ steps.yaml.outputs.styles_docker_login}}
+  styles_container:
+    value: ${{ steps.yaml.outputs.styles_container}}
+  styles_container_options:
+    value: ${{ steps.yaml.outputs.styles_container_options}}
+  styles_container_method:
+    value: ${{ steps.yaml.outputs.styles_container_method}}
+  styles_cache_bucket:
+    value: ${{ steps.yaml.outputs.styles_cache_bucket}}
+  styles_module_path:
+    value: ${{ steps.yaml.outputs.styles_module_path}}
+  styles_output_files:
+    value: ${{ steps.yaml.outputs.styles_output_files}}
   # finish variables
   finish_skip:
     value: ${{ steps.yaml.outputs.finish_skip}}
@@ -607,6 +652,8 @@ outputs:
   # module variables
   module_matrix_template_engine:
     value: ${{ steps.yaml.outputs.module_matrix_template_engine }}
+  module_ids:
+    value: ${{ steps.yaml.outputs.module_ids}}
   module_package_name:
     value: ${{ steps.module.outputs.module_package_name}}
   module_git_module_url:
