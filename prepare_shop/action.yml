@@ -293,7 +293,7 @@ runs:
 
     - name: 'Composer allow plugins ${{ inputs.composer_allow_plugins_repositories }}'
       if: ${{ inputs.composer_allow_plugins_repositories != '' }}
-      uses: 'OXID-eSales/github-actions/composer_allow_plugins@v0'
+      uses: 'OXID-eSales/github-actions/composer_allow_plugins@v2'
       with:
         container_name: ${{ inputs.container_name }}
         container_options: ${{ inputs.container_options }}
@@ -302,7 +302,7 @@ runs:
 
     - name: 'Composer configure and require ${{ inputs.composer_configure_install }}'
       if: ${{ inputs.composer_configure_install != '' }}
-      uses: 'OXID-eSales/github-actions/composer_configure@v0'
+      uses: 'OXID-eSales/github-actions/composer_configure@v2'
       with:
         container_name: ${{ inputs.container_name }}
         container_options: ${{ inputs.container_options }}
@@ -317,7 +317,7 @@ runs:
 
     - name: 'Composer require ${{ inputs.composer_require_install }}'
       if: ${{ inputs.composer_require_install != '' }}
-      uses: 'OXID-eSales/github-actions/composer_require@v0'
+      uses: 'OXID-eSales/github-actions/composer_require@v2'
       with:
         container_name: ${{ inputs.container_name }}
         container_options: ${{ inputs.container_options }}
