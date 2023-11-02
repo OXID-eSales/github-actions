@@ -3,9 +3,8 @@
 
 prepare_shop:
   composer:
-    require:
-      install:
-        oxid-esales/testing_library:dev-b-8.0.x
+    configure:
+      install: 'testing_library'
       update_options: '--no-interaction --no-dev'
 
 unit_tests:
