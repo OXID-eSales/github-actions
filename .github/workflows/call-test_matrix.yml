@@ -337,7 +337,6 @@ jobs:
       styles_matrix_mysql: ${{ steps.ltp.outputs.styles_matrix_mysql }}
       styles_matrix_php: ${{ steps.ltp.outputs.styles_matrix_php }}
       styles_max_parallel: ${{ steps.ltp.outputs.styles_max_parallel }}
-      styles_module_path: ${{ steps.ltp.outputs.styles_module_path }}
       styles_output_files: ${{ steps.ltp.outputs.styles_output_files }}
       styles_output_prefix: ${{ steps.ltp.outputs.styles_output_prefix }}
       styles_skip: ${{ steps.ltp.outputs.styles_skip }}
@@ -995,7 +994,6 @@ jobs:
           container_name: ${{ needs.init.outputs.styles_container_name }}
           container_options: ${{ needs.init.outputs.styles_container_options }}
           container_method: ${{ needs.init.outputs.styles_container_method }}
-          module_path: ${{ needs.init.outputs.styles_module_path }}
           output_files: ${{ needs.init.outputs.styles_output_files }}
           output_artifact: ${{ needs.init.outputs.styles_output_prefix}}_PHP${{ matrix.php }}
 
