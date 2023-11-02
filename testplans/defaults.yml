@@ -598,3 +598,4 @@ finish:
   matrix:
     php: *matrix_php
     mysql: *matrix_mysql
+  slack_title: '{{ .Github.Workflow }} on {{ .Github.Repository }} by {{ .Github.Actor }}'

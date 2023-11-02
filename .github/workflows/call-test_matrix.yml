@@ -345,6 +345,7 @@ jobs:
       finish_matrix_mysql: ${{ steps.ltp.outputs.finish_matrix_mysql }}
       finish_matrix_php: ${{ steps.ltp.outputs.finish_matrix_php }}
       finish_skip: ${{ steps.ltp.outputs.finish_skip }}
+      finish_slack_title: ${{ steps.ltp.outputs.finish_slack_title }}
 
   prepare_shop:
     needs: init
@@ -1025,9 +1026,10 @@ jobs:
         uses: 'OXID-eSales/github-actions/slack_status@v0'
         with:
           slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-          title: '${{ github.workflow }} on ${{ github.repository }} by ${{ github.actor }}'
+          title: '${{ needs.init.outputs.finish_slack_title }}'
           summary_list: |
-            Repository%${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Repository%${{ github.server_url }}/${{ github.repository }}
+            Job%${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
             Testplan%${{ inputs.testplan }}
           install_list: |
             prepare_shop%${{ needs.prepare_shop.result }}
