@@ -56,8 +56,10 @@ jobs:
           slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           title: '${{ github.workflow }} on ${{ github.repository }} by ${{ github.actor }}'
           summary_list: |
-            Repository%${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          job_list: |
+            Repository%${{ github.server_url }}/${{ github.repository }}
+            Job%${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          install_list: |
             checkout%${{ steps.checkout.outcome}}
+          report_list:
             yamllint%${{ steps.yamllint.outcome}}
             actionlint%${{ steps.actionlint.outcome }}
