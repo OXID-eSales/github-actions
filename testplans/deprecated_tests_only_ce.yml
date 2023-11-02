@@ -5,21 +5,9 @@ prepare_shop:
   composer:
     require:
       install:
-        codeception/codeception:^5.0
-        codeception/module-asserts:^3.0
-        codeception/module-db:^3.0
-        codeception/module-filesystem:^3.0
-        codeception/module-webdriver:^3.1
-        composer/composer:^2.0
-        incenteev/composer-parameter-handler:^v2.1.4
-        mikey179/vfsstream:~1.6.8
-        oxid-esales/codeception-modules:dev-b-8.0.x
-        oxid-esales/codeception-page-objects:dev-b-8.0.x
-        oxid-esales/developer-tools:dev-b-8.0.x
-        oxid-esales/oxideshop-ide-helper:dev-b-8.0.x
-        phpspec/prophecy-phpunit:^v2.0.1
-        phpunit/phpunit:^9.1.1
-        squizlabs/php_codesniffer:^3.5.4
+        oxid-esales/testing_library:dev-b-8.0.x
+      update_options: '--no-interaction --no-dev'
+
 unit_tests:
   skip: true
 
