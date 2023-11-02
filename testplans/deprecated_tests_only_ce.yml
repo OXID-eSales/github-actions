@@ -19,8 +19,6 @@ codeception_tests:
 shop_setup_tests:
   skip: true
 
-deprecated_tests:
-
 sonarcloud:
   skip: true
 
