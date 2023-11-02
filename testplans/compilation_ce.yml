@@ -51,3 +51,6 @@ phpcs_tests:
   matrix: *matrix
   git:
     ref: 'refs/heads/b-8.0'
+
+finish:
+  slack_title: 'Metapackage CE on {{ .Github.Repository }} by {{ .Github.Actor }}'

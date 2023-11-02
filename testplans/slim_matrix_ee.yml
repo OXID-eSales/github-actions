@@ -106,3 +106,4 @@ phpcs_tests:
 
 finish:
   matrix: *matrix
+  slack_title: 'Slim matrix EE on {{ .Github.Repository }} by {{ .Github.Actor }}'

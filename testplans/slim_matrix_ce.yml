@@ -45,3 +45,6 @@ phpcs_tests:
 
 finish:
   matrix: *matrix
+
+finish:
+  slack_title: 'Slim matrix CE on {{ .Github.Repository }} by {{ .Github.Actor }}'

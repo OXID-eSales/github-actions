@@ -104,3 +104,6 @@ sonarcloud:
 
 phpcs_tests:
   test: 'source/Internal vendor/oxid-esales/oxideshop-ee/Internal vendor/oxid-esales/oxideshop-pe/Internal'
+
+finish:
+  slack_title: 'Full matrix EE check on {{ .Github.Repository }} by {{ .Github.Actor }}'

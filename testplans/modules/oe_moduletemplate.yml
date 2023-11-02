@@ -86,3 +86,4 @@ styles:
 
 finish:
   matrix: *matrix
+  slack_title: 'Module oe_moduletemplate CE on {{ .Github.Repository }} by {{ .Github.Actor }}'
