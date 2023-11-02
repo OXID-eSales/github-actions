@@ -11,7 +11,7 @@ caching the shop installation. The action returns the installed shop name as out
 
 ## Inputs:
 
-**container:** *not required*, *default:*  php  
+**container_name:** *not required*, *default:*  php  
 Name of the container to run the test in.
 
 **container_options:** *not required*, *default:*  ''

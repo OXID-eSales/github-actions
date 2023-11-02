@@ -5,11 +5,6 @@ inputs:
     type: string
     required: true
     description: 'Space separated list of repositories to configure'
-  options:
-    type: string
-    required: false
-    description: 'Options to pass along to composer when requiring the repositories'
-    default: '--no-update'
   update:
     type: boolean
     required: false
@@ -35,11 +30,6 @@ inputs:
     required: false
     description: 'Method to execute the commands inside a container, either "run" or "exec"'
     default: 'exec'
-  enterprise_github_token:
-    type: string
-    required: false
-    description: 'OAuth token to access enterprise repos'
-    default: ''
 
 runs:
   using: "composite"
