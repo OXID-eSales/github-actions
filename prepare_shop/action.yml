@@ -328,7 +328,6 @@ runs:
           echo "COMPOSER_RM_PARAMETERS<<_composer_rm_parameters_delim_"
           echo "${{inputs.composer_rm_parameters}}"|tr ' ' '\n'
           echo "_composer_rm_parameters_delim_"
-        EOF
         } >>"${GITHUB_ENV}"
 
     - name: 'Composer rm'
