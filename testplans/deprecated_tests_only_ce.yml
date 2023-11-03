@@ -4,7 +4,7 @@
 prepare_shop:
   composer:
     rm:
-      parameters: 'codeception/codeception codeception/module-asserts codeception/module-db codeception/module-filesystem codeception/module-webdriver'
+      parameters: 'codeception/codeception codeception/module-asserts codeception/module-db codeception/module-filesystem codeception/module-webdriver oxid-esales/codeception-modules oxid-esales/codeception-page-objects'
       options: '--no-update --dev'
     configure:
       install: 'testing_library'
