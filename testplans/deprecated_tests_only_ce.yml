@@ -5,7 +5,7 @@ prepare_shop:
   composer:
     rm:
       parameters: 'codeception/codeception codeception/module-asserts codeception/module-db codeception/module-filesystem codeception/module-webdriver'
-      options: '--no-update'
+      options: '--no-update --dev'
     configure:
       install: 'testing_library'
       update_options: '--no-interaction'
