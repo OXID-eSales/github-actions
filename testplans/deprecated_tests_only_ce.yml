@@ -3,13 +3,16 @@
 
 prepare_shop:
   composer:
+    rm:
+      parameters: 'codeception/codeception codeception/module-asserts codeception/module-db codeception/module-filesystem codeception/module-webdriver'
+      options: '--no-update'
     configure:
       install: 'testing_library'
-      update_options: '--no-interaction --no-dev'
+      update_options: '--no-interaction'
     require:
       install: ''
       options: '--no-update'
-      update_options: '--no-interaction --no-dev'
+      update_options: '--no-interaction'
 unit_tests:
   skip: true
 

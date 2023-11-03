@@ -104,6 +104,26 @@ inputs:
     required: false
     description: 'Space separated list of repository:value pairs to manage allow-plugins'
     default: ''
+  composer_rm_parameters:
+    type: string
+    required: false
+    description: 'Space separated list of things to be removed'
+    default: ''
+  composer_rm_options:
+    type: string
+    required: false
+    description: 'Options to pass along to composer when requiring the repositories'
+    default: '--no-update'
+  composer_rm_update:
+    type: string
+    required: false
+    description: 'Run composer update after requiring all repositories'
+    default: false
+  composer_rm_update_options:
+    type: string
+    required: false
+    description: 'Options to pass along to composer during install'
+    default: '--no-interaction'
   composer_configure_install:
     type: string
     required: false
@@ -299,6 +319,30 @@ runs:
         container_options: ${{ inputs.container_options }}
         container_method: 'exec'
         repositories: ${{ inputs.composer_allow_plugins_repositories }}
+
+    - name: 'Prepare composer RM list'
+      if: ${{ inputs.composer_rm_parameters != '' }}
+      shell: bash
+      run: |
+        {
+          echo "COMPOSER_RM_PARAMETERS<<_composer_rm_parameters_delim_"
+          echo "${{inputs.composer_rm_parameters}}"|tr ' ' '\n'
+          echo "_composer_rm_parameters_delim_"
+        EOF
+        } >>"${GITHUB_ENV}"
+
+    - name: 'Composer rm'
+      if: ${{ inputs.composer_rm_parameters != '' }}
+      uses: 'OXID-eSales/github-actions/composer@v0'
+      with:
+        container_name: ${{ inputs.container_name }}
+        container_options: ${{ inputs.container_options }}
+        container_method: 'exec'
+        action: 'rm'
+        parameters: ${{ env.COMPOSER_RM_PARAMETERS }}
+        options: ${{ inputs.composer_rm_options}}
+        update: ${{ inputs.composer_rm_update }}
+        update_options: ${{ inputs.composer_rm_update_options }}
 
     - name: 'Composer configure and require ${{ inputs.composer_configure_install }}'
       if: ${{ inputs.composer_configure_install != '' }}

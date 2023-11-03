@@ -88,6 +88,10 @@ jobs:
       prepare_shop_cache_bucket: ${{ steps.ltp.outputs.prepare_shop_cache_bucket }}
       prepare_shop_cache_prefix: ${{ steps.ltp.outputs.prepare_shop_cache_prefix }}
       prepare_shop_composer_allow_plugins_repositories: ${{ steps.ltp.outputs.prepare_shop_composer_allow_plugins_repositories }}
+      prepare_shop_composer_rm_parameters: ${{ steps.ltp.outputs.prepare_shop_composer_rm_parameters }}
+      prepare_shop_composer_rm_options: ${{ steps.ltp.outputs.prepare_shop_composer_rm_options }}
+      prepare_shop_composer_rm_update: ${{ steps.ltp.outputs.prepare_shop_composer_rm_update }}
+      prepare_shop_composer_rm_update_options: ${{ steps.ltp.outputs.prepare_shop_composer_rm_update_options }}
       prepare_shop_composer_configure_install: ${{ steps.ltp.outputs.prepare_shop_composer_configure_install }}
       prepare_shop_composer_configure_options: ${{ steps.ltp.outputs.prepare_shop_composer_configure_options }}
       prepare_shop_composer_configure_organisation: ${{ steps.ltp.outputs.prepare_shop_composer_configure_organisation }}
@@ -358,7 +362,7 @@ jobs:
     steps:
       - name: 'Prepare Shop'
         id: prepare_shop
-        uses: 'OXID-eSales/github-actions/prepare_shop@v2'
+        uses: 'OXID-eSales/github-actions/prepare_shop@v0'
         with:
           container_name: ${{ needs.init.outputs.prepare_shop_container_name }}
           container_options: ${{ needs.init.outputs.prepare_shop_container_options }}
@@ -384,6 +388,10 @@ jobs:
           custom_ini_xdebug: ${{ needs.init.outputs.prepare_shop_custom_ini_xdebug }}
           add_services: ${{ needs.init.outputs.prepare_shop_add_services }}
           composer_allow_plugins_repositories: '${{ needs.init.outputs.prepare_shop_composer_allow_plugins_repositories }}'
+          composer_rm_parameters: ${{ needs.init.outputs.prepare_shop_composer_rm_parameters}}
+          composer_rm_options: ${{ needs.init.outputs.prepare_shop_composer_rm_options}}
+          composer_rm_update: ${{ needs.init.outputs.prepare_shop_composer_rm_update}}
+          composer_rm_update_options: ${{ needs.init.outputs.prepare_shop_composer_rm_update_options}}
           composer_configure_organisation: ${{ needs.init.outputs.prepare_shop_composer_configure_organisation}}
           composer_configure_install: '${{ needs.init.outputs.prepare_shop_composer_configure_install}}'
           composer_configure_ref: ${{ needs.init.outputs.prepare_shop_composer_configure_ref}}
