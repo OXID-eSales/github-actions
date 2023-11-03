@@ -47,11 +47,11 @@ runs:
       shell: bash
       run: |
         echo "${{ inputs.parameters }}" | while IFS= read -r PARAMETER ; do
-          echo -e "\033[0;35m### composer ${{ inputs.action }} ${PARAMETER} ${{inputs.additional_parameters}} ###\033[0m"
+          echo -e "\033[0;35m### composer ${{ inputs.action }} ${PARAMETER} ${{inputs.options}} ###\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
             ${{ inputs.container_name}} \
-            composer ${{ inputs.action }} ${PARAMETER} ${{inputs.additional_parameters}}
+            composer ${{ inputs.action }} ${PARAMETER} ${{inputs.options}}
         done
 
         if [ '${{ inputs.update }}' == 'true' ]; then
