@@ -452,8 +452,8 @@ jobs:
       - name: 'Collect status'
         run: |
           cat <<EOF | tee -a "${GITHUB_ENV}"
-          slack_test_list<<slack_test_list_separator
-          ${{ env.slack_test_list}}
+          SLACK_TEST_LIST<<slack_test_list_separator
+          ${{ env.SLACK_TEST_LIST}}
           ${{ steps.phpunit_testplan.outputs.phpunit_title }}%${{steps.phpunit_run.conclusion}}
           slack_test_list_separator
           EOF
@@ -596,8 +596,8 @@ jobs:
       - name: 'Collect status'
         run: |
           cat <<EOF | tee -a "${GITHUB_ENV}"
-          slack_test_list<<slack_test_list_separator
-          ${{ env.slack_test_list}}
+          SLACK_TEST_LIST<<slack_test_list_separator
+          ${{ env.SLACK_TEST_LIST}}
           ${{ steps.codeception_testplan.outputs.codeception_title }}%${{steps.codeception_run.conclusion}}
           slack_test_list_separator
           EOF
@@ -714,8 +714,8 @@ jobs:
       - name: 'Collect status'
         run: |
           cat <<EOF | tee -a "${GITHUB_ENV}"
-          slack_test_list<<slack_test_list_separator
-          ${{ env.slack_test_list}}
+          SLACK_TEST_LIST<<slack_test_list_separator
+          ${{ env.slack_test_list }}
           ${{ steps.runtest_testplan.outputs.runtest_title }}%${{steps.runtest_run.conclusion}}
           slack_test_list_separator
           EOF
@@ -877,11 +877,7 @@ jobs:
             install_shop%${{ needs.install_shop.result }}
             install_module%${{ needs.install_module.result }}
           test_list: |
-            unit_tests%${{ needs.unit_tests.result }}
-            integration_tests%${{ needs.integration_tests.result }}
-            codeception_tests%${{ needs.codeception_tests.result }}
-            shop_setup_tests%${{ needs.shop_setup_tests.result }}
-            deprecated_tests%${{ needs.deprecated_tests.result }}
+            ${{ env.SLACK_TEST_LIST}}
           report_list: |
             sonarcloud%${{ needs.sonarcloud.result }}
             phpcs_tests%${{ needs.phpcs_tests.result }}
