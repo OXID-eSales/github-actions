@@ -386,7 +386,7 @@ jobs:
         php: ${{ fromJSON(needs.init.outputs.phpunit_matrix_php) }}
         mysql: ${{ fromJSON(needs.init.outputs.phpunit_matrix_mysql) }}
         template_engine: ${{ fromJSON(needs.init.outputs.phpunit_matrix_template_engine) }}
-        testplan: ${{ needs.init.outputs.phpunit_matrix_testplan }}
+        testplan: ${{ fromJSON(needs.init.outputs.phpunit_matrix_testplan) }}
       fail-fast: false
       max-parallel: ${{ fromJSON(needs.init.outputs.phpunit_max_parallel) }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
@@ -466,7 +466,7 @@ jobs:
         php: ${{ fromJSON(needs.init.outputs.codeception_matrix_php) }}
         mysql: ${{ fromJSON(needs.init.outputs.codeception_matrix_mysql) }}
         template_engine: ${{ fromJSON(needs.init.outputs.codeception_matrix_template_engine) }}
-        testplan: ${{ needs.init.outputs.codeception_matrix_testplan }}
+        testplan: ${{ fromJSON(needs.init.outputs.codeception_matrix_testplan) }}
       fail-fast: false
       max-parallel: ${{ fromJSON(needs.init.outputs.codeception_max_parallel) }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
@@ -610,7 +610,7 @@ jobs:
         php: ${{ fromJSON(needs.init.outputs.runtest_matrix_php) }}
         mysql: ${{ fromJSON(needs.init.outputs.runtest_matrix_mysql) }}
         template_engine: ${{ fromJSON(needs.init.outputs.runtest_matrix_template_engine) }}
-        testplan: ${{ needs.init.outputs.runtest_matrix_testplan }}
+        testplan: ${{ fromJSON(needs.init.outputs.runtest_matrix_testplan) }}
       fail-fast: false
       max-parallel: ${{ fromJSON(needs.init.outputs.runtest_max_parallel) }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
@@ -727,11 +727,9 @@ jobs:
       - prepare_shop
       - install_shop
       - install_module
-      - unit_tests
-      - integration_tests
-      - codeception_tests
-      - shop_setup_tests
-      - deprecated_tests
+      - phpunit
+      - codeception
+      - runtest
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.sonarcloud_matrix_php) }}
@@ -854,11 +852,9 @@ jobs:
       - prepare_shop
       - install_shop
       - install_module
-      - unit_tests
-      - integration_tests
-      - codeception_tests
-      - shop_setup_tests
-      - deprecated_tests
+      - phpunit
+      - codeception
+      - runtest
       - sonarcloud
       - phpcs_tests
       - styles
