@@ -603,7 +603,7 @@ shop_setup_tests:
 # codeception/phpunit
 runtest:
   matrix: *matrix
-  matrix_testplan: '[""https://raw.githubusercontent.com/{{ .Github.Repository }}/{{ .Github.RefName }}/tests/github_actions/deprecated_tests.yml"]'
+  matrix_testplan: '["https://raw.githubusercontent.com/{{ .Github.Repository }}/{{ .Github.RefName }}/tests/github_actions/deprecated_tests.yml"]'
   max_parallel: *max_parallel
   docker_login: *docker_login
   load_shop: *install_module_prefix

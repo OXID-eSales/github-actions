@@ -155,11 +155,11 @@ jobs:
       phpunit_matrix_testplan: ${{ steps.ltp.outputs.phpunit_matrix_testplan }}
       phpunit_max_parallel: ${{ steps.ltp.outputs.phpunit_max_parallel }}
       # codeception_tests variables
-      codeception_matrix_mysql: ${{ steps.ltp.outputs.codeception_tests_matrix_mysql }}
-      codeception_matrix_php: ${{ steps.ltp.outputs.codeception_tests_matrix_php }}
-      codeception_matrix_template_engine: ${{ steps.ltp.outputs.codeception_tests_matrix_template_engine }}
-      codeception_matrix_testplan: ${{ steps.ltp.outputs.codeception_tests_matrix_testplan }}
-      codeception_max_parallel: ${{ steps.ltp.outputs.codeception_tests_max_parallel }}
+      codeception_matrix_mysql: ${{ steps.ltp.outputs.codeception_matrix_mysql }}
+      codeception_matrix_php: ${{ steps.ltp.outputs.codeception_matrix_php }}
+      codeception_matrix_template_engine: ${{ steps.ltp.outputs.codeception_matrix_template_engine }}
+      codeception_matrix_testplan: ${{ steps.ltp.outputs.codeception_matrix_testplan }}
+      codeception_max_parallel: ${{ steps.ltp.outputs.codeception_max_parallel }}
       # runtest variables
       runtest_matrix_mysql: ${{ steps.ltp.outputs.runtest_matrix_mysql }}
       runtest_matrix_php: ${{ steps.ltp.outputs.runtest_matrix_php }}
