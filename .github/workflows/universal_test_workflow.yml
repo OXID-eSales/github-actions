@@ -399,10 +399,11 @@ jobs:
       - name: 'Get testplan name'
         id: phpunit_testplan_name
         run: |
+          DEFAULT_TESTPLAN='https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml'
           if [ '${{ matrix.testplan}}' == '-' ]; then
-            echo 'testplan=https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml' | tee -a "${GITHUB_OUTPUT}"
+            echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
           else
-            echo 'testplan=https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml,${{matrix.testplan}}' | tee -a "${GITHUB_OUTPUT}"
+            echo "testplan=${DEFAULT_TESTPLAN},${{matrix.testplan}}" | tee -a "${GITHUB_OUTPUT}"
           fi
           echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}_TE${{ matrix.template_engine}}" | tee -a "${GITHUB_OUTPUT}"
 
@@ -478,10 +479,11 @@ jobs:
       - name: 'Get testplan name'
         id: codeception_testplan_name
         run: |
+          DEFAULT_TESTPLAN='https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml'
           if [ '${{ matrix.testplan}}' == '-' ]; then
-            echo 'testplan=https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml' | tee -a "${GITHUB_OUTPUT}"
+            echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
           else
-            echo 'testplan=https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml,${{matrix.testplan}}' | tee -a "${GITHUB_OUTPUT}"
+            echo "testplan=${DEFAULT_TESTPLAN},${{matrix.testplan}}" | tee -a "${GITHUB_OUTPUT}"
           fi
           echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}_TE${{ matrix.template_engine}}" | tee -a "${GITHUB_OUTPUT}"
 
@@ -621,10 +623,11 @@ jobs:
       - name: 'Get testplan name'
         id: runtest_testplan_name
         run: |
+          DEFAULT_TESTPLAN='https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml'
           if [ '${{ matrix.testplan}}' == '-' ]; then
-            echo 'testplan=https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml' | tee -a "${GITHUB_OUTPUT}"
+            echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
           else
-            echo 'testplan=https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml,${{matrix.testplan}}' | tee -a "${GITHUB_OUTPUT}"
+            echo "testplan=${DEFAULT_TESTPLAN},${{matrix.testplan}}" | tee -a "${GITHUB_OUTPUT}"
           fi
           echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}_TE${{ matrix.template_engine}}" | tee -a "${GITHUB_OUTPUT}"
 

@@ -4,6 +4,7 @@
 prepare_shop:
   composer:
     rm:
+      # yamllint disable-line rule:line-length
       parameters: 'codeception/codeception codeception/module-asserts codeception/module-db codeception/module-filesystem codeception/module-webdriver oxid-esales/codeception-modules oxid-esales/codeception-page-objects'
       options: '--no-update --dev'
     configure:

@@ -266,12 +266,6 @@ install_module:
   # Name of the package on github (organization/repository)
   package_name: ''
 
-
-
-
-
-
-
 # The unit tests we run on our code, this uses phpunit for the actual tests.
 # See docs/actions/start_shop.md and docs/actions/phpunit.md for more information.
 phpunit:
@@ -341,18 +335,6 @@ phpunit:
   # This grep pattern is applied to the generated phpunit log file. If we have
   # a hit matching the pattern below, the step will fail.
   failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|Test file ".+" not found'
-
-
-
-
-
-
-
-
-
-
-
-
 
 # The unit tests we run on our code, this uses phpunit for the actual tests.
 # See docs/actions/start_shop.md and docs/actions/phpunit.md for more information.
@@ -447,13 +429,6 @@ integration_tests:
     prefix: *coverage_prefix
   failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|Test file ".+" not found'
 
-
-
-
-
-
-
-
 # This step usesd the codeception custom action. Many inputs are similar to the
 # ones in the unit tests.
 # See docs/actions/start_shop.md and docs/actions/codeception.md for more information.
@@ -527,20 +502,6 @@ codeception:
     path: 'source/codeception_coverage.xml'
     prefix: *coverage_prefix
   failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found'
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # This step usesd the codeception custom action. Many inputs are similar to the
 # ones in the unit tests.
@@ -636,10 +597,6 @@ shop_setup_tests:
     prefix: *coverage_prefix
   failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found'
 
-
-
-
-
 # These deprecated tests use the runtests action. Many options are similar to
 # codeception/phpunit
 runtest:
@@ -703,13 +660,6 @@ runtest:
     path: 'source/deprecated_tests_coverage.xml'
     prefix: *coverage_prefix
   failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Fatal|Error|DID NOT FINISH'
-
-
-
-
-
-
-
 
 # These deprecated tests use the runtests action. Many options are similar to
 # codeception/phpunit
