@@ -272,7 +272,8 @@ phpunit:
   matrix: *matrix
   # Providing a list of testplans to be executed with phpunit
   # by default, these are the unit and integration tests
-  matrix_testplan: '["source/tests/github_actions/phpunit_unit.yml","source/tests/github_actions/phpunit_integration.yml"]'
+  # yamllint disable-line rule:line-length
+  matrix_testplan: '["https://raw.githubusercontent.com/{{ .Github.Repository }}/{{ .Github.RefName }}/tests/github_actions/phpunit_unit.yml","https://raw.githubusercontent.com/{{ .Github.Repository }}/{{ .Github.RefName }}/tests/github_actions/phpunit_integration.yml"]'
   max_parallel: *max_parallel
   # The title is used in the matrix testplan runs to distinguish their output
   # Overwrite it with a unique name in each iteration
@@ -434,7 +435,8 @@ integration_tests:
 # See docs/actions/start_shop.md and docs/actions/codeception.md for more information.
 codeception:
   matrix: *matrix
-  matrix_codeception: '["source/tests/github_actions/codeception_Acceptance.yml","source/tests/github_actions/codeception_AcceptanceSetup.yml"]'
+  # yamllint disable-line rule:line-length
+  matrix_codeception: '["https://raw.githubusercontent.com/{{ .Github.Repository }}/{{ .Github.RefName }}/tests/github_actions/codeception_Acceptance.yml","https://raw.githubusercontent.com/{{ .Github.Repository }}/{{ .Github.RefName }}/tests/github_actions/codeception_AcceptanceSetup.yml"]'
   # More parallelism causes instability on the private runners, so we reduce it here
   max_parallel: &codeception_max_parallel 1
   docker_login: *docker_login
