@@ -980,7 +980,9 @@ jobs:
 
       - name: 'Output report'
         run: |
-          cat $(find . -iname 'report*.md'|sort) >>"${GITHUB_STEP_SUMMARY}"
+          for FILE in $(find . -iname 'report*.md'|sort); do
+            cat "${FILE}" >>"${GITHUB_STEP_SUMMARY}"
+          done
 
       - name: 'Process job results'
         run: |
