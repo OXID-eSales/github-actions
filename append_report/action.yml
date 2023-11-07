@@ -46,12 +46,6 @@ inputs:
     description: 'Testplan for this matrix run'
     default: 'skipped'
 
-env:
-  SKIPPED_ICON: '![Skipped](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/26aa.png)'
-  SUCCESS_ICON: '![Success](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/2705.png)'
-  CANCELLED_ICON: '![Cancelled](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-large/26ab.png)'
-  FAILURE_ICON: '![Failure](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/274c.png)'
-
 runs:
   using: "composite"
   steps:
@@ -70,9 +64,13 @@ runs:
       shell: bash
       # yamllint disable rule:line-length
       run: |
+        SKIPPED_ICON='![Skipped](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/26aa.png)'
+        SUCCESS_ICON='![Success](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/2705.png)'
+        CANCELLED_ICON='![Cancelled](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-large/26ab.png)'
+        FAILURE_ICON='![Failure](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/274c.png)'
         JOB_STATUS='${{inputs.status}}'
         JOB_ICON="${JOB_STATUS^^}_ICON"
-        echo "ICON=${JOB_ICON}"
+        echo "ICON=${JOB_ICON} value='${!JOB_ICON}'"
         echo "|${{inputs.job}}|${{inputs.title}}|${{inputs.php}}|${{inputs.mysql}}|${{inputs.template_engine}}|[${{inputs.testplan}}]|${!JOB_ICON} ${JOB_STATUS}|" >"report-${{inputs.phase}}_${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}_TE${{inputs.template_engine}}.md"
         echo "${JOB_STATUS}" >"job_status-${{inputs.phase}}_${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}_TE${{inputs.template_engine}}.txt"
 
