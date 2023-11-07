@@ -76,7 +76,13 @@ runs:
         JOB_STATUS='${{inputs.status}}'
         JOB_ICON="${JOB_STATUS^^}_ICON"
         echo "ICON=${JOB_ICON} value='${!JOB_ICON}'"
-        echo "|${{inputs.job}}|${{inputs.title}}|${{inputs.php}}|${{inputs.mysql}}|${{inputs.template_engine}}|[${{inputs.testplan}}]|${!JOB_ICON} ${JOB_STATUS}|" >"report-${{inputs.priority}}-${{inputs.phase}}_${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}_TE${{inputs.template_engine}}.md"
+        if [ '${{inputs.testplan}}' =~ ^http.* ]; then
+          BASE=$(basename '${{inputs.testplan}}')
+          TP="[${BASE}](${{inputs.testplan}})"
+        else
+          TP="${{inputs.testplan}}"
+        fi
+        echo "|${{inputs.job}}|${{inputs.title}}|${{inputs.php}}|${{inputs.mysql}}|${{inputs.template_engine}}|${TP}|${!JOB_ICON} ${JOB_STATUS}|" >"report-${{inputs.priority}}-${{inputs.phase}}_${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}_TE${{inputs.template_engine}}.md"
         echo "${JOB_STATUS}" >"job_status-${{inputs.priority}}-${{inputs.phase}}_${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}_TE${{inputs.template_engine}}.txt"
 
     - name: Upload Artifacts

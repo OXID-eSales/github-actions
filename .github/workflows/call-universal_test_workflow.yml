@@ -1011,10 +1011,12 @@ jobs:
             CUMULATED=0
             LAST_TITLE=''
             for FILE in ${TEST_FILES}; do
-              TITLE=$(echo "${FILE}"|sed -e "s|^job_status-test_${JOB}-||" -e 's|-.*$||')
+              TITLE=$(echo "${FILE}"|sed -e "s|^\./job_status-...-test_${JOB}-||" -e 's|-.*$||')
               if [ "${TITLE}" != "${LAST_TITLE}" ]; then
-                SLACK_TEST_LIST="$(echo -ne "${LAST_TITLE}%${STATUS[CUMULATED]}\n${SLACK_TEST_LIST}")"
-                LAST_TITLE="$TITLE"
+                if [ -n "${LAST_TITLE}" ]; then
+                  SLACK_TEST_LIST="$(echo -ne "${LAST_TITLE}%${STATUS[CUMULATED]}\n${SLACK_TEST_LIST}")"
+                fi
+                LAST_TITLE="${TITLE}"
                 CUMULATED=0
               fi
               S=$(head -n 1 "${FILE}")
@@ -1028,8 +1030,8 @@ jobs:
                 CUMULATED=$SNUM
               fi
             done
+            SLACK_TEST_LIST="$(echo -ne "${LAST_TITLE}%${STATUS[CUMULATED]}\n${SLACK_TEST_LIST}")"
           done
-          SLACK_TEST_LIST="$(echo -ne "${LAST_TITLE}%${STATUS[CUMULATED]}\n${SLACK_TEST_LIST}")"
           cat <<EOF | tee -a "${GITHUB_ENV}"
           SLACK_TEST_LIST<<slack_test_list_separator
           ${SLACK_TEST_LIST}
