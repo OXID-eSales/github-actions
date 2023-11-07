@@ -413,7 +413,7 @@ jobs:
       - name: 'Write summary'
         if: always()
         run: |
-          if [ '${{ needs.init.outputs.install_module_ids != '' }}' == '' ] then
+          if [ '${{ needs.init.outputs.install_module_ids != '' }}' == '' ]; then
             JOB_STATUS="skipped"
           else
             JOB_STATUS='${{job.status}}'
@@ -525,7 +525,7 @@ jobs:
           retention-days: 7
 
   codeception:
-    needs: ['init', 'begin_test_phase']
+    needs: ['init', 'install_module', 'begin_test_phase']
     if: ${{ always() && needs.init.outputs.codeception_matrix_testplan != '' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
@@ -1039,11 +1039,11 @@ jobs:
           for JOB in phpunit codeception runtest; do
             TEST_FILES=$(find . -type f -iname "job_status-test_${JOB}-*.txt"|sort)
             CUMULATED=0
-            LAST_TITLE=""
+            LAST_TITLE=''
             for FILE in ${TEST_FILES}; do
               TITLE=$(echo "${FILE}"|sed -e "s|^job_status-test_${JOB}-||" -e 's|-.*$||')
               if [ "${TITLE}" != "${LAST_TITLE}" ]; then
-                SLACK_TEST_LIST=$( echo -ne "${LAST_TITLE}%${STATUS[CUMULATED]}\n${SLACK_TEST_LIST}")
+                SLACK_TEST_LIST="$(echo -ne "${LAST_TITLE}%${STATUS[CUMULATED]}\n${SLACK_TEST_LIST}")"
                 LAST_TITLE="$TITLE"
                 CUMULATED=0
               fi
@@ -1059,8 +1059,8 @@ jobs:
               fi
             done
           done
-          SLACK_TEST_LIST=$( echo -ne "${LAST_TITLE}%${STATUS[CUMULATED]}\n${SLACK_TEST_LIST}")
-          cat >"${GITHUB_ENV} <<EOF
+          SLACK_TEST_LIST="$(echo -ne "${LAST_TITLE}%${STATUS[CUMULATED]}\n${SLACK_TEST_LIST}")"
+          cat >"${GITHUB_ENV}" <<EOF
           SLACK_TEST_LIST<<slack_test_list_separator
           ${SLACK_TEST_LIST}
           slack_test_list_separator
