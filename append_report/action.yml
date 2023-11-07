@@ -19,27 +19,27 @@ inputs:
     type: string
     required: false
     description: 'Title of the job'
-    default: '-'
+    default: 'default'
   php:
     type: string
     required: false
     description: 'PHP version for this matrix run'
-    default: '-'
+    default: '0'
   mysql:
     type: string
     required: false
     description: 'MySQL version for this matrix run'
-    default: '-'
+    default: '0'
   template_engine:
     type: string
     required: false
     description: 'Template engine for this matrix run'
-    default: '-'
+    default: 'none'
   testplan:
     type: string
     required: false
     description: 'Testplan for this matrix run'
-    default: '-'
+    default: 'none'
   status:
     type: string
     required: false
@@ -59,7 +59,7 @@ runs:
       if: ${{ inputs.header == 'true' }}
       shell: bash
       run: |
-        cat <<EOF >report_${{ inputs.phase }}_000_header.md
+        cat <<EOF >report-${{ inputs.phase }}_000_header.md
         ## ${{ inputs.phase }} phase
         |Job |Title|PHP|MySQL|Template engine|Testplan|Status|
         |:---|:----|--:|----:|--------------:|:-------|:-----|
@@ -72,7 +72,8 @@ runs:
       run: |
         JOB_STATUS='${{inputs.status}}'
         JOB_ICON="${JOB_STATUS^^}_ICON"
-        echo "|${{inputs.job}}|${{inputs.title}}|${{inputs.php}}|${{inputs.mysql}}|${{inputs.template_engine}}|[${{inputs.testplan}}]|${!JOB_ICON} ${JOB_STATUS}|" >"report_${{inputs.phase}}_${{inputs.job}}_${{inputs.title}}.md"
+        echo "ICON=${JOB_ICON}"
+        echo "|${{inputs.job}}|${{inputs.title}}|${{inputs.php}}|${{inputs.mysql}}|${{inputs.template_engine}}|[${{inputs.testplan}}]|${!JOB_ICON} ${JOB_STATUS}|" >"report-${{inputs.phase}}_${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}_TE${{inputs.template_engine}}.md"
         echo "${JOB_STATUS}" >"job_status-${{inputs.phase}}_${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}_TE${{inputs.template_engine}}.txt"
 
     - name: Upload Artifacts
@@ -83,7 +84,7 @@ runs:
       with:
         name: job_status
         path: |
-          job_status-${{inputs.phase}}_${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}_TE${{inputs.template_engine}}.txt
-          report_${{inputs.phase}}*.md
+          job_status-*.txt
+          report-${{inputs.phase}}*.md
         if-no-files-found: ignore
         retention-days: 7
