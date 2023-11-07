@@ -314,6 +314,7 @@ phpunit:
     files: |
       source/source/log/oxideshop.log
       data/php/logs/error_log.txt
+      job_status*.txt
 
   # Github run artifact for the phpunit output - This is dynamic, so we set it
   # in the workflow to '<prefix_PHP<matrix.php>_MYSQL<matrix.mysql>'
@@ -496,6 +497,7 @@ codeception:
       source/source/log/oxideshop.log
       data/php/logs/error_log.txt
       source/tests/Codeception/_output
+      job_status*.txt
     prefix: 'codeception_artifacts'
 
   coverage:

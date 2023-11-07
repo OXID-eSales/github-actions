@@ -41,6 +41,12 @@ on:
         required: false
         # description: Webhook for posting to SLACK
 
+env:
+  SKIPPED_ICON: '![Skipped](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/26aa.png)'
+  SUCCESS_ICON: '![Success](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/2705.png)'
+  CANCELLED_ICON: '![Cancelled](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-large/26ab.png)'
+  FAILURE_ICON: '![Failure](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/274c.png)'
+
 jobs:
   init:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
@@ -75,6 +81,20 @@ jobs:
             generated_env.txt
             load_testplan.log
           retention-days: 7
+
+      - name: 'Write summary'
+        if: always()
+        run: |
+          JOB_STATUS='${{job.status}}'
+          JOB_ICON="${JOB_STATUS^^}_ICON"
+          cat <<EOF | tee -a "$GITHUB_STEP_SUMMARY"
+          # Workflow summary
+          
+          ## Installation phase
+          |Job |PHP|MySQL|Status|
+          |:---|--:|----:|:-----|
+          |Init|  -|    -|${!JOB_ICON} ${JOB_STATUS}|
+          EOF
 
     outputs:
       # prepare_shop variables
@@ -280,9 +300,12 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
-      - name: 'List files'
+      - name: 'Write summary'
+        if: always()
         run: |
-          find . |sort
+          JOB_STATUS='${{job.status}}'
+          JOB_ICON="${JOB_STATUS^^}_ICON"
+          echo "|prepare_shop|${{matrix.php}}|${{matrix.mysql}}|${!JOB_ICON} ${JOB_STATUS}|" | tee -a "$GITHUB_STEP_SUMMARY"
 
   install_shop:
     needs: ['init', 'prepare_shop']
@@ -328,6 +351,14 @@ jobs:
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+
+      - name: 'Write summary'
+        if: always()
+        run: |
+          JOB_STATUS='${{job.status}}'
+          JOB_ICON="${JOB_STATUS^^}_ICON"
+          echo "|install_shop|${{matrix.php}}|${{matrix.mysql}}|${!JOB_ICON} ${JOB_STATUS}|" | tee -a "$GITHUB_STEP_SUMMARY"
+
 
   install_module:
     needs: ['init', 'install_shop']
@@ -380,8 +411,32 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
+      - name: 'Write summary'
+        if: always()
+        run: |
+          if [ '${{ needs.init.outputs.install_module_ids != '' }}' == '' ] then
+            JOB_STATUS="skipped"
+          else
+            JOB_STATUS='${{job.status}}'
+          fi
+          JOB_ICON="${JOB_STATUS^^}_ICON"
+          echo "|install_module|${{matrix.php}}|${{matrix.mysql}}|${!JOB_ICON} ${JOB_STATUS}|" | tee -a "$GITHUB_STEP_SUMMARY"
+
+  begin_test_phase:
+    needs: ['install_module']
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    steps:
+      - name: 'Write Phase header'
+        if: always()
+        run: |
+          cat <<EOF | tee -a "$GITHUB_STEP_SUMMARY"
+          ## Test phase
+          |Job |PHP|MySQL|Template engine|Testplan|Status|
+          |:---|--:|----:|--------------:|:-------|:-----|
+          EOF
+
   phpunit:
-    needs: ['init', 'install_module']
+    needs: ['init','begin_test_phase']
     if: ${{ needs.init.outputs.phpunit_matrix_testplan != '' }}
     strategy:
       matrix:
@@ -451,17 +506,27 @@ jobs:
       - name: 'Stop shop'
         uses: 'OXID-eSales/github-actions/stop_shop@v2'
 
-      - name: 'Collect status'
+      - name: 'Write summary'
+        if: always()
+        # yamllint disable rule:line-length
         run: |
-          cat <<EOF | tee -a "${GITHUB_ENV}"
-          SLACK_TEST_LIST<<slack_test_list_separator
-          ${{ env.SLACK_TEST_LIST}}
-          ${{ steps.phpunit_testplan.outputs.phpunit_title }}%${{steps.phpunit_run.conclusion}}
-          slack_test_list_separator
-          EOF
+          JOB_STATUS='${{job.status}}'
+          JOB_ICON="${JOB_STATUS^^}_ICON"
+          echo "|phpunit ${{steps.phpunit_testplan.outputs.phpunit_title}}|${{matrix.php}}|${{matrix.mysql}}|${{matrix.template_engine}}|${{matrix.testplan}}|${!JOB_ICON} ${JOB_STATUS}|" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "${JOB_STATUS}" >"job_status-test_phpunit-${{steps.phpunit_testplan.outputs.phpunit_title}}-${{steps.phpunit_testplan_name.outputs.matrix_suffix}}.txt"
+        # yamllint enable rule:line-length
+
+      - name: Upload Artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: job_status
+          path: 'job_status-test_phpunit-${{steps.phpunit_testplan.outputs.phpunit_title}}-${{steps.phpunit_testplan_name.outputs.matrix_suffix}}.txt'
+          if-no-files-found: ignore
+          retention-days: 7
 
   codeception:
-    needs: ['init', 'install_module', 'phpunit']
+    needs: ['init', 'begin_test_phase']
     if: ${{ always() && needs.init.outputs.codeception_matrix_testplan != '' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
@@ -595,17 +660,27 @@ jobs:
       - name: 'Stop shop'
         uses: 'OXID-eSales/github-actions/stop_shop@v2'
 
-      - name: 'Collect status'
+      - name: 'Write summary'
+        if: always()
+        # yamllint disable rule:line-length
         run: |
-          cat <<EOF | tee -a "${GITHUB_ENV}"
-          SLACK_TEST_LIST<<slack_test_list_separator
-          ${{ env.SLACK_TEST_LIST}}
-          ${{ steps.codeception_testplan.outputs.codeception_title }}%${{steps.codeception_run.conclusion}}
-          slack_test_list_separator
-          EOF
+          JOB_STATUS='${{job.status}}'
+          JOB_ICON="${JOB_STATUS^^}_ICON"
+          echo "|codeception ${{steps.codeception_testplan.outputs.codeception_title}}|${{matrix.php}}|${{matrix.mysql}}|${{matrix.template_engine}}|${{matrix.testplan}}|${!JOB_ICON} ${JOB_STATUS}|" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "${JOB_STATUS}" >"job_status-test_codeception-${{steps.codeception_testplan.outputs.codeception_title}}-${{steps.codeception_testplan_name.outputs.matrix_suffix}}.txt"
+        # yamllint enable rule:line-length
+
+      - name: Upload Artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: job_status
+          path: 'job_status-test_codeception-${{steps.codeception_testplan.outputs.codeception_title}}-${{steps.codeception_testplan_name.outputs.matrix_suffix}}.txt'
+          if-no-files-found: ignore
+          retention-days: 7
 
   runtest:
-    needs: ['init', 'install_module', 'codeception']
+    needs: ['init', 'install_module', 'begin_test_phase']
     if: ${{ always() && needs.init.outputs.runtest_matrix_testplan != '' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
@@ -713,25 +788,41 @@ jobs:
       - name: 'Stop shop'
         uses: 'OXID-eSales/github-actions/stop_shop@v2'
 
-      - name: 'Collect status'
+      - name: 'Write summary'
+        if: always()
+        # yamllint disable rule:line-length
         run: |
-          cat <<EOF | tee -a "${GITHUB_ENV}"
-          SLACK_TEST_LIST<<slack_test_list_separator
-          ${{ env.slack_test_list }}
-          ${{ steps.runtest_testplan.outputs.runtest_title }}%${{steps.runtest_run.conclusion}}
-          slack_test_list_separator
+          JOB_STATUS='${{job.status}}'
+          JOB_ICON="${JOB_STATUS^^}_ICON"
+          echo "|runtest ${{steps.runtest_testplan.outputs.runtest_title}}|${{matrix.php}}|${{matrix.mysql}}|${{matrix.template_engine}}|${{matrix.testplan}}|${!JOB_ICON} ${JOB_STATUS}|" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "${JOB_STATUS}" >"job_status-test_runtest-${{steps.runtest_testplan.outputs.runtest_title}}-${{steps.runtest_testplan_name.outputs.matrix_suffix}}.txt"
+        # yamllint enable rule:line-length
+
+      - name: Upload Artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: job_status
+          path: 'job_status-test_runtest-${{steps.runtest_testplan.outputs.runtest_title}}-${{steps.runtest_testplan_name.outputs.matrix_suffix}}.txt'
+          if-no-files-found: ignore
+          retention-days: 7
+
+  begin_report_phase:
+    needs: ['phpunit','codeception','runtest']
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    steps:
+      - name: 'Write Phase header'
+        if: always()
+        run: |
+          cat <<EOF | tee -a "$GITHUB_STEP_SUMMARY"
+          ## Report phase
+          |Job |PHP|MySQL|Template engine|Testplan|Status|
+          |:---|--:|----:|--------------:|:-------|:-----|
           EOF
 
   sonarcloud:
-    if: ${{ always() && needs.init.outputs.sonarcloud_skip != 'true' && needs.install_shop.result == 'success' }}
-    needs:
-      - init
-      - prepare_shop
-      - install_shop
-      - install_module
-      - phpunit
-      - codeception
-      - runtest
+    needs: ['init','install_module','begin_report_phase']
+    if: ${{ always() && needs.init.outputs.sonarcloud_matrix_testplan == '' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.sonarcloud_matrix_php) }}
@@ -759,7 +850,7 @@ jobs:
           echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}_TE${{ matrix.template_engine}}" | tee -a "${GITHUB_OUTPUT}"
 
       - name: 'Load Testplan'
-        id: runtest_testplan
+        id: sonarcloud_testplan
         uses: 'joernott/load_testplan@v1'
         with:
           files: '${{steps.sonarcloud_testplan_name.outputs.testplan}}'
@@ -786,19 +877,24 @@ jobs:
           sonar_token: ${{ secrets.SONAR_TOKEN }}
           github_token: ${{ github.token }}
 
-      - name: 'SonarCloud Scan (internal)'
-        if: ${{ needs.init.outputs.sonarcloud_internal_project_name != '' }}
-        uses: 'OXID-eSales/github-actions/sonarcloud@v2'
+      - name: 'Write summary'
+        if: always()
+        # yamllint disable rule:line-length
+        run: |
+          JOB_STATUS='${{job.status}}'
+          JOB_ICON="${JOB_STATUS^^}_ICON"
+          echo "|sonarcloud ${{steps.sonarcloud_testplan.outputs.sonarcloud_title}}|${{matrix.php}}|${{matrix.mysql}}|${{matrix.template_engine}}|${{matrix.testplan}}|${!JOB_ICON} ${JOB_STATUS}|" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "${JOB_STATUS}" >"job_status-report_sonarcloud-${{steps.sonarcloud_testplan.outputs.sonarcloud_title}}-${{steps.sonarcloud_testplan_name.outputs.matrix_suffix}}.txt"
+        # yamllint enable rule:line-length
+
+      - name: Upload Artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
         with:
-          coverage_artifact: ${{ needs.init.outputs.sonarcloud_coverage_prefix }}_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}
-          target_branch: ${{ needs.init.outputs.sonarcloud_target_branch }}
-          github_ref_name: ${{ github.ref_name }}
-          sonarcloud_organization: ${{ needs.init.outputs.sonarcloud_organization }}
-          sonarcloud_project_key: ${{ needs.init.outputs.sonarcloud_internal_project_key }}
-          sonarcloud_project_name: ${{ needs.init.outputs.sonarcloud_internal_project_name }}
-          sonarcloud_parameters: ${{ needs.init.outputs.sonarcloud_internal_parameters }}
-          sonar_token: ${{ secrets.SONAR_TOKEN }}
-          github_token: ${{ github.token }}
+          name: job_status
+          path: 'job_status-report_sonarcloud-${{steps.sonarcloud_testplan.outputs.sonarcloud_title}}-${{steps.sonarcloud_testplan_name.outputs.matrix_suffix}}.txt'
+          if-no-files-found: ignore
+          retention-days: 7
 
   phpcs_tests:
     needs: ['init', 'install_module', 'sonarcloud']
@@ -840,8 +936,27 @@ jobs:
       - name: 'Stop shop'
         uses: 'OXID-eSales/github-actions/stop_shop@v2'
 
+      - name: 'Write summary'
+        if: always()
+        # yamllint disable rule:line-length
+        run: |
+          JOB_STATUS='${{job.status}}'
+          JOB_ICON="${JOB_STATUS^^}_ICON"
+          echo "|phpcs|${{matrix.php}}|${{matrix.mysql}}|-|-|${!JOB_ICON} ${JOB_STATUS}|" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "${JOB_STATUS}" >"job_status-report_phpcs-default-PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}.txt"
+        # yamllint enable rule:line-length
+
+      - name: Upload Artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: job_status
+          path: 'job_status-report_phpcs-default-PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}.txt'
+          if-no-files-found: ignore
+          retention-days: 7
+
   styles:
-    needs: ['init', 'install_module', 'sonarcloud']
+    needs: ['init', 'install_module', 'begin_report_phase']
     if: ${{ needs.init.outputs.styles_skip != 'true' }}
     strategy:
       matrix:
@@ -875,6 +990,25 @@ jobs:
       - name: 'Stop shop'
         uses: 'OXID-eSales/github-actions/stop_shop@v2'
 
+      - name: 'Write summary'
+        if: always()
+        # yamllint disable rule:line-length
+        run: |
+          JOB_STATUS='${{job.status}}'
+          JOB_ICON="${JOB_STATUS^^}_ICON"
+          echo "|styles|${{matrix.php}}|${{matrix.mysql}}|-|-|${!JOB_ICON} ${JOB_STATUS}|" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "${JOB_STATUS}" >"job_status-report_styles-default-PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}.txt"
+        # yamllint enable rule:line-length
+
+      - name: Upload Artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: job_status
+          path: 'job_status-report_styles-default-PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}.txt'
+          if-no-files-found: ignore
+          retention-days: 7
+
   finish:
     if: ${{ always() && needs.init.outputs.finish_skip != 'true' }}
     needs:
@@ -892,6 +1026,45 @@ jobs:
     env:
       SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"
     steps:
+      - name: 'Download job results'
+        uses: actions/download-artifact@v3
+        with:
+          name: job_status
+
+      - name: 'Process job results'
+        run: |
+          SLACK_TEST_LIST=''
+          STATUS=(skipped success cancelled failure)
+          for JOB in phpunit codeception runtest; do
+            TEST_FILES=$(find . -type f -iname "job_status-test_${JOB}-*.txt"|sort)
+            CUMULATED=0
+            LAST_TITLE=""
+            for FILE in ${TEST_FILES}; do
+              TITLE=$(echo "${FILE}"|sed -e "s|^job_status-test_${JOB}-||" -e 's|-.*$||')
+              if [ "${TITLE}" != "${LAST_TITLE}" ]; then
+                SLACK_TEST_LIST=$( echo -ne "${LAST_TITLE}%${STATUS[CUMULATED]}\n${SLACK_TEST_LIST}")
+                LAST_TITLE="$TITLE"
+                CUMULATED=0
+              fi
+              S=$(cat "${FILE}"|head -1)
+              case ${S} in
+              skipped) SNUM=0 ;;
+              success) SNUM=1 ;;
+              cancelled) SNUM=2 ;;
+              *) SNUM=3 ;;
+              esac
+              if [ ${SNUM} -gt ${CUMULATED} ]; then
+                CUMULATED=$SNUM
+              fi
+            done
+          done
+          SLACK_TEST_LIST=$( echo -ne "${LAST_TITLE}%${STATUS[CUMULATED]}\n${SLACK_TEST_LIST}")
+          cat >"${GITHUB_ENV} <<EOF
+          SLACK_TEST_LIST<<slack_test_list_separator
+          ${SLACK_TEST_LIST}
+          slack_test_list_separator
+          EOF
+
       - name: Send custom JSON data to Slack workflow
         if: ${{ always() && env.SLACK_WEBHOOK != '' }}
         uses: 'OXID-eSales/github-actions/slack_status@v2'
