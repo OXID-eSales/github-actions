@@ -1047,7 +1047,7 @@ jobs:
                 LAST_TITLE="$TITLE"
                 CUMULATED=0
               fi
-              S=$(cat "${FILE}"|head -1)
+              S=$(head -n 1 "${FILE}")
               case ${S} in
               skipped) SNUM=0 ;;
               success) SNUM=1 ;;
