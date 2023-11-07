@@ -12,11 +12,12 @@ inputs:
     description: 'Which phase are we in'
   job:
     type: string
-    required: true
+    required: false
     description: 'Which job are we running'
+    default: '-'
   title:
     type: string
-    required: true
+    required: false
     description: 'Title of the job'
     default: '-'
   php:
@@ -56,6 +57,7 @@ runs:
   steps:
     - name: 'Write Phase header'
       if: ${{ inputs.header == 'true' }}
+      shell: bash
       run: |
         cat <<EOF >report_${{ inputs.phase }}_000_header.md
         ## ${{ inputs.phase }} phase
@@ -65,6 +67,7 @@ runs:
 
     - name: 'Write summary'
       if: ${{ inputs.header == 'false' }}
+      shell: bash
       # yamllint disable rule:line-length
       run: |
         JOB_STATUS='${{inputs.status}}'
