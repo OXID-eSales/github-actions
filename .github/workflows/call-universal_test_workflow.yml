@@ -980,8 +980,7 @@ jobs:
 
       - name: 'Output report'
         run: |
-          FILES=$(find . -iname 'report*.md'|sort)
-          cat ${FILES} >"${GITHUB_STEP_SUMMARY}"
+          cat $(find . -iname 'report*.md'|sort) >>"${GITHUB_STEP_SUMMARY}"
 
       - name: 'Process job results'
         run: |
