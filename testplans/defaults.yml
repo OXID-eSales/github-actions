@@ -736,6 +736,7 @@ sonarcloud:
     php: '["8.1"]'
     mysql: '["5.7"]'
     template_engine: '["twig"]'
+    # yamllint disable-line rule:line-length
     testplan: '["-",https://raw.githubusercontent.com/{{ .Github.Repository }}/{{ .Github.RefName }}/tests/github_actions/sonarcloud_oxideshop_ce_internal.yml"]'
 
   # There is only one matrix combination

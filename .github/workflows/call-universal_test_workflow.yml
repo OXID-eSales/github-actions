@@ -89,7 +89,6 @@ jobs:
           JOB_ICON="${JOB_STATUS^^}_ICON"
           cat <<EOF | tee -a "$GITHUB_STEP_SUMMARY"
           # Workflow summary
-          
           ## Installation phase
           |Job |PHP|MySQL|Status|
           |:---|--:|----:|:-----|
@@ -436,7 +435,7 @@ jobs:
           EOF
 
   phpunit:
-    needs: ['init','begin_test_phase']
+    needs: ['init', 'begin_test_phase']
     if: ${{ needs.init.outputs.phpunit_matrix_testplan != '' }}
     strategy:
       matrix:
@@ -675,6 +674,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: job_status
+          # yamllint disable-line rule:line-length
           path: 'job_status-test_codeception-${{steps.codeception_testplan.outputs.codeception_title}}-${{steps.codeception_testplan_name.outputs.matrix_suffix}}.txt'
           if-no-files-found: ignore
           retention-days: 7
@@ -808,7 +808,7 @@ jobs:
           retention-days: 7
 
   begin_report_phase:
-    needs: ['phpunit','codeception','runtest']
+    needs: ['phpunit', 'codeception', 'runtest']
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Write Phase header'
@@ -821,7 +821,7 @@ jobs:
           EOF
 
   sonarcloud:
-    needs: ['init','install_module','begin_report_phase']
+    needs: ['init', 'install_module', 'begin_report_phase']
     if: ${{ always() && needs.init.outputs.sonarcloud_matrix_testplan == '' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
@@ -892,6 +892,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: job_status
+          # yamllint disable-line rule:line-length
           path: 'job_status-report_sonarcloud-${{steps.sonarcloud_testplan.outputs.sonarcloud_title}}-${{steps.sonarcloud_testplan_name.outputs.matrix_suffix}}.txt'
           if-no-files-found: ignore
           retention-days: 7
