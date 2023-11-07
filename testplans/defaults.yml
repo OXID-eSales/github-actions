@@ -274,7 +274,7 @@ phpunit:
   # by default, these are the unit and integration tests
   # yamllint disable-line rule:line-length
   matrix_testplan: '["https://raw.githubusercontent.com/{{ .Github.Repository }}/{{ .Github.RefName }}/tests/github_actions/phpunit_unit.yml","https://raw.githubusercontent.com/{{ .Github.Repository }}/{{ .Github.RefName }}/tests/github_actions/phpunit_integration.yml"]'
-  max_parallel: *max_parallel
+  max_parallel: 8
   # The title is used in the matrix testplan runs to distinguish their output
   # Overwrite it with a unique name in each iteration
   title: 'phpunit'
@@ -733,6 +733,9 @@ sonarcloud:
   matrix:
     php: '["8.1"]'
     mysql: '["5.7"]'
+    template_engine: '["twig"]'
+    testplans: '["-",https://raw.githubusercontent.com/{{ .Github.Repository }}/{{ .Github.RefName }}/tests/github_actions/sonarcloud_oxideshop_ce_internal.yml"]'
+
   # There is only one matrix combination
   max_parallel: 1
   docker_login: *docker_login
