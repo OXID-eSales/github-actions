@@ -75,9 +75,9 @@ runs:
         echo "|${{inputs.job}}|${{inputs.title}}|${{inputs.php}}|${{inputs.mysql}}|${{inputs.template_engine}}|[${{inputs.testplan}}]|${!JOB_ICON} ${JOB_STATUS}|" >"report_${{inputs.phase}}_${{inputs.job}}_${{inputs.title}}.md"
         echo "${JOB_STATUS}" >"job_status-${{inputs.phase}}_${{inputs.job}}-${{sinputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}_TE${{inputs.template_engine}}.txt"
 
-      # yamllint enable rule:line-length
-
       - name: Upload Artifacts
+        # yamllint enable rule:line-length
+
         if: always()
         uses: actions/upload-artifact@v3
         with:
