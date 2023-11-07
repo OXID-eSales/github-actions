@@ -82,6 +82,7 @@ jobs:
         with:
           header: true
           phase: install
+          priority: '000'
 
     outputs:
       # prepare_shop variables
@@ -297,6 +298,7 @@ jobs:
         if: always()
         uses: OXID-eSales/github-actions/append_report@v0
         with:
+          priority: '010'
           phase: install
           job: prepare_shop
           php: ${{matrix.php}}
@@ -352,6 +354,7 @@ jobs:
         if: always()
         uses: OXID-eSales/github-actions/append_report@v0
         with:
+          priority: '020'
           phase: install
           job: install_shop
           php: ${{matrix.php}}
@@ -413,6 +416,7 @@ jobs:
         if: ${{ needs.init.outputs.install_module_ids != '' }}
         uses: OXID-eSales/github-actions/append_report@v0
         with:
+          priority: '030'
           phase: install
           job: install_module
           php: ${{matrix.php}}
@@ -428,6 +432,7 @@ jobs:
         uses: OXID-eSales/github-actions/append_report@v0
         with:
           header: true
+          priority: '100'
           phase: test
 
   phpunit:
@@ -505,6 +510,7 @@ jobs:
         if: always()
         uses: OXID-eSales/github-actions/append_report@v0
         with:
+          priority: '110'
           phase: test
           job: phpunit
           title: ${{ steps.phpunit_testplan.outputs.phpunit_title }}
@@ -653,6 +659,7 @@ jobs:
         if: always()
         uses: OXID-eSales/github-actions/append_report@v0
         with:
+          priority: '120'
           phase: test
           job: codeception
           title: ${{ steps.codeception_testplan.outputs.codeception_title }}
@@ -775,6 +782,7 @@ jobs:
         if: always()
         uses: OXID-eSales/github-actions/append_report@v0
         with:
+          priority: '130'
           phase: test
           job: runtest
           title: ${{ steps.runtest_testplan.outputs.runtest_title }}
@@ -785,7 +793,7 @@ jobs:
           status: ${{job.status}}
 
   begin_report_phase:
-    needs: ['phpunit', 'codeception', 'runtest']
+    #needs: ['phpunit', 'codeception', 'runtest']
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Write Report'
@@ -793,10 +801,11 @@ jobs:
         uses: OXID-eSales/github-actions/append_report@v0
         with:
           header: true
+          priority: '200'
           phase: report
 
   sonarcloud:
-    needs: ['init', 'install_module', 'begin_report_phase']
+    needs: ['init', 'install_module', 'phpunit', 'codeception']
     if: ${{ always() && needs.init.outputs.sonarcloud_matrix_testplan == '' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
@@ -856,6 +865,7 @@ jobs:
         if: always()
         uses: OXID-eSales/github-actions/append_report@v0
         with:
+          priority: '210'
           phase: report
           job: sonarcloud
           title: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_title }}
@@ -866,7 +876,7 @@ jobs:
           status: ${{job.status}}
 
   phpcs_tests:
-    needs: ['init', 'install_module', 'sonarcloud']
+    needs: ['init', 'install_module']
     if: ${{ always() && needs.init.outputs.phpcs_tests_skip != 'true' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
@@ -909,7 +919,8 @@ jobs:
         if: always()
         uses: OXID-eSales/github-actions/append_report@v0
         with:
-          phase: test
+          priority: '220'
+          phase: report
           job: phpcs
           title: 'default'
           php: ${{matrix.php}}
@@ -917,7 +928,7 @@ jobs:
           status: ${{job.status}}
 
   styles:
-    needs: ['init', 'install_module', 'begin_report_phase']
+    needs: ['init', 'install_module']
     if: ${{ needs.init.outputs.styles_skip != 'true' }}
     strategy:
       matrix:
@@ -955,6 +966,7 @@ jobs:
         if: always()
         uses: OXID-eSales/github-actions/append_report@v0
         with:
+          priority: '230'
           phase: report
           job: styles
           title: 'default'
@@ -986,7 +998,7 @@ jobs:
 
       - name: 'Output report'
         run: |
-          for FILE in $(find . -iname 'report*.md'|sort); do
+          for FILE in $(find . -iname 'report-*.md'|sort); do
             cat "${FILE}" >>"${GITHUB_STEP_SUMMARY}"
           done
 
@@ -995,7 +1007,7 @@ jobs:
           SLACK_TEST_LIST=''
           STATUS=(skipped success cancelled failure)
           for JOB in phpunit codeception runtest; do
-            TEST_FILES=$(find . -type f -iname "job_status-test_${JOB}-*.txt"|sort)
+            TEST_FILES=$(find . -type f -iname "job_status-???-test_${JOB}-*.txt"|sort)
             CUMULATED=0
             LAST_TITLE=''
             for FILE in ${TEST_FILES}; do

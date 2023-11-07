@@ -9,6 +9,9 @@ report on the action summary page.
 If set to "true", a report header for the phase will be generated instead of a
 line in the respective table.
 
+**priority:** *not required*, *default:* 000  
+Priority helps with sorting phases and table content by becoming part of the file names in the artifact.
+
 **phase:** *required*, *no default:*  
 The phase, for which we generate the report. Currently, there are three phases:
 - install
