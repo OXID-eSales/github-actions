@@ -58,7 +58,7 @@ runs:
       if: ${{ inputs.header == 'true' }}
       shell: bash
       run: |
-        cat <<EOF >report-${{priority}}-${{ inputs.phase }}_header.md
+        cat <<EOF >report-${{inputs.priority}}-${{ inputs.phase }}_header.md
         ## ${{ inputs.phase }} phase
         |Job |Title|PHP|MySQL|Template engine|Testplan|Status|
         |:---|:----|--:|----:|--------------:|:-------|:-----|
@@ -76,8 +76,8 @@ runs:
         JOB_STATUS='${{inputs.status}}'
         JOB_ICON="${JOB_STATUS^^}_ICON"
         echo "ICON=${JOB_ICON} value='${!JOB_ICON}'"
-        echo "|${{inputs.job}}|${{inputs.title}}|${{inputs.php}}|${{inputs.mysql}}|${{inputs.template_engine}}|[${{inputs.testplan}}]|${!JOB_ICON} ${JOB_STATUS}|" >"report-${{priority}}-${{inputs.phase}}_${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}_TE${{inputs.template_engine}}.md"
-        echo "${JOB_STATUS}" >"job_status-${{priority}}-${{inputs.phase}}_${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}_TE${{inputs.template_engine}}.txt"
+        echo "|${{inputs.job}}|${{inputs.title}}|${{inputs.php}}|${{inputs.mysql}}|${{inputs.template_engine}}|[${{inputs.testplan}}]|${!JOB_ICON} ${JOB_STATUS}|" >"report-${{inputs.priority}}-${{inputs.phase}}_${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}_TE${{inputs.template_engine}}.md"
+        echo "${JOB_STATUS}" >"job_status-${{inputs.priority}}-${{inputs.phase}}_${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}_TE${{inputs.template_engine}}.txt"
 
     - name: Upload Artifacts
       # yamllint enable rule:line-length
