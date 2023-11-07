@@ -76,8 +76,8 @@ runs:
         JOB_STATUS='${{inputs.status}}'
         JOB_ICON="${JOB_STATUS^^}_ICON"
         echo "ICON=${JOB_ICON} value='${!JOB_ICON}'"
-        if [ '${{inputs.testplan}}' =~ ^http.* ]; then
-          BASE=$(echo '${{inputs.testplan}}'| sed -E 's|.+/(.+)/(.*)$|\1/\2|')
+        if [[ '${{inputs.testplan}}' =~ ^http.* ]]; then
+          BASE=$(echo '${{inputs.testplan}}'| sed -E 's|.+/(.*)$|\1|')
           TP="[${BASE}](${{inputs.testplan}})"
         else
           TP="${{inputs.testplan}}"
