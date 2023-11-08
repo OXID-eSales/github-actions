@@ -369,7 +369,7 @@ jobs:
         if: ${{ matrix.testplan != 'skip' }}
         id: install_module_testplan_name
         run: |
-          DEFAULT_TESTPLAN='https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml'
+          DEFAULT_TESTPLAN='https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml,${{ inputs.testplan }}'
           if [ '${{ matrix.testplan}}' == '-' ]; then
             echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
           else
@@ -487,7 +487,7 @@ jobs:
       - name: 'Get testplan name'
         id: phpunit_testplan_name
         run: |
-          DEFAULT_TESTPLAN='https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml'
+          DEFAULT_TESTPLAN='https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml,${{ inputs.testplan }}'
           if [ '${{ matrix.testplan}}' == '-' ]; then
             echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
           else
@@ -572,7 +572,7 @@ jobs:
       - name: 'Get testplan name'
         id: codeception_testplan_name
         run: |
-          DEFAULT_TESTPLAN='https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml'
+          DEFAULT_TESTPLAN='https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml,${{ inputs.testplan }}'
           if [ '${{ matrix.testplan}}' == '-' ]; then
             echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
           else
@@ -721,7 +721,7 @@ jobs:
       - name: 'Get testplan name'
         id: runtest_testplan_name
         run: |
-          DEFAULT_TESTPLAN='https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml'
+          DEFAULT_TESTPLAN='https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml,${{ inputs.testplan }}'
           if [ '${{ matrix.testplan}}' == '-' ]; then
             echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
           else
@@ -856,7 +856,7 @@ jobs:
       - name: 'Get testplan name'
         id: sonarcloud_testplan_name
         run: |
-          DEFAULT_TESTPLAN='https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml'
+          DEFAULT_TESTPLAN='https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml,${{ inputs.testplan }}'
           if [ '${{ matrix.testplan}}' == '-' ]; then
             echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
           else
