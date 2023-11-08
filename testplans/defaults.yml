@@ -233,7 +233,7 @@ install_shop:
 # See docs/actions/start_shop.md and docs/actions/install_module.md for more information.
 install_module:
   matrix: *matrix
-  matrix_testplan: ''
+  matrix_testplan: '""'
   max_parallel: *max_parallel
   docker_login: *docker_login
   load_shop: *install_shop_prefix
