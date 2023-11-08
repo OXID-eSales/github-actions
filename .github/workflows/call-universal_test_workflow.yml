@@ -352,7 +352,7 @@ jobs:
 
   install_module:
     needs: ['init', 'install_shop']
-    if: ${{ needs.init.outputs.phpunit_matrix_testplan != '' }}
+    if: ${{ needs.init.outputs.install_module_matrix_testplan != '' }}
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.install_module_matrix_php) }}
