@@ -406,7 +406,7 @@ jobs:
         with:
           repository: ${{ steps.install_module_testplan.outputs.install_module_git_module_url }}
           ref: ${{ steps.install_module_testplan.outputs.install_module_git_module_ref }}
-          path: 'dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}'
+          path: 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}'
 
       - name: Install module
         if: ${{ matrix.testplan != 'skip' }}
