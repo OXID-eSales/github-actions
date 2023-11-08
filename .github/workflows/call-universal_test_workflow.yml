@@ -140,22 +140,11 @@ jobs:
       install_shop_output_artifact_prefix: ${{ steps.ltp.outputs.install_shop_output_artifact_prefix }}
       install_shop_output_files: ${{ steps.ltp.outputs.install_shop_output_files }}
       # install_module variables
-      install_module_cache_bucket: ${{ steps.ltp.outputs.install_module_cache_bucket }}
       install_module_cache_prefix: ${{ steps.ltp.outputs.install_module_cache_prefix }}
-      install_module_container_method: ${{ steps.ltp.outputs.install_module_container_method }}
-      install_module_container_name: ${{ steps.ltp.outputs.install_module_container_name }}
-      install_module_container_options: ${{ steps.ltp.outputs.install_module_container_options }}
-      install_module_docker_login: ${{ steps.ltp.outputs.install_module_docker_login }}
-      install_module_git_module_ref: ${{ steps.ltp.outputs.install_module_git_module_ref }}
-      install_module_git_module_url: ${{ steps.ltp.outputs.install_module_git_module_url }}
-      install_module_ids: ${{ steps.ltp.outputs.install_module_ids }}
       install_module_matrix_mysql: ${{ steps.ltp.outputs.install_module_matrix_mysql }}
       install_module_matrix_php: ${{ steps.ltp.outputs.install_module_matrix_php }}
-      install_module_matrix_template_engine: ${{ steps.ltp.outputs.install_module_matrix_template_engine }}
+      install_module_matrix_testplan: ${{ steps.ltp.outputs.install_module_matrix_testplan }}
       install_module_max_parallel: ${{ steps.ltp.outputs.install_module_max_parallel }}
-      install_module_output_artifact_prefix: ${{ steps.ltp.outputs.install_module_output_artifact_prefix }}
-      install_module_output_files: ${{ steps.ltp.outputs.install_module_output_files }}
-      install_module_package_name: ${{ steps.ltp.outputs.install_module_package_name }}
       # phpunit variables
       phpunit_matrix_mysql: ${{ steps.ltp.outputs.phpunit_matrix_mysql }}
       phpunit_matrix_php: ${{ steps.ltp.outputs.phpunit_matrix_php }}
@@ -363,64 +352,88 @@ jobs:
 
   install_module:
     needs: ['init', 'install_shop']
+    if: ${{ needs.init.outputs.phpunit_matrix_testplan != '' }}
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.install_module_matrix_php) }}
         mysql: ${{ fromJSON(needs.init.outputs.install_module_matrix_mysql) }}
+        testplan: ${{ fromJSON(needs.init.outputs.phpunit_matrix_testplan) }}
       fail-fast: false
       max-parallel: ${{ fromJSON(needs.init.outputs.install_module_max_parallel) }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
+    env:
+      MATRIX_PHP: ${{ matrix.php }}
+      MATRIX_MYSQL: ${{ matrix.mysql }}
+      MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
+      - name: 'Get testplan name'
+        id: install_module_testplan_name
+        run: |
+          DEFAULT_TESTPLAN='https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml'
+          if [ '${{ matrix.testplan}}' == '-' ]; then
+            echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
+          else
+            echo "testplan=${DEFAULT_TESTPLAN},${{matrix.testplan}}" | tee -a "${GITHUB_OUTPUT}"
+          fi
+          echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}" | tee -a "${GITHUB_OUTPUT}"
+
+      - name: 'Load Testplan'
+        id: install_module_testplan
+        uses: 'joernott/load_testplan@v1'
+        with:
+          files: '${{steps.install_module_testplan_name.outputs.testplan}}'
+          set_output: true
+          set_print: true
+          yaml: generated_testplan.yaml
+
       - name: 'Start shop'
-        if: ${{ needs.init.outputs.install_module_ids != '' }}
         uses: 'OXID-eSales/github-actions/start_shop@v2'
         with:
-          cached_shop: '${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
-          cache_bucket: ${{ needs.init.outputs.install_module_cache_bucket }}
+          cached_shop: '${{ steps.install_module_testplan.outputs.install_module_load_shop}}_${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
+          cache_bucket: ${{ steps.install_module_testplan.outputs.install_module_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
-          docker_login: ${{ needs.init.outputs.install_module_docker_login }}
+          docker_login: ${{ steps.install_module_testplan.outputs.install_module_docker_login }}
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: Checkout module
-        if: ${{ needs.init.outputs.install_module_ids != '' }}
         uses: actions/checkout@v4
         with:
-          repository: ${{ needs.init.outputs.install_module_git_module_url }}
-          ref: ${{ needs.init.outputs.install_module_git_module_ref }}
+          repository: ${{ steps.install_module_testplan.outputs.install_module_git_module_url }}
+          ref: ${{ steps.install_module_testplan.outputs.install_module_git_module_ref }}
           path: source/test-module
 
       - name: Install module
         id: install_module
-        if: ${{ needs.init.outputs.install_module_ids != '' }}
-        uses: 'OXID-eSales/github-actions/install_module@v2'
+        uses: 'OXID-eSales/github-actions/install_module@v0'
         with:
-          container_name: ${{ needs.init.outputs.install_module_container_name }}
-          container_options: ${{ needs.init.outputs.install_module_container_options }}
-          container_method: ${{ needs.init.outputs.install_module_container_method }}
-          package_name: ${{ needs.init.outputs.install_module_package_name }}
-          module_ids: ${{ needs.init.outputs.install_module_ids }}
-          git_module_url: ${{ needs.init.outputs.install_module_git_module_url }}
-          git_module_ref: ${{ needs.init.outputs.install_module_git_module_ref }}
-          output_files: ${{ needs.init.outputs.install_module_output_files }}
-          output_artifact: '${{needs.init.outputs.install_module_output_artifact_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
-          cache_name: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
-          cache_bucket: ${{ needs.init.outputs.install_module_cache_bucket }}
+          container_name: ${{ steps.install_module_testplan.outputs.install_module_container_name }}
+          container_options: ${{ steps.install_module_testplan.outputs.install_module_container_options }}
+          container_method: ${{ steps.install_module_testplan.outputs.install_module_container_method }}
+          package_name: ${{ steps.install_module_testplan.outputs.install_module_package_name }}
+          module_ids: ${{ steps.install_module_testplan.outputs.install_module_ids }}
+          git_module_url: ${{ steps.install_module_testplan.outputs.install_module_git_module_url }}
+          git_module_ref: ${{ steps.install_module_testplan.outputs.install_module_git_module_ref }}
+          output_files: ${{ steps.install_module_testplan.outputs.install_module_output_files }}
+          output_artifact: '${{steps.install_module_testplan.outputs.install_module_output_artifact_prefix}}_${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
+          cache_name: '${{ steps.install_module_testplan.outputs.install_module_cache_prefix}}_${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
+          cache_bucket: ${{ steps.install_module_testplan.outputs.install_module_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
       - name: 'Write Report'
-        if: ${{ needs.init.outputs.install_module_ids != '' }}
         uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '030'
           phase: install
           job: install_module
+          title: ${{ steps.install_module_testplan.outputs.install_module_ids }}
           php: ${{matrix.php}}
           mysql: ${{matrix.mysql}}
+          testplan: ${{matrix.testplan}}
           status: ${{job.status}}
 
   begin_test_phase:

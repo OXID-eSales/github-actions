@@ -28,7 +28,7 @@ inputs:
     type: string
     required: false
     description: 'Path for the checkout and url'
-    default: 'test-module'
+    default: 'dev-packages/test-module'
   git_module_url:
     type: string
     required: true
@@ -95,11 +95,12 @@ runs:
     - name: Install module
       shell: bash
       run: |
+        if !
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
           composer config repositories.${{ inputs.package_name }} \
-          --json '{"type":"path", "url":"./test-module", "options": {"symlink": true}}'
+          --json '{"type":"path", "url":"./${{inputs.module_path}}", "options": {"symlink": true}}'
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
@@ -127,7 +128,7 @@ runs:
       run: |
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
-          --workdir=/var/www/test-module \
+          --workdir=/var/www/${{inputs.module_path}} \
           ${{ inputs.container_name}} \
           composer install
 

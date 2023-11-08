@@ -208,7 +208,7 @@ install_shop:
   is_enterprise: *is_enterprise
   cache:
     bucket: *cache_bucket
-    prefix: 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
+    prefix: &install_shop_prefix 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
 
   # Modifying source/source/config.inc.php
   config:
@@ -233,8 +233,10 @@ install_shop:
 # See docs/actions/start_shop.md and docs/actions/install_module.md for more information.
 install_module:
   matrix: *matrix
+  matrix_testplan: ''
   max_parallel: *max_parallel
   docker_login: *docker_login
+  load_shop: *install_shop_prefix
   container: *container
   container_options: *container_options
   container_method: *container_method
@@ -265,6 +267,9 @@ install_module:
 
   # Name of the package on github (organization/repository)
   package_name: ''
+
+  # Path to install the module under dev-packages, should be the same as module_ids
+  path: ''
 
 # The unit tests we run on our code, this uses phpunit for the actual tests.
 # See docs/actions/start_shop.md and docs/actions/phpunit.md for more information.
