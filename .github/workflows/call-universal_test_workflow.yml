@@ -519,7 +519,7 @@ jobs:
 
       - name: 'Run unit tests'
         id: phpunit_run
-        uses: 'OXID-eSales/github-actions/phpunit@v2'
+        uses: 'OXID-eSales/github-actions/phpunit@v0'
         with:
           container_name: ${{ steps.phpunit_testplan.outputs.phpunit_container_name }}
           container_options: ${{ steps.phpunit_testplan.outputs.phpunit_container_options }}
