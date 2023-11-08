@@ -43,6 +43,7 @@ integration_tests:
 
 codeception:
   matrix: *matrix
+  composer: *composer
 
 codeception_tests:
   matrix: *matrix
