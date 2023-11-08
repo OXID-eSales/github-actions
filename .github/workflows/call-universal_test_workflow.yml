@@ -837,7 +837,7 @@ jobs:
           phase: report
 
   sonarcloud:
-    needs: ['init', 'install_module', 'phpunit', 'codeception']
+    needs: ['init', 'install_module', 'phpunit', 'codeception', 'begin_test_phase']
     if: ${{ always() && needs.init.outputs.sonarcloud_matrix_testplan == '' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
@@ -908,7 +908,7 @@ jobs:
           status: ${{job.status}}
 
   phpcs_tests:
-    needs: ['init', 'install_module']
+    needs: ['init', 'install_module', 'begin_test_phase']
     if: ${{ always() && needs.init.outputs.phpcs_tests_skip != 'true' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
@@ -960,7 +960,7 @@ jobs:
           status: ${{job.status}}
 
   styles:
-    needs: ['init', 'install_module']
+    needs: ['init', 'install_module', 'begin_test_phase']
     if: ${{ needs.init.outputs.styles_skip != 'true' }}
     strategy:
       matrix:
