@@ -95,7 +95,6 @@ runs:
     - name: Install module
       shell: bash
       run: |
-        if !
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
