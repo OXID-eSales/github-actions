@@ -418,6 +418,7 @@ jobs:
           container_method: ${{ steps.install_module_testplan.outputs.install_module_container_method }}
           package_name: ${{ steps.install_module_testplan.outputs.install_module_package_name }}
           module_ids: ${{ steps.install_module_testplan.outputs.install_module_ids }}
+          module_path: 'dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}'
           git_module_url: ${{ steps.install_module_testplan.outputs.install_module_git_module_url }}
           git_module_ref: ${{ steps.install_module_testplan.outputs.install_module_git_module_ref }}
           output_files: ${{ steps.install_module_testplan.outputs.install_module_output_files }}
