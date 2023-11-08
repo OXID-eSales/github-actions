@@ -49,6 +49,7 @@ deprecated_tests:
 
 sonarcloud:
   matrix: *matrix
+  target_branch: *git_shop_ref
 
 phpcs_tests:
   matrix: *matrix
