@@ -587,13 +587,14 @@ jobs:
         with:
           files: '${{steps.codeception_testplan_name.outputs.testplan}}'
           set_output: true
+          set_env: true
           set_print: true
           yaml: generated_testplan.yaml
 
       - name: Run pre-script
         shell: bash
         run: |
-          ${{ steps.codeception_testplan.outputs.pre_script }}
+          ${{ steps.codeception_testplan.outputs.codeception_pre_script }}
 
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v2'
