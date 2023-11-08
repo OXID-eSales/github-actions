@@ -366,7 +366,7 @@ jobs:
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
       - name: 'Get testplan name'
-        if: ${{ matrix.testplan != '' }}
+        if: ${{ matrix.testplan != 'skip' }}
         id: install_module_testplan_name
         run: |
           DEFAULT_TESTPLAN='https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml'
@@ -379,7 +379,7 @@ jobs:
 
       - name: 'Load Testplan'
         id: install_module_testplan
-        if: ${{ matrix.testplan != '' }}
+        if: ${{ matrix.testplan != 'skip' }}
         uses: 'joernott/load_testplan@v1'
         with:
           files: '${{steps.install_module_testplan_name.outputs.testplan}}'
@@ -388,7 +388,7 @@ jobs:
           yaml: generated_testplan.yaml
 
       - name: 'Start shop'
-        if: ${{ matrix.testplan != '' }}
+        if: ${{ matrix.testplan != 'skip' }}
         uses: 'OXID-eSales/github-actions/start_shop@v2'
         with:
           cached_shop: '${{ steps.install_module_testplan.outputs.install_module_load_shop}}_${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
@@ -401,7 +401,7 @@ jobs:
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: Checkout module
-        if: ${{ matrix.testplan != '' }}
+        if: ${{ matrix.testplan != 'skip' }}
         uses: actions/checkout@v4
         with:
           repository: ${{ steps.install_module_testplan.outputs.install_module_git_module_url }}
@@ -409,7 +409,7 @@ jobs:
           path: source/test-module
 
       - name: Install module
-        if: ${{ matrix.testplan != '' }}
+        if: ${{ matrix.testplan != 'skip' }}
         id: install_module
         uses: 'OXID-eSales/github-actions/install_module@v0'
         with:
@@ -429,7 +429,7 @@ jobs:
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
       - name: 'Write Report'
-        if: ${{ matrix.testplan != '' }}
+        if: ${{ matrix.testplan != 'skip' }}
         uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '030'
@@ -442,7 +442,7 @@ jobs:
           status: ${{job.status}}
 
       - name: 'Write Report'
-        if: ${{ matrix.testplan == '' }}
+        if: ${{ matrix.testplan == 'skip' }}
         uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '030'
