@@ -32,10 +32,16 @@ install_module:
       ref: 'b-7.0.x'
   composer: *composer
 
+phpunit:
+  matrix: *matrix
+
 unit_tests:
   matrix: *matrix
 
 integration_tests:
+  matrix: *matrix
+
+codeception:
   matrix: *matrix
 
 codeception_tests:
