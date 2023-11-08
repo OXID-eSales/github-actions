@@ -47,9 +47,11 @@ codeception:
 
 codeception_tests:
   matrix: *matrix
+  composer: *composer
 
 shop_setup_tests:
   matrix: *matrix
+  composer: *composer
 
 deprecated_tests:
   matrix: *matrix
