@@ -77,9 +77,6 @@ runs:
       run: |
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
-          find . -type f |grep bootstrap.php
-        docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
-          ${{ inputs.container_name}} \
           php vendor/bin/phpunit \
             -c "${{ inputs.configuration }}" \
             ${{ inputs.additional_options }} \
