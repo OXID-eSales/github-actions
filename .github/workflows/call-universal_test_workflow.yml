@@ -430,7 +430,7 @@ jobs:
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
       - name: 'Write Report'
-        if: ${{ matrix.testplan != 'skip' }}
+        if: ${{ always() && matrix.testplan != 'skip' }}
         uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '030'
@@ -443,7 +443,7 @@ jobs:
           status: ${{job.status}}
 
       - name: 'Write Report'
-        if: ${{ matrix.testplan == 'skip' }}
+        if: ${{ always() && matrix.testplan == 'skip' }}
         uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '030'

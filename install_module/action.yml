@@ -143,6 +143,12 @@ runs:
       run: |
         docker-compose logs --tail=all
 
+    - name: Write files list
+      if: always()
+      shell: bash
+      run: |
+        find . -type f >files.txt
+
     - name: Upload configuration artifacts
       if: always()
       uses: actions/upload-artifact@v3

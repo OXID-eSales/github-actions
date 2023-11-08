@@ -253,6 +253,7 @@ install_module:
       source/composer.json
       source/composer.lock
       source/source/config.inc.php
+      files.txt
     artifact_prefix: 'configs_install_module'
   # Unique module id
   ids: ''
