@@ -983,7 +983,7 @@ jobs:
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: 'Run styles check'
-        uses: 'OXID-eSales/github-actions/styles@v2'
+        uses: 'OXID-eSales/github-actions/styles@v0'
         with:
           container_name: ${{ needs.init.outputs.styles_container_name }}
           container_options: ${{ needs.init.outputs.styles_container_options }}

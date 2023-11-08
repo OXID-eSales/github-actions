@@ -36,8 +36,8 @@ runs:
       if: always()
       shell: bash
       run: |
-        docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
-          --workdir=/var/www/test-module \
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           bash -c "composer phpstan-report; composer phpstan"
 
@@ -47,8 +47,8 @@ runs:
       continue-on-error: true
       shell: bash
       run: |
-        docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
-          --workdir=/var/www/test-module \
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           bash -c "composer phpmd-report; composer phpmd"
 
@@ -56,8 +56,8 @@ runs:
       if: always()
       shell: bash
       run: |
-        docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
-          --workdir=/var/www/test-module \
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           composer phpcs
 
