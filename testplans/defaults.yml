@@ -237,7 +237,6 @@ install_module:
   max_parallel: *max_parallel
   docker_login: *docker_login
   load_shop: *install_shop_prefix
-  install_shop: true
   container: *container
   container_options: *container_options
   container_method: *container_method

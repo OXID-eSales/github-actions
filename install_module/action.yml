@@ -37,10 +37,6 @@ inputs:
     type: string
     required: false
     description: 'Branch, tag or hash of the commit to check out'
-  install_shop:
-    type: boolean
-    required: false
-    description: 'Should we run install_shop after the shop reset?'
     default: true
   output_files:
     type: string
@@ -123,23 +119,6 @@ runs:
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
           ${{ env.OE_CONSOLE }} oe:module:activate ${{ inputs.module_ids }}
-
-    - name: Install shop
-      if: ${{ inputs.install_shop == 'true' }}
-      shell: bash
-      run: |
-        docker-compose ${{ inputs.container_method }} -T \
-          ${{ inputs.container_options }} \
-          ${{ inputs.container_name }} \
-          ${{ env.OE_CONSOLE }} oe:setup:shop \
-          --db-host mysql \
-          --db-port 3306 \
-          --db-name example \
-          --db-user root \
-          --db-password root \
-          --shop-url http://localhost.local \
-          --shop-directory /var/www/source \
-          --compile-directory /var/www/source/tmp
 
     - name: Install module dependencies
       shell: bash
