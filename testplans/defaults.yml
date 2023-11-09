@@ -342,7 +342,7 @@ phpunit:
 
   # This grep pattern is applied to the generated phpunit log file. If we have
   # a hit matching the pattern below, the step will fail.
-  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|Test file ".+" not found'
+  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|Test file ".+" not found|Cannot open file'
 
 # The unit tests we run on our code, this uses phpunit for the actual tests.
 # See docs/actions/start_shop.md and docs/actions/phpunit.md for more information.
@@ -408,7 +408,7 @@ unit_tests:
 
   # This grep pattern is applied to the generated phpunit log file. If we have
   # a hit matching the pattern below, the step will fail.
-  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|Test file ".+" not found'
+  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|Test file ".+" not found|Cannot open file'
 
 # The integratioon tests are also phpunit tests, see the above comments above
 # for more information.
@@ -512,7 +512,7 @@ codeception:
     # nothing will be added to the codeception artifact
     path: 'source/codeception_coverage.xml'
     prefix: *coverage_prefix
-  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found'
+  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found|Cannot open file'
 
 # This step usesd the codeception custom action. Many inputs are similar to the
 # ones in the unit tests.
@@ -565,7 +565,7 @@ codeception_tests:
     # nothing will be added to the codeception artifact
     path: 'source/codeception_coverage.xml'
     prefix: *coverage_prefix
-  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found'
+  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found|Cannot open file'
 
 # The shop setup tests also use codeception but start from the prepared_shop
 # Set skip to true if you run module tests as this will not install any module.
@@ -606,7 +606,7 @@ shop_setup_tests:
     # No coverage report for shop_setup
     path: ''
     prefix: *coverage_prefix
-  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found'
+  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found|Cannot open file'
 
 # These deprecated tests use the runtests action. Many options are similar to
 # codeception/phpunit
