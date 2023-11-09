@@ -463,8 +463,8 @@ codeception:
     env
     if [ "${MATRIX_TEMPLATE_ENGINE}" == 'smarty' ]; then
       MODULE_OPTIONS=""
-      if [ "${INSTALL_MODULE_IDS}" != "" ]; then
-        MODULE_OPTIONS="-e MODULE_IDS=${INSTALL_MODULE_IDS}"
+      if [ "${install_module_ids}" != "" ]; then
+        MODULE_OPTIONS="-e MODULE_IDS=${install_module_ids}"
       fi
       echo "CODECEPTION_CONTAINER_OPTIONS=-e THEME_ID=flow ${$MODULE_OPTIONS}" | tee -a "$GITHUB_ENV"
       perl -pi \
@@ -474,8 +474,8 @@ codeception:
     fi
     if [ "${MATRIX_TEMPLATE_ENGINE}" == 'twig' ]; then
       MODULE_OPTIONS=""
-      if [ "${INSTALL_MODULE_IDS}" != "" ]; then
-        MODULE_OPTIONS="-e MODULE_IDS=${INSTALL_MODULE_IDS}"
+      if [ "${install_module_ids}" != "" ]; then
+        MODULE_OPTIONS="-e MODULE_IDS=${install_module_ids}"
       fi
       echo "CODECEPTION_CONTAINER_OPTIONS=-e THEME_ID=apex ${MODULE_OPTIONS}" | tee -a "$GITHUB_ENV"
     fi
