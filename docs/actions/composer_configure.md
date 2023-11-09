@@ -21,6 +21,12 @@ Run composer update after configuring all repositories.
 **update_options:** *not required*, *default*: '--no-interaction'  
 Options to pass along to composer when running composer update.
 
+**dumpautoload:** *not required*, *default*: false  
+Run composer dumpautoload after configuring all repositories.
+
+**dumpautoload_options:** *not required*, *default*: '--dev'  
+Options to pass along to composer when running composer dumpautoload.
+
 **container_name:** *not required*, *default*: 'php'  
 Name of the container to run composer in, defaults to 'php'.
 

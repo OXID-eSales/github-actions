@@ -55,6 +55,11 @@ inputs:
     required: false
     description: 'Method to execute the commands inside a container, either "run" or "exec"'
     default: 'exec'
+  enterprise_github_token:
+    type: string
+    required: false
+    description: 'OAuth token to access enterprise repos'
+    default: ''
 
 runs:
   using: "composite"
@@ -69,6 +74,18 @@ runs:
           REFERENCE=":${{ inputs.ref }}"
         fi
         ORGANIZATION=$(echo "${{ inputs.organisation }}" | tr '[:upper:]' '[:lower:]')
+        if [ -n "${{ inputs.enterprise_github_token }}" ]; then
+          echo -e "\033[0;35m###  configure github access ###\033[0m"
+          docker-compose ${{ inputs.container_method }} -T \
+            ${{ inputs.container_options }} \
+            ${{ inputs.container_name}} \
+            composer config github-protocols https
+          docker-compose ${{ inputs.container_method }} -T \
+            ${{ inputs.container_options }} \
+            ${{ inputs.container_name}} \
+            composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
+        fi
+
         for REPOSITORY in ${REPOSITORIES}; do
           ORG=$(echo "${REPOSITORY}"|sed -e 's|/.*||')
           if [[ -z "${ORG}" || "${ORG}" == "${REPOSITORY}" ]]; then
