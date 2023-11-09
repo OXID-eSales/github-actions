@@ -124,7 +124,7 @@ runs:
           --db-password root \
           --shop-url http://localhost.local \
           --shop-directory /var/www/source \
-          --compile-directory /var/www/source/tmp \
+          --compile-directory /var/www/source/tmp
 
     - name: Activate iDebug
       if: ${{ inputs.config_idebug == 'true' }}

@@ -421,6 +421,7 @@ jobs:
           module_path: 'dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}'
           git_module_url: ${{ steps.install_module_testplan.outputs.install_module_git_module_url }}
           git_module_ref: ${{ steps.install_module_testplan.outputs.install_module_git_module_ref }}
+          install_shop: ${{ steps.install_module_testplan.outputs.install_module_install_shop }}
           output_files: ${{ steps.install_module_testplan.outputs.install_module_output_files }}
           output_artifact: '${{steps.install_module_testplan.outputs.install_module_output_artifact_prefix}}_${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
           cache_name: '${{ steps.install_module_testplan.outputs.install_module_cache_prefix}}_${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
