@@ -30,6 +30,16 @@ inputs:
     required: false
     description: 'Options to pass along to composer when running composer update'
     default: '--no-interaction'
+  dumpautoload:
+    type: boolean
+    required: false
+    description: 'Run composer dumpautoload after installing all repos'
+    default: false
+  dumpautoload_options:
+    type: string
+    required: false
+    description: 'Options to pass along to composer when running composer dumpautoload'
+    default: '--dev'
   container_name:
     type: string
     required: false
@@ -57,12 +67,13 @@ runs:
     - name: Configure repositories
       shell: bash
       run: |
+        REPOSITORIES=$(echo -n "${{ inputs.repositories }}"| tr -d '\n')
         if [ -z "${{ inputs.ref }}" ]; then
-          REF=""
+          REFERENCE=""
         else
-          REF=":${{ inputs.ref }}"
+          REFERENCE=":${{ inputs.ref }}"
         fi
-        ORG=$(echo "${{ inputs.organisation }}" | tr '[:upper:]' '[:lower:]')
+        ORGANIZATION=$(echo "${{ inputs.organisation }}" | tr '[:upper:]' '[:lower:]')
         if [ -n "${{ inputs.enterprise_github_token }}" ]; then
           echo -e "\033[0;35m###  configure github access ###\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
@@ -75,7 +86,21 @@ runs:
             composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
         fi
 
-        for REPOSITORY in ${{ inputs.repositories }}; do
+        for REPOSITORY in ${REPOSITORIES}; do
+          ORG=$(echo "${REPOSITORY}"|sed -e 's|/.*||')
+          if [[ -z "${ORG}" || "${ORG}" == "${REPOSITORY}" ]]; then
+            ORG="${ORGANIZATION}"
+          else
+            REPOSITORY=$(echo "${REPOSITORY}"|sed -e 's|.*/||')
+          fi
+          REF=$(echo "${REPOSITORY}"|sed -e 's|.*:||')
+          if [[ -z "${REF}" || "${REF}" == "${REPOSITORY}" ]]; then
+            REF="${REFERENCE}"
+          else
+            REF=":${REF}"
+            REPOSITORY=$(echo "${REPOSITORY}"|sed -e 's|:.*||')
+          fi
+
           # compensate for repos with _ and config with -
           DASHED_REPO=$(echo "${REPOSITORY}"|tr '_', '-')
           echo -e "\033[0;35m###  configure ${ORG}/${DASHED_REPO} ###\033[0m"
@@ -89,7 +114,13 @@ runs:
             ${{ inputs.container_name}} \
             composer require "${ORG}/${DASHED_REPO}${REF}" ${{ inputs.options }}
         done
-
+        if [ '${{ inputs.dumpautoload }}' == 'true' ]; then
+          echo -e "\033[0;35m### Running composer dumpautoload with ${{ inputs.dumpautoload_options }}\033[0m"
+          docker-compose ${{ inputs.container_method }} -T \
+            ${{ inputs.container_options }} \
+            ${{ inputs.container_name}} \
+            composer dumpautoload ${{ inputs.dumpautoload_options }}
+        fi
         if [ '${{ inputs.update }}' == 'true' ]; then
           echo -e "\033[0;35m### Running composer update with ${{ inputs.update_options }}\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
