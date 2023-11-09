@@ -87,6 +87,13 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Locate Console
+      shell: bash
+      run: |
+        cd source
+        OE_CONSOLE=$(find . -iname "oe-console" -type f|head -1|sed -e "s|^$(pwd)/||")
+        echo "OE_CONSOLE=${OE_CONSOLE}"|tee -a "${GITHUB_ENV}"
+
     - name: Install module
       shell: bash
       run: |
@@ -110,12 +117,12 @@ runs:
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
-          bin/oe-console oe:database:reset \
+          ${{ env.OE_CONSOLE }} oe:database:reset \
           --db-host=mysql --db-port=3306 --db-name=example --db-user=root --db-password=root --force
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
-          bin/oe-console oe:module:activate ${{ inputs.module_ids }}
+          ${{ env.OE_CONSOLE }} oe:module:activate ${{ inputs.module_ids }}
 
     - name: Install shop
       if: ${{ inputs.install_shop == 'true' }}
