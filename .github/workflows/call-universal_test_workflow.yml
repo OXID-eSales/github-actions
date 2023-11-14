@@ -370,6 +370,11 @@ jobs:
       MATRIX_MYSQL: ${{ matrix.mysql }}
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
+      - name: 'Checkout testplans'
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: 'tests/github_actions'
+
       - name: 'Get testplan name'
         if: ${{ matrix.testplan != 'skip' }}
         id: install_module_testplan_name
@@ -491,6 +496,11 @@ jobs:
       MATRIX_TEMPLATE_ENGINE: ${{ matrix.template_engine }}
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
+      - name: 'Checkout testplans'
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: 'tests/github_actions'
+
       - name: 'Get testplan name'
         id: phpunit_testplan_name
         run: |
@@ -577,6 +587,11 @@ jobs:
       MATRIX_TEMPLATE_ENGINE: ${{ matrix.template_engine }}
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
+      - name: 'Checkout testplans'
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: 'tests/github_actions'
+
       - name: 'Get testplan name'
         id: codeception_testplan_name
         run: |
@@ -728,6 +743,11 @@ jobs:
       MATRIX_TEMPLATE_ENGINE: ${{ matrix.template_engine }}
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
+      - name: 'Checkout testplans'
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: 'tests/github_actions'
+
       - name: 'Get testplan name'
         id: runtest_testplan_name
         run: |
@@ -864,6 +884,11 @@ jobs:
       MATRIX_TEMPLATE_ENGINE: ${{ matrix.template_engine }}
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
+      - name: 'Checkout testplans'
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: 'tests/github_actions'
+
       - name: 'Get testplan name'
         id: sonarcloud_testplan_name
         run: |
