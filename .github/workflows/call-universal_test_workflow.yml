@@ -468,8 +468,8 @@ jobs:
           phase: test
 
   phpunit:
-    needs: ['init', 'begin_test_phase']
-    if: ${{ needs.init.outputs.phpunit_matrix_testplan != '' }}
+    needs: ['init', 'install_module', 'begin_test_phase']
+    if: ${{ always() && needs.init.outputs.phpunit_matrix_testplan != '' && needs.init.outputs.phpunit_matrix_testplan != 'none' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.phpunit_matrix_php) }}
@@ -554,7 +554,7 @@ jobs:
 
   codeception:
     needs: ['init', 'install_module', 'begin_test_phase']
-    if: ${{ always() && needs.init.outputs.codeception_matrix_testplan != '' && needs.install_module.result == 'success' }}
+    if: ${{ always() && needs.init.outputs.codeception_matrix_testplan != '' && needs.init.outputs.codeception_matrix_testplan != 'none' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.codeception_matrix_php) }}
@@ -704,7 +704,7 @@ jobs:
 
   runtest:
     needs: ['init', 'install_module', 'begin_test_phase']
-    if: ${{ always() && needs.init.outputs.runtest_matrix_testplan != '' && needs.install_module.result == 'success' }}
+    if: ${{ always() && needs.init.outputs.runtest_matrix_testplan != '' && needs.init.outputs.runtest_matrix_testplan != 'none' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.runtest_matrix_php) }}
