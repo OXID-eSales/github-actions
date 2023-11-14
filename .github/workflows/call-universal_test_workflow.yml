@@ -677,7 +677,7 @@ jobs:
           suite: ${{ steps.codeception_testplan.outputs.codeception_suite }}
           test: ${{ steps.codeception_testplan.outputs.codeception_test }}
           additional_options: ${{ steps.codeception_testplan.outputs.codeception_additional_options }}
-          logfile: ${{steps.codeception_testplan.outputs.logfile_prefix}}-${{steps.codeception_testplan.outputs.title}}-${{steps.codeception_testplan_name.outputs.matrix_suffix}}.txt
+          logfile: ${{steps.codeception_testplan.outputs.codeception_logfile_prefix}}-${{steps.codeception_testplan.outputs.codeception_title}}-${{steps.codeception_testplan_name.outputs.matrix_suffix}}.txt
           logfile_artifact: ${{ steps.codeception_testplan.outputs.codeception_logfile_artifact }}
           output_files: ${{ steps.codeception_testplan.outputs.codeception_output_files }}
           output_artifact: ${{steps.codeception_testplan.outputs.codeception_output_prefix}}_${{steps.codeception_testplan_name.outputs.matrix_suffix}}
