@@ -45,6 +45,11 @@ jobs:
   init:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
+      - name: 'Checkout testplans'
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: 'tests/github_actions/**'
+
       - name: 'Load Testplan'
         id: ltp
         uses: 'joernott/load_testplan@1c467888a91914b48ba345720c38e46e86ab953e'
@@ -56,7 +61,6 @@ jobs:
           loglevel: trace
           logfile: load_testplan.log
           yaml: generated_testplan.yaml
-          token: ${{ github.token }}
 
       - name: 'Prepare artifact'
         if: always()
