@@ -56,7 +56,7 @@ jobs:
           # loglevel: trace
           # logfile: load_testplan.log
           yaml: generated_testplan.yaml
-          token: ${{ github.token }}
+          token: ${{ secrets.enterprise_github_token }}
 
       - name: 'Prepare artifact'
         if: always()
@@ -387,7 +387,7 @@ jobs:
           set_output: true
           set_print: true
           yaml: generated_testplan.yaml
-          token: ${{ github.token }}
+          token: ${{ secrets.enterprise_github_token }}
 
       - name: 'Start shop'
         if: ${{ matrix.testplan != 'skip' }}
@@ -506,7 +506,7 @@ jobs:
           set_output: true
           set_print: true
           yaml: generated_testplan.yaml
-          token: ${{ github.token }}
+          token: ${{ secrets.enterprise_github_token }}
 
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v2'
@@ -593,7 +593,7 @@ jobs:
           set_env: true
           set_print: true
           yaml: generated_testplan.yaml
-          token: ${{ github.token }}
+          token: ${{ secrets.enterprise_github_token }}
 
       - name: Run pre-script
         shell: bash
@@ -743,7 +743,7 @@ jobs:
           set_output: true
           set_print: true
           yaml: generated_testplan.yaml
-          token: ${{ github.token }}
+          token: ${{ secrets.enterprise_github_token }}
 
       - name: Set swap space
         if: ${{ inputs.runs_on == '"ubuntu-latest"' }}
@@ -879,7 +879,7 @@ jobs:
           set_output: true
           set_print: true
           yaml: generated_testplan.yaml
-          token: ${{ github.token }}
+          token: ${{ secrets.enterprise_github_token }}
 
 
       - name: Checkout shop
