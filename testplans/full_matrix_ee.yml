@@ -31,12 +31,16 @@ install_shop:
   git: *git
   is_enterprise: *is_enterprise
   cache:
-    prefix: 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
+    prefix: &install_shop_prefix 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
 
 install_module:
   cache:
     # Need to set this as we don't install a module
-    prefix: 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
+    prefix: *install_shop_prefix
+  load_shop: *install_shop_prefix
+
+phpunit:
+  load_shop: *install_shop_prefix
 
 unit_tests:
   test: 'vendor/oxid-esales/oxideshop-ee/Tests/Unit'
@@ -48,6 +52,9 @@ integration_tests:
   test: 'vendor/oxid-esales/oxideshop-ee/Tests/Integration'
   coverage:
     path: ''
+
+codeception:
+  load_shop: *install_shop_prefix
 
 codeception_tests:
   container:
@@ -84,6 +91,9 @@ shop_setup_tests:
       source/vendor/oxid-esales/oxideshop-ee/Tests/Codeception/_output
   coverage:
     path: ''
+
+runtest:
+  load_shop: *install_shop_prefix
 
 deprecated_tests:
   container:
