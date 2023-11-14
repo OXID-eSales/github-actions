@@ -52,14 +52,14 @@ jobs:
 
       - name: 'Load Testplan'
         id: ltp
-        uses: 'joernott/load_testplan@1c467888a91914b48ba345720c38e46e86ab953e'
+        uses: 'joernott/load_testplan@v1'
         with:
           files: 'https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml,${{ inputs.testplan }}'
           set_output: true
           set_env: true
           set_print: true
-          loglevel: trace
-          logfile: load_testplan.log
+          # loglevel: trace
+          # logfile: load_testplan.log
           yaml: generated_testplan.yaml
 
       - name: 'Prepare artifact'
