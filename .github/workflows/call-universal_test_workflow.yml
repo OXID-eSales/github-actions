@@ -332,7 +332,7 @@ jobs:
           mysql: ${{ matrix.mysql }}
           is_enterprise: ${{ needs.init.outputs.install_shop_is_enterprise }}
           config_idebug: ${{ needs.init.outputs.install_shop_config_idebug }}
-          output_artifact: 'Configs-${{ matrix.php }}-${{ matrix.mysql }}_install_shop'
+          output_artifact: 'configs-install_shop-${{ matrix.php }}-${{ matrix.mysql }}'
           cache_name: '${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.install_shop_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
@@ -422,7 +422,7 @@ jobs:
           git_module_url: ${{ steps.install_module_testplan.outputs.install_module_git_module_url }}
           git_module_ref: ${{ steps.install_module_testplan.outputs.install_module_git_module_ref }}
           output_files: ${{ steps.install_module_testplan.outputs.install_module_output_files }}
-          output_artifact: '${{steps.install_module_testplan.outputs.install_module_output_artifact_prefix}}_${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
+          output_artifact: '${{steps.install_module_testplan.outputs.install_module_output_artifact_prefix}}-${{steps.install_module_testplan.outputs.install_module_ids}}-${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
           cache_name: '${{ steps.install_module_testplan.outputs.install_module_cache_prefix}}_${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
           cache_bucket: ${{ steps.install_module_testplan.outputs.install_module_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
@@ -527,7 +527,7 @@ jobs:
           configuration: ${{ steps.phpunit_testplan.outputs.phpunit_configuration }}
           test: ${{ steps.phpunit_testplan.outputs.phpunit_test }}
           additional_options: ${{ steps.phpunit_testplan.outputs.phpunit_additional_options }}
-          logfile: ${{ steps.phpunit_testplan.outputs.phpunit_title }}_${{steps.phpunit_testplan_name.outputs.matrix_suffix}}_phpunit_log.txt
+          logfile: ${{steps.phpunit_testplan.outputs.logfile_prefix}}-${{ steps.phpunit_testplan.outputs.phpunit_title }}-${{steps.phpunit_testplan_name.outputs.matrix_suffix}}.txt
           logfile_artifact: ${{ steps.phpunit_testplan.outputs.phpunit_logfile_artifact }}
           output_files: ${{ steps.phpunit_testplan.outputs.phpunit_output_files }}
           output_artifact: ${{steps.phpunit_testplan.outputs.phpunit_output_prefix}}_${{steps.phpunit_testplan_name.outputs.matrix_suffix}}
@@ -677,7 +677,7 @@ jobs:
           suite: ${{ steps.codeception_testplan.outputs.codeception_suite }}
           test: ${{ steps.codeception_testplan.outputs.codeception_test }}
           additional_options: ${{ steps.codeception_testplan.outputs.codeception_additional_options }}
-          logfile: ${{steps.codeception_testplan.outputs.logfile_prefix}}_${{steps.codeception_testplan_name.outputs.matrix_suffix}}_phpunit_log.txt
+          logfile: ${{steps.codeception_testplan.outputs.logfile_prefix}}-${{steps.codeception_testplan.outputs.title}}-${{steps.codeception_testplan_name.outputs.matrix_suffix}}.txt
           logfile_artifact: ${{ steps.codeception_testplan.outputs.codeception_logfile_artifact }}
           output_files: ${{ steps.codeception_testplan.outputs.codeception_output_files }}
           output_artifact: ${{steps.codeception_testplan.outputs.codeception_output_prefix}}_${{steps.codeception_testplan_name.outputs.matrix_suffix}}
@@ -800,7 +800,7 @@ jobs:
           container_method: ${{ steps.runtest_testplan.outputs.runtest_container_method }}
           test: ${{ steps.runtest_testplan.outputs.runtest_test }}
           additional_options: ${{ steps.runtest_testplan.outputs.runtest_additional_options }}
-          logfile: ${{ steps.runtest_testplan.outputs.runtest_logfile_prefix}}_${{ steps.runtest_testplan_name.outputs.matrix_suffix }}_phpunit.log.txt
+          logfile: ${{ steps.runtest_testplan.outputs.runtest_logfile_prefix}}-${{ steps.runtest_testplan.outputs.runtest_title}}-${{ steps.runtest_testplan_name.outputs.matrix_suffix }}.txt
           logfile_artifact: ${{ steps.runtest_testplan.outputs.runtest_logfile_artifact }}
           output_files: ${{ steps.runtest_testplan.outputs.runtest_output_files }}
           output_artifact: ${{ steps.runtest_testplan.outputs.runtest_output_prefix }}_${{ steps.runtest_testplan_name.outputs.matrix_suffix }}
@@ -941,7 +941,7 @@ jobs:
           diff_only: ${{ needs.init.outputs.phpcs_tests_diff_only}}
           filter: ${{ needs.init.outputs.phpcs_tests_filter}}
           additional_options: ${{ needs.init.outputs.phpcs_tests_additional_options }}
-          logfile: phpcs_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_codesniff_log.txt
+          logfile: phpcs-PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_codesniff_log.txt
           logfile_artifact: ${{ needs.init.outputs.phpcs_tests_logfile_artifact }}
           failure_pattern: ${{ needs.init.outputs.phpcs_tests_failure_pattern }}
 

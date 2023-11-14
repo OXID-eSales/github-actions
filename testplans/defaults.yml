@@ -254,7 +254,7 @@ install_module:
       source/composer.lock
       source/source/config.inc.php
       files.txt
-    artifact_prefix: 'configs_install_module'
+    artifact_prefix: 'configs-install_module'
   # Unique module id
   ids: ''
   # Git repository related settings
@@ -658,7 +658,7 @@ runtest:
   test: 'AllTestsUnit'
   additional_options: '--coverage-clover=/var/www/deprecated_tests_coverage.xml'
   logfile:
-    prefix: 'deprecated_tests'
+    prefix: 'runtests'
     artifact: 'logs'
   # phpunit output and test settings
   output:
