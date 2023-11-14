@@ -48,7 +48,7 @@ jobs:
       - name: 'Checkout testplans'
         uses: actions/checkout@v4
         with:
-          sparse-checkout: 'tests/github_actions/**'
+          sparse-checkout: 'tests/github_actions'
 
       - name: 'Load Testplan'
         id: ltp
