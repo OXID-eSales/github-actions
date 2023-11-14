@@ -53,8 +53,8 @@ jobs:
           set_output: true
           set_env: true
           set_print: true
-          # loglevel: trace
-          # logfile: load_testplan.log
+          loglevel: trace
+          logfile: load_testplan.log
           yaml: generated_testplan.yaml
           token: ${{ secrets.enterprise_github_token }}
 
