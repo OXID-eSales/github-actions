@@ -123,7 +123,7 @@ runs:
     - name: Activate modules
       shell: bash
       run: |
-        MODULES=$(echo -n "${{ inputs.activate }}"| tr -d '\n')
+        MODULES=$(echo -n "${{ inputs.activate }}"| tr '\n' ' ')
         for MODULE in ${MODULES}; do
           echo -e "\033[0;35m###  activating module ${MODULE} ###\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
