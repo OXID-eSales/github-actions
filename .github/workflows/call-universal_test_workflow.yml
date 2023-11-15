@@ -66,6 +66,7 @@ jobs:
 
       - name: 'Consolidate plans'
         run: |
+          find . -type f
           mv defaults/tests/github_actions/defaults tests/github_actions/defaults
           rm -rf defaults
 
