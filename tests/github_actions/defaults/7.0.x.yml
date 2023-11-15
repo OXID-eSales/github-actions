@@ -35,25 +35,11 @@ install_module:
 phpunit:
   matrix: *matrix
 
-unit_tests:
-  matrix: *matrix
-
-integration_tests:
-  matrix: *matrix
-
 codeception:
   matrix: *matrix
   composer: *composer
 
-codeception_tests:
-  matrix: *matrix
-  composer: *composer
-
-shop_setup_tests:
-  matrix: *matrix
-  composer: *composer
-
-deprecated_tests:
+runtest:
   matrix: *matrix
 
 sonarcloud:
