@@ -393,7 +393,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: testplan
-          path: 'tests/github_actions'
 
       - name: 'Get testplan name'
         if: ${{ matrix.testplan != 'skip' }}
@@ -521,7 +520,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: testplan
-          path: 'tests/github_actions/*'
 
       - name: 'Get testplan name'
         id: phpunit_testplan_name
@@ -614,7 +612,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: testplan
-          path: 'tests/github_actions'
 
       - name: 'Get testplan name'
         id: codeception_testplan_name
@@ -771,7 +768,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: testplan
-          path: 'tests/github_actions'
 
       - name: 'Get testplan name'
         id: runtest_testplan_name
@@ -913,7 +909,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: testplan
-          path: 'tests/github_actions'
 
       - name: 'Get testplan name'
         id: sonarcloud_testplan_name
