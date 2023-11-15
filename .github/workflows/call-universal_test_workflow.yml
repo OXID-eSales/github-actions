@@ -54,7 +54,7 @@ jobs:
       - name: 'Checkout testplans'
         uses: actions/checkout@v4
         with:
-          repository: 'https://github.com/OXID-eSales/github-actions.git'
+          repository: 'OXID-eSales/github-actions'
           ref: '${{ inputs.defaults }}'
           path: 'defaults'
           sparse-checkout: 'tests/github_actions/defaults'
