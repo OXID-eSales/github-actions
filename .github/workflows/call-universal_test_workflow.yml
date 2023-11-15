@@ -399,6 +399,7 @@ jobs:
         if: ${{ matrix.testplan != 'skip' }}
         id: install_module_testplan_name
         run: |
+          find . -type f
           DEFAULT_TESTPLAN='tests/github_actions/defaults/defaults.yml,${{ inputs.testplan }}'
           if [ '${{ matrix.testplan}}' == '-' ]; then
             echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
@@ -520,11 +521,12 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: testplan
-          path: 'tests/github_actions'
+          path: 'tests/github_actions/*'
 
       - name: 'Get testplan name'
         id: phpunit_testplan_name
         run: |
+          find . -type f
           DEFAULT_TESTPLAN='tests/github_actions/defaults/defaults.yml,${{ inputs.testplan }}'
           if [ '${{ matrix.testplan}}' == '-' ]; then
             echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
