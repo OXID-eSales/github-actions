@@ -51,7 +51,7 @@ jobs:
   init:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
-      - name: 'Checkout testplans'
+      - name: 'Checkout testplan defaults'
         uses: actions/checkout@v4
         with:
           repository: 'OXID-eSales/github-actions'
@@ -59,16 +59,22 @@ jobs:
           path: 'defaults'
           sparse-checkout: 'tests/github_actions/defaults'
 
+      - name: 'Show files'
+        run: |
+          find . -type f
+
       - name: 'Checkout testplans'
         uses: actions/checkout@v4
         with:
           sparse-checkout: 'tests/github_actions'
+          path: workflow
 
       - name: 'Consolidate plans'
         run: |
           find . -type f
-          mv defaults/tests/github_actions/defaults tests/github_actions/defaults
-          rm -rf defaults
+          mkdir tests
+          mv workflow/tests/github_actions tests/
+          mv defaults/tests/github_actions/defaults tests/github_actions/
 
       - name: 'Load Testplan'
         id: ltp
