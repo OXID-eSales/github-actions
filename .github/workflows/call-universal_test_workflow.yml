@@ -15,6 +15,12 @@ on:
         type: string
         description: 'JSON string/array describing the runner'
         required: true
+      defaults:
+        type: string
+        description: 'Which ref do we want to use for the plan defaults'
+        required: false
+        default: 'v0'
+
     secrets:
       DOCKER_HUB_USER:
         # description: 'user for the docker login'
@@ -48,13 +54,26 @@ jobs:
       - name: 'Checkout testplans'
         uses: actions/checkout@v4
         with:
+          repository: 'https://github.com/OXID-eSales/github-actions.git'
+          ref: '${{ inputs.defaults }}'
+          path: 'defaults'
+          sparse-checkout: 'tests/github_actions/defaults'
+
+      - name: 'Checkout testplans'
+        uses: actions/checkout@v4
+        with:
           sparse-checkout: 'tests/github_actions'
+
+      - name: 'Consolidate plans'
+        run: |
+          mv defaults/tests/github_actions/defaults tests/github_actions/defaults
+          rm -rf defaults
 
       - name: 'Load Testplan'
         id: ltp
         uses: 'joernott/load_testplan@v1'
         with:
-          files: 'https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml,${{ inputs.testplan }}'
+          files: 'tests/github_actions/defaults/defaults.yml,${{ inputs.testplan }}'
           set_output: true
           set_env: true
           set_print: true
@@ -65,7 +84,6 @@ jobs:
       - name: 'Prepare artifact'
         if: always()
         run: |
-          echo "prepare_shop_matrix_php: ${{ steps.ltp.outputs.prepare_shop_matrix_php }}"
           cp "${GITHUB_OUTPUT}" generated_output.txt
           cp "${GITHUB_ENV}" generated_env.txt
 
@@ -282,12 +300,6 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
-      - name: 'Download job results'
-        uses: actions/download-artifact@v3
-        with:
-          name: job_status
-          path: 'report.md'
-
       - name: 'Write Report'
         if: always()
         uses: OXID-eSales/github-actions/append_report@v0
@@ -370,16 +382,17 @@ jobs:
       MATRIX_MYSQL: ${{ matrix.mysql }}
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
-      - name: 'Checkout testplans'
-        uses: actions/checkout@v4
+      - name: 'Download testplans'
+        uses: actions/download-artifact@v3
         with:
-          sparse-checkout: 'tests/github_actions'
+          name: testplan
+          path: 'tests/github_actions'
 
       - name: 'Get testplan name'
         if: ${{ matrix.testplan != 'skip' }}
         id: install_module_testplan_name
         run: |
-          DEFAULT_TESTPLAN='https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml,${{ inputs.testplan }}'
+          DEFAULT_TESTPLAN='tests/github_actions/defaults/defaults.yml,${{ inputs.testplan }}'
           if [ '${{ matrix.testplan}}' == '-' ]; then
             echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
           else
@@ -496,15 +509,16 @@ jobs:
       MATRIX_TEMPLATE_ENGINE: ${{ matrix.template_engine }}
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
-      - name: 'Checkout testplans'
-        uses: actions/checkout@v4
+      - name: 'Download testplans'
+        uses: actions/download-artifact@v3
         with:
-          sparse-checkout: 'tests/github_actions'
+          name: testplan
+          path: 'tests/github_actions'
 
       - name: 'Get testplan name'
         id: phpunit_testplan_name
         run: |
-          DEFAULT_TESTPLAN='https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml,${{ inputs.testplan }}'
+          DEFAULT_TESTPLAN='tests/github_actions/defaults/defaults.yml,${{ inputs.testplan }}'
           if [ '${{ matrix.testplan}}' == '-' ]; then
             echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
           else
@@ -587,15 +601,16 @@ jobs:
       MATRIX_TEMPLATE_ENGINE: ${{ matrix.template_engine }}
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
-      - name: 'Checkout testplans'
-        uses: actions/checkout@v4
+      - name: 'Download testplans'
+        uses: actions/download-artifact@v3
         with:
-          sparse-checkout: 'tests/github_actions'
+          name: testplan
+          path: 'tests/github_actions'
 
       - name: 'Get testplan name'
         id: codeception_testplan_name
         run: |
-          DEFAULT_TESTPLAN='https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml,${{ inputs.testplan }}'
+          DEFAULT_TESTPLAN='tests/github_actions/defaults/defaults.yml,${{ inputs.testplan }}'
           if [ '${{ matrix.testplan}}' == '-' ]; then
             echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
           else
@@ -743,15 +758,16 @@ jobs:
       MATRIX_TEMPLATE_ENGINE: ${{ matrix.template_engine }}
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
-      - name: 'Checkout testplans'
-        uses: actions/checkout@v4
+      - name: 'Download testplans'
+        uses: actions/download-artifact@v3
         with:
-          sparse-checkout: 'tests/github_actions'
+          name: testplan
+          path: 'tests/github_actions'
 
       - name: 'Get testplan name'
         id: runtest_testplan_name
         run: |
-          DEFAULT_TESTPLAN='https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml,${{ inputs.testplan }}'
+          DEFAULT_TESTPLAN='tests/github_actions/defaults/defaults.yml,${{ inputs.testplan }}'
           if [ '${{ matrix.testplan}}' == '-' ]; then
             echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
           else
@@ -884,15 +900,16 @@ jobs:
       MATRIX_TEMPLATE_ENGINE: ${{ matrix.template_engine }}
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
-      - name: 'Checkout testplans'
-        uses: actions/checkout@v4
+      - name: 'Download testplans'
+        uses: actions/download-artifact@v3
         with:
-          sparse-checkout: 'tests/github_actions'
+          name: testplan
+          path: 'tests/github_actions'
 
       - name: 'Get testplan name'
         id: sonarcloud_testplan_name
         run: |
-          DEFAULT_TESTPLAN='https://raw.githubusercontent.com/OXID-eSales/github-actions/v0/testplans/defaults.yml,${{ inputs.testplan }}'
+          DEFAULT_TESTPLAN='tests/github_actions/defaults/defaults.yml,${{ inputs.testplan }}'
           if [ '${{ matrix.testplan}}' == '-' ]; then
             echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
           else
@@ -1062,11 +1079,11 @@ jobs:
       - name: 'Download job results'
         uses: actions/download-artifact@v3
         with:
-          name: job_status
+          name: testplan
 
       - name: 'Output report'
         run: |
-          for FILE in $(find . -iname 'report-*.md'|sort); do
+          for FILE in $(find reports -type f|sort); do
             cat "${FILE}" >>"${GITHUB_STEP_SUMMARY}"
           done
 
@@ -1075,11 +1092,11 @@ jobs:
           SLACK_TEST_LIST=''
           STATUS=(skipped success cancelled failure)
           for JOB in phpunit codeception runtest; do
-            TEST_FILES=$(find . -type f -iname "job_status-???-test_${JOB}-*.txt"|sort)
+            TEST_FILES=$(find job_status/ -type f -iname "???-test_${JOB}-*.txt"|sort)
             CUMULATED=0
             LAST_TITLE=''
             for FILE in ${TEST_FILES}; do
-              TITLE=$(echo "${FILE}"|sed -e "s|^\./job_status-...-test_${JOB}-||" -e 's|-.*$||')
+              TITLE=$(echo "${FILE}"|sed -e "s|^\./job_status/...-test_${JOB}-||" -e 's|-.*$||')
               if [ "${TITLE}" != "${LAST_TITLE}" ]; then
                 if [ -n "${LAST_TITLE}" ]; then
                   SLACK_TEST_LIST="$(echo -ne "${LAST_TITLE}%${STATUS[CUMULATED]}\n${SLACK_TEST_LIST}")"

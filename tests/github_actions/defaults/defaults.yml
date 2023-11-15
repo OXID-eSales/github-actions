@@ -1,0 +1,576 @@
+# Purpose
+# =======
+# This file defines the default settings for the test workflow. It contains all
+# variables. The variables can then be overridden in more specific yaml files
+# to run different test scenarios.
+#
+# Variables used in multiple steps will be defined in the "workflow" and "global"
+# sections and we use anchors to reference them in the specific sections. We use
+# yamllint to validate the files, make sure to add linter exceptions, when you
+# break the rules.
+#
+# We can use Golang templates in these test plans, see https://github.com/joernott/load_testplan/blob/main/README.md
+# on how to reference environment variables and the github context.
+#
+# Sections
+# ========
+# The yaml hierarchy will be flattened to simple key=value settings. The
+# various levels of the yaml file here will become prefixes to the variable
+# names. For each step of the testplan, we use use a section to have the
+# variables for that step contain the same prefix.
+#
+# The "workflow" section contains global definitions of matrix variables and
+# settings used in the "strategy" parts of a job. They have anchors and every
+# specific job has its own variables which reference these anchors if no
+# job specific exceptions are needed.
+#
+# The "global" section is much the same. The variables here are defaults with
+# anchors which will be used inside the steps of the various other sections.
+#
+
+# Global settings for a jobs strategy setting
+workflow:
+
+  # The variables "php", "mysql" and template_engine in the "matrix" subsection
+  #  are used to run a matrix of all combinations of these values for testing.
+  matrix: &matrix
+    # This string contains a json array of php versions to test against.
+    php: &matrix_php '["8.1","8.2"]'
+
+    # This json array are the mysql versions to test
+    mysql: &matrix_mysql '["5.7","8.0"]'
+
+    # This json array contains a list of template engines to test, use '["smarty","twig"]' for both
+    template_engine: &template_engine '["twig"]'
+
+  # This matrix definition is used, when we only want one analysis done
+  # It covers the recommended combination of PHP and MySQL
+  matrix_slim: &matrix_slim
+    php: '["8.2"]'
+    mysql: '["8.0"]'
+
+  # How many matrix tests should run in parallel. When running on our private runners, we need to
+  # reduce this to get consistent test results
+  max_parallel: &max_parallel 4
+
+# Global settings used in the actual steps in the jobs
+global:
+  # This action can be used on the community edition (ce) and enterprise
+  # edition (ee) of the shop. On top of setting this to true, a few extra
+  # variables/secrets must be provided for using the action on ee.
+  # If is enterprise is set to true, you need to provide the following
+  # - secrets.enterprise_github_token
+  # - testplan entry global.git_enterprise_ref
+  is_enterprise: &is_enterprise false
+  # This template variable must be set to "ce" if is_enterprise is false or "ee"
+  # if is_enterprise is true. It will be used for determining object names
+  # {{ $shop_type := "ce" }}$shop_type: {{ printf "%q" $shop_type }}
+
+  # Repository related settings
+  git: &git
+
+    # URL for the docker-eshop sdk repository to clone
+    sdk_url: &git_sdk_url 'https://github.com/OXID-eSales/docker-eshop-sdk.git'
+
+    # Branch to check out for the SDK
+    sdk_ref: &git_sdk_ref 'master'
+
+    # URL for the oxidshop_ce repository
+    shop_url: &git_shop_url 'https://github.com/OXID-eSales/oxideshop_ce.git'
+
+    # Branch, tag or hash of the commit to check out
+    shop_ref: &git_shop_ref '{{ .Github.RefName }}'
+
+    # Branch to check out for the enterprise repos
+    enterprise_ref: &git_enterprise_ref 'b-8.0.x'
+
+  # When running on a self hosted runner with access to a local s3 cache:
+  # Set the following secrets:
+  # - secrets.CACHE_ENDPOINT
+  # - secrets.CACHE_ACCESS_KEY
+  # - secrets.CACHE_SECRET_KEY
+  cache:
+    bucket: &cache_bucket 'oxideshop-ee'
+
+  # Should we log in to docker? If set to "true", you need to set the following
+  # secrets:
+  # - secrets.DOCKER_HUB_USER
+  # - secrets.DOCKER_HUB_TOKEN
+  docker_login: &docker_login true
+
+  # Settings related to the container we run tests in
+  container: &container
+
+    # Name of the container running php
+    name: &container_name 'php'
+
+    # Additional options passed to docker-compose when running tests in
+    # the the container
+    options: &container_options ''
+
+    # Method to execute the commands inside a container.
+    # "run" spins up an entirely new container while "exec" runs inside the
+    # already running container.
+    method: &container_method 'exec'
+
+  # These defaults are used when running the composer_configure and
+  # composer_require actions
+  composer: &composer
+    # Set the allow-plugins
+    allow_plugins:
+
+      # Space separated list of repositories
+      repositories: ''
+
+    # Enterprise repositories to configure, this action also contains
+    # the require part
+    configure:
+
+      # Space separated list of repositories to configure
+      install: ''
+
+      # The Github organisation for the repositories
+      organisation: &composer_org 'OXID-eSales'
+
+      # The git reference to install
+      ref: &dev_ref dev-b-8.0.x
+
+      # Options to pass along to composer when requiring the repositories
+      options: '--no-update'
+
+      # Run composer update after configuring all repositories
+      update: true
+
+      # Options to pass along to composer when running composer update
+      update_options: '--no-interaction'
+
+    # This does just run composer require, use if no repository
+    # configuration is needed
+    require:
+
+      # Space separated list of repositories to require
+      install: 'twig-admin-theme apex-theme'
+
+      # The Github organisation for the repositories
+      organisation: 'OXID-eSales'
+
+      # The git reference to install
+      ref: *dev_ref
+
+      # Options to pass along to composer during install
+      options: '--with-all-dependencies'
+
+      # Run composer update after requiring all repositories
+      update: true
+
+      # Options to pass along to composer when running composer update
+      update_options: '--no-interaction'
+
+# The prepare_shop step checks out the sdk and the shop. It is a prerequisite
+# for the install_shop and shop_setup tests. It generates a cached object
+# used in those steps.
+# See docs/actions/prepare_shop.md for more information on the custom action.
+prepare_shop:
+  matrix: *matrix
+  max_parallel: *max_parallel
+  docker_login: *docker_login
+  container: *container
+  git: *git
+  is_enterprise: *is_enterprise
+  cache:
+    bucket: *cache_bucket
+    prefix: 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
+  composer: *composer
+
+  # These modify php "custom.ini"
+  custom_ini:
+    # Error reporting settings
+    error_reporting: 'E_ALL & ~E_DEPRECATED & ~E_NOTICE & ~E_WARNING'
+
+    # xdebug settings for php custom.ini
+    xdebug: 'xdebug.max_nesting_level=1000'
+
+  # Space separated list of extra services to add
+  add_services: 'selenium-chrome'
+
+# This is the second part of the shop installation. It uses the cached
+# shop from prepare_shop and generates its own cached object used in the
+# following steps. See docs/actions/start_shop.md and
+# docs/actions/install_shop.md for more information on the custom actions.
+install_shop:
+  matrix: *matrix
+  max_parallel: *max_parallel
+  docker_login: *docker_login
+  container: *container
+  git:
+    shop_ref: *git_shop_ref
+    enterprise_ref: *git_enterprise_ref
+  is_enterprise: *is_enterprise
+  cache:
+    bucket: *cache_bucket
+    prefix: &install_shop_prefix 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
+
+  # Modifying source/source/config.inc.php
+  config:
+    # Set iDebug in source/source/config.inc.php
+    idebug: false
+
+  # Exporting an artifact with Configuration files for the shop setup
+  output:
+    files: |
+      docker-compose.yml
+      source/composer.json
+      source/composer.lock
+      source/source/config.inc.php
+
+    # The configuration file name is dynamic, the matrix variables will be appended
+    artifact_prefix: 'configs_install_shop'
+
+# This installs a single module for testing. If no module is defined, you need
+# to ensure that the cache_prefix for this step is identical to the cache_prefix
+# from install_shop
+# steps will use the chached object from install_shop
+# See docs/actions/start_shop.md and docs/actions/install_module.md for more information.
+install_module:
+  matrix: *matrix
+  matrix_testplan: '["skip"]'
+  max_parallel: *max_parallel
+  docker_login: *docker_login
+  load_shop: *install_shop_prefix
+  container: *container
+  container_options: *container_options
+  container_method: *container_method
+  cache:
+    bucket: *cache_bucket
+    # If we don't install a module, keep it the same as the prefix for
+    # installed_shop. Otherwise set it to
+    # 'moduleInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
+    prefix: &install_module_prefix 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
+
+  output:
+    files: |
+      docker-compose.yml
+      source/composer.json
+      source/composer.lock
+      source/source/config.inc.php
+      files.txt
+    artifact_prefix: 'configs-install_module'
+  # Unique module id
+  ids: ''
+  # Git repository related settings
+  git:
+    module:
+      # URL for the module repository
+      url: ''
+
+      # Branch to check out/test
+      ref: ''
+
+  # Name of the package on github (organization/repository)
+  package_name: ''
+
+  # Path to install the module under dev-packages, should be the same as module_ids
+  path: ''
+
+# The unit tests we run on our code, this uses phpunit for the actual tests.
+# See docs/actions/start_shop.md and docs/actions/phpunit.md for more information.
+phpunit:
+  matrix: *matrix
+  # Providing a list of testplans to be executed with phpunit
+  # by default, these are the unit and integration tests
+  # yamllint disable-line rule:line-length
+  matrix_testplan: '["https://raw.githubusercontent.com/{{ .Github.Repository }}/{{ .Github.RefName }}/tests/github_actions/phpunit_unit.yml","https://raw.githubusercontent.com/{{ .Github.Repository }}/{{ .Github.RefName }}/tests/github_actions/phpunit_integration.yml"]'
+  max_parallel: 8
+  # The title is used in the matrix testplan runs to distinguish their output
+  # Overwrite it with a unique name in each iteration
+  title: 'phpunit'
+  docker_login: *docker_login
+  # Which cached shop do we want to load.
+  load_shop: *install_module_prefix
+  container:
+    name: *container_name
+    # diverging container options for coverage
+    options: ''
+    method: *container_method
+  cache:
+    bucket: *cache_bucket
+
+  # Name of the configuration file
+  configuration: 'phpunit.xml'
+  # Name of the test or folder to run
+  test: ''
+  # Optional: Additional options to pass to phpunit
+  additional_options: ''
+
+  # log file related settings
+  logfile:
+
+    # The name of the output logfile starts with this. The rest is dynamic,
+    # using the PHP and MySQL matrix parameters. So it will be something like
+    # '<prefix>_PHP<matrix.php>_MYSQL<matrix.mysql>.txt'
+    prefix: 'phpunit'
+
+    # Currently, we put all log files across all steps into one artifact per
+    # matrix combination
+    artifact: 'logs'
+
+  # Output artifact for this step
+  output:
+    # Which files should be archived
+    files: |
+      source/source/log/oxideshop.log
+      data/php/logs/error_log.txt
+      job_status*.txt
+
+  # Github run artifact for the phpunit output - This is dynamic, so we set it
+  # in the workflow to '<prefix_PHP<matrix.php>_MYSQL<matrix.mysql>'
+    prefix: 'phpunit_artifacts'
+
+  # Settings for the coverage report
+  coverage:
+    # Name of the file produced in the coverage report. This must match
+    # the value of '--coverage-clover' in the additional_options above.
+    # If the name is empty, nothing will be added to the coverage reports
+    # artifact.
+    path: ''
+
+    # Github run artifact for the coverage file - This is dynamic, so we set it
+    # in the workflow to <prefix>_PHP<matrix.php>_MYSQL<matrix.mysql>.
+    # Currently, we put all log files across all steps into one artifact per
+    # matrix combination.
+    prefix: &coverage_prefix coverage-reports
+
+  # This grep pattern is applied to the generated phpunit log file. If we have
+  # a hit matching the pattern below, the step will fail.
+  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|Test file ".+" not found|Cannot open file'
+
+# This step usesd the codeception custom action. Many inputs are similar to the
+# ones in the unit tests.
+# See docs/actions/start_shop.md and docs/actions/codeception.md for more information.
+codeception:
+  matrix: *matrix
+  # yamllint disable-line rule:line-length
+  matrix_testplan: '["https://raw.githubusercontent.com/{{ .Github.Repository }}/{{ .Github.RefName }}/tests/github_actions/codeception_Acceptance.yml","https://raw.githubusercontent.com/{{ .Github.Repository }}/{{ .Github.RefName }}/tests/github_actions/codeception_AcceptanceSetup.yml"]'
+  # More parallelism causes instability on the private runners, so we reduce it here
+  max_parallel: &codeception_max_parallel 1
+  docker_login: *docker_login
+  load_shop: *install_module_prefix
+  container:
+    name: *container_name
+
+    # For codeception, we need different options than the empty default
+    # yamllint disable-line rule:line-length
+    options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex -e XDEBUG_MODE=coverage'
+
+    method: *container_method
+  cache_bucket: *cache_bucket
+  composer: *composer
+
+  # This script is used to determine container options depending on the module and
+  # modifying the codeception config to handle smarty
+  pre_script: |
+    env
+    if [ "${MATRIX_TEMPLATE_ENGINE}" == 'smarty' ]; then
+      MODULE_OPTIONS=""
+      if [ "${install_module_ids}" != "" ]; then
+        MODULE_OPTIONS="-e MODULE_IDS=${install_module_ids}"
+      fi
+      echo "CODECEPTION_CONTAINER_OPTIONS=-e THEME_ID=flow ${$MODULE_OPTIONS}" | tee -a "$GITHUB_ENV"
+      perl -pi \
+        -e 's#admin_twig#admin_smarty#g;' \
+        -e 's#views/apex#views/flow/translations#g;' \
+        'source/test-module/tests/Codeception/acceptance.suite.yml'
+    fi
+    if [ "${MATRIX_TEMPLATE_ENGINE}" == 'twig' ]; then
+      MODULE_OPTIONS=""
+      if [ "${install_module_ids}" != "" ]; then
+        MODULE_OPTIONS="-e MODULE_IDS=${install_module_ids}"
+      fi
+      echo "CODECEPTION_CONTAINER_OPTIONS=-e THEME_ID=apex ${MODULE_OPTIONS}" | tee -a "$GITHUB_ENV"
+    fi
+  configuration: 'tests/codeception.yml'
+
+  # Whether to run the codeception build step before running codeception itself
+  build: true
+
+  # Name of the codeception test suite to run
+  suite: 'Acceptance'
+
+  # Name of the test to run
+  test: ''
+  # Additional options to pass to codeception
+  additional_options: '--coverage-xml=/var/www/codeception_coverage.xml'
+
+  logfile:
+    prefix: 'codeception'
+    artifact: 'logs'
+  output:
+    files: |
+      docker-compose.yml
+      source/composer.json
+      source/composer.lock
+      source/source/config.inc.php
+      source/source/log/oxideshop.log
+      data/php/logs/error_log.txt
+      source/tests/Codeception/_output
+      job_status*.txt
+    prefix: 'codeception_artifacts'
+
+  coverage:
+    # Must math the value of --coverage-xml in 'additional_options'. If empty,
+    # nothing will be added to the codeception artifact
+    path: 'source/codeception_coverage.xml'
+    prefix: *coverage_prefix
+  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found|Cannot open file'
+
+# These deprecated tests use the runtests action. Many options are similar to
+# codeception/phpunit
+runtest:
+  matrix: *matrix
+  matrix_testplan: '["https://raw.githubusercontent.com/{{ .Github.Repository }}/{{ .Github.RefName }}/tests/github_actions/deprecated_tests.yml"]'
+  max_parallel: *max_parallel
+  docker_login: *docker_login
+  load_shop: *install_module_prefix
+  container:
+    name: *container_name
+    # container options for coverage
+    options: '-e XDEBUG_MODE=coverage'
+    # We use run here, instead of 'exec'
+    method: 'run'
+  cache:
+    bucket: *cache_bucket
+  composer:
+    # Enterprise repositories to configure (and require)
+    configure:
+      # Space separated list of repositories to configure
+      install: ''
+      # The organisation for the repositories
+      organisation: *composer_org
+      # The git reference to install
+      ref: *dev_ref
+      # Options to pass along to composer when requiring the repositories
+      options: '--no-update'
+      # Run composer update after configuring all repositories
+      update: true
+      # Options to pass along to composer when running composer update
+      update_options: '--no-interaction'
+    require:
+      # Space separated list of repositories to install
+      install: 'twig-admin-theme apex-theme tests-deprecated-ce'
+      # The organisation for the repositories
+      organisation: *composer_org
+      # The git reference to install
+      ref: *dev_ref
+      # Options to pass along to composer during install
+      options: '--with-all-dependencies'
+      # Run composer update after requiring all repositories
+      update: true
+      # Options to pass along to composer during install
+      update_options: '--no-interaction'
+
+  # Name of the config file to copy
+  config_file: 'vendor/oxid-esales/testing-library/test_config.yml.dist'
+  test: 'AllTestsUnit'
+  additional_options: '--coverage-clover=/var/www/deprecated_tests_coverage.xml'
+  logfile:
+    prefix: 'runtests'
+    artifact: 'logs'
+  # phpunit output and test settings
+  output:
+    files: |
+      source/unit.cov
+      source/source/log/oxideshop.log
+      data/php/logs/error_log.txt
+    prefix: 'deprecated_tests_artifacts'
+  coverage:
+    path: 'source/deprecated_tests_coverage.xml'
+    prefix: *coverage_prefix
+  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Fatal|Error|DID NOT FINISH'
+
+# Running the sonarcloud scanner on the gathered coverage reports
+sonarcloud:
+  skip: false
+  # We only run sonarcloud for one of the matrix combinations of PHP/MySQL
+  matrix:
+    php: '["8.1"]'
+    mysql: '["5.7"]'
+    template_engine: '["twig"]'
+    # yamllint disable-line rule:line-length
+    testplan: '["-",https://raw.githubusercontent.com/{{ .Github.Repository }}/{{ .Github.RefName }}/tests/github_actions/sonarcloud_oxideshop_ce_internal.yml"]'
+
+  # There is only one matrix combination
+  max_parallel: 1
+  docker_login: *docker_login
+  coverage:
+    prefix: *coverage_prefix
+  target_branch: b-8.0.x
+  # Sonarcloud settings, get them from https://sonarcloud.io/organizations/oxid-esales/projects
+  organization: 'oxid-esales'
+  project_key: 'OXID-eSales_oxideshop_ce'
+  project_name: 'oxideshop_ce'
+  # Parameters passed to the scanner
+  parameters: |
+    -Dsonar.language=php
+    -Dsonar.scm.provider=git
+    -Dsonar.sources=source
+    -Dsonar.tests=tests
+
+  # for the internal run, leave the project key empty if you don't have a need
+  # for this second run with different settings
+  internal_project_key: 'OXID-eSales_oxideshop_ce_internal'
+  internal_project_name: 'oxideshop_ce_internal'
+  internal_parameters: |
+    -Dsonar.language=php
+    -Dsonar.scm.provider=git
+    -Dsonar.sources=source/Internal
+    -Dsonar.tests=tests
+
+# See docs/actions/start_shop.md and docs/actions/phpphpcs.md for more information.
+phpcs_tests:
+  skip: false
+  matrix: *matrix_slim
+  max_parallel: *max_parallel
+  docker_login: *docker_login
+  container: *container
+  cache:
+    bucket: *cache_bucket
+  # Name of the branch/commit to gather the list of changed files
+  git:
+    ref: '{{ .Github.Ref }}'
+  # Should we use git diff or check all files
+  diff_only: true
+  # Filter the file n ames against this regex
+  filter: '\.php$'
+  # Optional: Additional options to pass to phpcs
+  additional_options: '-vp --standard=PSR12'
+  logfile:
+    prefix: 'phpcs'
+    artifact: 'logs'
+  # Grep pattern which indicate that the test failed
+  failure_pattern: '[1-9][0-9]* error|[1-9][0-9]* warning'
+
+styles:
+  # This is only used in the module workflow, so the default is true
+  skip: true
+  matrix: *matrix_slim
+  max_parallel: 1
+  docker_login: *docker_login
+  container: *container
+  cache:
+    bucket: *cache_bucket
+  module_path: 'test-module'
+  output:
+    files: |
+      source/test-module/tests/reports/phpstan.report.json
+      source/test-module/tests/reports/phpmd.report.json
+    prefix: 'styles_artifacts'
+
+# This is the final cleanup at the end
+finish:
+  # Skip this part of the test run
+  skip: false
+  # Using the global settings here
+  matrix:
+    php: *matrix_php
+    mysql: *matrix_mysql
+  slack_title: '{{ .Github.Workflow }} on {{ .Github.Repository }} by {{ .Github.Actor }}'

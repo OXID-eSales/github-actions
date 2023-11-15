@@ -82,8 +82,9 @@ runs:
         else
           TP="${{inputs.testplan}}"
         fi
-        echo "|${{inputs.job}}|${{inputs.title}}|${{inputs.php}}|${{inputs.mysql}}|${{inputs.template_engine}}|${TP}|${!JOB_ICON} ${JOB_STATUS}|" >"report-${{inputs.priority}}-${{inputs.phase}}_${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}_TE${{inputs.template_engine}}.md"
-        echo "${JOB_STATUS}" >"job_status-${{inputs.priority}}-${{inputs.phase}}_${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}_TE${{inputs.template_engine}}.txt"
+        mkdir -p reports job_status
+        echo "|${{inputs.job}}|${{inputs.title}}|${{inputs.php}}|${{inputs.mysql}}|${{inputs.template_engine}}|${TP}|${!JOB_ICON} ${JOB_STATUS}|" >"reports/${{inputs.priority}}-${{inputs.phase}}_${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}_TE${{inputs.template_engine}}.md"
+        echo "${JOB_STATUS}" >"job_status/${{inputs.priority}}-${{inputs.phase}}_${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}_TE${{inputs.template_engine}}.txt"
 
     - name: Upload Artifacts
       # yamllint enable rule:line-length
@@ -91,9 +92,9 @@ runs:
       if: always()
       uses: actions/upload-artifact@v3
       with:
-        name: job_status
+        name: testplan
         path: |
-          job_status-*.txt
-          report-*.md
+          job_status/*.txt
+          reports/*.md
         if-no-files-found: ignore
         retention-days: 7
