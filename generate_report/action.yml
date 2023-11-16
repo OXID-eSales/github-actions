@@ -41,7 +41,7 @@ runs:
           TITLE="${PARTS[3]}"
           MATRIX="${PARTS[4]}"
           if [ "${PRIORITY}-${PHASE}-${JOB}-${TITLE}" != "${LAST_GROUP}" ]; then
-            if if [ -n "${LAST_GROUP}" ]; then
+            if [ -n "${LAST_GROUP}" ]; then
               SLACK_FILE='slack_reports/${PRIORITY}-${PHASE}-${JOB}_summary.md'
               SUMMARY_STATUS="${STATUS[CUMULATED]}"
               SUMMARY_EMOJI="${SUMMARY_STATUS^^}_EMOJI"
