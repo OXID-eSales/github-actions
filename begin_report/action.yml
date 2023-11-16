@@ -1,0 +1,48 @@
+name: 'begin_report'
+description: 'Creates the initial markdown headers for the reports'
+inputs:
+  repository:
+    type: string
+    required: true
+    description: 'URL of the github repository'
+  job:
+    type: string
+    required: false
+    description: 'URL of the job'
+    default: '-'
+  title:
+    type: string
+    required: false
+    description: 'Title of the job'
+    default: 'default'
+
+runs:
+  using: "composite"
+  steps:
+    - name: 'Write Report header'
+      if: ${{ inputs.header == 'true' }}
+      shell: bash
+      run: |
+        mkdir -p reports job_status slack_reports
+        cat <<EOF >reports/000_header.md
+        # ${{inputs.title}}
+        EOF
+        cat <<EOF >slack_reports/000_header.md
+        Repository: ${{ inputs.repository }}
+        Job: ${{ inputs.job }}
+        Testplan: ${{ inputs.TESTPLAN }}
+
+        EOF
+
+    - name: Upload Artifacts
+
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: testplan
+        path: |
+          job_status/*.txt
+          reports/*.md
+          slack_reports/*.md
+        if-no-files-found: ignore
+        retention-days: 7

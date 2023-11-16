@@ -16,8 +16,8 @@ runs:
   steps:
     - name: Download Artifact
       uses: actions/download-artifact@v3
-        with:
-          name: testplan
+      with:
+        name: testplan
 
     - name: 'Process job results for slack'
       id: process_slack

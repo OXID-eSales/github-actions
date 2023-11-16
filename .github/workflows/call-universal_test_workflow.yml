@@ -107,13 +107,22 @@ jobs:
             load_testplan.log
           retention-days: 7
 
+      - name: 'Write Report Header'
+        if: always()
+        uses: OXID-eSales/github-actions/begin_report@v0
+        with:
+          title: ${{ steps.ltp.outputs.finish_slack_title }}
+          repository: '${{ github.server_url }}/${{ github.repository }}'
+          job: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          testplan: '${{ inputs.testplan }}'
+
       - name: 'Write Report'
         if: always()
         uses: OXID-eSales/github-actions/append_report@v0
         with:
           header: true
           phase: install
-          priority: '000'
+          priority: '001'
 
     outputs:
       # prepare_shop variables
@@ -454,6 +463,7 @@ jobs:
           git_module_url: ${{ steps.install_module_testplan.outputs.install_module_git_module_url }}
           git_module_ref: ${{ steps.install_module_testplan.outputs.install_module_git_module_ref }}
           output_files: ${{ steps.install_module_testplan.outputs.install_module_output_files }}
+          # yamllint disable-line rule:line-length
           output_artifact: '${{steps.install_module_testplan.outputs.install_module_output_artifact_prefix}}-${{steps.install_module_testplan.outputs.install_module_ids}}-${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
           cache_name: '${{ steps.install_module_testplan.outputs.install_module_cache_prefix}}_${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
           cache_bucket: ${{ steps.install_module_testplan.outputs.install_module_cache_bucket }}
@@ -501,6 +511,7 @@ jobs:
 
   phpunit:
     needs: ['init', 'install_module', 'begin_test_phase']
+    # yamllint disable-line rule:line-length
     if: ${{ always() && needs.init.outputs.phpunit_matrix_testplan != '' && needs.init.outputs.phpunit_matrix_testplan != 'none' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
@@ -565,6 +576,7 @@ jobs:
           configuration: ${{ steps.phpunit_testplan.outputs.phpunit_configuration }}
           test: ${{ steps.phpunit_testplan.outputs.phpunit_test }}
           additional_options: ${{ steps.phpunit_testplan.outputs.phpunit_additional_options }}
+          # yamllint disable-line rule:line-length
           logfile: ${{steps.phpunit_testplan.outputs.logfile_prefix}}-${{ steps.phpunit_testplan.outputs.phpunit_title }}-${{steps.phpunit_testplan_name.outputs.matrix_suffix}}.txt
           logfile_artifact: ${{ steps.phpunit_testplan.outputs.phpunit_logfile_artifact }}
           output_files: ${{ steps.phpunit_testplan.outputs.phpunit_output_files }}
@@ -592,6 +604,7 @@ jobs:
 
   codeception:
     needs: ['init', 'install_module', 'begin_test_phase']
+    # yamllint disable-line rule:line-length
     if: ${{ always() && needs.init.outputs.codeception_matrix_testplan != '' && needs.init.outputs.codeception_matrix_testplan != 'none' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
@@ -721,6 +734,7 @@ jobs:
           suite: ${{ steps.codeception_testplan.outputs.codeception_suite }}
           test: ${{ steps.codeception_testplan.outputs.codeception_test }}
           additional_options: ${{ steps.codeception_testplan.outputs.codeception_additional_options }}
+          # yamllint disable-line rule:line-length
           logfile: ${{steps.codeception_testplan.outputs.codeception_logfile_prefix}}-${{steps.codeception_testplan.outputs.codeception_title}}-${{steps.codeception_testplan_name.outputs.matrix_suffix}}.txt
           logfile_artifact: ${{ steps.codeception_testplan.outputs.codeception_logfile_artifact }}
           output_files: ${{ steps.codeception_testplan.outputs.codeception_output_files }}
@@ -748,6 +762,7 @@ jobs:
 
   runtest:
     needs: ['init', 'install_module', 'begin_test_phase']
+    # yamllint disable-line rule:line-length
     if: ${{ always() && needs.init.outputs.runtest_matrix_testplan != '' && needs.init.outputs.runtest_matrix_testplan != 'none' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
@@ -850,6 +865,7 @@ jobs:
           container_method: ${{ steps.runtest_testplan.outputs.runtest_container_method }}
           test: ${{ steps.runtest_testplan.outputs.runtest_test }}
           additional_options: ${{ steps.runtest_testplan.outputs.runtest_additional_options }}
+          # yamllint disable-line rule:line-length
           logfile: ${{ steps.runtest_testplan.outputs.runtest_logfile_prefix}}-${{ steps.runtest_testplan.outputs.runtest_title}}-${{ steps.runtest_testplan_name.outputs.matrix_suffix }}.txt
           logfile_artifact: ${{ steps.runtest_testplan.outputs.runtest_logfile_artifact }}
           output_files: ${{ steps.runtest_testplan.outputs.runtest_output_files }}
