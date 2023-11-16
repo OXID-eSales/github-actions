@@ -32,6 +32,7 @@ runs:
         OVERALL=0
         LAST_GROUP=''
         TEST_FILES=$(find job_status/ -type f -iname "*.txt"|sort)
+        mkdir -p slack_reports
         for FILE in ${TEST_FILES}; do
           F=$(echo "${FILE}" | sed -e 's|^.*job_status/||' -e 's|\.txt$ ||')
           IFS='-' read -r -a PARTS <<< "${F}"
