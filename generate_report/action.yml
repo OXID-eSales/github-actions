@@ -1,0 +1,130 @@
+name: 'generate_report'
+description: 'Appends data to the job_status'
+inputs:
+  slack_webhook:
+    type: string
+    required: true
+    description: 'URL for the channel web hook, see https://api.slack.com/apps/A04CAPK58G0/incoming-webhooks?'
+  title:
+    type: string
+    required: false
+    description: 'Title of the job'
+    default: 'default'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Download Artifact
+      uses: actions/download-artifact@v3
+        with:
+          name: testplan
+
+    - name: 'Process job results for slack'
+      id: process_slack
+      shell: bash
+      run: |
+        SKIPPED_EMOJI=':white_circle:'
+        SUCCESS_EMOJI=':white_check_mark:'
+        CANCELLED_EMOJI=':black_circle:'
+        FAILURE_EMOJI=':x:'
+        STATUS=(skipped success cancelled failure)
+        CUMULATED=0
+        OVERALL=0
+        LAST_GROUP=''
+        TEST_FILES=$(find job_status/ -type f -iname "*.txt"|sort)
+        for FILE in ${TEST_FILES}; do
+          F=$(echo "${FILE}" | sed -e 's|^.*job_status/||'')
+          IFS='-' read -r -a PARTS <<< "${F}"
+          PRIORITY="${PARTS[0]}"
+          PHASE="${PARTS[1]}"
+          JOB="${PARTS[2]}"
+          TITLE="${PARTS[3]}"
+          MATRIX="${PARTS[4]}"
+          if [ "${PRIORITY}-${PHASE}-${JOB}-${TITLE}" != "${LAST_GROUP}" ]; then
+            if if [ -n "${LAST_GROUP}" ]; then
+              SLACK_FILE='slack_reports/${{PRIORITY}}-${{PHASE}}-${{JOB}}_summary.md'
+              SUMMARY_STATUS="${STATUS[CUMULATED]}"
+              SUMMARY_EMOJI="${SUMMARY_STATUS^^}_EMOJI"
+              echo -ne " :arrow_right: *${SUMMARY_STATUS}* ${SUMMARY_EMOJI}\n" >"${SLACK_FILE}"
+            fi
+            LAST_GROUP="${PRIORITY}-${PHASE}-${JOB}-${TITLE}"
+            CUMULATED=0
+          fi
+          VALUE=$(head -n 1 "${FILE}")
+          case ${VALUE} in
+            skipped) SNUM=0 ;;
+            success) SNUM=1 ;;
+            cancelled) SNUM=2 ;;
+            *) SNUM=3 ;;
+          esac
+          if [ ${SNUM} -gt ${CUMULATED} ]; then
+            CUMULATED=$SNUM
+          fi
+          if [ ${SNUM} -gt ${OVERALL} ]; then
+            OVERALL=$SNUM
+          fi
+        done
+        SLACK_FILE='slack_reports/${{PRIORITY}}-${{PHASE}}-${{JOB}}_summary.md'
+        SUMMARY_STATUS="${STATUS[CUMULATED]}"
+        SUMMARY_EMOJI="${SUMMARY_STATUS^^}_EMOJI"
+        echo -ne " :arrow_right: *${SUMMARY_STATUS}* ${SUMMARY_EMOJI}\n" >"${SLACK_FILE}"
+        OVERALL_STATUS="${STATUS[OVERALL]}"
+        OVERALL_EMOJI="${OVERALL_STATUS^^}_EMOJI"
+        echo "overall_status=${OVERALL_EMOJI} ${OVERALL_STATUS}" >>"${GITHUB_OUTPUT}"
+
+    - name: 'Output reports'
+      run: |
+        for FILE in $(find reports -type f|sort); do
+          cat "${FILE}" >>github_report.md
+        done
+        cat github_report.md >>"${GITHUB_STEP_SUMMARY}"
+
+        for FILE in $(find slack_reports -type f|sort); do
+          cat "${FILE}" >>slack_report.md
+        done
+        SLACK_MARKDOWN=$(cat slack_report.md)
+        cat >slack.json <<EOF
+        {
+          "blocks": [
+            {
+              "type": "header",
+              "text": {
+                "type": "plain_text",
+                "emoji": true,
+                "text": "${{inputs.title}} ${{ steps.process_slack.outputs.overall_status}}"
+              }
+            },
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "${SLACK_MARKDOWN}"
+              }
+            }
+          ]
+        }
+        EOF
+
+    - name: Upload Artifacts
+      # yamllint enable rule:line-length
+
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: testplan
+        path: |
+          slack_reports/*_summary.md
+          github_report.md
+          slack_report.md
+          slack.json
+        if-no-files-found: ignore
+        retention-days: 7
+
+    - name: Send custom JSON data to Slack workflow
+      if: ${{ inputs.slack_webhook != '' }}
+      uses: slackapi/slack-github-action@v1
+      with:
+        payload-file-path: 'slack.json'
+      env:
+        SLACK_WEBHOOK_URL: ${{ inputs.slack_webhook }}
+        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK

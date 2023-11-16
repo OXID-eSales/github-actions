@@ -4,7 +4,7 @@ inputs:
   header:
     type: boolean
     required: false
-    description: 'do we need to write the phase header instead of a normal line'
+    description: 'Do we need to write the phase header instead of a normal line'
     default: false
   priority:
     type: string
@@ -58,7 +58,8 @@ runs:
       if: ${{ inputs.header == 'true' }}
       shell: bash
       run: |
-        cat <<EOF >report-${{inputs.priority}}-${{ inputs.phase }}_header.md
+        mkdir -p reports job_status slack_reports
+        cat <<EOF >reports/${{inputs.priority}}-${{ inputs.phase }}_header.md
         ## ${{ inputs.phase }} phase
         |Job |Title|PHP|MySQL|Template engine|Testplan|Status|
         |:---|:----|--:|----:|--------------:|:-------|:-----|
@@ -69,12 +70,20 @@ runs:
       shell: bash
       # yamllint disable rule:line-length
       run: |
+        REPORT_FILE='reports/${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}_TE${{inputs.template_engine}}.md'
+        STATUS_FILE='job_status/${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}_TE${{inputs.template_engine}}.txt'
+        SLACK_FILE='slack_reports/${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}.md'
         SKIPPED_ICON='![Skipped](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/26aa.png)'
         SUCCESS_ICON='![Success](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/2705.png)'
         CANCELLED_ICON='![Cancelled](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-large/26ab.png)'
         FAILURE_ICON='![Failure](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/274c.png)'
+        SKIPPED_EMOJI=':white_circle:'
+        SUCCESS_EMOJI=':white_check_mark:'
+        CANCELLED_EMOJI=':black_circle:'
+        FAILURE_EMOJI=':x:'
         JOB_STATUS='${{inputs.status}}'
         JOB_ICON="${JOB_STATUS^^}_ICON"
+        JOB_EMOJI="${JOB_STATUS^^}_EMOJI"
         echo "ICON=${JOB_ICON} value='${!JOB_ICON}'"
         if [[ '${{inputs.testplan}}' =~ ^http.* ]]; then
           BASE=$(echo '${{inputs.testplan}}'| sed -E 's|.+/(.*)$|\1|')
@@ -82,9 +91,13 @@ runs:
         else
           TP="${{inputs.testplan}}"
         fi
-        mkdir -p reports job_status
-        echo "|${{inputs.job}}|${{inputs.title}}|${{inputs.php}}|${{inputs.mysql}}|${{inputs.template_engine}}|${TP}|${!JOB_ICON} ${JOB_STATUS}|" >"reports/${{inputs.priority}}-${{inputs.phase}}_${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}_TE${{inputs.template_engine}}.md"
-        echo "${JOB_STATUS}" >"job_status/${{inputs.priority}}-${{inputs.phase}}_${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}_TE${{inputs.template_engine}}.txt"
+        mkdir -p reports job_status slack_report
+        echo "|${{inputs.job}}|${{inputs.title}}|${{inputs.php}}|${{inputs.mysql}}|${{inputs.template_engine}}|${TP}|${!JOB_ICON} ${JOB_STATUS}|" >"${REPORT_FILE}"
+        echo "${JOB_STATUS}" >"${STATUS_FILE}"        
+        if [ ! -f "${SLACK_FILE}" ]; then
+          echo "- ${{inputs.phase}}/${{inputs.job}}: ${{inputs.title}}" >"${SLACK_FILE}"
+        fi
+        echo "${!JOB_EMOJI}" >>"${SLACK_FILE}"
 
     - name: Upload Artifacts
       # yamllint enable rule:line-length
@@ -96,5 +109,6 @@ runs:
         path: |
           job_status/*.txt
           reports/*.md
+          slack_reports/*.md
         if-no-files-found: ignore
         retention-days: 7

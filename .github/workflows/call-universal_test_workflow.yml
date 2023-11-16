@@ -1086,64 +1086,68 @@ jobs:
           name: testplan
 
       - name: 'Output report'
-        run: |
-          for FILE in $(find reports -type f|sort); do
-            cat "${FILE}" >>"${GITHUB_STEP_SUMMARY}"
-          done
-
-      - name: 'Process job results'
-        run: |
-          SLACK_TEST_LIST=''
-          STATUS=(skipped success cancelled failure)
-          for JOB in phpunit codeception runtest; do
-            TEST_FILES=$(find job_status/ -type f -iname "???-test_${JOB}-*.txt"|sort)
-            CUMULATED=0
-            LAST_TITLE=''
-            for FILE in ${TEST_FILES}; do
-              TITLE=$(echo "${FILE}"|sed -e "s|^\./job_status/...-test_${JOB}-||" -e 's|-.*$||')
-              if [ "${TITLE}" != "${LAST_TITLE}" ]; then
-                if [ -n "${LAST_TITLE}" ]; then
-                  SLACK_TEST_LIST="$(echo -ne "${LAST_TITLE}%${STATUS[CUMULATED]}\n${SLACK_TEST_LIST}")"
-                fi
-                LAST_TITLE="${TITLE}"
-                CUMULATED=0
-              fi
-              S=$(head -n 1 "${FILE}")
-              case ${S} in
-              skipped) SNUM=0 ;;
-              success) SNUM=1 ;;
-              cancelled) SNUM=2 ;;
-              *) SNUM=3 ;;
-              esac
-              if [ ${SNUM} -gt ${CUMULATED} ]; then
-                CUMULATED=$SNUM
-              fi
-            done
-            SLACK_TEST_LIST="$(echo -ne "${LAST_TITLE}%${STATUS[CUMULATED]}\n${SLACK_TEST_LIST}")"
-          done
-          cat <<EOF | tee -a "${GITHUB_ENV}"
-          SLACK_TEST_LIST<<slack_test_list_separator
-          ${SLACK_TEST_LIST}
-          slack_test_list_separator
-          EOF
-
-      - name: Send custom JSON data to Slack workflow
-        if: ${{ always() && env.SLACK_WEBHOOK != '' }}
-        uses: 'OXID-eSales/github-actions/slack_status@v2'
+        uses: 'OXID-eSales/github-actions/generate_report@v0'
         with:
           slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           title: '${{ needs.init.outputs.finish_slack_title }}'
-          summary_list: |
-            Repository%${{ github.server_url }}/${{ github.repository }}
-            Job%${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-            Testplan%${{ inputs.testplan }}
-          install_list: |
-            prepare_shop%${{ needs.prepare_shop.result }}
-            install_shop%${{ needs.install_shop.result }}
-            install_module%${{ needs.install_module.result }}
-          test_list: |
-            ${{ env.SLACK_TEST_LIST}}
-          report_list: |
-            sonarcloud%${{ needs.sonarcloud.result }}
-            phpcs_tests%${{ needs.phpcs_tests.result }}
-            styles%${{ needs.styles.result }}
+        # run: |
+        #   for FILE in $(find reports -type f|sort); do
+        #     cat "${FILE}" >>"${GITHUB_STEP_SUMMARY}"
+        #   done
+
+      # - name: 'Process job results'
+      #   run: |
+      #     SLACK_TEST_LIST=''
+      #     STATUS=(skipped success cancelled failure)
+      #     for JOB in phpunit codeception runtest; do
+      #       TEST_FILES=$(find job_status/ -type f -iname "???-test_${JOB}-*.txt"|sort)
+      #       CUMULATED=0
+      #       LAST_TITLE=''
+      #       for FILE in ${TEST_FILES}; do
+      #         TITLE=$(echo "${FILE}"|sed -e "s|^\./job_status/...-test_${JOB}-||" -e 's|-.*$||')
+      #         if [ "${TITLE}" != "${LAST_TITLE}" ]; then
+      #           if [ -n "${LAST_TITLE}" ]; then
+      #             SLACK_TEST_LIST="$(echo -ne "${LAST_TITLE}%${STATUS[CUMULATED]}\n${SLACK_TEST_LIST}")"
+      #           fi
+      #           LAST_TITLE="${TITLE}"
+      #           CUMULATED=0
+      #         fi
+      #         S=$(head -n 1 "${FILE}")
+      #         case ${S} in
+      #         skipped) SNUM=0 ;;
+      #         success) SNUM=1 ;;
+      #         cancelled) SNUM=2 ;;
+      #         *) SNUM=3 ;;
+      #         esac
+      #         if [ ${SNUM} -gt ${CUMULATED} ]; then
+      #           CUMULATED=$SNUM
+      #         fi
+      #       done
+      #       SLACK_TEST_LIST="$(echo -ne "${LAST_TITLE}%${STATUS[CUMULATED]}\n${SLACK_TEST_LIST}")"
+      #     done
+      #     cat <<EOF | tee -a "${GITHUB_ENV}"
+      #     SLACK_TEST_LIST<<slack_test_list_separator
+      #     ${SLACK_TEST_LIST}
+      #     slack_test_list_separator
+      #     EOF
+
+      # - name: Send custom JSON data to Slack workflow
+      #   if: ${{ always() && env.SLACK_WEBHOOK != '' }}
+      #   uses: 'OXID-eSales/github-actions/slack_status@v2'
+      #   with:
+      #     slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+      #     title: '${{ needs.init.outputs.finish_slack_title }}'
+      #     summary_list: |
+      #       Repository%${{ github.server_url }}/${{ github.repository }}
+      #       Job%${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      #       Testplan%${{ inputs.testplan }}
+      #     install_list: |
+      #       prepare_shop%${{ needs.prepare_shop.result }}
+      #       install_shop%${{ needs.install_shop.result }}
+      #       install_module%${{ needs.install_module.result }}
+      #     test_list: |
+      #       ${{ env.SLACK_TEST_LIST}}
+      #     report_list: |
+      #       sonarcloud%${{ needs.sonarcloud.result }}
+      #       phpcs_tests%${{ needs.phpcs_tests.result }}
+      #       styles%${{ needs.styles.result }}
