@@ -33,7 +33,7 @@ runs:
         LAST_GROUP=''
         TEST_FILES=$(find job_status/ -type f -iname "*.txt"|sort)
         for FILE in ${TEST_FILES}; do
-          F=$(echo "${FILE}" | sed -e 's|^.*job_status/||')
+          F=$(echo "${FILE}" | sed -e 's|^.*job_status/||' -e 's|\.txt$ ||')
           IFS='-' read -r -a PARTS <<< "${F}"
           PRIORITY="${PARTS[0]}"
           PHASE="${PARTS[1]}"
@@ -42,13 +42,13 @@ runs:
           MATRIX="${PARTS[4]}"
           if [ "${PRIORITY}-${PHASE}-${JOB}-${TITLE}" != "${LAST_GROUP}" ]; then
             if [ -n "${LAST_GROUP}" ]; then
-              SLACK_FILE="slack_reports/${PRIORITY}-${PHASE}-${JOB}_summary.md"
+              SLACK_FILE="slack_reports/${LAST_GROUP}.md"
               SUMMARY_STATUS="${STATUS[CUMULATED]}"
               SUMMARY_EMOJI="${SUMMARY_STATUS^^}_EMOJI"
               echo -ne " :arrow_right: *${SUMMARY_STATUS}* ${!SUMMARY_EMOJI}\n" >"${SLACK_FILE}"
+              CUMULATED=0
             fi
             LAST_GROUP="${PRIORITY}-${PHASE}-${JOB}-${TITLE}"
-            CUMULATED=0
           fi
           VALUE=$(head -n 1 "${FILE}")
           case ${VALUE} in
@@ -63,6 +63,13 @@ runs:
           if [ ${SNUM} -gt ${OVERALL} ]; then
             OVERALL=$SNUM
           fi
+          JOB_EMOJI="${VALUE^^}_EMOJI"
+          SLACK_FILE="slack_reports/${LAST_GROUP}.md"
+          if [ ! -f "${SLACK_FILE}" ]; then
+            echo -n "- ${PHASE}/${JOB}: ${TITLE} " >"${SLACK_FILE}"
+          fi
+          echo -n "${!JOB_EMOJI} " >>"${SLACK_FILE}"
+
         done
         SLACK_FILE="slack_reports/${PRIORITY}-${PHASE}-${JOB}_summary.md"
         SUMMARY_STATUS="${STATUS[CUMULATED]}"
