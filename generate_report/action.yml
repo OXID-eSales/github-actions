@@ -42,7 +42,7 @@ runs:
           MATRIX="${PARTS[4]}"
           if [ "${PRIORITY}-${PHASE}-${JOB}-${TITLE}" != "${LAST_GROUP}" ]; then
             if if [ -n "${LAST_GROUP}" ]; then
-              SLACK_FILE='slack_reports/${{PRIORITY}}-${{PHASE}}-${{JOB}}_summary.md'
+              SLACK_FILE='slack_reports/${PRIORITY}-${PHASE}-${JOB}_summary.md'
               SUMMARY_STATUS="${STATUS[CUMULATED]}"
               SUMMARY_EMOJI="${SUMMARY_STATUS^^}_EMOJI"
               echo -ne " :arrow_right: *${SUMMARY_STATUS}* ${SUMMARY_EMOJI}\n" >"${SLACK_FILE}"
@@ -64,7 +64,7 @@ runs:
             OVERALL=$SNUM
           fi
         done
-        SLACK_FILE='slack_reports/${{PRIORITY}}-${{PHASE}}-${{JOB}}_summary.md'
+        SLACK_FILE='slack_reports/${PRIORITY}-${PHASE}-${JOB}_summary.md'
         SUMMARY_STATUS="${STATUS[CUMULATED]}"
         SUMMARY_EMOJI="${SUMMARY_STATUS^^}_EMOJI"
         echo -ne " :arrow_right: *${SUMMARY_STATUS}* ${SUMMARY_EMOJI}\n" >"${SLACK_FILE}"
