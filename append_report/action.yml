@@ -91,7 +91,7 @@ runs:
         else
           TP="${{inputs.testplan}}"
         fi
-        mkdir -p reports job_status slack_report
+        mkdir -p reports job_status slack_reports
         echo "|${{inputs.job}}|${{inputs.title}}|${{inputs.php}}|${{inputs.mysql}}|${{inputs.template_engine}}|${TP}|${!JOB_ICON} ${JOB_STATUS}|" >"${REPORT_FILE}"
         echo "${JOB_STATUS}" >"${STATUS_FILE}"
         if [ ! -f "${SLACK_FILE}" ]; then
