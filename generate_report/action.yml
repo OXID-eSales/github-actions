@@ -42,10 +42,10 @@ runs:
           MATRIX="${PARTS[4]}"
           if [ "${PRIORITY}-${PHASE}-${JOB}-${TITLE}" != "${LAST_GROUP}" ]; then
             if [ -n "${LAST_GROUP}" ]; then
-              SLACK_FILE='slack_reports/${PRIORITY}-${PHASE}-${JOB}_summary.md'
+              SLACK_FILE="slack_reports/${PRIORITY}-${PHASE}-${JOB}_summary.md"
               SUMMARY_STATUS="${STATUS[CUMULATED]}"
               SUMMARY_EMOJI="${SUMMARY_STATUS^^}_EMOJI"
-              echo -ne " :arrow_right: *${SUMMARY_STATUS}* ${SUMMARY_EMOJI}\n" >"${SLACK_FILE}"
+              echo -ne " :arrow_right: *${SUMMARY_STATUS}* ${!SUMMARY_EMOJI}\n" >"${SLACK_FILE}"
             fi
             LAST_GROUP="${PRIORITY}-${PHASE}-${JOB}-${TITLE}"
             CUMULATED=0
@@ -67,10 +67,10 @@ runs:
         SLACK_FILE="slack_reports/${PRIORITY}-${PHASE}-${JOB}_summary.md"
         SUMMARY_STATUS="${STATUS[CUMULATED]}"
         SUMMARY_EMOJI="${SUMMARY_STATUS^^}_EMOJI"
-        echo -ne " :arrow_right: *${SUMMARY_STATUS}* ${SUMMARY_EMOJI}\n" >"${SLACK_FILE}"
+        echo -ne " :arrow_right: *${SUMMARY_STATUS}* ${!SUMMARY_EMOJI}\n" >"${SLACK_FILE}"
         OVERALL_STATUS="${STATUS[OVERALL]}"
         OVERALL_EMOJI="${OVERALL_STATUS^^}_EMOJI"
-        echo "overall_status=${OVERALL_EMOJI} ${OVERALL_STATUS}" >>"${GITHUB_OUTPUT}"
+        echo "overall_status=${!OVERALL_EMOJI} ${OVERALL_STATUS}" >>"${GITHUB_OUTPUT}"
 
     - name: 'Output reports'
       shell: bash
@@ -83,7 +83,7 @@ runs:
         for FILE in $(find slack_reports -type f|sort); do
           cat "${FILE}" >>slack_report.md
         done
-        SLACK_MARKDOWN=$(cat slack_report.md)
+        SLACK_MARKDOWN=$(cat slack_report.md|sed 's/$/\\n/g' | tr -d '\n')
         cat >slack.json <<EOF
         {
           "blocks": [

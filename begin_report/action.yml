@@ -10,6 +10,11 @@ inputs:
     required: false
     description: 'URL of the job'
     default: '-'
+  testplan:
+    type: string
+    required: false
+    description: 'URL/file name of the test plan'
+    default: '-'
   title:
     type: string
     required: false

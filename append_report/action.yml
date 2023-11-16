@@ -95,9 +95,9 @@ runs:
         echo "|${{inputs.job}}|${{inputs.title}}|${{inputs.php}}|${{inputs.mysql}}|${{inputs.template_engine}}|${TP}|${!JOB_ICON} ${JOB_STATUS}|" >"${REPORT_FILE}"
         echo "${JOB_STATUS}" >"${STATUS_FILE}"
         if [ ! -f "${SLACK_FILE}" ]; then
-          echo "- ${{inputs.phase}}/${{inputs.job}}: ${{inputs.title}}" >"${SLACK_FILE}"
+          echo -n "- ${{inputs.phase}}/${{inputs.job}}: ${{inputs.title}}" >"${SLACK_FILE}"
         fi
-        echo "${!JOB_EMOJI}" >>"${SLACK_FILE}"
+        echo -n "${!JOB_EMOJI}" >>"${SLACK_FILE}"
 
     - name: Upload Artifacts
       # yamllint enable rule:line-length
