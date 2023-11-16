@@ -673,7 +673,7 @@ jobs:
           container_options: '${{ steps.codeception_testplan.outputs.codeception_container_options }} ${{ env.CODECEPTION_CONTAINER_OPTIONS }}'
           container_method: 'exec'
           organisation: ${{ steps.codeception_testplan.outputs.codeception_composer_require_organisation }}
-          repositories: 'twig-component twig-admin-theme apex-theme'
+          repositories: 'twig-component:* twig-admin-theme:* apex-theme:*'
           ref: ${{ steps.codeception_testplan.outputs.codeception_composer_require_ref }}
           options: ${{ steps.codeception_testplan.outputs.codeception_composer_require_options }}
           update: ${{ steps.codeception_testplan.outputs.codeception_composer_require_update }}
@@ -687,7 +687,7 @@ jobs:
           container_options: '${{ steps.codeception_testplan.outputs.codeception_container_options }} ${{ env.CODECEPTION_CONTAINER_OPTIONS }}'
           container_method: 'exec'
           organisation: ${{ steps.codeception_testplan.outputs.codeception_composer_require_organisation }}
-          repositories: 'smarty-component smarty-admin-theme flow-theme codeception-page-objects codeception-modules'
+          repositories: 'smarty-component:* smarty-admin-theme:* flow-theme:* codeception-page-objects codeception-modules'
           ref: ${{ steps.codeception_testplan.outputs.codeception_composer_require_ref }}
           options: ${{ steps.codeception_testplan.outputs.codeception_composer_require_options }}
           update: ${{ steps.codeception_testplan.outputs.codeception_composer_require_update }}
