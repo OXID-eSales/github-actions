@@ -33,7 +33,7 @@ runs:
         LAST_GROUP=''
         TEST_FILES=$(find job_status/ -type f -iname "*.txt"|sort)
         for FILE in ${TEST_FILES}; do
-          F=$(echo "${FILE}" | sed -e 's|^.*job_status/||'')
+          F=$(echo "${FILE}" | sed -e 's|^.*job_status/||')
           IFS='-' read -r -a PARTS <<< "${F}"
           PRIORITY="${PARTS[0]}"
           PHASE="${PARTS[1]}"
@@ -64,7 +64,7 @@ runs:
             OVERALL=$SNUM
           fi
         done
-        SLACK_FILE='slack_reports/${PRIORITY}-${PHASE}-${JOB}_summary.md'
+        SLACK_FILE="slack_reports/${PRIORITY}-${PHASE}-${JOB}_summary.md"
         SUMMARY_STATUS="${STATUS[CUMULATED]}"
         SUMMARY_EMOJI="${SUMMARY_STATUS^^}_EMOJI"
         echo -ne " :arrow_right: *${SUMMARY_STATUS}* ${SUMMARY_EMOJI}\n" >"${SLACK_FILE}"
