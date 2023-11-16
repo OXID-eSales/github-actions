@@ -46,7 +46,7 @@ runs:
               SLACK_FILE="slack_reports/${LAST_GROUP}.md"
               SUMMARY_STATUS="${STATUS[CUMULATED]}"
               SUMMARY_EMOJI="${SUMMARY_STATUS^^}_EMOJI"
-              echo -ne " :arrow_right: *${SUMMARY_STATUS}* ${!SUMMARY_EMOJI}\n" >"${SLACK_FILE}"
+              echo -ne " :arrow_right: *${SUMMARY_STATUS}* ${!SUMMARY_EMOJI}\n" >>"${SLACK_FILE}"
               CUMULATED=0
             fi
             LAST_GROUP="${PRIORITY}-${PHASE}-${JOB}-${TITLE}"
