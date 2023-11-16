@@ -72,10 +72,10 @@ runs:
           echo -n "${!JOB_EMOJI} " >>"${SLACK_FILE}"
 
         done
-        SLACK_FILE="slack_reports/${PRIORITY}-${PHASE}-${JOB}_summary.md"
+        SLACK_FILE="slack_reports/${PRIORITY}-${PHASE}-${JOB}.md"
         SUMMARY_STATUS="${STATUS[CUMULATED]}"
         SUMMARY_EMOJI="${SUMMARY_STATUS^^}_EMOJI"
-        echo -ne " :arrow_right: *${SUMMARY_STATUS}* ${!SUMMARY_EMOJI}\n" >"${SLACK_FILE}"
+        echo -ne " :arrow_right: *${SUMMARY_STATUS}* ${!SUMMARY_EMOJI}\n" >>"${SLACK_FILE}"
         OVERALL_STATUS="${STATUS[OVERALL]}"
         OVERALL_EMOJI="${OVERALL_STATUS^^}_EMOJI"
         echo "overall_status=${!OVERALL_EMOJI} ${OVERALL_STATUS}" >>"${GITHUB_OUTPUT}"
@@ -122,7 +122,7 @@ runs:
       with:
         name: testplan
         path: |
-          slack_reports/*_summary.md
+          slack_reports/*.md
           github_report.md
           slack_report.md
           slack.json
