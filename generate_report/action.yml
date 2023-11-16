@@ -73,6 +73,7 @@ runs:
         echo "overall_status=${OVERALL_EMOJI} ${OVERALL_STATUS}" >>"${GITHUB_OUTPUT}"
 
     - name: 'Output reports'
+      shell: bash
       run: |
         for FILE in $(find reports -type f|sort); do
           cat "${FILE}" >>github_report.md
