@@ -1,6 +1,5 @@
 # append_report
-This action manages the job_status artifact containing the results of the
-individual matrix runs as small text files and report snippets in markdown.
+This action adds report and job_status snippets to the testplan artifact.
 These are used in the finish action to create the slack notification and the
 report on the action summary page.
 

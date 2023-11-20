@@ -1,5 +1,5 @@
 name: 'append_report'
-description: 'Appends data to the job_status'
+description: 'Adds report and status snippets to the testplan artifact'
 inputs:
   header:
     type: boolean
