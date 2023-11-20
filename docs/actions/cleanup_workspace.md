@@ -12,7 +12,7 @@ Set to false to skip this step.
 If set to true, all running containers will be killed. If you use ACT,
 this might result in killing the container the action runs in, thus failing it.
 
-**docker_prune:** *not required*, *default:* true  
+**prune_docker:** *not required*, *default:* true  
 This runs 'docker prune -f' to remove terminated containers and unused
 images. Set to false if you still need to access them.
 

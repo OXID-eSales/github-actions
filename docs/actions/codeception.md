@@ -26,10 +26,10 @@ Name of a specific test to run.
 **additional_options:** *not required*, *default:*  ''  
 Optional: Additional options to pass to codeception. Example: "--skip-group flow_theme".
 
-**logfile:** *not required*, *default:*  phpunit_log.txt  
+**logfile:** *not required*, *default:*  codeception.txt  
 Name of the output logfile.
 
-**logfile_artifact:** *not required*, *default:*  phpunit_logs  
+**logfile_artifact:** *not required*, *default:*  logs  
 Github run artifact to put the logfile in.
 
 **output_files:** *not required*, *default:*

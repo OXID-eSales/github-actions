@@ -415,6 +415,11 @@ jobs:
             echo "testplan=${DEFAULT_TESTPLAN},${{matrix.testplan}}" | tee -a "${GITHUB_OUTPUT}"
           fi
           echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}" | tee -a "${GITHUB_OUTPUT}"
+          if [ -z '${{ secrets.enterprise_github_token }}' ]; then
+            echo -e "\033[0;35mUsing enterprise github token\033[0m"
+          else
+            echo -e "\033[0;35mUsing default github token\033[0m"
+          fi
 
       - name: 'Load Testplan'
         id: install_module_testplan
@@ -447,6 +452,7 @@ jobs:
           repository: ${{ steps.install_module_testplan.outputs.install_module_git_module_url }}
           ref: ${{ steps.install_module_testplan.outputs.install_module_git_module_ref }}
           path: 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}'
+          token: ${{ secrets.enterprise_github_token }}
 
       - name: Install module
         if: ${{ matrix.testplan != 'skip' }}
