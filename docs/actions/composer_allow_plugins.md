@@ -1,4 +1,4 @@
-# composer_require
+# composer_allow_plugins
 This action runs composer config.allow-plugins for a list of modules in the
 format module:value in a given container (default 'php') and optionally runs
 composer update at the end.

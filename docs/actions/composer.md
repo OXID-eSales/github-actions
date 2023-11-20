@@ -1,6 +1,6 @@
 # composer
-This action configures and requires one or more enterprise repositories in the
-given container (default 'php') and runs composer update at the end.
+This action executes a composer command with a variable list of parameters. It
+is intended as a generic frontend to composer
 
 ## Inputs:
 **action:** *required*, *no default*  
