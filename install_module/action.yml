@@ -154,7 +154,7 @@ runs:
       run: |
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
-          --workdir=/var/www/${{inputs.module_path}} \
+          --workdir=/var/www \
           ${{ inputs.container_name}} \
           composer install
 
