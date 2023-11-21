@@ -388,9 +388,9 @@ jobs:
     needs: ['init', 'install_shop']
     strategy:
       matrix:
+        testplan: ${{ fromJSON(needs.init.outputs.install_module_matrix_testplan) }}
         php: ${{ fromJSON(needs.init.outputs.install_module_matrix_php) }}
         mysql: ${{ fromJSON(needs.init.outputs.install_module_matrix_mysql) }}
-        testplan: ${{ fromJSON(needs.init.outputs.install_module_matrix_testplan) }}
       fail-fast: false
       max-parallel: ${{ fromJSON(needs.init.outputs.install_module_max_parallel) }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
