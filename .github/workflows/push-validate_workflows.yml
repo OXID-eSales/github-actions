@@ -16,6 +16,14 @@ jobs:
           job: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
           testplan: ''
 
+      - name: 'Write Report'
+        if: always()
+        uses: OXID-eSales/github-actions/append_report@v0
+        with:
+          header: true
+          phase: lint
+          priority: '001'
+
   yamllint:
     runs-on: 'ubuntu-latest'
     steps:
@@ -46,7 +54,9 @@ jobs:
         with:
           priority: '010'
           phase: lint
-          job: yamllint
+          title: ''
+          job: ''
+          php: 'yamllint'
           status: ${{job.status}}
 
   actionlint:
@@ -75,10 +85,12 @@ jobs:
         if: always()
         uses: OXID-eSales/github-actions/append_report@v0
         with:
-          priority: '010'
+          priority: '020'
           phase: lint
-          job: actionlint
-          status: ${{steps.actionlint.outcome}}
+          job: ''
+          title: ''
+          php: 'actionlint'
+          status: ${{job.status}}
 
   finish:
     if: always()
