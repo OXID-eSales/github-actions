@@ -19,7 +19,7 @@ on:
         type: string
         description: 'Which ref do we want to use for the plan defaults'
         required: false
-        default: 'v0'
+        default: 'v3'
 
     secrets:
       DOCKER_HUB_USER:
