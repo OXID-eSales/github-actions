@@ -249,6 +249,7 @@ jobs:
       styles_max_parallel: ${{ steps.ltp.outputs.styles_max_parallel }}
       styles_output_files: ${{ steps.ltp.outputs.styles_output_files }}
       styles_output_prefix: ${{ steps.ltp.outputs.styles_output_prefix }}
+      styles_path: ${{ steps.ltp.outputs.styles_path }}
       styles_skip: ${{ steps.ltp.outputs.styles_skip }}
       # finish variables
       finish_matrix_mysql: ${{ steps.ltp.outputs.finish_matrix_mysql }}
@@ -1071,6 +1072,7 @@ jobs:
       - name: 'Run styles check'
         uses: 'OXID-eSales/github-actions/styles@v0'
         with:
+          path: ${{ needs.init.outputs.styles_path }}
           container_name: ${{ needs.init.outputs.styles_container_name }}
           container_options: ${{ needs.init.outputs.styles_container_options }}
           container_method: ${{ needs.init.outputs.styles_container_method }}

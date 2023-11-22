@@ -558,11 +558,12 @@ styles:
   container: *container
   cache:
     bucket: *cache_bucket
-  module_path: 'test-module'
+  path: '.'
   output:
     files: |
-      source/test-module/tests/reports/phpstan.report.json
-      source/test-module/tests/reports/phpmd.report.json
+      source/tests/reports/phpstan*.report.json
+      source/tests/reports/phpmd*.report.json
+      source/tests/reports/phpcs*.report.json
     prefix: 'styles_artifacts'
 
 # This is the final cleanup at the end
