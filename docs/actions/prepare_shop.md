@@ -92,10 +92,64 @@ xdebug settings for php custom.ini.
 **add_services:** *not required*, *default:* selenium-chrome  
 Space separated list of extra services to add.
 
+**composer_allow_plugins_repositories:**  *not required*,
+Space separated list of repository:value pairs to manage allow-plugins.
+
+**composer_rm_parameters:** *not required*,
+Space separated list of things to be removed.
+
+**composer_rm_options:** *not required*,
+Options to pass along to composer when requiring the repositories.
+
+**composer_rm_update:** *not required*,
+Run composer update after requiring all repositories.
+
+**composer_rm_update_options:** *not required*,
+Options to pass along to composer during install.
+
+**composer_configure_install:** *not required*,
+Space separated list of repositories to configure.
+
+**composer_configure_organisation:** *not required*,
+The organisation for the repositories.
+
+**composer_configure_ref:** *not required*,
+Git reference used in require.
+
+**composer_configure_options:** *not required*,
+Options to pass along to composer when requiring the repositories.
+
+**composer_configure_update:** *not required*,
+Run composer update after requiring all repositories.
+
+**composer_configure_update_options:** *not required*,
+Options to pass along to composer during install.
+
+**composer_require_install:** *notrequired*,
+Space separated list of repositories to require.
+
+**composer_require_organisation:** *not required*,
+The organisation for the repositories.
+
+**composer_require_ref:** ,
+Git reference used in require.
+
+**composer_require_options:** *not required*,
+Options to pass along to composer when requiring the repositories.
+
+**composer_require_update:** *not required*,
+Run composer update after requiring all repositories.
+
+**composer_require_update_options:** *not required*,
+Options to pass along to composer during install.
+
 **enterprise_github_token:** *not required*, *default:* ''  
 OAuth token to access enterprise repos. It is required when is_enterprise is
 set to 'true'. This should be populated with ${{ secrets.enterprise_github_token }}
 and will be hidden by GitHub.
+
+**cache_name:** *required*,
+Name of the shop to cache.
 
 **cache_bucket:** *not required*, *default:* 'oxidshop_ee'  
 If set, the local s3 cache is used instead of githubs cache to speed things up on

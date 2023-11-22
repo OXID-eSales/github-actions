@@ -48,6 +48,9 @@ Github run artifact to put the output files in.
 **coverage_path:** *not required*, *default:*  ''  
 Path for the coverage file, not uploaded if it is empty.
 
+**coverage_artifact:** *not required*, *default:* coverage-reports
+Github run artifact for the coverage file.
+
 **failure_pattern:** *not required*, *default:*  'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found|Cannot open file'  
 Grep pattern which indicate that the test failed.
 
