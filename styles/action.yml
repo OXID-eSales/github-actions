@@ -46,7 +46,7 @@ runs:
         PATHS=$(echo -n "${{ inputs.path }}"| tr '\n' ' ')
         for PATH in ${PATHS}; do
           echo -e "\033[0;35m###  Run phpstan in ${PATH} ###\033[0m"
-          ID=${echo "${PATH}"|sed -e 's|/|_'}
+          ID=${echo "${PATH}"|sed -e 's|/|_|g'}
           docker-compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
             ${{ inputs.container_name}} \
@@ -62,7 +62,7 @@ runs:
         PATHS=$(echo -n "${{ inputs.path }}"| tr '\n' ' ')
         for PATH in ${PATHS}; do
           echo -e "\033[0;35m###  Run phpmd in ${PATH} ###\033[0m"
-          ID=${echo "${PATH}"|sed -e 's|/|_'}
+          ID=${echo "${PATH}"|sed -e 's|/|_|g'}
           docker-compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
             ${{ inputs.container_name}} \
@@ -76,7 +76,7 @@ runs:
         PATHS=$(echo -n "${{ inputs.path }}"| tr '\n' ' ')
         for PATH in ${PATHS}; do
           echo -e "\033[0;35m###  Run phpcs in ${PATH} ###\033[0m"
-          ID=${echo "${PATH}"|sed -e 's|/|_'}
+          ID=${echo "${PATH}"|sed -e 's|/|_|g'}
           docker-compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
             ${{ inputs.container_name}} \
