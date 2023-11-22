@@ -526,7 +526,7 @@ jobs:
   phpunit:
     needs: ['init', 'install_module', 'begin_test_phase']
     # yamllint disable-line rule:line-length
-    if: ${{ always() && needs.init.outputs.phpunit_matrix_testplan != '' && needs.init.outputs.phpunit_matrix_testplan != 'none' && needs.install_module.result == 'success' }}
+    if: ${{ always() && needs.init.outputs.phpunit_matrix_testplan != '' && needs.init.outputs.phpunit_matrix_testplan != 'skip' && needs.init.outputs.phpunit_matrix_testplan != 'none' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.phpunit_matrix_php) }}
@@ -619,7 +619,7 @@ jobs:
   codeception:
     needs: ['init', 'install_module', 'begin_test_phase']
     # yamllint disable-line rule:line-length
-    if: ${{ always() && needs.init.outputs.codeception_matrix_testplan != '' && needs.init.outputs.codeception_matrix_testplan != 'none' && needs.install_module.result == 'success' }}
+    if: ${{ always() && needs.init.outputs.codeception_matrix_testplan != '' && needs.init.outputs.codeception_matrix_testplan != 'none' && needs.init.outputs.codeception_matrix_testplan != 'skip' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.codeception_matrix_php) }}
@@ -777,7 +777,7 @@ jobs:
   runtest:
     needs: ['init', 'install_module', 'begin_test_phase']
     # yamllint disable-line rule:line-length
-    if: ${{ always() && needs.init.outputs.runtest_matrix_testplan != '' && needs.init.outputs.runtest_matrix_testplan != 'none' && needs.install_module.result == 'success' }}
+    if: ${{ always() && needs.init.outputs.runtest_matrix_testplan != '' && needs.init.outputs.runtest_matrix_testplan != 'none' && needs.init.outputs.runtest_matrix_testplan != 'skip' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.runtest_matrix_php) }}
@@ -919,7 +919,7 @@ jobs:
 
   sonarcloud:
     needs: ['init', 'install_module', 'phpunit', 'codeception', 'begin_report_phase']
-    if: ${{ always() && needs.init.outputs.sonarcloud_matrix_testplan == '' && needs.install_module.result == 'success' }}
+    if: ${{ always() && needs.init.outputs.sonarcloud_matrix_testplan != '' && needs.init.outputs.sonarcloud_matrix_testplan != 'none' && needs.init.outputs.sonarcloud_matrix_testplan != 'skip' && needs.install_module.result == 'success' }}
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.sonarcloud_matrix_php) }}
