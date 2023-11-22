@@ -1,0 +1,57 @@
+workflow:
+  matrix: &matrix
+    # We only test the latest recommended versions here but both template engines
+    php: &matrix_php '["8.0","8.1"]'
+    mysql: &matrix_mysql '["5.7","8.0"]'
+    # currently, only twig works for oe_moduletemplate template_engine: &template_engine '["smarty","twig"]'
+
+global:
+  git: &git
+    shop_ref: &git_shop_ref b-7.0.x
+    enterprise_ref: &git_enterprise_ref 'b-7.0.x'
+
+  composer: &composer
+    configure:
+      ref: &dev_ref dev-b-7.0.x
+    require:
+      install: 'twig-admin-theme twig-component:^2.2.0 apex-theme'
+      ref: *dev_ref
+
+prepare_shop:
+  matrix: *matrix
+  git: *git
+  composer: *composer
+
+install_shop:
+  matrix: *matrix
+  git: *git
+
+install_module:
+  matrix: *matrix
+  git:
+    module:
+      ref: 'b-7.0.x'
+  composer: *composer
+
+phpunit:
+  matrix: *matrix
+
+codeception:
+  matrix: *matrix
+  composer: *composer
+
+runtest:
+  matrix: *matrix
+
+sonarcloud:
+  matrix: *matrix
+  target_branch: *git_shop_ref
+
+phpcs_tests:
+  matrix: *matrix
+
+styles:
+  matrix: *matrix
+
+finish:
+  matrix: *matrix

@@ -1,6 +1,11 @@
 name: 'styles'
 description: 'Configures styles'
 inputs:
+  path:
+    type: string
+    required: false
+    description: 'List of folders relative to the source folder to run the tests in'
+    default: '.'
   container_name:
     type: string
     required: false
@@ -21,8 +26,9 @@ inputs:
     required: false
     description: 'phpunit output and test settings'
     default: |
-      source/test-module/tests/reports/phpstan.report.json
-      source/test-module/tests/reports/phpmd.report.json
+      source/tests/reports/phpstan*.report.json
+      source/tests/reports/phpmd*.report.json
+      source/tests/reports/phpcs*.report.json
   output_artifact:
     type: string
     required: false
@@ -36,10 +42,16 @@ runs:
       if: always()
       shell: bash
       run: |
-        docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
-          --workdir=/var/www/test-module \
-          ${{ inputs.container_name}} \
-          bash -c "composer phpstan-report; composer phpstan"
+        mkdir -p source/tests/reports
+        PATHS=$(echo -n "${{ inputs.path }}"| tr '\n' ' ')
+        for PATH in ${PATHS}; do
+          echo -e "\033[0;35m###  Run phpstan in ${PATH} ###\033[0m"
+          ID=${echo "${PATH}"|sed -e 's|/|_|g'}
+          docker-compose ${{ inputs.container_method }} -T \
+            ${{ inputs.container_options }} \
+            ${{ inputs.container_name}} \
+            bash -c "composer phpstan-report; composer phpstan --error-format=prettyJson '${PATH}' &>/var/www/tests/reports/phpstan-${ID}.report.json'"
+        done
 
     - name: Run phpmd
       id: phpmd
@@ -47,19 +59,29 @@ runs:
       continue-on-error: true
       shell: bash
       run: |
-        docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
-          --workdir=/var/www/test-module \
-          ${{ inputs.container_name}} \
-          bash -c "composer phpmd-report; composer phpmd"
+        PATHS=$(echo -n "${{ inputs.path }}"| tr '\n' ' ')
+        for PATH in ${PATHS}; do
+          echo -e "\033[0;35m###  Run phpmd in ${PATH} ###\033[0m"
+          ID=${echo "${PATH}"|sed -e 's|/|_|g'}
+          docker-compose ${{ inputs.container_method }} -T \
+            ${{ inputs.container_options }} \
+            ${{ inputs.container_name}} \
+            bash -c "composer phpmd-report; composer phpmd '${PATH}' --reportfile '/var/www/tests/reports/phpmd-${ID}.report.json'"
+        done
 
     - name: Run phpcs
       if: always()
       shell: bash
       run: |
-        docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
-          --workdir=/var/www/test-module \
-          ${{ inputs.container_name}} \
-          composer phpcs
+        PATHS=$(echo -n "${{ inputs.path }}"| tr '\n' ' ')
+        for PATH in ${PATHS}; do
+          echo -e "\033[0;35m###  Run phpcs in ${PATH} ###\033[0m"
+          ID=${echo "${PATH}"|sed -e 's|/|_|g'}
+          docker-compose ${{ inputs.container_method }} -T \
+            ${{ inputs.container_options }} \
+            ${{ inputs.container_name}} \
+            composer phpcs --report=json --report-file="/var/www/tests/reports/phpcs-${ID}.report.json" "${PATH}"
+        done
 
     - name: Stop containers
       if: always()

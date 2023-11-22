@@ -1,5 +1,10 @@
-# This config depends on the defaults.yml testplan
-# Only diverging settings are defined here
+# This config overrides defaults.yml to set the necessary settings for
+# enterprise edition.
+# You also need to make sure that the following secrets are defined:
+# - CACHE_ENDPOINT
+# - CACHE_ACCESS_KEY
+# - CACHE_SECRET_KEY
+# - enterprise_github_token
 
 global:
   # {{ $shop_type := "ee" }}$shop_type: {{ printf "%q" $shop_type }}
@@ -35,28 +40,16 @@ install_shop:
 
 install_module:
   cache:
-    # Need to set this as we don't install a module
+    # Need to set this as we don't install a module. When installing a module:
+    # 'moduleInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
     prefix: *install_shop_prefix
   load_shop: *install_shop_prefix
 
 phpunit:
   load_shop: *install_shop_prefix
 
-unit_tests:
-  test: 'vendor/oxid-esales/oxideshop-ee/Tests/Unit'
-  additional_options: ''
-  coverage:
-    path: ''
-
-integration_tests:
-  test: 'vendor/oxid-esales/oxideshop-ee/Tests/Integration'
-  coverage:
-    path: ''
-
 codeception:
   load_shop: *install_shop_prefix
-
-codeception_tests:
   container:
     options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex'
     method: &selenium_container_method 'run'
@@ -75,27 +68,8 @@ codeception_tests:
   coverage:
     path: ''
 
-shop_setup_tests:
-  container:
-    method: *selenium_container_method
-  composer: *composer
-  configuration: 'vendor/oxid-esales/oxideshop-ee/Tests/codeception.yml'
-  output:
-    files: |
-      docker-compose.yml
-      source/composer.json
-      source/composer.lock
-      source/source/config.inc.php
-      source/source/log/oxideshop.log
-      data/php/logs/error_log.txt
-      source/vendor/oxid-esales/oxideshop-ee/Tests/Codeception/_output
-  coverage:
-    path: ''
-
 runtest:
   load_shop: *install_shop_prefix
-
-deprecated_tests:
   container:
     options: '-e ACTIVE_THEME=apex'
     method: 'run'
@@ -114,6 +88,3 @@ sonarcloud:
 
 phpcs_tests:
   test: 'source/Internal vendor/oxid-esales/oxideshop-ee/Internal vendor/oxid-esales/oxideshop-pe/Internal'
-
-finish:
-  slack_title: 'Full matrix EE check on {{ .Github.Repository }} by {{ .Github.Actor }}'

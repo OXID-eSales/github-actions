@@ -67,7 +67,7 @@ runs:
     - name: Configure repositories
       shell: bash
       run: |
-        REPOSITORIES=$(echo -n "${{ inputs.repositories }}"| tr -d '\n')
+        REPOSITORIES=$(echo -n "${{ inputs.repositories }}"| tr '\n' ' ')
         if [ -z "${{ inputs.ref }}" ]; then
           REFERENCE=""
         else

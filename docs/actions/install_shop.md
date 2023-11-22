@@ -56,6 +56,9 @@ Configuration files for the shop setup.
 
 **output_artifact** *not required*, *default:* Configs-${{ inputs.php }}-${{ inputs.mysql }}_install_shop
 
+**cache_name:** *required*, *required*,
+Name of the shop to cache.
+
 **cache_bucket:** *not required*, *default:* 'oxidshop_ee'  
 If set, the local s3 cache is used instead of githubs cache to speed things up on
 private runners. If the bucket can't be reached, the GitHub cache is used.

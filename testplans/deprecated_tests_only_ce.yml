@@ -3,23 +3,17 @@
 
 prepare_shop:
   composer:
+    rm:
+      # yamllint disable-line rule:line-length
+      parameters: 'codeception/codeception codeception/module-asserts codeception/module-db codeception/module-filesystem codeception/module-webdriver oxid-esales/codeception-modules oxid-esales/codeception-page-objects'
+      options: '--no-update --dev'
+    configure:
+      install: 'testing_library'
+      update_options: '--no-interaction'
     require:
-      install:
-        codeception/codeception:^5.0
-        codeception/module-asserts:^3.0
-        codeception/module-db:^3.0
-        codeception/module-filesystem:^3.0
-        codeception/module-webdriver:^3.1
-        composer/composer:^2.0
-        incenteev/composer-parameter-handler:^v2.1.4
-        mikey179/vfsstream:~1.6.8
-        oxid-esales/codeception-modules:dev-b-8.0.x
-        oxid-esales/codeception-page-objects:dev-b-8.0.x
-        oxid-esales/developer-tools:dev-b-8.0.x
-        oxid-esales/oxideshop-ide-helper:dev-b-8.0.x
-        phpspec/prophecy-phpunit:^v2.0.1
-        phpunit/phpunit:^9.1.1
-        squizlabs/php_codesniffer:^3.5.4
+      install: ''
+      options: '--no-update'
+      update_options: '--no-interaction'
 unit_tests:
   skip: true
 
@@ -31,8 +25,6 @@ codeception_tests:
 
 shop_setup_tests:
   skip: true
-
-deprecated_tests:
 
 sonarcloud:
   skip: true

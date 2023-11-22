@@ -11,6 +11,9 @@ Options to pass to the container start.
 **container_method:** *not required*, *default*: 'exec'  
 Whether we use exec to run the command in the existing php container or run to spin up a new one.
 
+**reset_shop:** *not required*,
+Should we run vendor/bin/reset-shop before the test.
+
 **test:** *not required*, *default:*  AllTestsUnit  
 Name of the test or folder to run.
 
@@ -32,8 +35,17 @@ Github run artifact to put the output files in.
 **coverage_path:** *not required*, *default:*  ''  
 Path for the coverage file, not uploaded if it is empty.
 
+**coverage_artifact:** *not required*, *default:* coverage-reports
+Github run artifact for the coverage file.
+
 **failure_pattern:** *not required*, *default:*  'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH'  
 Grep pattern which indicate that the test failed.
+
+**reset_shop_binary:** *not required*, *default:* 'vendor/bin/reset-shop'
+Location of the reset-shop binary.
+
+**runtests_binary:** *not required*, *default:* 'vendor/bin/runtests'
+Location of the runtests binary.
 
 ## Outputs:
 none

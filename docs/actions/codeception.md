@@ -26,10 +26,10 @@ Name of a specific test to run.
 **additional_options:** *not required*, *default:*  ''  
 Optional: Additional options to pass to codeception. Example: "--skip-group flow_theme".
 
-**logfile:** *not required*, *default:*  phpunit_log.txt  
+**logfile:** *not required*, *default:*  codeception.txt  
 Name of the output logfile.
 
-**logfile_artifact:** *not required*, *default:*  phpunit_logs  
+**logfile_artifact:** *not required*, *default:*  logs  
 Github run artifact to put the logfile in.
 
 **output_files:** *not required*, *default:*
@@ -42,13 +42,16 @@ Github run artifact to put the logfile in.
     - source/tests/Codeception/_output  
 Output files of the codeception run to put into the output artifact.
 
-**output_artifact:** *not required*, *default:*  phpunit-artifacts  
+**output_artifact:** *not required*, *default:*  codeception-artifacts  
 Github run artifact to put the output files in.
 
 **coverage_path:** *not required*, *default:*  ''  
 Path for the coverage file, not uploaded if it is empty.
 
-**failure_pattern:** *not required*, *default:*  'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH'  
+**coverage_artifact:** *not required*, *default:* coverage-reports
+Github run artifact for the coverage file.
+
+**failure_pattern:** *not required*, *default:*  'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found|Cannot open file'  
 Grep pattern which indicate that the test failed.
 
 ## Outputs:

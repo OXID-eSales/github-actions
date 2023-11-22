@@ -72,7 +72,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Run PHPUnit Unit tests
+    - name: Run PHPUnit tests
       shell: bash
       run: |
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \

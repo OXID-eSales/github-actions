@@ -2,9 +2,6 @@
 Fetches the module and installs it.
 
 ## inputs
-**cached_shop:** *required*, *no default*  
-Name of the cached object from [prepare_shop](prepare_shop.md)/[install_shop](install_shop.md) or a previous install_module.
-
 **container_name:** *not required*, *default:*  php  
 Name of the container to run the test in.
 
@@ -23,6 +20,9 @@ Ids of the module.
 **module_path:** *not required*, *default:* test-module  
 Path for the checkout and url.
 
+**activate:** *required*, *no default*   
+List of module_ids to activate.
+
 **template_engine:** *not required*, *default:* both  
 One of twig, smarty, both.
 
@@ -32,12 +32,6 @@ URL for the module repository.
 **git_module_ref:** *required*, *no default*  
 Branch, tag or hash of the commit to check out.
 
-**php:** *not required*, *default:*  '8.2'  
-Version of PHP for this instance.
-
-**mysql:** *not required*, *default:*  '8.0'  
-Version of MySQL for this instance.
-
 **output_files:** *not required*, *default:*
     - docker-compose.yml
     - source/composer.json
@@ -45,13 +39,16 @@ Version of MySQL for this instance.
     - source/source/config.inc.php
 Output files of the module installation.
 
-**output_artifact:** *not required*, *default:*  Configs-${{ inputs.php }}-${{ inputs.mysql }}-${{ inputs.template_engine }}_${{ inputs.module_ids }}  
+**output_artifact:** *not required*, *default:*  install_module-artifacts  
 Github run artifact to put the output files in.
 
 **enterprise_github_token:** *not required*, *default:* ''  
 OAuth token to access enterprise repos. It is required when is_enterprise is
 set to 'true'. This should be populated with ${{ secrets.enterprise_github_token }}
 and will be hidden by GitHub.
+
+**cache_name:** *required*,
+Name of the shop to cache.
 
 **cache_bucket:** *not required*, *default:* 'oxidshop_ee'  
 If set, the local s3 cache is used instead of githubs cache to speed things up on

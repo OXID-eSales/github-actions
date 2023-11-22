@@ -69,6 +69,17 @@ inputs:
     required: false
     description: 'Grep pattern which indicate that the test failed'
     default: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH'
+  reset_shop_binary:
+    type: string
+    required: false
+    description: 'Location of the reset-shop binary'
+    default: 'vendor/bin/reset-shop'
+  runtests_binary:
+    type: string
+    required: false
+    description: 'Location of the runtests binary'
+    default: 'vendor/bin/runtests'
+
 runs:
   using: "composite"
   steps:
@@ -78,14 +89,14 @@ runs:
       run: |
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
-          php vendor/bin/reset-shop
+          php ${{ inputs.reset_shop_binary }}
 
     - name: Run PHPUnit Unit tests
       shell: bash
       run: |
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
-          php vendor/bin/runtests \
+          php ${{ inputs.runtests_binary }} \
             ${{ inputs.additional_options }} \
             "${{ inputs.test }}" \
           | tee "${{ inputs.logfile }}" 2>&1 || true

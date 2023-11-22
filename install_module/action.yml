@@ -28,7 +28,11 @@ inputs:
     type: string
     required: false
     description: 'Path for the checkout and url'
-    default: 'test-module'
+    default: 'dev-packages/test-module'
+  activate:
+    type: string
+    required: true
+    description: 'Space/multiline list of modules to activate'
   git_module_url:
     type: string
     required: true
@@ -37,16 +41,7 @@ inputs:
     type: string
     required: false
     description: 'Branch, tag or hash of the commit to check out'
-  php:
-    type: string
-    required: false
-    description: 'Version of PHP for this instance'
-    default: '8.2'
-  mysql:
-    type: string
-    required: false
-    description: 'Version of MySQL for this instance'
-    default: '8.0'
+    default: true
   output_files:
     type: string
     required: false
@@ -61,6 +56,11 @@ inputs:
     required: false
     description: 'Github run artifact to put the output files in'
     default: 'install_module-artifacts'
+  enterprise_github_token:
+    type: string
+    required: false
+    description: 'OAuth token to access enterprise repos'
+    default: ''
   cache_name:
     type: string
     required: true
@@ -85,13 +85,32 @@ inputs:
     required: false
     description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
     default: ''
-outputs:
-  shop_with_module:
-    description: 'Name of the cached shop installation'
-    value: ${{ steps.init.outputs.installed_shop_with_module }}
+
 runs:
   using: "composite"
   steps:
+    - name: Locate Console
+      shell: bash
+      run: |
+        cd source
+        OE_CONSOLE=$(find . -iname "oe-console" -type f|head -1|sed -e "s|^$(pwd)/||")
+        echo "OE_CONSOLE=${OE_CONSOLE}"|tee -a "${GITHUB_ENV}"
+
+    - name: Configure enterprise credentials
+      shell: bash
+      run: |
+        if [ -n "${{ inputs.enterprise_github_token }}" ]; then
+          echo -e "\033[0;35m###  configure github access ###\033[0m"
+          docker-compose ${{ inputs.container_method }} -T \
+            ${{ inputs.container_options }} \
+            ${{ inputs.container_name}} \
+            composer config github-protocols https
+          docker-compose ${{ inputs.container_method }} -T \
+            ${{ inputs.container_options }} \
+            ${{ inputs.container_name}} \
+            composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
+        fi
+
     - name: Install module
       shell: bash
       run: |
@@ -99,7 +118,7 @@ runs:
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
           composer config repositories.${{ inputs.package_name }} \
-          --json '{"type":"path", "url":"./test-module", "options": {"symlink": true}}'
+          --json '{"type":"path", "url":"./${{inputs.module_path}}", "options": {"symlink": true}}'
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
@@ -115,19 +134,27 @@ runs:
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
-          bin/oe-console oe:database:reset \
+          ${{ env.OE_CONSOLE }} oe:database:reset \
           --db-host=mysql --db-port=3306 --db-name=example --db-user=root --db-password=root --force
-        docker-compose ${{ inputs.container_method }} -T \
-          ${{ inputs. container_options }} \
-          ${{ inputs.container_name}} \
-          bin/oe-console oe:module:activate ${{ inputs.module_ids }}
+
+    - name: Activate modules
+      shell: bash
+      run: |
+        MODULES=$(echo -n "${{ inputs.activate }}"| tr '\n' ' ')
+        for MODULE in ${MODULES}; do
+          echo -e "\033[0;35m###  activating module ${MODULE} ###\033[0m"
+          docker-compose ${{ inputs.container_method }} -T \
+            ${{ inputs. container_options }} \
+            ${{ inputs.container_name}} \
+            ${{ env.OE_CONSOLE }} oe:module:activate "${MODULE}"
+        done
 
     - name: Install module dependencies
       shell: bash
       run: |
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
-          --workdir=/var/www/test-module \
+          --workdir=/var/www \
           ${{ inputs.container_name}} \
           composer install
 
@@ -142,6 +169,12 @@ runs:
       shell: bash
       run: |
         docker-compose logs --tail=all
+
+    - name: Write files list
+      if: always()
+      shell: bash
+      run: |
+        find . -type f >files.txt
 
     - name: Upload configuration artifacts
       if: always()

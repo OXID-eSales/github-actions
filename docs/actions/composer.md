@@ -1,13 +1,19 @@
-# composer_allow_plugins
-This action runs composer config.allow-plugins for a list of modules in the
-format module:value in a given container (default 'php') and optionally runs
-composer update at the end.
+# composer
+This action executes a composer command with a variable list of parameters. It
+is intended as a generic frontend to composer
 
 ## Inputs:
-**repositories:** *required*, *no default*  
-Space separated list of repository:value pairs to configure.
+**action:** *required*, *no default*  
+An action like configure, remove etc to be executed by composer.
 
-**update:** *not required*, *default*: false  
+**parameters:** *required*, *no default*  
+A multiline string with parameters to iterate over. composer **action** will
+be executed for each line.
+
+**options:** *not required*, *default*: ''  
+This will be added at the end of each composer command.
+
+**update:** *not required*, *default*: true  
 Run composer update after configuring all repositories.
 
 **update_options:** *not required*, *default*: '--no-interaction'  

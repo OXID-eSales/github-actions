@@ -1,14 +1,23 @@
-name: 'composer_allow_plugins'
-description: 'Configures allow-plugins settings'
+name: 'composer'
+description: 'Generic composer wrapper'
 inputs:
-  repositories:
+  action:
     type: string
     required: true
-    description: 'Space separated list of repositories to configure'
+    description: 'Composer action to execute'
+  parameters:
+    type: string
+    required: true
+    description: 'List of parameters for the action'
+  options:
+    type: string
+    required: false
+    default: ''
+    description: 'These options will be added at the end of every command'
   update:
     type: boolean
     required: false
-    description: 'Run composer update after configuring all repositories'
+    description: 'Run composer update after all the commands'
     default: false
   update_options:
     type: string
@@ -34,19 +43,15 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Configure allow-plugins
+    - name: Run composer
       shell: bash
       run: |
-        REPOSITORIES=$(echo -n "${{ inputs.repositories }}"| tr '\n' ' ')
-        for REPOSITORY in ${REPOSITORIES}; do
-          # compensate for repos with _ and config with -
-          DASHED_REPO=$(echo "${REPOSITORY}"|tr '_', '-'|sed -e 's|:.*||')
-          VALUE=$(echo "${REPOSITORY}"|sed -e 's|.*:||')
-          echo -e "\033[0;35m###  configure allow-plugins.${DASHED_REPO} '${VALUE}'' ###\033[0m"
+        echo "${{ inputs.parameters }}%" | while IFS=$'\n' read -d '%' -r PARAMETER ; do
+          echo -e "\033[0;35m### composer ${{ inputs.action }} ${PARAMETER} ${{inputs.options}} ###\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
             ${{ inputs.container_name}} \
-            composer config allow-plugins.${DASHED_REPO} "${VALUE}"
+            composer ${{ inputs.action }} ${PARAMETER} ${{inputs.options}}
         done
 
         if [ '${{ inputs.update }}' == 'true' ]; then
