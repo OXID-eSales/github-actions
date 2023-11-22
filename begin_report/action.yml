@@ -25,7 +25,6 @@ runs:
   using: "composite"
   steps:
     - name: 'Write Report header'
-      if: ${{ inputs.header == 'true' }}
       shell: bash
       run: |
         mkdir -p reports job_status slack_reports
