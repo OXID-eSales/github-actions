@@ -47,6 +47,9 @@ OAuth token to access enterprise repos. It is required when is_enterprise is
 set to 'true'. This should be populated with ${{ secrets.enterprise_github_token }}
 and will be hidden by GitHub.
 
+**cache_name:** *required*,
+Name of the shop to cache.
+
 **cache_bucket:** *not required*, *default:* 'oxidshop_ee'  
 If set, the local s3 cache is used instead of githubs cache to speed things up on
 private runners. If the bucket can't be reached, the GitHub cache is used.

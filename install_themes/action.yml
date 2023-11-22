@@ -20,7 +20,7 @@ inputs:
     required: false
     description: 'Options to pass along to composer when running composer update'
     default: '--no-interaction'
-  container:
+  container_name:
     type: string
     required: false
     description: 'Name of the container to run the test in'

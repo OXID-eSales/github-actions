@@ -11,11 +11,17 @@ Additional options to pass into the container.
 **container_method:** *not required*, *default*: 'exec'  
 Whether we use exec to run the command in the existing php container or run to spin up a new one.
 
+**coverage_artifact:** *not required*, *default:* 'coverage-reports'
+Name of the artifact containing the coverage reports.
+
 **target_branch:** *not required*, *default:*  'b-8.0.x'  
 Target branch for the scan.
 
 **phpcov_version:** *not required*, *default:*  '8.2.1'  
 Version of phpcov to use.
+
+**github_ref_name:** *required*,
+Github reference for the scan.
 
 **sonarcloud_organization:** *not required*, *default:*  'oxid-esales'  
 Name of the organization in sonarcloud.
@@ -38,6 +44,9 @@ Parameters passed to the scanner.
 
 **sonar_token:** *required*, *no default*  
 Token for Sonarcloud.
+
+**github_token:** *required*, *no default*
+Token for Sonarcloud github access.
 
 **output_files:** *not required*, *default:*
     - tests/*
