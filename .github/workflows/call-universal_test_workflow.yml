@@ -437,6 +437,7 @@ jobs:
         if: ${{ matrix.testplan != 'skip' }}
         uses: 'OXID-eSales/github-actions/start_shop@v2'
         with:
+          # yamllint disable-line rule:line-length
           cached_shop: '${{ steps.install_module_testplan.outputs.install_module_load_shop}}_${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
           cache_bucket: ${{ steps.install_module_testplan.outputs.install_module_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
@@ -448,12 +449,6 @@ jobs:
 
       - name: Checkout module
         if: ${{ matrix.testplan != 'skip' }}
-        # uses: actions/checkout@v4
-        # with:
-        #   repository: ${{ steps.install_module_testplan.outputs.install_module_git_module_url }}
-        #   ref: ${{ steps.install_module_testplan.outputs.install_module_git_module_ref }}
-        #   path: 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}'
-        #   token: '${{ secrets.enterprise_github_token || github.token }}'
         run: |
           git clone --depth 2 \
             https://oxidci:${{ secrets.enterprise_github_token || github.token }}@github.com/${{ steps.install_module_testplan.outputs.install_module_git_module_url }}.git \
@@ -919,6 +914,7 @@ jobs:
 
   sonarcloud:
     needs: ['init', 'install_module', 'phpunit', 'codeception', 'begin_report_phase']
+    # yamllint disable-line rule:line-length
     if: ${{ always() && needs.init.outputs.sonarcloud_matrix_testplan != '' && needs.init.outputs.sonarcloud_matrix_testplan != 'none' && needs.init.outputs.sonarcloud_matrix_testplan != 'skip' && needs.install_module.result == 'success' }}
     strategy:
       matrix:

@@ -11,7 +11,7 @@ jobs:
         if: always()
         uses: OXID-eSales/github-actions/begin_report@v0
         with:
-          title: 'Workflow validation on {{ .Github.Repository }} by {{ .Github.Actor }}'
+          title: 'Workflow validation on %{{ github.repository }} by ${{ github.actor }}'
           repository: '${{ github.server_url }}/${{ github.repository }}'
           job: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
           testplan: ''
@@ -55,7 +55,7 @@ jobs:
           priority: '010'
           phase: lint
           title: ''
-          job: ''
+          job: '-'
           php: 'yamllint'
           status: ${{job.status}}
 
@@ -87,7 +87,7 @@ jobs:
         with:
           priority: '020'
           phase: lint
-          job: ''
+          job: '-'
           title: ''
           php: 'actionlint'
           status: ${{job.status}}
@@ -111,4 +111,4 @@ jobs:
         uses: 'OXID-eSales/github-actions/generate_report@v0'
         with:
           slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-          title: 'Workflow validation on {{ .Github.Repository }} by {{ .Github.Actor }}'
+          title: 'Workflow validation on %{{ github.repository }} by ${{ github.actor }}'
