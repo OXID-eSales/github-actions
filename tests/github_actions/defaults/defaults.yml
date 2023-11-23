@@ -149,7 +149,7 @@ global:
     require:
 
       # Space separated list of repositories to require
-      install: 'twig-component twig-admin-theme apex-theme'
+      install: 'twig-admin-theme:^2.2.0 twig-component:^2.2.0 apex-theme:^1.0.0'
 
       # The Github organisation for the repositories
       organisation: 'OXID-eSales'
@@ -456,7 +456,7 @@ runtest:
       update_options: '--no-interaction'
     require:
       # Space separated list of repositories to install
-      install: 'twig-admin-theme apex-theme tests-deprecated-ce'
+      install: 'twig-admin-theme:^2.2.0 twig-component:^2.2.0 apex-theme:^1.0.0 tests-deprecated-ce'
       # The organisation for the repositories
       organisation: *composer_org
       # The git reference to install
