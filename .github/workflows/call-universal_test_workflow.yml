@@ -451,10 +451,23 @@ jobs:
         if: ${{ matrix.testplan != 'skip' }}
         run: |
           AUTH="oxidci:${{ secrets.enterprise_github_token || github.token }}"
-          git clone --depth 2 \
-            https://${AUTH}@github.com/${{ steps.install_module_testplan.outputs.install_module_git_module_url }}.git \
-            --branch ${{ steps.install_module_testplan.outputs.install_module_git_module_ref }} \
-            --single-branch 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}'
+
+          if [[ '${{ github.event_name }}' != 'pull_request' || \
+                ( '${{github.repository}}' != 'OXID-eSales/oxideshop_ce' && \
+                  '${{github.repository}}' != 'OXID-eSales/oxideshop_ee' )]]; then
+            git clone --depth 2 \
+              https://${AUTH}@github.com/${{ steps.install_module_testplan.outputs.install_module_git_module_url }}.git \
+              --branch ${{ steps.install_module_testplan.outputs.install_module_git_module_ref }} \
+              --single-branch 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}'
+          else
+            git clone --depth 2 \
+              https://${AUTH}@github.com/${{ steps.install_module_testplan.outputs.install_module_git_module_url }}.git \
+              --branch ${{ github.base_ref }} \
+              --single-branch 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}'
+            git -C source fetch origin \
+              refs/pull/${{ github.event.number }}/head:pr_${{ github.event.number }}
+            git -C source checkout pr_${{ github.event.number }}
+          fi
           find . -type f >files.txt
 
       - name: Install module
