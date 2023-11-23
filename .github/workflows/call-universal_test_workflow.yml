@@ -463,8 +463,8 @@ jobs:
               --branch ${{ github.base_ref }} \
               --single-branch 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}'
             git -C source fetch origin \
-              refs/pull/${{ github.event_number }}/head:pr_${{ github.event_number }}
-            git -C source checkout pr_${{ github.event_number }}
+              refs/pull/${{ github.event.number }}/head:pr_${{ github.event.number }}
+            git -C source checkout pr_${{ github.event.number }}
           fi
           find . -type f >files.txt
 
