@@ -14,7 +14,7 @@ global:
     configure:
       ref: &dev_ref dev-b-7.0.x
     require:
-      install: 'twig-admin-theme twig-component:^2.2.0 apex-theme'
+      install: 'twig-admin-theme twig-component apex-theme'
       ref: *dev_ref
 
 prepare_shop:
