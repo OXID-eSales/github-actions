@@ -239,14 +239,14 @@ runs:
       run: git clone --depth 1 ${{ inputs.git_sdk_url }} --branch ${{ inputs.git_sdk_ref }} --single-branch .
 
     - name: Clone the shop  (${{ inputs.git_shop_ref }})
-      if: inputs.github_event_name != 'pull_request'
+      if: ${{ inputs.github_event_name != 'pull_request' || ( github.repository != 'OXID-eSales/oxideshop_ce' && github.repository != 'OXID-eSales/oxideshop_ee' ) }}
       shell: bash
       run: |
         git clone --depth 2 ${{ inputs.git_shop_url }} --branch ${{ inputs.git_shop_ref }} --single-branch source
         mkdir source/dev-packages
 
     - name: Clone the shop (PR ${{ inputs.github_event_number }})
-      if: inputs.github_event_name == 'pull_request'
+      if: ${{ inputs.github_event_name == 'pull_request' && ( github.repository == 'OXID-eSales/oxideshop_ce' || github.repository == 'OXID-eSales/oxideshop_ee' ) }}
       shell: bash
       run: |
         git clone --depth 2 ${{ inputs.git_shop_url }} --branch ${{ inputs.github_base_ref }} --single-branch source
