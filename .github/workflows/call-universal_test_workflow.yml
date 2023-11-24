@@ -1065,6 +1065,11 @@ jobs:
       MATRIX_MYSQL: ${{ matrix.mysql }}
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
+      - name: 'Download testplans'
+        uses: actions/download-artifact@v3
+        with:
+          name: testplan
+
       - name: 'Get testplan name'
         id: styles_testplan_name
         run: |
