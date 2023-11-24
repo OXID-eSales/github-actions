@@ -256,7 +256,7 @@ install_module:
       files.txt
     artifact_prefix: 'configs-install_module'
   # Unique module id
-  ids: & module_ids ''
+  ids: &module_ids ''
   # Git repository related settings
   git:
     module:
