@@ -49,6 +49,7 @@ runs:
       shell: bash()
       run: |
         mkdir -p source/tests/reports
+        echo "PATH=${PATH}"
         echo -e "\033[0;35m### Running composer update with ${{ inputs.update_options }}\033[0m"
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \

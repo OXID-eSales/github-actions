@@ -973,7 +973,7 @@ jobs:
       - name: 'SonarCloud Scan'
         uses: 'OXID-eSales/github-actions/sonarcloud@v3'
         with:
-          coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_TE{{ matrix.template_engine }}
+          coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_TE${{ matrix.template_engine }}
           target_branch: ${{ needs.init.outputs.sonarcloud_target_branch }}
           github_ref_name: ${{ github.ref_name }}
           sonarcloud_organization: ${{ needs.init.outputs.sonarcloud_organization }}
