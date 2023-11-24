@@ -239,18 +239,10 @@ jobs:
       phpcs_tests_max_parallel: ${{ steps.ltp.outputs.phpcs_tests_max_parallel }}
       phpcs_tests_skip: ${{ steps.ltp.outputs.phpcs_tests_skip }}
       # styles variables
-      styles_cache_bucket: ${{ steps.ltp.outputs.styles_cache_bucket }}
-      styles_container_method: ${{ steps.ltp.outputs.styles_container_method }}
-      styles_container_name: ${{ steps.ltp.outputs.styles_container_name }}
-      styles_container_options: ${{ steps.ltp.outputs.styles_container_options }}
-      styles_docker_login: ${{ steps.ltp.outputs.styles_docker_login }}
       styles_matrix_mysql: ${{ steps.ltp.outputs.styles_matrix_mysql }}
       styles_matrix_php: ${{ steps.ltp.outputs.styles_matrix_php }}
+      styles_matrix_testplan: ${{ steps.ltp.outputs.styles_matrix_testplan }}
       styles_max_parallel: ${{ steps.ltp.outputs.styles_max_parallel }}
-      styles_output_files: ${{ steps.ltp.outputs.styles_output_files }}
-      styles_output_prefix: ${{ steps.ltp.outputs.styles_output_prefix }}
-      styles_path: ${{ steps.ltp.outputs.styles_path }}
-      styles_skip: ${{ steps.ltp.outputs.styles_skip }}
       # finish variables
       finish_matrix_mysql: ${{ steps.ltp.outputs.finish_matrix_mysql }}
       finish_matrix_php: ${{ steps.ltp.outputs.finish_matrix_php }}
@@ -973,7 +965,6 @@ jobs:
           yaml: generated_testplan.yaml
           token: ${{ secrets.enterprise_github_token }}
 
-
       - name: Checkout shop
         uses: actions/checkout@v4
         with:
@@ -1060,36 +1051,64 @@ jobs:
 
   styles:
     needs: ['init', 'install_module', 'begin_report_phase']
-    if: ${{ needs.init.outputs.styles_skip != 'true' }}
+    if: ${{ needs.init.outputs.styles_matrix_testplan != 'skip' }}
     strategy:
       matrix:
         php: ${{ fromJSON(needs.init.outputs.styles_matrix_php) }}
         mysql: ${{ fromJSON(needs.init.outputs.styles_matrix_mysql) }}
+        testplan: ${{ fromJSON(needs.init.outputs.styles_matrix_testplan) }}
       fail-fast: false
       max-parallel: ${{ fromJSON(needs.init.outputs.styles_max_parallel) }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
+    env:
+      MATRIX_PHP: ${{ matrix.php }}
+      MATRIX_MYSQL: ${{ matrix.mysql }}
+      MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
+      - name: 'Get testplan name'
+        id: styles_testplan_name
+        run: |
+          DEFAULT_TESTPLAN='tests/github_actions/defaults/defaults.yml,${{ inputs.testplan }}'
+          if [ '${{ matrix.testplan}}' == '-' ]; then
+            echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
+          else
+            echo "testplan=${DEFAULT_TESTPLAN},${{matrix.testplan}}" | tee -a "${GITHUB_OUTPUT}"
+          fi
+          echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}" | tee -a "${GITHUB_OUTPUT}"
+
+      - name: 'Load Testplan'
+        id: styles_testplan
+        uses: 'joernott/load_testplan@v1'
+        with:
+          files: '${{steps.styles_testplan_name.outputs.testplan}}'
+          set_output: true
+          set_print: true
+          yaml: generated_testplan.yaml
+          token: ${{ secrets.enterprise_github_token }}
+
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v3'
         with:
-          cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
-          cache_bucket: ${{ needs.init.outputs.styles_cache_bucket }}
+          cached_shop: '${{ steps.styles_testplan.outputs.styles_load_shop}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cache_bucket: ${{ steps.styles_testplan.outputs.styles_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
-          docker_login: ${{ needs.init.outputs.styles_docker_login }}
+          docker_login: ${{ steps.styles_testplan.outputs.styles_docker_login }}
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: 'Run styles check'
-        uses: 'OXID-eSales/github-actions/styles@v3'
+        uses: 'OXID-eSales/github-actions/styles@v0'
         with:
-          path: ${{ needs.init.outputs.styles_path }}
-          container_name: ${{ needs.init.outputs.styles_container_name }}
-          container_options: ${{ needs.init.outputs.styles_container_options }}
-          container_method: ${{ needs.init.outputs.styles_container_method }}
-          output_files: ${{ needs.init.outputs.styles_output_files }}
-          output_artifact: ${{ needs.init.outputs.styles_output_prefix}}_PHP${{ matrix.php }}
+          path: ${{ steps.styles_testplan.outputs.styles_path }}
+          module_ids: ${{ steps.styles_testplan.outputs.styles_module_ids }}
+          install_options: ${{ steps.styles_testplan.outputs.styles_install_options }}
+          container_name: ${{ steps.styles_testplan.outputs.styles_container_name }}
+          container_options: ${{ steps.styles_testplan.outputs.styles_container_options }}
+          container_method: ${{ steps.styles_testplan.outputs.styles_container_method }}
+          output_files: ${{ steps.styles_testplan.outputs.styles_output_files }}
+          output_artifact: ${{ steps.styles_testplan.outputs.styles_output_prefix}}_PHP${{ matrix.php }}
 
       - name: 'Stop shop'
         uses: 'OXID-eSales/github-actions/stop_shop@v3'
