@@ -3,14 +3,12 @@ description: 'Configures styles'
 inputs:
   path:
     type: string
-    required: false
+    required: true
     description: 'Folder to run the tests in'
-    default: '.'
   module_ids:
     type: string
-    required: false
+    required: true
     description: 'Moduleids'
-    default: '.'
   install_options:
     type: string
     required: false
@@ -47,7 +45,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Run composer update
+    - name: Run composer install
       shell: bash()
       run: |
         mkdir -p source/tests/reports
@@ -55,7 +53,7 @@ runs:
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           --workdir '/var/www/dev-packages/${{ inputs.path }}'
-          ${{ inputs.container_name}} \
+          ${{ inputs.container_name }} \
           composer install ${{ inputs.install_options }}
 
     - name: Run phpstan
@@ -65,15 +63,15 @@ runs:
         echo -e "\033[0;35m###  Run phpstan in ${{ inputs.path }} ###\033[0m"
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
-          --workdir '/var/www/dev-packages/${{ inputs.path}}' \
-          ${{ inputs.container_name}} \
+          --workdir '/var/www/dev-packages/${{ inputs.path }}' \
+          ${{ inputs.container_name }} \
           composer phpstan-report
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
-          --workdir '/var/www/dev-packages/${{ inputs.path}}' \
-          ${{ inputs.container_name}} \
+          --workdir '/var/www/dev-packages/${{ inputs.path }}' \
+          ${{ inputs.container_name }} \
           composer phpstan
-        mv source/dev-packages/${{path}}/phpstan.report.json source/tests/reports/phpstan-${{module_ids}}.report.json
+        mv source/dev-packages/${{ inputs.path }}/phpstan.report.json source/tests/reports/phpstan-${{ inputs.module_ids }}.report.json
 
     - name: Run phpmd
       id: phpmd
@@ -84,15 +82,15 @@ runs:
         echo -e "\033[0;35m###  Run phpmd in ${{ inputs.path }} ###\033[0m"
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
-          --workdir '/var/www/dev-packages/${{ inputs.path}}' \
-          ${{ inputs.container_name}} \
+          --workdir '/var/www/dev-packages/${{ inputs.path }}' \
+          ${{ inputs.container_name }} \
           composer phpmd-report
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
-          --workdir '/var/www/dev-packages/${{ inputs.path}}' \
-          ${{ inputs.container_name}} \         
+          --workdir '/var/www/dev-packages/${{ inputs.path }}' \
+          ${{ inputs.container_name }} \         
           composer phpmd
-        mv source/dev-packages/${{path}}/phpmd.report.json source/tests/reports/phpmd-${{module_ids}}.report.json
+        mv source/dev-packages/${{ inputs.path }}/phpmd.report.json source/tests/reports/phpmd-${{ inputs.module_ids }}.report.json
 
     - name: Run phpcs
       if: always()
@@ -101,10 +99,10 @@ runs:
         echo -e "\033[0;35m###  Run phpcs in ${{ inputs.path }} ###\033[0m"
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
-          --workdir '/var/www/dev-packages/${{ inputs.path}}' \
-          ${{ inputs.container_name}} \
+          --workdir '/var/www/dev-packages/${{ inputs.path }}' \
+          ${{ inputs.container_name }} \
           composer phpcs
-        mv source/dev-packages/${{path}}/phpcs.report.json source/tests/reports/phpcs-${{module_ids}}.report.json
+        mv source/dev-packages/${{ inputs.path }}/phpcs.report.json source/tests/reports/phpcs-${{ inputs.module_ids }}.report.json
 
     - name: Stop containers
       if: always()
