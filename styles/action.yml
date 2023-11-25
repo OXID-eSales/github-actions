@@ -53,7 +53,7 @@ runs:
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           -e PATH=/var/www/vendor/composer/composer/bin \
-          --workdir '/var/www/dev-packages/${{ inputs.path }}'
+          --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
           composer install ${{ inputs.install_options }}
         find source -type f|grep -E 'phpstan$'
