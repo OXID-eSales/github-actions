@@ -52,7 +52,6 @@ runs:
         echo -e "\033[0;35m### Running composer install with ${{ inputs.install_options }}\033[0m"
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
-          -e "PATH=/bin:/usr/bin:/var/www/vendor/composer/composer/bin" \
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
           composer install ${{ inputs.install_options }}
