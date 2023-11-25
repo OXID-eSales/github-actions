@@ -56,9 +56,9 @@ runs:
           --workdir '/var/www/dev-packages/${{ inputs.path }}'
           ${{ inputs.container_name }} \
           composer install ${{ inputs.install_options }}
-        find source/dev-packages/${{ inputs.path }} -type f|grep -E 'phpstan$'
-        find source/dev-packages/${{ inputs.path }} -type f|grep -E 'phpmd$'
-        find source/dev-packages/${{ inputs.path }} -type f|grep -E 'phpcs$'
+        find source -type f|grep -E 'phpstan$'
+        find source -type f|grep -E 'phpmd$'
+        find source -type f|grep -E 'phpcs$'
 
     - name: Run phpstan
       id: phpstan
