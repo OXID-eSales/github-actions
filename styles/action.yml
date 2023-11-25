@@ -46,7 +46,7 @@ runs:
   using: "composite"
   steps:
     - name: Run composer install
-      shell: bash()
+      shell: bash
       run: |
         mkdir -p source/tests/reports
         echo -e "\033[0;35m### Running composer update with ${{ inputs.update_options }}\033[0m"
