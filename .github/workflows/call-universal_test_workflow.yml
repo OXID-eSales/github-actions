@@ -1104,7 +1104,7 @@ jobs:
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: 'Run styles check'
-        uses: 'OXID-eSales/github-actions/styles@v0'
+        uses: 'OXID-eSales/github-actions/styles@v3'
         with:
           path: ${{ steps.styles_testplan.outputs.styles_path }}
           module_ids: ${{ steps.styles_testplan.outputs.styles_module_ids }}
