@@ -20,7 +20,8 @@ global:
   composer: &composer
     configure:
       install: 'oxideshop_pe oxideshop_ee twig-component-pe twig-component-ee codeception-modules codeception-page-objects'
-      # The organisation for the repositories
+    require:
+      install: 'twig-admin-theme twig-component apex-theme'
 
 # See docs/actions/prepare_shop.md for more information.
 prepare_shop:
