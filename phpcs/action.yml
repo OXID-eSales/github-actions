@@ -61,13 +61,15 @@ runs:
         cd source
         git status
         if [ "${{ inputs.diff_only }}" == "true" ]; then
+          echo -e "\033[0;35m###  Use git diff for phpcs ###\033[0m"
           git diff --name-only --diff-filter=AM ${{ inputs.git_ref }} HEAD~1 | grep '${{ inputs.filter }}' | while read file; do
             if [[ -f "$file" ]]; then
               echo "$file"
             fi
           done >changed-files.txt || true
         else
-          find . -type f|grep '${{ inputs.filter }}' >changed-files.txt
+          echo -e "\033[0;35m###  Use full file list for phpcs ###\033[0m"
+          find . -type f|grep '${{ inputs.filter }}' | tee changed-files.txt
         fi
         if [[ -f "changed-files.txt" && -s "changed-files.txt" ]]; then
           echo "skip=false" >> "$GITHUB_OUTPUT"
