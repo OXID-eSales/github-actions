@@ -84,12 +84,13 @@ runs:
       continue-on-error: true
       shell: bash
       run: |
-        echo -e "\033[0;35m###  Run phpmd in ${{ inputs.path }} ###\033[0m"
+        echo -e "\033[0;35m###  Run phpmd-report in ${{ inputs.path }} ###\033[0m"
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
           composer phpmd-report
+        echo -e "\033[0;35m###  Run phpmd in ${{ inputs.path }} ###\033[0m"
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
@@ -102,12 +103,13 @@ runs:
       if: always()
       shell: bash
       run: |
-        echo -e "\033[0;35m###  Run phpcs in ${{ inputs.path }} ###\033[0m"
+        echo -e "\033[0;35m###  Run phpcs-report in ${{ inputs.path }} ###\033[0m"
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
           composer phpcs-report
+        echo -e "\033[0;35m###  Run phpcs in ${{ inputs.path }} ###\033[0m"
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
