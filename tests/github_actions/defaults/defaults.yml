@@ -256,7 +256,7 @@ install_module:
       files.txt
     artifact_prefix: 'configs-install_module'
   # Unique module id
-  ids: ''
+  ids: &module_ids ''
   # Git repository related settings
   git:
     module:
@@ -270,7 +270,7 @@ install_module:
   package_name: ''
 
   # Path to install the module under dev-packages, should be the same as module_ids
-  path: ''
+  path: &module_path ''
 
 # The unit tests we run on our code, this uses phpunit for the actual tests.
 # See docs/actions/start_shop.md and docs/actions/phpunit.md for more information.
@@ -456,7 +456,13 @@ runtest:
       update_options: '--no-interaction'
     require:
       # Space separated list of repositories to install
-      install: 'twig-admin-theme:^2.2.0 twig-component:^2.2.0 apex-theme:^1.0.0 tests-deprecated-ce'
+      install: |
+        twig-admin-theme:^2.2.0
+        twig-component:^2.2.0
+        apex-theme:^1.0.0
+        tests-deprecated-ce
+        codeception/module-webdriver:^3.1
+        phpunit/phpunit:^9.1.1
       # The organisation for the repositories
       organisation: *composer_org
       # The git reference to install
@@ -550,20 +556,34 @@ phpcs_tests:
   failure_pattern: '[1-9][0-9]* error|[1-9][0-9]* warning'
 
 styles:
-  # This is only used in the module workflow, so the default is true
-  skip: true
+  # This is only used in the module workflow, so the default is to skip this
+  matrix_testplan: 'skip'
   matrix: *matrix_slim
   max_parallel: 1
   docker_login: *docker_login
+  load_shop: *install_module_prefix
   container: *container
   cache:
     bucket: *cache_bucket
-  path: '.'
+
+  # The path pointing to the module relative to source/dev-packages needs to be the same as in install_module
+  path: *module_path
+
+  # The module_ids needs to be the same as in install_module
+  module_ids: *module_ids
+
+  # These options are passed along to composer install
+  install_options: ''
+
+  # Each iteration of the styles workflow will move their report to a distinct name in the central report folder
   output:
     files: |
       source/tests/reports/phpstan*.report.json
       source/tests/reports/phpmd*.report.json
       source/tests/reports/phpcs*.report.json
+      source/tests/reports/phpstan*.report.txt
+      source/tests/reports/phpmd*.report.txt
+      source/tests/reports/phpcs*.report.txt
     prefix: 'styles_artifacts'
 
 # This is the final cleanup at the end

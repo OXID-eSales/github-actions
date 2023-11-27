@@ -3,9 +3,17 @@ description: 'Configures styles'
 inputs:
   path:
     type: string
+    required: true
+    description: 'Folder to run the tests in'
+  module_ids:
+    type: string
+    required: true
+    description: 'Moduleids'
+  install_options:
+    type: string
     required: false
-    description: 'List of folders relative to the source folder to run the tests in'
-    default: '.'
+    description: 'Options to pass along to composer when running composer install'
+    default: ''
   container_name:
     type: string
     required: false
@@ -29,6 +37,9 @@ inputs:
       source/tests/reports/phpstan*.report.json
       source/tests/reports/phpmd*.report.json
       source/tests/reports/phpcs*.report.json
+      source/tests/reports/phpstan*.report.txt
+      source/tests/reports/phpmd*.report.txt
+      source/tests/reports/phpcs*.report.txt
   output_artifact:
     type: string
     required: false
@@ -37,21 +48,35 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Run phpstan
-      id: phpstan
-      if: always()
+    - name: Run composer install
       shell: bash
       run: |
         mkdir -p source/tests/reports
-        PATHS=$(echo -n "${{ inputs.path }}"| tr '\n' ' ')
-        for PATH in ${PATHS}; do
-          echo -e "\033[0;35m###  Run phpstan in ${PATH} ###\033[0m"
-          ID=${echo "${PATH}"|sed -e 's|/|_|g'}
-          docker-compose ${{ inputs.container_method }} -T \
-            ${{ inputs.container_options }} \
-            ${{ inputs.container_name}} \
-            bash -c "composer phpstan-report; composer phpstan --error-format=prettyJson '${PATH}' &>/var/www/tests/reports/phpstan-${ID}.report.json'"
-        done
+        echo -e "\033[0;35m### Running composer install with ${{ inputs.install_options }}\033[0m"
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          --workdir '/var/www/dev-packages/${{ inputs.path }}' \
+          ${{ inputs.container_name }} \
+          composer install ${{ inputs.install_options }}
+
+    - name: Run phpstan
+      id: phpstan
+      shell: bash
+      run: |
+        echo -e "\033[0;35m###  Run phpstan-report in ${{ inputs.path }} ###\033[0m"
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          --workdir '/var/www/dev-packages/${{ inputs.path }}' \
+          ${{ inputs.container_name }} \
+          composer phpstan-report
+        echo -e "\033[0;35m###  Run phpstan in ${{ inputs.path }} ###\033[0m"
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          --workdir '/var/www/dev-packages/${{ inputs.path }}' \
+          ${{ inputs.container_name }} \
+          composer phpstan
+        mv source/dev-packages/${{ inputs.path }}/phpstan.report.json source/tests/reports/phpstan-${{ inputs.module_ids }}.report.json
+        mv source/dev-packages/${{ inputs.path }}/phpstan.report.txt source/tests/reports/phpstan-${{ inputs.module_ids }}.report.txt
 
     - name: Run phpmd
       id: phpmd
@@ -59,29 +84,39 @@ runs:
       continue-on-error: true
       shell: bash
       run: |
-        PATHS=$(echo -n "${{ inputs.path }}"| tr '\n' ' ')
-        for PATH in ${PATHS}; do
-          echo -e "\033[0;35m###  Run phpmd in ${PATH} ###\033[0m"
-          ID=${echo "${PATH}"|sed -e 's|/|_|g'}
-          docker-compose ${{ inputs.container_method }} -T \
-            ${{ inputs.container_options }} \
-            ${{ inputs.container_name}} \
-            bash -c "composer phpmd-report; composer phpmd '${PATH}' --reportfile '/var/www/tests/reports/phpmd-${ID}.report.json'"
-        done
+        echo -e "\033[0;35m###  Run phpmd-report in ${{ inputs.path }} ###\033[0m"
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          --workdir '/var/www/dev-packages/${{ inputs.path }}' \
+          ${{ inputs.container_name }} \
+          composer phpmd-report
+        echo -e "\033[0;35m###  Run phpmd in ${{ inputs.path }} ###\033[0m"
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          --workdir '/var/www/dev-packages/${{ inputs.path }}' \
+          ${{ inputs.container_name }} \
+          composer phpmd
+        mv source/dev-packages/${{ inputs.path }}/phpmd.report.json source/tests/reports/phpmd-${{ inputs.module_ids }}.report.json
+        mv source/dev-packages/${{ inputs.path }}/phpmd.report.txt source/tests/reports/phpmd-${{ inputs.module_ids }}.report.txt
 
     - name: Run phpcs
       if: always()
       shell: bash
       run: |
-        PATHS=$(echo -n "${{ inputs.path }}"| tr '\n' ' ')
-        for PATH in ${PATHS}; do
-          echo -e "\033[0;35m###  Run phpcs in ${PATH} ###\033[0m"
-          ID=${echo "${PATH}"|sed -e 's|/|_|g'}
-          docker-compose ${{ inputs.container_method }} -T \
-            ${{ inputs.container_options }} \
-            ${{ inputs.container_name}} \
-            composer phpcs --report=json --report-file="/var/www/tests/reports/phpcs-${ID}.report.json" "${PATH}"
-        done
+        echo -e "\033[0;35m###  Run phpcs-report in ${{ inputs.path }} ###\033[0m"
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          --workdir '/var/www/dev-packages/${{ inputs.path }}' \
+          ${{ inputs.container_name }} \
+          composer phpcs-report
+        echo -e "\033[0;35m###  Run phpcs in ${{ inputs.path }} ###\033[0m"
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          --workdir '/var/www/dev-packages/${{ inputs.path }}' \
+          ${{ inputs.container_name }} \
+          composer phpcs
+        mv source/dev-packages/${{ inputs.path }}/phpcs.report.json source/tests/reports/phpcs-${{ inputs.module_ids }}.report.json
+        mv source/dev-packages/${{ inputs.path }}/phpcs.report.txt source/tests/reports/phpcs-${{ inputs.module_ids }}.report.txt
 
     - name: Stop containers
       if: always()
