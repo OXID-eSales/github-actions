@@ -75,7 +75,12 @@ jobs:
         run: |
           find . -type f
           mkdir tests
-          mv workflow/tests/github_actions tests/
+          if [ -d workflow/tests/github_actions ]; then
+            mv workflow/tests/github_actions tests/
+          fi
+          if [ -d workflow/Tests/github_actions ]; then
+            mv workflow/Tests/github_actions tests/
+          fi
           mv defaults/tests/github_actions/defaults tests/github_actions/
 
       - name: 'Load Testplan'
