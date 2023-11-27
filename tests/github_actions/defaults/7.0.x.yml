@@ -56,3 +56,4 @@ styles:
 
 finish:
   matrix: *matrix
+  slack_title: '{{ .Github.Workflow }} (7.0.x) on {{ .Github.Repository }} by {{ .Github.Actor }}'
