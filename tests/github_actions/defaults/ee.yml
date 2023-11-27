@@ -77,7 +77,13 @@ runtest:
     configure:
       install: 'oxideshop_pe oxideshop_ee twig-component-pe twig-component-ee tests-deprecated-pe tests-deprecated-ee'
     require:
-      install: 'twig-admin-theme apex-theme tests-deprecated-ce'
+      install: |
+        twig-admin-theme:^2.2.0
+        twig-component:^2.2.0
+        apex-theme:^1.0.0
+        tests-deprecated-ce
+        codeception/module-webdriver:^3.1
+        phpunit/phpunit:^9.1.1
   # yamllint disable-line rule:line-length
   additional_options: '--filter "/^((?!(testFrontendVAT)).)*$/" --exclude-group quarantine,varnish,paypal_buyerlogin,paypal_external,paypal_graphql,adminFunctionality,flow_theme'
   coverage:
