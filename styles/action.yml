@@ -37,6 +37,9 @@ inputs:
       source/tests/reports/phpstan*.report.json
       source/tests/reports/phpmd*.report.json
       source/tests/reports/phpcs*.report.json
+      source/tests/reports/phpstan*.report.txt
+      source/tests/reports/phpmd*.report.txt
+      source/tests/reports/phpcs*.report.txt
   output_artifact:
     type: string
     required: false
@@ -55,26 +58,25 @@ runs:
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
           composer install ${{ inputs.install_options }}
-        find source -type f|grep -E 'phpstan$'
-        find source -type f|grep -E 'phpmd$'
-        find source -type f|grep -E 'phpcs$'
 
     - name: Run phpstan
       id: phpstan
       shell: bash
       run: |
-        echo -e "\033[0;35m###  Run phpstan in ${{ inputs.path }} ###\033[0m"
+        echo -e "\033[0;35m###  Run phpstan-report in ${{ inputs.path }} ###\033[0m"
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
           composer phpstan-report
+        echo -e "\033[0;35m###  Run phpstan in ${{ inputs.path }} ###\033[0m"
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
           composer phpstan
         mv source/dev-packages/${{ inputs.path }}/phpstan.report.json source/tests/reports/phpstan-${{ inputs.module_ids }}.report.json
+        mv source/dev-packages/${{ inputs.path }}/phpstan.report.txt source/tests/reports/phpstan-${{ inputs.module_ids }}.report.txt
 
     - name: Run phpmd
       id: phpmd
@@ -94,6 +96,7 @@ runs:
           ${{ inputs.container_name }} \         
           composer phpmd
         mv source/dev-packages/${{ inputs.path }}/phpmd.report.json source/tests/reports/phpmd-${{ inputs.module_ids }}.report.json
+        mv source/dev-packages/${{ inputs.path }}/phpmd.report.txt source/tests/reports/phpmd-${{ inputs.module_ids }}.report.txt
 
     - name: Run phpcs
       if: always()
@@ -104,8 +107,14 @@ runs:
           ${{ inputs.container_options }} \
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
+          composer phpcs-report
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          --workdir '/var/www/dev-packages/${{ inputs.path }}' \
+          ${{ inputs.container_name }} \
           composer phpcs
         mv source/dev-packages/${{ inputs.path }}/phpcs.report.json source/tests/reports/phpcs-${{ inputs.module_ids }}.report.json
+        mv source/dev-packages/${{ inputs.path }}/phpcs.report.txt source/tests/reports/phpcs-${{ inputs.module_ids }}.report.txt
 
     - name: Stop containers
       if: always()

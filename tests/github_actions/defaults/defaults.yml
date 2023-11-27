@@ -575,6 +575,9 @@ styles:
       source/tests/reports/phpstan*.report.json
       source/tests/reports/phpmd*.report.json
       source/tests/reports/phpcs*.report.json
+      source/tests/reports/phpstan*.report.txt
+      source/tests/reports/phpmd*.report.txt
+      source/tests/reports/phpcs*.report.txt
     prefix: 'styles_artifacts'
 
 # This is the final cleanup at the end
