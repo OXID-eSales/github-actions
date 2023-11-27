@@ -93,4 +93,4 @@ sonarcloud:
   skip: true
 
 phpcs_tests:
-  test: 'source/Internal vendor/oxid-esales/oxideshop-ee/Internal vendor/oxid-esales/oxideshop-pe/Internal'
+  filter: '^\./source/(Internal|vendor/oxid-esales/oxideshop-[ep]e/Internal)/.*\.php$'
