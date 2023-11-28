@@ -66,14 +66,12 @@ runs:
     - name: 'Output report'
       shell: bash
       run: |
-        for FILE in $(find reports -type f|sort); do
-          cat "${FILE}" >>github_report.md
-        done
-        cat github_report.md >>"${GITHUB_STEP_SUMMARY}"
-        
-        for FILE in $(find slack_report -type f|sort); do
-          cat "${FILE}" >>slack_report.md
-        done
+        mkdir -p deprecated_service_reports job_status slack_reports
+        cat <<EOF >deprecated_service_reports/${{inputs.priority}}-${{ inputs.phase }}_header.md
+        ## ${{ inputs.phase }} phase
+        |Job |Title|PHP|MySQL|Template engine|Testplan|Status|
+        |:---|:----|--:|----:|--------------:|:-------|:-----|
+        EOF
         SLACK_MARKDOWN=$(cat slack_report.md|sed 's/$/\\n/g' | tr -d '\n')
         cat >slack_deprecated.json <<EOF
             {
@@ -82,7 +80,7 @@ runs:
                  "type": "section",
                   "text": {
                   "type": "mrkdwn",
-                  "text": "This is a section block with a button."
+                  "text": "${SLACK_MARKDOWN}"
             },
               "accessory": {
                   "type": "button",
