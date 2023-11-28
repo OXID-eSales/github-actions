@@ -20,8 +20,7 @@ global:
   composer: &composer
     configure:
       install: 'oxideshop_pe oxideshop_ee twig-component-pe twig-component-ee codeception-modules codeception-page-objects'
-    require:
-      install: 'twig-admin-theme twig-component apex-theme'
+
 
 # See docs/actions/prepare_shop.md for more information.
 prepare_shop:
@@ -79,9 +78,6 @@ runtest:
       install: 'oxideshop_pe oxideshop_ee twig-component-pe twig-component-ee tests-deprecated-pe tests-deprecated-ee'
     require:
       install: |
-        twig-admin-theme:^2.2.0
-        twig-component:^2.2.0
-        apex-theme:^1.0.0
         tests-deprecated-ce
         codeception/module-webdriver:^3.1
         phpunit/phpunit:^9.1.1
