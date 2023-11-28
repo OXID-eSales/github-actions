@@ -149,7 +149,7 @@ global:
     require:
 
       # Space separated list of repositories to require
-      install: 'twig-component:^2.2.0 twig-admin-theme:^2.2.0 apex-theme:^1.0.0'
+      install: 'twig-component twig-admin-theme apex-theme'
 
       # The Github organisation for the repositories
       organisation: 'OXID-eSales'
