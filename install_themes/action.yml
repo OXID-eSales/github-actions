@@ -107,6 +107,6 @@ runs:
       with:
         payload-file-path: 'slack_deprecated.json'
       env:
-        SLACK_WEBHOOK_URL: ${{ inputs.slack_webhook_notify_devops }}
+        SLACK_WEBHOOK_URL: "https://hooks.slack.com/services/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"
         SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
