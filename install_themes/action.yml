@@ -79,7 +79,7 @@ runs:
             {
              "blocks": [
                {
-                 "type": "link",
+                 "type": "section",
                   "text": {
                   "type": "mrkdwn",
                   "text": "This is a section block with a button."
@@ -87,13 +87,13 @@ runs:
               "accessory": {
                   "type": "button",
                   "text": {
-                   "type": "link",
-                   "text": "Click Me",
-                   "emoji": true
+                      "type": "plain_text",
+                      "text": "Click Me",
+                       "emoji": true
             },
-             #"value": "click_me_123",
+             "value": "slack_webhook_notify_devops",
              "url": "https://hooks.slack.com/services/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",
-            "action_id": "button-action"
+             "action_id": "button-action"
             }
           }
        ]
