@@ -149,7 +149,7 @@ global:
     require:
 
       # Space separated list of repositories to require
-      install: 'twig-admin-theme:^2.2.0 twig-component:^2.2.0 apex-theme:^1.0.0'
+      install: 'twig-admin-theme:* twig-component:* apex-theme:*'
 
       # The Github organisation for the repositories
       organisation: 'OXID-eSales'
@@ -457,9 +457,9 @@ runtest:
     require:
       # Space separated list of repositories to install
       install: |
-        twig-admin-theme:^2.2.0
-        twig-component:^2.2.0
-        apex-theme:^1.0.0
+        twig-admin-theme:*
+        twig-component:*
+        apex-theme:*
         tests-deprecated-ce
         codeception/module-webdriver:^3.1
         phpunit/phpunit:^9.1.1
