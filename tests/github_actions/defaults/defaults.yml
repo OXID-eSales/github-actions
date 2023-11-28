@@ -149,7 +149,7 @@ global:
     require:
 
       # Space separated list of repositories to require
-      install: 'twig-component twig-admin-theme apex-theme'
+      install: ''
 
       # The Github organisation for the repositories
       organisation: 'OXID-eSales'
@@ -181,6 +181,7 @@ prepare_shop:
     bucket: *cache_bucket
     prefix: 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
   composer: *composer
+  composer_require_install: 'twig-component twig-admin-theme apex-theme'
 
   # These modify php "custom.ini"
   custom_ini:
