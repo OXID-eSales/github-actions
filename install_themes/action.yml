@@ -62,12 +62,12 @@ runs:
     - name: generate deprecation warning to summary page
       shell: bash
       run: |
-        STATUS_FILE='job_status/${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}_TE${{inputs.template_engine}}.txt'
           echo "Deprecation Warning:"
           echo "---------------------"
           echo -e "\033[0;31m### This actions are deprecated and may not be supported ${{ inputs.install_theme}} \033[0m"
           exit 1
         fi
+
     - name: 'Output reports'
       shell: bash
       run: |
@@ -109,4 +109,3 @@ runs:
       env:
         SLACK_WEBHOOK_URL: "https://hooks.slack.com/services/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"
         SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-
