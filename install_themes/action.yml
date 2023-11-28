@@ -59,16 +59,15 @@ runs:
             composer update ${{ inputs.update_options }}
         fi
 
-    - name: generate deprecation warning to summary page
+    - name: 'generate deprecation warning to summary page'
       shell: bash
       run: |
           echo "Deprecation Warning:"
           echo "---------------------"
           echo -e "\033[0;31m### This actions are deprecated and may not be supported ${{ inputs.install_theme}} \033[0m"
           exit 1
-        fi
 
-    - name: 'Output reports'
+    - name: 'Output report'
       shell: bash
       run: |
         for FILE in $(find reports -type f|sort); do
@@ -102,7 +101,7 @@ runs:
         }
         EOF    
 
-    - name: send a deprecation warning link to slack channel
+    - name: 'send a deprecation warning link to slack channel'
       uses: slackapi/slack-github-action@v1
       with:
         payload-file-path: 'slack_deprecated.json'
