@@ -566,7 +566,7 @@ jobs:
           else
             echo "testplan=${DEFAULT_TESTPLAN},${{matrix.testplan}}" | tee -a "${GITHUB_OUTPUT}"
           fi
-          echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}_TE${{ matrix.template_engine}}" | tee -a "${GITHUB_OUTPUT}"
+          echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}-TE${{ matrix.template_engine}}" | tee -a "${GITHUB_OUTPUT}"
 
       - name: 'Load Testplan'
         id: phpunit_testplan
@@ -659,7 +659,7 @@ jobs:
           else
             echo "testplan=${DEFAULT_TESTPLAN},${{matrix.testplan}}" | tee -a "${GITHUB_OUTPUT}"
           fi
-          echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}_TE${{ matrix.template_engine}}" | tee -a "${GITHUB_OUTPUT}"
+          echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}-TE${{ matrix.template_engine}}" | tee -a "${GITHUB_OUTPUT}"
 
       - name: 'Load Testplan'
         id: codeception_testplan
@@ -817,7 +817,7 @@ jobs:
           else
             echo "testplan=${DEFAULT_TESTPLAN},${{matrix.testplan}}" | tee -a "${GITHUB_OUTPUT}"
           fi
-          echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}_TE${{ matrix.template_engine}}" | tee -a "${GITHUB_OUTPUT}"
+          echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}-TE${{ matrix.template_engine}}" | tee -a "${GITHUB_OUTPUT}"
 
       - name: 'Load Testplan'
         id: runtest_testplan
@@ -960,7 +960,7 @@ jobs:
           else
             echo "testplan=${DEFAULT_TESTPLAN},${{matrix.testplan}}" | tee -a "${GITHUB_OUTPUT}"
           fi
-          echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}_TE${{ matrix.template_engine}}" | tee -a "${GITHUB_OUTPUT}"
+          echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}-TE${{ matrix.template_engine}}" | tee -a "${GITHUB_OUTPUT}"
 
       - name: 'Load Testplan'
         id: sonarcloud_testplan
@@ -980,7 +980,7 @@ jobs:
       - name: 'SonarCloud Scan'
         uses: 'OXID-eSales/github-actions/sonarcloud@v3'
         with:
-          coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_TE${{ matrix.template_engine }}
+          coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}-TE${{ matrix.template_engine }}
           target_branch: ${{ needs.init.outputs.sonarcloud_target_branch }}
           github_ref_name: ${{ github.ref_name }}
           sonarcloud_organization: ${{ needs.init.outputs.sonarcloud_organization }}
