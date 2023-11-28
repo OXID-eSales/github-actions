@@ -35,10 +35,6 @@ inputs:
     required: false
     description: 'Method to execute the commands inside a container, either "run" or "exec"'
     default: 'exec'
-  slack_webhook:
-    type: string
-    required: true
-    description: 'URL for the channel web hook, see https://api.slack.com/apps/A04CAPK58G0/incoming-webhooks?'
 
 runs:
   using: "composite"
@@ -62,9 +58,9 @@ runs:
     - name: Generate deprecation warning to summary page
       shell: bash
       run: |
-          echo "Deprecation Warning:"
-          echo "---------------------"
-          echo -e "\033[0;31m### This actions are deprecated and may not be supported ${{ inputs.install_theme}} \033[0m"
+        echo "Deprecation Warning:" >> $GITHUB_STEP_SUMMARY
+          echo "---------------------" >> $GITHUB_STEP_SUMMARY
+          echo -e "\033[0;31m### This actions are deprecated and may not be supported ${{ inputs.install_theme}} \033[0m" >> $GITHUB_STEP_SUMMARY
           exit 1
 
     - name: 'Output report'
@@ -74,32 +70,34 @@ runs:
           cat "${FILE}" >>github_report.md
         done
         cat github_report.md >>"${GITHUB_STEP_SUMMARY}"
-
-        for FILE in $(find slack_reports -type f|sort); do
+        
+        for FILE in $(find slack_report -type f|sort); do
           cat "${FILE}" >>slack_report.md
         done
         SLACK_MARKDOWN=$(cat slack_report.md|sed 's/$/\\n/g' | tr -d '\n')
         cat >slack_deprecated.json <<EOF
-        {
-          "blocks": [
             {
-              "type": "header",
-              "text": {
-                "type": "plain_text",
-                "emoji": true,
-                "text": "${{inputs.title}} ${{ steps.process_slack.outputs.overall_status}}"
-              }
+             "blocks": [
+               {
+                 "type": "link",
+                  "text": {
+                  "type": "mrkdwn",
+                  "text": "This is a section block with a button."
             },
-            {
-              "type": "section",
-              "text": {
-                "type": "mrkdwn",
-                "text": "${SLACK_MARKDOWN}"
-              }
+              "accessory": {
+                  "type": "button",
+                  "text": {
+                   "type": "link",
+                   "text": "Click Me",
+                   "emoji": true
+            },
+             #"value": "click_me_123",
+             "url": "https://hooks.slack.com/services/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",
+            "action_id": "button-action"
             }
-          ]
-        }
-        EOF    
+          }
+       ]
+      }
 
     - name: Send a deprecation warning link to slack channel
       uses: slackapi/slack-github-action@v1
