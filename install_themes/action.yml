@@ -59,7 +59,7 @@ runs:
             composer update ${{ inputs.update_options }}
         fi
 
-    - name: 'generate deprecation warning to summary page'
+    - name: Generate deprecation warning to summary page
       shell: bash
       run: |
           echo "Deprecation Warning:"
@@ -101,10 +101,11 @@ runs:
         }
         EOF    
 
-    - name: 'send a deprecation warning link to slack channel'
+    - name: Send a deprecation warning link to slack channel
       uses: slackapi/slack-github-action@v1
       with:
          payload-file-path: 'slack_deprecated.json'
       env:
         SLACK_WEBHOOK_URL: "https://hooks.slack.com/services/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"
         SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
