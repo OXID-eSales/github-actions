@@ -89,9 +89,13 @@ runs:
         cat github_report.md >>"${GITHUB_STEP_SUMMARY}"
 
         for FILE in $(find slack_reports -type f|sort); do
-          cat "${FILE}" >>slack_report.md
+          GROUP=$(echo "${FILE}"|sed -e 's|\..*$||'|awk -F '-' '{print $2}')
+          cat "${FILE}" >>slack_report-${GROUP}.md
         done
-        SLACK_MARKDOWN=$(cat slack_report.md|sed 's/$/\\n/g' | tr -d '\n')
+        SLACK_MARKDOWN_HEADER=$(cat slack_report_header.md|sed 's/$/\\n/g' | tr -d '\n')
+        SLACK_MARKDOWN_INSTALL=$(cat slack_report_install.md|sed 's/$/\\n/g' | tr -d '\n')
+        SLACK_MARKDOWN_TEST=$(cat slack_report_test.md|sed 's/$/\\n/g' | tr -d '\n')
+        SLACK_MARKDOWN_REPORT=$(cat slack_report_report.md|sed 's/$/\\n/g' | tr -d '\n')
         cat >slack.json <<EOF
         {
           "blocks": [
@@ -107,7 +111,31 @@ runs:
               "type": "section",
               "text": {
                 "type": "mrkdwn",
-                "text": "${SLACK_MARKDOWN}"
+                "text": "${SLACK_MARKDOWN_HEADER}"
+              }
+            },
+            {
+            "type": "divider"
+            },
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "${SLACK_MARKDOWN_INSTALL}"
+              }
+            },
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "${SLACK_MARKDOWN_TEST}"
+              }
+            },
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "${SLACK_MARKDOWN_REPORT}"
               }
             }
           ]
