@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: 'Write Report Header'
         if: always()
-        uses: OXID-eSales/github-actions/begin_report@v0
+        uses: OXID-eSales/github-actions/begin_report@v3
         with:
           title: 'Workflow validation on ${{ github.repository }} by ${{ github.actor }}'
           repository: '${{ github.server_url }}/${{ github.repository }}'
@@ -113,7 +113,7 @@ jobs:
           name: testplan
 
       - name: 'Output report'
-        uses: 'OXID-eSales/github-actions/generate_report@v0'
+        uses: 'OXID-eSales/github-actions/generate_report@v3'
         with:
           slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           title: 'Workflow validation on ${{ github.repository }} by ${{ github.actor }}'

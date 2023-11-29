@@ -1,4 +1,7 @@
 # load_testplan
+> [!WARNING]
+> This action is deprecated and will be removed with v4. Use joernott/load_testplan@v1 instead.
+
 Loads a yaml file describing the test plan and sets environment variables
 
 ## inputs

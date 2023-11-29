@@ -1,4 +1,7 @@
 # install_themes
+> [!WARNING]
+> This action is deprecated and will be removed with v4.
+
 This action installs one or more themes using the composer inside the
 given container (default 'php') and runs composer update at the end.
 
