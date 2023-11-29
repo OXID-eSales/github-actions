@@ -93,6 +93,7 @@ runs:
           GROUP=$(echo "${FILE}"|sed -e 's|\..*$||'|awk -F '-' '{print $2}')
           if [[ "${GROUPLIST}" != *"${GROUP}"* ]]; then
             GROUPLIST="${GROUPLIST} ${GROUP}"
+          fi
           cat "${FILE}" >>"slack_report-${GROUP}.md"
         done
         cat >slack.json <<EOF
