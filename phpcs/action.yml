@@ -58,27 +58,30 @@ runs:
       id: diff
       shell: bash
       run: |
+        set -x
         cd source
-        git status
         if [ "${{ inputs.diff_only }}" == "true" ]; then
+          echo -e "\033[0;35m###  Use git diff for phpcs using filter '${{ inputs.filter }}' ###\033[0m"
           git diff --name-only --diff-filter=AM ${{ inputs.git_ref }} HEAD~1 | grep '${{ inputs.filter }}' | while read file; do
             if [[ -f "$file" ]]; then
               echo "$file"
             fi
           done >changed-files.txt || true
         else
-          find . -type f|grep '${{ inputs.filter }}' >changed-files.txt
+          echo -e "\033[0;35m###  Use full file list for phpcs using filter '${{ inputs.filter }}' ###\033[0m"
+          find . -type f | grep '${{ inputs.filter }}' >changed-files.txt || true
         fi
         if [[ -f "changed-files.txt" && -s "changed-files.txt" ]]; then
-          echo "skip=false" >> "$GITHUB_OUTPUT"
+          echo "skip=false" | tee -a "$GITHUB_OUTPUT"
+          cat changed-files.txt
+          FILES=""
+          for FILE in $(cat changed-files.txt); do
+            FILES="${FILES} ${FILE}"
+          done
+          echo "files=${FILES}" | tee -a "${GITHUB_OUTPUT}"
         else
-          echo "skip=true" >> "$GITHUB_OUTPUT"
+          echo "skip=true" | tee -a "$GITHUB_OUTPUT"
         fi
-        FILES=""
-        for FILE in $(cat changed-files.txt); do
-          FILES="${FILES} ${FILE}"
-        done
-        echo "files=${FILES}" >>"${GITHUB_OUTPUT}"
 
     - name: Run PHP_CS check
       shell: bash

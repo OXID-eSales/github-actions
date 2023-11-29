@@ -26,20 +26,20 @@ prepare_shop:
   is_enterprise: *is_enterprise
   cache:
     # Needs to be here as $shop_type is different
-    prefix: 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
+    prefix: 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}'
 
 install_shop:
   matrix: *matrix
   git: *git
   is_enterprise: *is_enterprise
   cache:
-    prefix: 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
+    prefix: 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}'
 
 install_module:
   matrix: *matrix
   cache:
     # Need to set this as we don't install a module
-    prefix: 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
+    prefix: 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}'
 
 unit_tests:
   matrix: *matrix

@@ -28,10 +28,10 @@ runs:
       shell: bash
       run: |
         mkdir -p reports job_status slack_reports
-        cat >reports/000_header.md <<EOF
+        cat >reports/000-header.md <<EOF
         # ${{inputs.title}}
         EOF
-        cat >slack_reports/000_header.md <<EOF
+        cat >slack_reports/000-header.md <<EOF
         Repository: ${{ inputs.repository }}
         Job: ${{ inputs.job }}
         Testplan: ${{ inputs.TESTPLAN }}
@@ -45,7 +45,7 @@ runs:
       with:
         name: testplan
         path: |
-          reports/000_header.md.md
-          slack_reports/000_header.md
+          reports/000-header.md.md
+          slack_reports/000-header.md
         if-no-files-found: ignore
         retention-days: 7

@@ -88,10 +88,14 @@ runs:
         done
         cat github_report.md >>"${GITHUB_STEP_SUMMARY}"
 
+        GROUPLIST=""
         for FILE in $(find slack_reports -type f|sort); do
-          cat "${FILE}" >>slack_report.md
+          GROUP=$(echo "${FILE}"|sed -e 's|\..*$||'|awk -F '-' '{print $2}')
+          if [[ "${GROUPLIST}" != *"${GROUP}"* ]]; then
+            GROUPLIST="${GROUPLIST} ${GROUP}"
+          fi
+          cat "${FILE}" >>"slack_report-${GROUP}.md"
         done
-        SLACK_MARKDOWN=$(cat slack_report.md|sed 's/$/\\n/g' | tr -d '\n')
         cat >slack.json <<EOF
         {
           "blocks": [
@@ -102,14 +106,25 @@ runs:
                 "emoji": true,
                 "text": "${{inputs.title}} ${{ steps.process_slack.outputs.overall_status}}"
               }
-            },
+            }
+        EOF
+        for GROUP in ${GROUPLIST}; do
+          MARKDOWN=$(cat "slack_report-${GROUP}.md"|sed 's/$/\\n/g' | tr -d '\n')
+          cat >>slack.json <<EOF
+            ,
             {
               "type": "section",
               "text": {
                 "type": "mrkdwn",
-                "text": "${SLACK_MARKDOWN}"
+                "text": "${MARKDOWN}"
               }
+            },
+            {
+            "type": "divider"
             }
+        EOF
+        done
+        cat >>slack.json <<EOF
           ]
         }
         EOF
