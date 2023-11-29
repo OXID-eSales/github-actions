@@ -20,8 +20,9 @@ inputs:
     required: false
     description: 'Optional YAML code to override the testplan'
     default: ''
+
 runs:
-  using: composite
+  using: "composite"
   steps:
     - name: 'Checkout repository'
       if: ${{ inputs.repository != '' }}
@@ -128,6 +129,14 @@ runs:
         echo -e "\033[0;35m### Environment"
         env
         echo -e "\033[0m"
+
+    - name: 'Generate deprecation warning to summary page'
+      shell: bash
+      run: |
+        cat  >> $GITHUB_STEP_SUMMARY <<EOF
+        # Deprecation Warning:
+        This load_testplan actions are deprecated and may not be supported.
+        EOF
 
 outputs:
   # workflow variables
