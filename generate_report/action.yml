@@ -92,24 +92,17 @@ runs:
         for FILE in $(find slack_reports -type f|sort); do
           GROUP=$(echo "${FILE}"|sed -e 's|\..*$||'|awk -F '-' '{print $2}')
           if [[ "${GROUPLIST}" != *"${GROUP}"* ]]; then
+            echo "Adding ${GROUP} to group list"
             GROUPLIST="${GROUPLIST} ${GROUP}"
+          else
+            echo "${GROUP} is already in the list"
           fi
           cat "${FILE}" >>"slack_report-${GROUP}.md"
         done
-        cat >slack.json <<EOF
-        {
-          "blocks": [
-            {
-              "type": "header",
-              "text": {
-                "type": "plain_text",
-                "emoji": true,
-                "text": "${{inputs.title}} ${{ steps.process_slack.outputs.overall_status}}"
-              }
-            }
-        EOF
+        echo "Groups: '${GROUPLIST}'"
         for GROUP in ${GROUPLIST}; do
-          MARKDOWN=$(cat "slack_report_${GROUP}.md"|sed 's/$/\\n/g' | tr -d '\n')
+          echo "Adding ${GROUP}"
+          MARKDOWN=$(cat "slack_report-${GROUP}.md"|sed 's/$/\\n/g' | tr -d '\n')
           cat >>slack.json <<EOF
             ,
             {
