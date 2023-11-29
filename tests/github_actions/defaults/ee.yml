@@ -87,7 +87,8 @@ runtest:
     path: ''
 
 sonarcloud:
-  matrix_testplan: 'skip'
+  matrix:
+    testplan: 'skip'
 
 phpcs_tests:
   filter: '^\./source/(Internal|vendor/oxid-esales/oxideshop-[ep]e/Internal)/.*\.php$'
