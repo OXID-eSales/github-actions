@@ -46,8 +46,8 @@ workflow:
   # This matrix definition is used, when we only want one analysis done
   # It covers the recommended combination of PHP and MySQL
   matrix_slim: &matrix_slim
-    php: '["8.2"]' &matrix_php_slim
-    mysql: '["8.0"]' &matrix_mysql_slim
+    php: &matrix_php_slim '["8.2"]'
+    mysql: &matrix_mysql_slim '["8.0"]'
 
   # How many matrix tests should run in parallel. When running on our private runners, we need to
   # reduce this to get consistent test results
