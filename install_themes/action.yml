@@ -58,42 +58,11 @@ runs:
     - name: Generate deprecation warning to summary page
       shell: bash
       run: |
-        cat <<EOF
-        echo "Deprecation Warning:" >> $GITHUB_STEP_SUMMARY
-        echo "---------------------" >> $GITHUB_STEP_SUMMARY
-        echo -e "\033[0;31m### This install_theme actions are deprecated and may not be supported  \033[0m" >> $GITHUB_STEP_SUMMARY
-        exit 1
+        cat  >> $GITHUB_STEP_SUMMARY << EOF
+        # Deprecation Warning:
+        This install_theme actions are deprecated and may not be supported.
         EOF
+        
 
-    - name: 'Output report'
-      shell: bash
-      run: |
-        cat >> slack_deprecated.json >>EOF
-          {
-            "blocks": [
-              {
-                "type": "header",
-                "text": {
-                  "type": "plain_text",
-                  "emoji": true,
-                  "text": "deprecation warning install_themes"
-                }
-              },
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "the workflow '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}' is using deprecated install_themes action. The action install_themes has been replaced by the respective composer_require action."
-                }
-              }
-            ]
-          }
-        EOF
 
-    - name: Send a deprecation warning link to slack channel
-      uses: slackapi/slack-github-action@v1
-      with:
-        payload-file-path: 'slack_deprecated.json'
-      env:
-        SLACK_WEBHOOK_URL: "https://hooks.slack.com/services/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"
-        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+   
