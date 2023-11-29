@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: 'Write Report Header'
         if: always()
-        uses: OXID-eSales/github-actions/begin_report@v3
+        uses: OXID-eSales/github-actions/begin_report@v0
         with:
           title: 'Workflow validation on ${{ github.repository }} by ${{ github.actor }}'
           repository: '${{ github.server_url }}/${{ github.repository }}'
