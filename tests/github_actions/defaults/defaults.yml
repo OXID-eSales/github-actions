@@ -185,7 +185,7 @@ prepare_shop:
   is_enterprise: *is_enterprise
   cache:
     bucket: *cache_bucket
-    prefix: 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
+    prefix: 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}'
   composer: *composer
   composer_require_install: 'twig-component twig-admin-theme apex-theme'
 
@@ -215,7 +215,7 @@ install_shop:
   is_enterprise: *is_enterprise
   cache:
     bucket: *cache_bucket
-    prefix: &install_shop_prefix 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
+    prefix: &install_shop_prefix 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}'
 
   # Modifying source/source/config.inc.php
   config:
@@ -251,8 +251,8 @@ install_module:
     bucket: *cache_bucket
     # If we don't install a module, keep it the same as the prefix for
     # installed_shop. Otherwise set it to
-    # 'moduleInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
-    prefix: &install_module_prefix 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
+    # 'moduleInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}'
+    prefix: &install_module_prefix 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}'
 
   output:
     files: |
