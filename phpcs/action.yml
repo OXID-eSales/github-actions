@@ -71,15 +71,15 @@ runs:
           find . -type f|grep '${{ inputs.filter }}' | tee changed-files.txt
         fi
         if [[ -f "changed-files.txt" && -s "changed-files.txt" ]]; then
-          echo "skip=false" >> "$GITHUB_OUTPUT"
+          echo "skip=false" | tee -a "$GITHUB_OUTPUT"
         else
-          echo "skip=true" >> "$GITHUB_OUTPUT"
+          echo "skip=true" | tee -a "$GITHUB_OUTPUT"
         fi
         FILES=""
         for FILE in $(cat changed-files.txt); do
           FILES="${FILES} ${FILE}"
         done
-        echo "files=${FILES}" >>"${GITHUB_OUTPUT}"
+        [[ -n "${FILES}" ]] && echo "files=${FILES}" | tee -a "${GITHUB_OUTPUT}"
 
     - name: Run PHP_CS check
       shell: bash
