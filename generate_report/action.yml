@@ -92,6 +92,10 @@ runs:
           GROUP=$(echo "${FILE}"|sed -e 's|\..*$||'|awk -F '-' '{print $2}')
           cat "${FILE}" >>slack_report-${GROUP}.md
         done
+        [[ ! -f slack_report_header.md ]] && touch slack_report_header.md
+        [[ ! -f slack_report_install.md ]] && touch slack_report_install.md
+        [[ ! -f slack_report_test.md ]] && touch slack_report_test.md
+        [[ ! -f slack_report_report.md ]] && touch slack_report_report.md
         SLACK_MARKDOWN_HEADER=$(cat slack_report_header.md|sed 's/$/\\n/g' | tr -d '\n')
         SLACK_MARKDOWN_INSTALL=$(cat slack_report_install.md|sed 's/$/\\n/g' | tr -d '\n')
         SLACK_MARKDOWN_TEST=$(cat slack_report_test.md|sed 's/$/\\n/g' | tr -d '\n')

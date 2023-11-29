@@ -106,6 +106,15 @@ jobs:
     env:
       SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"
     steps:
+      - name: 'Write Report Header'
+        if: always()
+        uses: OXID-eSales/github-actions/begin_report@v3
+        with:
+          title: 'Workflow validation on ${{ github.repository }} by ${{ github.actor }}'
+          repository: '${{ github.server_url }}/${{ github.repository }}'
+          job: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          testplan: ''
+
       - name: 'Download job results'
         uses: actions/download-artifact@v3
         with:
