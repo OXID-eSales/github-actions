@@ -1285,14 +1285,10 @@ jobs:
         shell: bash
         run: |
           gh extension install actions/gh-actions-cache
-          TESTPLAN_CACHE="$(gh actions-cache list --key ${{ needs.init.outputs.init_cache_name }})"
-          echo -e "\033[0;35m###  cached shops for this run ###\033[0m"
-          echo "${TESTPLAN_CACHE}"
-          gh actions-cache list --key "${{ needs.init.outputs.init_cache_name }}"
-          gh actions-cache list --key "${{ needs.init.outputs.prepare_shop_cache_prefix }}"
-          gh actions-cache list --key "${{ needs.init.outputs.install_shop_cache_prefix }}"
-          gh actions-cache list --key "${{ needs.init.outputs.install_module_cache_prefix }}"
+          # yamllint disable-line rule:line-length          
+          for CACHE in '${{ needs.init.outputs.init_cache_name }}' '${{ needs.init.outputs.prepare_shop_cache_prefix }}' '${{ needs.init.outputs.install_shop_cache_prefix }}' '${{ needs.init.outputs.install_module_cache_prefix }}'; do
+            echo -e "\033[0;35m###  Cleaning cached object '${ID}' ###\033[0m"
+            ID="$(gh actions-cache list --key ${ID}|awk '{print $1}')"
+            [[ -n "${ID}" ]] && gh actions-cache delete "${ID}" --confirm
+          done
           
-          if [ -n "${TESTPLAN_CACHE}" ]; then
-            gh actions-cache delete "${{ needs.init.outputs.init_cache_name }}" --confirm
-          fi
