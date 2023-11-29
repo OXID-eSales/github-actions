@@ -45,7 +45,7 @@ runs:
       with:
         name: testplan
         path: |
-          reports/000_header.md.md
-          slack_reports/000_header.md
+          reports/000-header.md.md
+          slack_reports/000-header.md
         if-no-files-found: ignore
         retention-days: 7

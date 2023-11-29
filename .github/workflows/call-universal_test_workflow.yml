@@ -131,7 +131,22 @@ jobs:
           phase: install
           priority: '001'
 
+      - name: Cache testplan
+        uses: tespkg/actions-cache@v1
+        with:
+          path: |
+            tests/github_actions/*
+          key: '${{ steps.ltp.outputs.init_cache_name }}'
+          endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
+          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
+          bucket: ${{ steps.ltp.outputs.init_cache_bucket }}
+
+
     outputs:
+      # init variables
+      init_cache_bucket: ${{ steps.ltp.outputs.init_cache_bucket }}
+      init_cache_name: ${{ steps.ltp.outputs.init_cache_name }}
       # prepare_shop variables
       prepare_shop_add_services: ${{ steps.ltp.outputs.prepare_shop_add_services }}
       prepare_shop_cache_bucket: ${{ steps.ltp.outputs.prepare_shop_cache_bucket }}
@@ -399,10 +414,26 @@ jobs:
       MATRIX_MYSQL: ${{ matrix.mysql }}
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
-      - name: 'Download testplans'
-        uses: actions/download-artifact@v3
+      - name: Load cached testplan
+        id: load_testplan_cache
+        uses: tespkg/actions-cache@v1
         with:
-          name: testplan
+          path: |
+            tests/github_actions/*
+          key: ${{ needs.init.outputs.init_cache_name }}
+          restore-keys: ${{ needs.init.outputs.init_cache_name }}
+          endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
+          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
+          bucket: ${{ needs.init.outputs.init_cache_bucket }}
+
+      - name: Confirm successful restore
+        shell: bash
+        run: |
+          if [ "${{ steps.load_testplan_cache.outputs.cache-hit }}" != "true" ]; then
+            echo -e "\033[0;31m### Failed to load ${{ needs.init.outputs.init_cache_name }} from cache\033[0m"
+            exit 1
+          fi
 
       - name: 'Get testplan name'
         if: ${{ matrix.testplan != 'skip' }}
@@ -552,10 +583,26 @@ jobs:
       MATRIX_TEMPLATE_ENGINE: ${{ matrix.template_engine }}
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
-      - name: 'Download testplans'
-        uses: actions/download-artifact@v3
+      - name: Load cached testplan
+        id: load_testplan_cache
+        uses: tespkg/actions-cache@v1
         with:
-          name: testplan
+          path: |
+            tests/github_actions/*
+          key: ${{ needs.init.outputs.init_cache_name }}
+          restore-keys: ${{ needs.init.outputs.init_cache_name }}
+          endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
+          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
+          bucket: ${{ needs.init.outputs.init_cache_bucket }}
+
+      - name: Confirm successful restore
+        shell: bash
+        run: |
+          if [ "${{ steps.load_testplan_cache.outputs.cache-hit }}" != "true" ]; then
+            echo -e "\033[0;31m### Failed to load ${{ needs.init.outputs.init_cache_name }} from cache\033[0m"
+            exit 1
+          fi
 
       - name: 'Get testplan name'
         id: phpunit_testplan_name
@@ -645,10 +692,26 @@ jobs:
       MATRIX_TEMPLATE_ENGINE: ${{ matrix.template_engine }}
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
-      - name: 'Download testplans'
-        uses: actions/download-artifact@v3
+      - name: Load cached testplan
+        id: load_testplan_cache
+        uses: tespkg/actions-cache@v1
         with:
-          name: testplan
+          path: |
+            tests/github_actions/*
+          key: ${{ needs.init.outputs.init_cache_name }}
+          restore-keys: ${{ needs.init.outputs.init_cache_name }}
+          endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
+          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
+          bucket: ${{ needs.init.outputs.init_cache_bucket }}
+
+      - name: Confirm successful restore
+        shell: bash
+        run: |
+          if [ "${{ steps.load_testplan_cache.outputs.cache-hit }}" != "true" ]; then
+            echo -e "\033[0;31m### Failed to load ${{ needs.init.outputs.init_cache_name }} from cache\033[0m"
+            exit 1
+          fi
 
       - name: 'Get testplan name'
         id: codeception_testplan_name
@@ -803,10 +866,26 @@ jobs:
       MATRIX_TEMPLATE_ENGINE: ${{ matrix.template_engine }}
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
-      - name: 'Download testplans'
-        uses: actions/download-artifact@v3
+      - name: Load cached testplan
+        id: load_testplan_cache
+        uses: tespkg/actions-cache@v1
         with:
-          name: testplan
+          path: |
+            tests/github_actions/*
+          key: ${{ needs.init.outputs.init_cache_name }}
+          restore-keys: ${{ needs.init.outputs.init_cache_name }}
+          endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
+          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
+          bucket: ${{ needs.init.outputs.init_cache_bucket }}
+
+      - name: Confirm successful restore
+        shell: bash
+        run: |
+          if [ "${{ steps.load_testplan_cache.outputs.cache-hit }}" != "true" ]; then
+            echo -e "\033[0;31m### Failed to load ${{ needs.init.outputs.init_cache_name }} from cache\033[0m"
+            exit 1
+          fi
 
       - name: 'Get testplan name'
         id: runtest_testplan_name
@@ -946,10 +1025,26 @@ jobs:
       MATRIX_TEMPLATE_ENGINE: ${{ matrix.template_engine }}
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
-      - name: 'Download testplans'
-        uses: actions/download-artifact@v3
+      - name: Load cached testplan
+        id: load_testplan_cache
+        uses: tespkg/actions-cache@v1
         with:
-          name: testplan
+          path: |
+            tests/github_actions/*
+          key: ${{ needs.init.outputs.init_cache_name }}
+          restore-keys: ${{ needs.init.outputs.init_cache_name }}
+          endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
+          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
+          bucket: ${{ needs.init.outputs.init_cache_bucket }}
+
+      - name: Confirm successful restore
+        shell: bash
+        run: |
+          if [ "${{ steps.load_testplan_cache.outputs.cache-hit }}" != "true" ]; then
+            echo -e "\033[0;31m### Failed to load ${{ needs.init.outputs.init_cache_name }} from cache\033[0m"
+            exit 1
+          fi
 
       - name: 'Get testplan name'
         id: sonarcloud_testplan_name
@@ -1028,7 +1123,7 @@ jobs:
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: 'Run phpcs tests'
-        uses: 'OXID-eSales/github-actions/phpcs@v0'
+        uses: 'OXID-eSales/github-actions/phpcs@v3'
         with:
           container_name: ${{ needs.init.outputs.phpcs_tests_container_name }}
           container_options: ${{ needs.init.outputs.phpcs_tests_container_options }}
@@ -1072,10 +1167,26 @@ jobs:
       MATRIX_MYSQL: ${{ matrix.mysql }}
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
-      - name: 'Download testplans'
-        uses: actions/download-artifact@v3
+      - name: Load cached testplan
+        id: load_testplan_cache
+        uses: tespkg/actions-cache@v1
         with:
-          name: testplan
+          path: |
+            tests/github_actions/*
+          key: ${{ needs.init.outputs.init_cache_name }}
+          restore-keys: ${{ needs.init.outputs.init_cache_name }}
+          endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
+          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
+          bucket: ${{ needs.init.outputs.init_cache_bucket }}
+
+      - name: Confirm successful restore
+        shell: bash
+        run: |
+          if [ "${{ steps.load_testplan_cache.outputs.cache-hit }}" != "true" ]; then
+            echo -e "\033[0;31m### Failed to load ${{ needs.init.outputs.init_cache_name }} from cache\033[0m"
+            exit 1
+          fi
 
       - name: 'Get testplan name'
         id: styles_testplan_name
@@ -1160,7 +1271,29 @@ jobs:
           name: testplan
 
       - name: 'Output report'
-        uses: 'OXID-eSales/github-actions/generate_report@v3'
+        uses: 'OXID-eSales/github-actions/generate_report@v0'
         with:
           slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           title: '${{ needs.init.outputs.finish_slack_title }}'
+
+      - name: Checkout the repo
+        uses: actions/checkout@v4
+
+      - name: Cleanup cached objects
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        # yamllint disable rule:line-length
+        run: |
+          GH=$(which gh)
+          if [ -n "${GH}" ]; then
+            gh extension install actions/gh-actions-cache
+            # yamllint disable-line rule:line-length
+            for CACHE in '${{ needs.init.outputs.init_cache_name }}' '${{ needs.init.outputs.prepare_shop_cache_prefix }}' '${{ needs.init.outputs.install_shop_cache_prefix }}' '${{ needs.init.outputs.install_module_cache_prefix }}'; do
+              echo -e "\033[0;35m###  Cleaning cached object '${CACHE}' ###\033[0m"
+              ID="$(gh actions-cache list --key ${CACHE}|awk '{print $1}')"
+              if [ -n "${ID}" ]; then
+                gh actions-cache delete "${ID}" --confirm
+              fi
+            done
+          fi

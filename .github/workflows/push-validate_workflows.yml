@@ -38,6 +38,7 @@ jobs:
           format: 'github'
           config_data: |
             extends: default
+            ignore: .git/*
             rules:
               document-start: disable
               line-length:
