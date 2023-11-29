@@ -58,7 +58,7 @@ runs:
     - name: Generate deprecation warning to summary page
       shell: bash
       run: |
-        cat  >> $GITHUB_STEP_SUMMARY << EOF
+        cat  >> $GITHUB_STEP_SUMMARY <<EOF
         # Deprecation Warning:
         This install_theme actions are deprecated and may not be supported.
         EOF
