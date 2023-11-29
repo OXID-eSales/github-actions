@@ -61,15 +61,16 @@ runs:
         set -x
         cd source
         if [ "${{ inputs.diff_only }}" == "true" ]; then
-          echo -e "\033[0;35m###  Use git diff for phpcs ###\033[0m"
+          echo -e "\033[0;35m###  Use git diff for phpcs using filter '${{ inputs.filter }}' ###\033[0m"
           git diff --name-only --diff-filter=AM ${{ inputs.git_ref }} HEAD~1 | grep '${{ inputs.filter }}' | while read file; do
             if [[ -f "$file" ]]; then
               echo "$file"
             fi
           done >changed-files.txt || true
         else
-          echo -e "\033[0;35m###  Use full file list for phpcs ###\033[0m"
-          find . -type f|grep '${{ inputs.filter }}' | tee changed-files.txt
+          echo -e "\033[0;35m###  Use full file list for phpcs using filter '${{ inputs.filter }}' ###\033[0m"
+          find . -type f
+          find . -type f | grep '${{ inputs.filter }}' || true | tee changed-files.txt
         fi
         if [[ -f "changed-files.txt" && -s "changed-files.txt" ]]; then
           echo "skip=false" | tee -a "$GITHUB_OUTPUT"
