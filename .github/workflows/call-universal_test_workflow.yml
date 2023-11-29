@@ -66,14 +66,21 @@ jobs:
       - name: 'Checkout testplans'
         uses: actions/checkout@v4
         with:
-          sparse-checkout: 'tests/github_actions'
+          sparse-checkout: |
+            tests/github_actions
+            Tests/github_actions
           path: workflow
 
       - name: 'Consolidate plans'
         run: |
           find . -type f
           mkdir tests
-          mv workflow/tests/github_actions tests/
+          if [ -d workflow/tests/github_actions ]; then
+            mv workflow/tests/github_actions tests/
+          fi
+          if [ -d workflow/Tests/github_actions ]; then
+            mv workflow/Tests/github_actions tests/
+          fi
           mv defaults/tests/github_actions/defaults tests/github_actions/
 
       - name: 'Load Testplan'
@@ -559,7 +566,7 @@ jobs:
           else
             echo "testplan=${DEFAULT_TESTPLAN},${{matrix.testplan}}" | tee -a "${GITHUB_OUTPUT}"
           fi
-          echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}_TE${{ matrix.template_engine}}" | tee -a "${GITHUB_OUTPUT}"
+          echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}-TE${{ matrix.template_engine}}" | tee -a "${GITHUB_OUTPUT}"
 
       - name: 'Load Testplan'
         id: phpunit_testplan
@@ -652,7 +659,7 @@ jobs:
           else
             echo "testplan=${DEFAULT_TESTPLAN},${{matrix.testplan}}" | tee -a "${GITHUB_OUTPUT}"
           fi
-          echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}_TE${{ matrix.template_engine}}" | tee -a "${GITHUB_OUTPUT}"
+          echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}-TE${{ matrix.template_engine}}" | tee -a "${GITHUB_OUTPUT}"
 
       - name: 'Load Testplan'
         id: codeception_testplan
@@ -682,33 +689,33 @@ jobs:
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
-      - name: 'Install twig template engine and twig theme'
-        if: ${{ matrix.template_engine == 'twig' }}
-        uses: 'OXID-eSales/github-actions/composer_require@v3'
-        with:
-          container_name: ${{ steps.codeception_testplan.outputs.codeception_container_name }}
-          container_options: '${{ steps.codeception_testplan.outputs.codeception_container_options }} ${{ env.CODECEPTION_CONTAINER_OPTIONS }}'
-          container_method: 'exec'
-          organisation: ${{ steps.codeception_testplan.outputs.codeception_composer_require_organisation }}
-          repositories: 'twig-component:* twig-admin-theme:* apex-theme:*'
-          ref: ${{ steps.codeception_testplan.outputs.codeception_composer_require_ref }}
-          options: ${{ steps.codeception_testplan.outputs.codeception_composer_require_options }}
-          update: ${{ steps.codeception_testplan.outputs.codeception_composer_require_update }}
-          update_options: ${{ steps.codeception_testplan.outputs.codeception_composer_require_update_options }}
+      # - name: 'Install twig template engine and twig theme'
+      #   if: ${{ matrix.template_engine == 'twig' }}
+      #   uses: 'OXID-eSales/github-actions/composer_require@v3'
+      #   with:
+      #     container_name: ${{ steps.codeception_testplan.outputs.codeception_container_name }}
+      #     container_options: '${{ steps.codeception_testplan.outputs.codeception_container_options }} ${{ env.CODECEPTION_CONTAINER_OPTIONS }}'
+      #     container_method: 'exec'
+      #     organisation: ${{ steps.codeception_testplan.outputs.codeception_composer_require_organisation }}
+      #     repositories: 'twig-component twig-admin-theme apex-theme'
+      #     ref: ${{ steps.codeception_testplan.outputs.codeception_composer_require_ref }}
+      #     options: ${{ steps.codeception_testplan.outputs.codeception_composer_require_options }}
+      #     update: ${{ steps.codeception_testplan.outputs.codeception_composer_require_update }}
+      #     update_options: ${{ steps.codeception_testplan.outputs.codeception_composer_require_update_options }}
 
-      - name: 'Install smarty template engine and flow theme'
-        if: ${{ matrix.template_engine == 'smarty' }}
-        uses: 'OXID-eSales/github-actions/composer_require@v3'
-        with:
-          container_name: ${{ steps.codeception_testplan.outputs.codeception_container_name }}
-          container_options: '${{ steps.codeception_testplan.outputs.codeception_container_options }} ${{ env.CODECEPTION_CONTAINER_OPTIONS }}'
-          container_method: 'exec'
-          organisation: ${{ steps.codeception_testplan.outputs.codeception_composer_require_organisation }}
-          repositories: 'smarty-component:* smarty-admin-theme:* flow-theme:* codeception-page-objects:* codeception-modules:*'
-          ref: ${{ steps.codeception_testplan.outputs.codeception_composer_require_ref }}
-          options: ${{ steps.codeception_testplan.outputs.codeception_composer_require_options }}
-          update: ${{ steps.codeception_testplan.outputs.codeception_composer_require_update }}
-          update_options: ${{ steps.codeception_testplan.outputs.codeception_composer_require_update_options }}
+      # - name: 'Install smarty template engine and flow theme'
+      #   if: ${{ matrix.template_engine == 'smarty' }}
+      #   uses: 'OXID-eSales/github-actions/composer_require@v3'
+      #   with:
+      #     container_name: ${{ steps.codeception_testplan.outputs.codeception_container_name }}
+      #     container_options: '${{ steps.codeception_testplan.outputs.codeception_container_options }} ${{ env.CODECEPTION_CONTAINER_OPTIONS }}'
+      #     container_method: 'exec'
+      #     organisation: ${{ steps.codeception_testplan.outputs.codeception_composer_require_organisation }}
+      #     repositories: 'smarty-component:* smarty-admin-theme:* flow-theme:* codeception-page-objects:* codeception-modules:*'
+      #     ref: ${{ steps.codeception_testplan.outputs.codeception_composer_require_ref }}
+      #     options: ${{ steps.codeception_testplan.outputs.codeception_composer_require_options }}
+      #     update: ${{ steps.codeception_testplan.outputs.codeception_composer_require_update }}
+      #     update_options: ${{ steps.codeception_testplan.outputs.codeception_composer_require_update_options }}
 
       - name: 'Composer configure and require ${{ steps.codeception_testplan.outputs.codeception_composer_configure_install }}'
         if: ${{ steps.codeception_testplan.outputs.codeception_composer_configure_install != '' }}
@@ -810,7 +817,7 @@ jobs:
           else
             echo "testplan=${DEFAULT_TESTPLAN},${{matrix.testplan}}" | tee -a "${GITHUB_OUTPUT}"
           fi
-          echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}_TE${{ matrix.template_engine}}" | tee -a "${GITHUB_OUTPUT}"
+          echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}-TE${{ matrix.template_engine}}" | tee -a "${GITHUB_OUTPUT}"
 
       - name: 'Load Testplan'
         id: runtest_testplan
@@ -953,7 +960,7 @@ jobs:
           else
             echo "testplan=${DEFAULT_TESTPLAN},${{matrix.testplan}}" | tee -a "${GITHUB_OUTPUT}"
           fi
-          echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}_TE${{ matrix.template_engine}}" | tee -a "${GITHUB_OUTPUT}"
+          echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}-TE${{ matrix.template_engine}}" | tee -a "${GITHUB_OUTPUT}"
 
       - name: 'Load Testplan'
         id: sonarcloud_testplan
@@ -973,7 +980,7 @@ jobs:
       - name: 'SonarCloud Scan'
         uses: 'OXID-eSales/github-actions/sonarcloud@v3'
         with:
-          coverage_artifact: coverage-reports_PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_TE${{ matrix.template_engine }}
+          coverage_artifact: coverage-reports_PHP${{ matrix.php }}-MYSQL${{ matrix.mysql }}-TE${{ matrix.template_engine }}
           target_branch: ${{ needs.init.outputs.sonarcloud_target_branch }}
           github_ref_name: ${{ github.ref_name }}
           sonarcloud_organization: ${{ needs.init.outputs.sonarcloud_organization }}
@@ -1021,7 +1028,7 @@ jobs:
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: 'Run phpcs tests'
-        uses: 'OXID-eSales/github-actions/phpcs@v3'
+        uses: 'OXID-eSales/github-actions/phpcs@v0'
         with:
           container_name: ${{ needs.init.outputs.phpcs_tests_container_name }}
           container_options: ${{ needs.init.outputs.phpcs_tests_container_options }}

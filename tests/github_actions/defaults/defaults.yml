@@ -149,7 +149,7 @@ global:
     require:
 
       # Space separated list of repositories to require
-      install: 'twig-admin-theme:^2.2.0 twig-component:^2.2.0 apex-theme:^1.0.0'
+      install: ''
 
       # The Github organisation for the repositories
       organisation: 'OXID-eSales'
@@ -181,6 +181,7 @@ prepare_shop:
     bucket: *cache_bucket
     prefix: 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}-{{ .Github.RunAttempt }}'
   composer: *composer
+  composer_require_install: 'twig-component twig-admin-theme apex-theme'
 
   # These modify php "custom.ini"
   custom_ini:
@@ -427,7 +428,7 @@ codeception:
 # codeception/phpunit
 runtest:
   matrix: *matrix
-  matrix_testplan: '["https://raw.githubusercontent.com/{{ .Github.Repository }}/{{ .Github.RefName }}/tests/github_actions/deprecated_tests.yml"]'
+  matrix_testplan: '["tests/github_actions/deprecated_tests.yml"]'
   max_parallel: *max_parallel
   docker_login: *docker_login
   load_shop: *install_module_prefix
@@ -457,9 +458,9 @@ runtest:
     require:
       # Space separated list of repositories to install
       install: |
-        twig-admin-theme:^2.2.0
-        twig-component:^2.2.0
-        apex-theme:^1.0.0
+        twig-admin-theme:*
+        twig-component:*
+        apex-theme:*
         tests-deprecated-ce
         codeception/module-webdriver:^3.1
         phpunit/phpunit:^9.1.1
@@ -502,7 +503,7 @@ sonarcloud:
     mysql: '["5.7"]'
     template_engine: '["twig"]'
     # yamllint disable-line rule:line-length
-    testplan: '["-",https://raw.githubusercontent.com/{{ .Github.Repository }}/{{ .Github.RefName }}/tests/github_actions/sonarcloud_oxideshop_ce_internal.yml"]'
+    testplan: '["-","https://raw.githubusercontent.com/{{ .Github.Repository }}/{{ .Github.RefName }}/tests/github_actions/sonarcloud_oxideshop_ce_internal.yml"]'
 
   # There is only one matrix combination
   max_parallel: 1
