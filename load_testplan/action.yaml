@@ -130,7 +130,7 @@ runs:
         env
         echo -e "\033[0m"
 
-    - name: Generate deprecation warning to summary page
+    - name: 'Generate deprecation warning to summary page'
       shell: bash
       run: |
         cat  >> $GITHUB_STEP_SUMMARY <<EOF
