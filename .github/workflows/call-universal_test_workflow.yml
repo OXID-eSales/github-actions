@@ -1283,12 +1283,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
+        # yamllint disable rule:line-length
         run: |
           gh extension install actions/gh-actions-cache
-          # yamllint disable-line rule:line-length          
+          # yamllint disable-line rule:line-length
           for CACHE in '${{ needs.init.outputs.init_cache_name }}' '${{ needs.init.outputs.prepare_shop_cache_prefix }}' '${{ needs.init.outputs.install_shop_cache_prefix }}' '${{ needs.init.outputs.install_module_cache_prefix }}'; do
             echo -e "\033[0;35m###  Cleaning cached object '${ID}' ###\033[0m"
             ID="$(gh actions-cache list --key ${ID}|awk '{print $1}')"
-            [[ -n "${ID}" ]] && gh actions-cache delete "${ID}" --confirm
+            [[ -n "${ID}" ]] && gh actions-cache delete --key "${ID}" --confirm
           done
-          
