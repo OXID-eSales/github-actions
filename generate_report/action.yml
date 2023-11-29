@@ -109,14 +109,14 @@ runs:
             }
         EOF
         for GROUP in ${GROUPLIST}; do
-          MARKDOWN=$(cat "slack_report_{GROUP}.md"|sed 's/$/\\n/g' | tr -d '\n')  
+          MARKDOWN=$(cat "slack_report_${GROUP}.md"|sed 's/$/\\n/g' | tr -d '\n')
           cat >>slack.json <<EOF
             ,
             {
               "type": "section",
               "text": {
                 "type": "mrkdwn",
-                "text": "${SLACK_MARKDOWN_HEADER}"
+                "text": "${MARKDOWN}"
               }
             },
             {
