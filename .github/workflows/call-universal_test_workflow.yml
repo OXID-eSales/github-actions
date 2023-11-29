@@ -1276,6 +1276,9 @@ jobs:
           slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           title: '${{ needs.init.outputs.finish_slack_title }}'
 
+      - name: Checkout the repo
+        uses: actions/checkout@v4
+
       - name: Cleanup cached objects
         env:
           GH_TOKEN: ${{ github.token }}
@@ -1283,10 +1286,13 @@ jobs:
         run: |
           gh extension install actions/gh-actions-cache
           TESTPLAN_CACHE="$(gh actions-cache list --key ${{ needs.init.outputs.init_cache_name }})"
-          if [ -n "${TESTPLAN_CACHE}" ]; then
-            gh actions-cache delete "${{ needs.init.outputs.init_cache_name }}" --confirm
-          fi
           echo -e "\033[0;35m###  cached shops for this run ###\033[0m"
+          echo ${TESTPLAN_CACHE}
+          gh actions-cache list --key "${{ needs.init.outputs.init_cache_name }}"
           gh actions-cache list --key "${{ needs.init.outputs.prepare_shop_cache_prefix }}"
           gh actions-cache list --key "${{ needs.init.outputs.install_shop_cache_prefix }}"
           gh actions-cache list --key "${{ needs.init.outputs.install_module_cache_prefix }}"
+          
+          if [ -n "${TESTPLAN_CACHE}" ]; then
+            gh actions-cache delete "${{ needs.init.outputs.init_cache_name }}" --confirm
+          fi
