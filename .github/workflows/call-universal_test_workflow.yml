@@ -116,7 +116,7 @@ jobs:
 
       - name: 'Write Report Header'
         if: always()
-        uses: OXID-eSales/github-actions/begin_report@v3
+        uses: OXID-eSales/github-actions/begin_report@v0
         with:
           title: ${{ steps.ltp.outputs.finish_slack_title }}
           repository: '${{ github.server_url }}/${{ github.repository }}'
@@ -1287,7 +1287,7 @@ jobs:
           gh extension install actions/gh-actions-cache
           TESTPLAN_CACHE="$(gh actions-cache list --key ${{ needs.init.outputs.init_cache_name }})"
           echo -e "\033[0;35m###  cached shops for this run ###\033[0m"
-          echo ${TESTPLAN_CACHE}
+          echo "${TESTPLAN_CACHE}"
           gh actions-cache list --key "${{ needs.init.outputs.init_cache_name }}"
           gh actions-cache list --key "${{ needs.init.outputs.prepare_shop_cache_prefix }}"
           gh actions-cache list --key "${{ needs.init.outputs.install_shop_cache_prefix }}"
