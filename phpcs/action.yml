@@ -58,6 +58,7 @@ runs:
       id: diff
       shell: bash
       run: |
+        set -x
         cd source
         if [ "${{ inputs.diff_only }}" == "true" ]; then
           echo -e "\033[0;35m###  Use git diff for phpcs ###\033[0m"
