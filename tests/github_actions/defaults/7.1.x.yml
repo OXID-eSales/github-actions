@@ -38,6 +38,7 @@ phpunit:
 codeception:
   matrix: *matrix
   composer: *composer
+  suite: 'acceptance'
 
 runtest:
   matrix: *matrix
