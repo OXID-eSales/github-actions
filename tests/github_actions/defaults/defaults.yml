@@ -124,7 +124,7 @@ global:
 
     # Enterprise repositories to configure, this action also contains
     # the require part
-    configure:
+    configure: &composer_configure
       # Space separated list of repositories to configure
       install: ''
 
@@ -145,7 +145,7 @@ global:
 
     # This does just run composer require, use if no repository
     # configuration is needed
-    require:
+    require: &composer_require
 
       # Space separated list of repositories to require
       install: ''
@@ -186,8 +186,9 @@ prepare_shop:
     bucket: *cache_bucket
     prefix: 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}'
   composer:
-    <<: *composer
+    configure: *composer_configure
     require:
+      <<: *composer_require
       install: 'twig-component twig-admin-theme apex-theme'
 
   # These modify php "custom.ini"
