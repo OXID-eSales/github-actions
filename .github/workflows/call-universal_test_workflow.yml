@@ -1271,7 +1271,7 @@ jobs:
           name: testplan
 
       - name: 'Output report'
-        uses: 'OXID-eSales/github-actions/generate_report@v0'
+        uses: 'OXID-eSales/github-actions/generate_report@v3'
         with:
           slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           title: '${{ needs.init.outputs.finish_slack_title }}'
