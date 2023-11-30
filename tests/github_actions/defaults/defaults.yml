@@ -521,14 +521,13 @@ runtest:
 
 # Running the sonarcloud scanner on the gathered coverage reports
 sonarcloud:
-  skip: false
   # We only run sonarcloud for one of the matrix combinations of PHP/MySQL
   matrix:
     php: '["8.1"]'
     mysql: '["5.7"]'
     template_engine: '["twig"]'
     # yamllint disable-line rule:line-length
-    testplan: '["-","https://raw.githubusercontent.com/{{ .Github.Repository }}/{{ .Github.RefName }}/tests/github_actions/sonarcloud_oxideshop_ce_internal.yml"]'
+    testplan: '["-"]'
 
   # There is only one matrix combination
   max_parallel: 1
