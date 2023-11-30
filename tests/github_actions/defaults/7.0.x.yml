@@ -44,7 +44,7 @@ runtest:
   matrix: *matrix
 
 sonarcloud:
-matrix: &slim_matrix
+  matrix: &slim_matrix
     # We only test the latest recommended versions here but both template engines
     php: '["8.1"]'
     mysql: '["8.0"]'
