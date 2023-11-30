@@ -1291,9 +1291,9 @@ jobs:
             # yamllint disable-line rule:line-length
             for CACHE in '${{ needs.init.outputs.init_cache_name }}' '${{ needs.init.outputs.prepare_shop_cache_prefix }}' '${{ needs.init.outputs.install_shop_cache_prefix }}' '${{ needs.init.outputs.install_module_cache_prefix }}'; do
               echo -e "\033[0;35m###  Cleaning cached object '${CACHE}' ###\033[0m"
-              ID="$(gh actions-cache list --key ${CACHE}|awk '{print $1}')"
-              if [ -n "${ID}" ]; then
+              ID_LIST="$(gh actions-cache list --key ${CACHE}|awk '{print $1}')"
+              for ID in ${ID_LIST}; do
                 gh actions-cache delete "${ID}" --confirm
-              fi
+              done
             done
           fi
