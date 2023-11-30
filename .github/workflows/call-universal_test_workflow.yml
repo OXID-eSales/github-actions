@@ -648,7 +648,7 @@ jobs:
           test: ${{ steps.phpunit_testplan.outputs.phpunit_test }}
           additional_options: ${{ steps.phpunit_testplan.outputs.phpunit_additional_options }}
           # yamllint disable-line rule:line-length
-          logfile: ${{steps.phpunit_testplan.outputs.logfile_prefix}}-${{ steps.phpunit_testplan.outputs.phpunit_title }}-${{steps.phpunit_testplan_name.outputs.matrix_suffix}}.txt
+          logfile: ${{steps.phpunit_testplan.outputs.phpunit_logfile_prefix}}-${{ steps.phpunit_testplan.outputs.phpunit_title }}-${{steps.phpunit_testplan_name.outputs.matrix_suffix}}.txt
           logfile_artifact: ${{ steps.phpunit_testplan.outputs.phpunit_logfile_artifact }}
           output_files: ${{ steps.phpunit_testplan.outputs.phpunit_output_files }}
           output_artifact: ${{steps.phpunit_testplan.outputs.phpunit_output_prefix}}_${{steps.phpunit_testplan_name.outputs.matrix_suffix}}
@@ -1271,7 +1271,7 @@ jobs:
           name: testplan
 
       - name: 'Output report'
-        uses: 'OXID-eSales/github-actions/generate_report@v0'
+        uses: 'OXID-eSales/github-actions/generate_report@v3'
         with:
           slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           title: '${{ needs.init.outputs.finish_slack_title }}'
@@ -1291,9 +1291,9 @@ jobs:
             # yamllint disable-line rule:line-length
             for CACHE in '${{ needs.init.outputs.init_cache_name }}' '${{ needs.init.outputs.prepare_shop_cache_prefix }}' '${{ needs.init.outputs.install_shop_cache_prefix }}' '${{ needs.init.outputs.install_module_cache_prefix }}'; do
               echo -e "\033[0;35m###  Cleaning cached object '${CACHE}' ###\033[0m"
-              ID="$(gh actions-cache list --key ${CACHE}|awk '{print $1}')"
-              if [ -n "${ID}" ]; then
+              ID_LIST="$(gh actions-cache list --key ${CACHE}|awk '{print $1}')"
+              for ID in ${ID_LIST}; do
                 gh actions-cache delete "${ID}" --confirm
-              fi
+              done
             done
           fi

@@ -38,21 +38,23 @@ phpunit:
 codeception:
   matrix: *matrix
   composer: *composer
+  suite: 'acceptance'
 
 runtest:
   matrix: *matrix
 
 sonarcloud:
-  matrix: *matrix
+  matrix: &slim_matrix
+    # We only test the latest recommended versions here but both template engines
+    php: '["8.1"]'
+    mysql: '["8.0"]'
   target_branch: *git_shop_ref
 
 phpcs_tests:
   matrix: *matrix
 
 styles:
-  matrix:
-    php: '["8.1"]'
-    mysql: '["8.0"]'
+  matrix: *slim_matrix
 
 finish:
   matrix: *matrix
