@@ -526,7 +526,6 @@ sonarcloud:
     php: '["8.1"]'
     mysql: '["5.7"]'
     template_engine: '["twig"]'
-    # yamllint disable-line rule:line-length
     testplan: '["-"]'
 
   # There is only one matrix combination
