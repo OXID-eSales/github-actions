@@ -5,14 +5,14 @@ phpunit:
   configuration: '/var/www/vendor/{{ .Data.install_module.package_name }}/tests/phpunit.xml'
   test: '/var/www/vendor/{{ .Data.install_module.package_name }}/tests/Unit'
   additional_options: '--bootstrap=/var/www/source/bootstrap.php --coverage-clover=/var/www/unit_coverage.xml'
-logfile:
-  prefix: 'phpunit_unit'
-output:
-  prefix: 'unit_artifacts'
-  files: |
-    source/unit_coverage.xml
-    generated_testplan.yaml
-    source/source/log/oxideshop.log
-    data/php/logs/error_log.txt
-coverage:
-  path: 'source/unit_coverage.xml'
+  logfile:
+    prefix: 'phpunit_unit'
+  output:
+    prefix: 'unit_artifacts'
+    files: |
+      source/unit_coverage.xml
+      generated_testplan.yaml
+      source/source/log/oxideshop.log
+      data/php/logs/error_log.txt
+  coverage:
+    path: 'source/unit_coverage.xml'

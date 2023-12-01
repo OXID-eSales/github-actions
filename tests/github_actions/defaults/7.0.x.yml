@@ -38,6 +38,7 @@ phpunit:
 codeception:
   matrix: *matrix
   composer: *composer
+  suite: 'acceptance'
 
 runtest:
   matrix: *matrix
@@ -53,9 +54,7 @@ phpcs_tests:
   matrix: *matrix_slim
 
 styles:
-  matrix:
-    php: '["8.1"]'
-    mysql: '["8.0"]'
+  matrix: *slim_matrix
 
 finish:
   matrix: *matrix
