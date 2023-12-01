@@ -10,7 +10,10 @@ inputs:
     required: false
     description: 'Title of the job'
     default: 'default'
-
+outputs:
+  overall_status:
+    description: 'Overall status of the tests'
+    value: ${{ steps.process_slack.outputs.overall_status_plain }}
 runs:
   using: "composite"
   steps:
@@ -79,6 +82,7 @@ runs:
         OVERALL_STATUS="${STATUS[OVERALL]}"
         OVERALL_EMOJI="${OVERALL_STATUS^^}_EMOJI"
         echo "overall_status=${!OVERALL_EMOJI} ${OVERALL_STATUS}" >>"${GITHUB_OUTPUT}"
+        echo "overall_status_plain=${OVERALL_STATUS}" >>"${GITHUB_OUTPUT}"
 
     - name: 'Output reports'
       shell: bash

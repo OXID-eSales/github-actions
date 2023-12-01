@@ -43,16 +43,16 @@ runtest:
   matrix: *matrix
 
 sonarcloud:
-  matrix: *matrix
+  matrix: &matrix_slim
+    php: '["8.2"]'
+    mysql: '["8.0"]'
   target_branch: *git_shop_ref
 
 phpcs_tests:
-  matrix: *matrix
+  matrix: *matrix_slim
 
 styles:
-  matrix:
-    php: '["8.2"]'
-    mysql: '["8.0"]'
+  matrix: *matrix_slim
 
 finish:
   matrix: *matrix
