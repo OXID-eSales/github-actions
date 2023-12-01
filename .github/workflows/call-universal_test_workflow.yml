@@ -125,7 +125,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           header: true
           phase: install
@@ -316,7 +316,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '010'
           phase: install
@@ -372,7 +372,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '020'
           phase: install
@@ -510,7 +510,7 @@ jobs:
 
       - name: 'Write Report'
         if: ${{ always() && matrix.testplan != 'skip' }}
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '030'
           phase: install
@@ -523,7 +523,7 @@ jobs:
 
       - name: 'Write Report'
         if: ${{ always() && matrix.testplan == 'skip' }}
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '030'
           phase: install
@@ -540,7 +540,7 @@ jobs:
     steps:
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           header: true
           priority: '100'
@@ -641,7 +641,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '110'
           phase: test
@@ -785,7 +785,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '120'
           phase: test
@@ -929,7 +929,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '130'
           phase: test
@@ -946,7 +946,7 @@ jobs:
     steps:
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           header: true
           priority: '200'
@@ -1031,7 +1031,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '210'
           phase: report
@@ -1084,7 +1084,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '220'
           phase: report
@@ -1181,7 +1181,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '230'
           phase: report
