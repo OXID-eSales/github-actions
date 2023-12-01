@@ -54,7 +54,7 @@ phpcs_tests:
   matrix: *matrix_slim
 
 styles:
-  matrix: *slim_matrix
+  matrix: *matrix_slim
 
 finish:
   matrix: *matrix
