@@ -23,9 +23,6 @@ Path for the checkout and url.
 **activate:** *required*, *no default*   
 List of module_ids to activate.
 
-**template_engine:** *not required*, *default:* both  
-One of twig, smarty, both.
-
 **git_module_url:** *required*, *no default*  
 URL for the module repository.
 

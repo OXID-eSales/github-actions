@@ -29,9 +29,6 @@ The PHP version for this matrix combination.
 **mysql:** *not required*, *default:* -  
 The MySQL version for this matrix combination.
 
-**template_engine:** *not required*, *default:* -  
-The template engine for this matrix combination.
-
 **testplan:** *not required*, *default:* -  
 The Testplan used for this matrix combination.
 
