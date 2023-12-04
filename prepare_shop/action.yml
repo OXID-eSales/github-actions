@@ -399,7 +399,6 @@ runs:
         container_method: 'exec'
         action: config
         organisation: ${{ inputs.composer_configure_organisation }}
-        #repositories: ${{ inputs.composer_configure_install }}
         ref: ${{ inputs.composer_configure_ref }}
         options: ${{ inputs.composer_configure_options }}
         update: ${{ inputs.composer_configure_update }}
