@@ -475,9 +475,6 @@ runtest:
     require:
       # Space separated list of repositories to install
       install: |
-        twig-admin-theme:*
-        twig-component:*
-        apex-theme:*
         tests-deprecated-ce
         codeception/module-webdriver:^3.1
         phpunit/phpunit:^9.1.1

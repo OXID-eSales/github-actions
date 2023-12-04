@@ -41,6 +41,7 @@ codeception:
 
 runtest:
   matrix: *matrix
+  composer: *composer
 
 sonarcloud:
   matrix: &matrix_slim
