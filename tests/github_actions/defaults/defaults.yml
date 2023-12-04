@@ -31,8 +31,8 @@
 # Global settings for a jobs strategy setting
 workflow:
 
-  # The variables "php", "mysql" and template_engine in the "matrix" subsection
-  #  are used to run a matrix of all combinations of these values for testing.
+  # The variables "php" and "mysql" in the "matrix" subsection are used to run
+  # a matrix of all combinations of these values for testing.
   matrix: &matrix
     # This string contains a json array of php versions to test against.
     php: &matrix_php '["8.1","8.2"]'
@@ -41,6 +41,7 @@ workflow:
     mysql: &matrix_mysql '["5.7","8.0"]'
 
     # This json array contains a list of template engines to test, use '["smarty","twig"]' for both
+    # @ToDo: deprecated, can be removed when 3.2 is out
     template_engine: &template_engine '["twig"]'
 
   # This matrix definition is used, when we only want one analysis done
@@ -289,6 +290,7 @@ phpunit:
   matrix:
     php: *matrix_php
     mysql: *matrix_mysql
+    # @ToDo: deprecated, can be removed when 3.2 is out
     template_engine: *template_engine
 
     # Providing a list of testplans to be executed with phpunit
@@ -365,6 +367,7 @@ codeception:
   matrix:
     php: *matrix_php
     mysql: *matrix_mysql
+    # @ToDo: deprecated, can be removed when 3.2 is out
     template_engine: *template_engine
 
     # Providing a list of testplans to be executed with codeception
@@ -380,34 +383,22 @@ codeception:
 
     # For codeception, we need different options than the empty default
     # yamllint disable-line rule:line-length
-    options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex -e XDEBUG_MODE=coverage'
+    options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e XDEBUG_MODE=coverage'
 
     method: *container_method
   cache_bucket: *cache_bucket
   composer: *composer
 
   # This script is used to determine container options depending on the module and
-  # modifying the codeception config to handle smarty
+  # modifying the codeception config to handle smarty. You must create the
+  # "container_options" output here
   pre_script: |
-    env
-    if [ "${MATRIX_TEMPLATE_ENGINE}" == 'smarty' ]; then
-      MODULE_OPTIONS=""
-      if [ "${install_module_ids}" != "" ]; then
-        MODULE_OPTIONS="-e MODULE_IDS=${install_module_ids}"
-      fi
-      echo "CODECEPTION_CONTAINER_OPTIONS=-e THEME_ID=flow ${$MODULE_OPTIONS}" | tee -a "$GITHUB_ENV"
-      perl -pi \
-        -e 's#admin_twig#admin_smarty#g;' \
-        -e 's#views/apex#views/flow/translations#g;' \
-        'source/test-module/tests/Codeception/acceptance.suite.yml'
+    MODULE_OPTIONS=""
+    if [ "${install_module_ids}" != "" ]; then
+      MODULE_OPTIONS="-e MODULE_IDS=${install_module_ids}"
     fi
-    if [ "${MATRIX_TEMPLATE_ENGINE}" == 'twig' ]; then
-      MODULE_OPTIONS=""
-      if [ "${install_module_ids}" != "" ]; then
-        MODULE_OPTIONS="-e MODULE_IDS=${install_module_ids}"
-      fi
-      echo "CODECEPTION_CONTAINER_OPTIONS=-e THEME_ID=apex ${MODULE_OPTIONS}" | tee -a "$GITHUB_ENV"
-    fi
+    echo "CODECEPTION_CONTAINER_OPTIONS=-e THEME_ID=apex ${MODULE_OPTIONS}" | tee -a "${GITHUB_ENV}"
+    echo "container_options=-e THEME_ID=apex ${MODULE_OPTIONS}" | tee -a "${GITHUB_OUTPUT}"
   configuration: 'tests/codeception.yml'
 
   # Whether to run the codeception build step before running codeception itself
@@ -419,7 +410,7 @@ codeception:
   # Name of the test to run
   test: ''
   # Additional options to pass to codeception
-  additional_options: '--coverage-xml=/var/www/codeception_coverage.xml'
+  additional_options: '--coverage-xml=/var/www/codeception_coverage.xml -x flow_theme'
 
   logfile:
     prefix: 'codeception'
@@ -449,6 +440,7 @@ runtest:
   matrix:
     php: *matrix_php
     mysql: *matrix_mysql
+    # @ToDo: deprecated, can be removed when 3.2 is out
     template_engine: *template_engine
 
     # Providing a list of testplans to be executed with runtests
@@ -483,9 +475,6 @@ runtest:
     require:
       # Space separated list of repositories to install
       install: |
-        twig-admin-theme:*
-        twig-component:*
-        apex-theme:*
         tests-deprecated-ce
         codeception/module-webdriver:^3.1
         phpunit/phpunit:^9.1.1
@@ -525,6 +514,7 @@ sonarcloud:
   matrix:
     php: '["8.1"]'
     mysql: '["5.7"]'
+    # @ToDo: deprecated, can be removed when 3.2 is out
     template_engine: '["twig"]'
     testplan: '["-"]'
 

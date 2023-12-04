@@ -35,11 +35,6 @@ inputs:
     required: false
     description: 'MySQL version for this matrix run'
     default: '0'
-  template_engine:
-    type: string
-    required: false
-    description: 'Template engine for this matrix run'
-    default: 'none'
   testplan:
     type: string
     required: false
@@ -61,8 +56,8 @@ runs:
         mkdir -p reports job_status slack_reports
         cat <<EOF >reports/${{inputs.priority}}-${{ inputs.phase }}_header.md
         ## ${{ inputs.phase }} phase
-        |Job |Title|PHP|MySQL|Template engine|Testplan|Status|
-        |:---|:----|--:|----:|--------------:|:-------|:-----|
+        |Job |Title|PHP|MySQL|Testplan|Status|
+        |:---|:----|--:|----:|:-------|:-----|
         EOF
 
     - name: 'Write summary'
@@ -70,8 +65,8 @@ runs:
       shell: bash
       # yamllint disable rule:line-length
       run: |
-        REPORT_FILE='reports/${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}_TE${{inputs.template_engine}}.md'
-        STATUS_FILE='job_status/${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}_TE${{inputs.template_engine}}.txt'
+        REPORT_FILE='reports/${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}.md'
+        STATUS_FILE='job_status/${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}.txt'
         SKIPPED_ICON='![Skipped](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/26aa.png)'
         SUCCESS_ICON='![Success](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/2705.png)'
         CANCELLED_ICON='![Cancelled](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-large/26ab.png)'
@@ -85,7 +80,7 @@ runs:
           TP="${{inputs.testplan}}"
         fi
         mkdir -p reports job_status
-        echo "|${{inputs.job}}|${{inputs.title}}|${{inputs.php}}|${{inputs.mysql}}|${{inputs.template_engine}}|${TP}|${!JOB_ICON} ${JOB_STATUS}|" >"${REPORT_FILE}"
+        echo "|${{inputs.job}}|${{inputs.title}}|${{inputs.php}}|${{inputs.mysql}}|${TP}|${!JOB_ICON} ${JOB_STATUS}|" >"${REPORT_FILE}"
         echo "${JOB_STATUS}" >"${STATUS_FILE}"
 
     - name: Upload Artifacts

@@ -3,7 +3,6 @@ workflow:
     # We only test the latest recommended versions here but both template engines
     php: &matrix_php '["8.0","8.1"]'
     mysql: &matrix_mysql '["5.7","8.0"]'
-    # currently, only twig works for oe_moduletemplate template_engine: &template_engine '["smarty","twig"]'
 
 global:
   git: &git
@@ -42,19 +41,19 @@ codeception:
 
 runtest:
   matrix: *matrix
+  composer: *composer
 
 sonarcloud:
-  matrix: &slim_matrix
-    # We only test the latest recommended versions here but both template engines
-    php: '["8.1"]'
-    mysql: '["8.0"]'
+  matrix: &matrix_slim
+    php: '["8.0"]'
+    mysql: '["5.7"]'
   target_branch: *git_shop_ref
 
 phpcs_tests:
-  matrix: *matrix
+  matrix: *matrix_slim
 
 styles:
-  matrix: *slim_matrix
+  matrix: *matrix_slim
 
 finish:
   matrix: *matrix
