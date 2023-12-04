@@ -317,14 +317,30 @@ runs:
           docker logs -n 200 $c
         done
 
+    - name: Configure allow-plugins
+      id: configure_allow_plugins
+      shell: bash
+      run: |
+        REPOSITORIES=$(echo -n "${{ inputs.composer_allow_plugins_repositories }}"| tr '\n' ' ')
+        echo 'composer_allow_plugins<<EOF' >> $GITHUB_OUTPUT
+        for REPOSITORY in ${REPOSITORIES}; do
+          # compensate for repos with _ and config with -
+          DASHED_REPO=$(echo "${REPOSITORY}"|tr '_', '-'|sed -e 's|:.*||')
+          VALUE=$(echo "${REPOSITORY}"|sed -e 's|.*:||')
+          echo -e "\033[0;35m###  configure allow-plugins.${DASHED_REPO} '${VALUE}'' ###\033[0m"
+          echo "allow-plugins.${DASHED_REPO} \"${VALUE}\"" >> "$GITHUB_OUTPUT" 
+        done
+        echo 'EOF' >> $GITHUB_OUTPUT
+
     - name: 'Composer allow plugins ${{ inputs.composer_allow_plugins_repositories }}'
       if: ${{ inputs.composer_allow_plugins_repositories != '' }}
-      uses: 'OXID-eSales/github-actions/composer_allow_plugins@v3'
+      uses: 'OXID-eSales/github-actions/composer@v3'
       with:
         container_name: ${{ inputs.container_name }}
         container_options: ${{ inputs.container_options }}
         container_method: 'exec'
-        repositories: ${{ inputs.composer_allow_plugins_repositories }}
+        action: config
+        parameters: ${{steps.configure_allow_plugins.outputs.composer_allow_plugins}}
 
     - name: 'Prepare composer RM list'
       if: ${{ inputs.composer_rm_parameters != '' }}
@@ -349,20 +365,47 @@ runs:
         update: ${{ inputs.composer_rm_update }}
         update_options: ${{ inputs.composer_rm_update_options }}
 
+    - name: Configure repositories
+      id: composer_configure
+      shell: bash
+      run: |
+        REPOSITORIES=$(echo -n "${{ inputs.repositories }}"| tr '\n' ' ')
+        echo 'composer_configure<<EOF' >> $GITHUB_OUTPUT
+        if [ -z "${{ inputs.ref }}" ]; then
+          REFERENCE=""
+        else
+          REFERENCE=":${{ inputs.ref }}"
+        fi
+        ORGANIZATION=$(echo "${{ inputs.organisation }}" | tr '[:upper:]' '[:lower:]')
+        if [ -n "${{ inputs.enterprise_github_token }}" ]; then
+          echo -e "\033[0;35m###  configure github access ###\033[0m"
+           echo "github-protocols https" >> "$GITHUB_OUTPUT"
+           echo "github-oauth.github.com "${{ inputs.enterprise_github_token }}" >> "$GITHUB_OUTPUT"
+        # compensate for repos with _ and config with -
+          DASHED_REPO=$(echo "${REPOSITORY}"|tr '_', '-')
+          echo -e "\033[0;35m###  configure ${ORG}/${DASHED_REPO} ###\033[0m"
+           echo "repositories.${ORG}/${DASHED_REPO} git "https://github.com/${{ inputs.organisation }}/${REPOSITORY}.git" >> "$GITHUB_OUTPUT"
+          echo -e "\033[0;35m###  require "${ORG}/${DASHED_REPO}${REF} with ${{ inputs.options }} ###\033[0m"
+           echo "${ORG}/${DASHED_REPO}${REF}" ${{ inputs.options }}" >> "$GITHUB_OUTPUT"
+        fi
+        echo 'EOF' >> $GITHUB_OUTPUT
+
     - name: 'Composer configure and require ${{ inputs.composer_configure_install }}'
       if: ${{ inputs.composer_configure_install != '' }}
-      uses: 'OXID-eSales/github-actions/composer_configure@v3'
+      uses: 'OXID-eSales/github-actions/composer@v3'
       with:
         container_name: ${{ inputs.container_name }}
         container_options: ${{ inputs.container_options }}
         container_method: 'exec'
+        action: congig,require
         organisation: ${{ inputs.composer_configure_organisation }}
-        repositories: ${{ inputs.composer_configure_install }}
+        #repositories: ${{ inputs.composer_configure_install }}
         ref: ${{ inputs.composer_configure_ref }}
         options: ${{ inputs.composer_configure_options }}
         update: ${{ inputs.composer_configure_update }}
         update_options: ${{ inputs.composer_configure_update_options }}
         enterprise_github_token: ${{ inputs.enterprise_github_token }}
+        parameters: {{steps.composer_configure.outputs.composer_configure }}
 
     - name: 'Composer require ${{ inputs.composer_require_install }}'
       if: ${{ inputs.composer_require_install != '' }}
