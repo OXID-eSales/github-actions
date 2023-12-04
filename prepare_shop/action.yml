@@ -328,7 +328,7 @@ runs:
           DASHED_REPO=$(echo "${REPOSITORY}"|tr '_', '-'|sed -e 's|:.*||')
           VALUE=$(echo "${REPOSITORY}"|sed -e 's|.*:||')
           echo -e "\033[0;35m###  configure allow-plugins.${DASHED_REPO} '${VALUE}'' ###\033[0m"
-          echo "allow-plugins.${DASHED_REPO} \"${VALUE}\"" >> "$GITHUB_OUTPUT" 
+        echo "allow-plugins.${DASHED_REPO} \"${VALUE}\"" >> "$GITHUB_OUTPUT" 
         done
         echo 'EOF' >> $GITHUB_OUTPUT
 
@@ -404,7 +404,7 @@ runs:
         update: ${{ inputs.composer_configure_update }}
         update_options: ${{ inputs.composer_configure_update_options }}
         enterprise_github_token: ${{ inputs.enterprise_github_token }}
-        parameters: {{steps.composer_configure.outputs.composer_configure }}
+        parameters: {{ steps.composer_configure.outputs.composer_configure }}
 
     - name: 'Composer require ${{ inputs.composer_require_install }}'
       if: ${{ inputs.composer_require_install != '' }}
