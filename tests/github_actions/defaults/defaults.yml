@@ -31,8 +31,8 @@
 # Global settings for a jobs strategy setting
 workflow:
 
-  # The variables "php", "mysql" and template_engine in the "matrix" subsection
-  #  are used to run a matrix of all combinations of these values for testing.
+  # The variables "php" and "mysql" in the "matrix" subsection are used to run
+  # a matrix of all combinations of these values for testing.
   matrix: &matrix
     # This string contains a json array of php versions to test against.
     php: &matrix_php '["8.1","8.2"]'
@@ -41,6 +41,7 @@ workflow:
     mysql: &matrix_mysql '["5.7","8.0"]'
 
     # This json array contains a list of template engines to test, use '["smarty","twig"]' for both
+    # @ToDo: deprecated, can be removed when 3.2 is out
     template_engine: &template_engine '["twig"]'
 
   # This matrix definition is used, when we only want one analysis done
@@ -289,6 +290,7 @@ phpunit:
   matrix:
     php: *matrix_php
     mysql: *matrix_mysql
+    # @ToDo: deprecated, can be removed when 3.2 is out
     template_engine: *template_engine
 
     # Providing a list of testplans to be executed with phpunit
@@ -365,6 +367,7 @@ codeception:
   matrix:
     php: *matrix_php
     mysql: *matrix_mysql
+    # @ToDo: deprecated, can be removed when 3.2 is out
     template_engine: *template_engine
 
     # Providing a list of testplans to be executed with codeception
@@ -407,7 +410,7 @@ codeception:
   # Name of the test to run
   test: ''
   # Additional options to pass to codeception
-  additional_options: '--coverage-xml=/var/www/codeception_coverage.xml'
+  additional_options: '--coverage-xml=/var/www/codeception_coverage.xml -x flow_theme'
 
   logfile:
     prefix: 'codeception'
@@ -437,6 +440,7 @@ runtest:
   matrix:
     php: *matrix_php
     mysql: *matrix_mysql
+    # @ToDo: deprecated, can be removed when 3.2 is out
     template_engine: *template_engine
 
     # Providing a list of testplans to be executed with runtests
@@ -513,6 +517,7 @@ sonarcloud:
   matrix:
     php: '["8.1"]'
     mysql: '["5.7"]'
+    # @ToDo: deprecated, can be removed when 3.2 is out
     template_engine: '["twig"]'
     testplan: '["-"]'
 
