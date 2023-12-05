@@ -628,7 +628,7 @@ jobs:
           test: ${{ steps.phpunit_testplan.outputs.phpunit_test }}
           additional_options: ${{ steps.phpunit_testplan.outputs.phpunit_additional_options }}
           # yamllint disable-line rule:line-length
-          logfile: ${{steps.phpunit_testplan.outputs.logfile_prefix}}-${{ steps.phpunit_testplan.outputs.phpunit_title }}-${{steps.phpunit_testplan_name.outputs.matrix_suffix}}.txt
+          logfile: ${{steps.phpunit_testplan.outputs.phpunit_logfile_prefix}}-${{ steps.phpunit_testplan.outputs.phpunit_title }}-${{steps.phpunit_testplan_name.outputs.matrix_suffix}}.txt
           logfile_artifact: ${{ steps.phpunit_testplan.outputs.phpunit_logfile_artifact }}
           output_files: ${{ steps.phpunit_testplan.outputs.phpunit_output_files }}
           output_artifact: ${{steps.phpunit_testplan.outputs.phpunit_output_prefix}}_${{steps.phpunit_testplan_name.outputs.matrix_suffix}}
