@@ -45,32 +45,10 @@ inputs:
     required: false
     description: 'Github run artifact for the phpunit output'
     default: 'StylesLog'
-  enterprise_github_token:
-    type: string
-    required: false
-    description: 'OAuth token to access enterprise repos'
-    default: ''
 
 runs:
   using: "composite"
   steps:
-    - name: Configure enterprise token
-      if: ${{ inputs.enterprise_github_token != '' }}
-      shell: bash
-      run: |
-        echo -e "\033[0;35m###  configure github access ###\033[0m"
-        docker-compose ${{ inputs.container_method }} -T \
-          ${{ inputs.container_options }} \
-          --workdir '/var/www/dev-packages/${{ inputs.path }}' \
-          ${{ inputs.container_name}} \
-          composer config github-protocols https
-        docker-compose ${{ inputs.container_method }} -T \
-          ${{ inputs.container_options }} \
-          --workdir '/var/www/dev-packages/${{ inputs.path }}' \
-          ${{ inputs.container_name}} \
-          composer config github-oauth.github.com "${{ inputs.enterprise_github_token }}"
-        cat 'source/dev-packages/${{ inputs.path }}/composer.json'
-
     - name: Run composer install
       shell: bash
       run: |

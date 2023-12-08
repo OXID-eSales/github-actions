@@ -1166,8 +1166,6 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.styles_testplan.outputs.styles_composer_transform != '' }}
-        env:
-          GITHUB_ENTERPRISE_TOKEN: ${{ secrets.enterprise_github_token }}
         uses: 'OXID-eSales/github-actions/composer_merge@v0'
         with:
           file: 'source/dev-packages/${{ steps.styles_testplan.outputs.styles_path }}/composer.json'
@@ -1186,7 +1184,6 @@ jobs:
           container_method: ${{ steps.styles_testplan.outputs.styles_container_method }}
           output_files: ${{ steps.styles_testplan.outputs.styles_output_files }}
           output_artifact: ${{ steps.styles_testplan.outputs.styles_output_prefix}}_PHP${{ matrix.php }}
-          enterprise_github_token: ${{ secrets.enterprise_github_token }}
 
       - name: 'Stop shop'
         uses: 'OXID-eSales/github-actions/stop_shop@v3'
