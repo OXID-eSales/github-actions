@@ -1233,6 +1233,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install s3cmd and gh
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           GH=$(type -p 'gh'||true)
           if [ -z "${GH}" ]; then
