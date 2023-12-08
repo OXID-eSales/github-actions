@@ -170,7 +170,7 @@ global:
 init:
   cache:
     bucket: *cache_bucket
-    name: 'testplan-{{ .Github.Repository }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}'
+    name: 'testplan-${{ .Env.GITHUB_REPOSITORY_ID }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}'
 
 # The prepare_shop step checks out the sdk and the shop. It is a prerequisite
 # for the install_shop and shop_setup tests. It generates a cached object
