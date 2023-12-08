@@ -1243,6 +1243,7 @@ jobs:
             echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
             sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update
             sudo apt-get -qq install gh
+            GH=$(type -p 'gh'||true)
           fi
           ${GH} extension install actions/gh-actions-cache
           sudo DEBIAN_FRONTEND=noninteractive apt-get -qq install s3cmd
