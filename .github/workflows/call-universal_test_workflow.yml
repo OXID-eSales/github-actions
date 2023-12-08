@@ -1252,13 +1252,13 @@ jobs:
           RUNS_ON='${{ inputs.runs_on }}'
           if [[ "${RUNS_ON}" != *"ubuntu" ]]; then
             cat >/home/runner/.s3cfg <<EOF
-            [default]
-            check_ssl_certificate = False
-            check_ssl_hostname = False
-            host_base = ${{secrets.CACHE_ENDPOINT}}
-            host_bucket = %(bucket)s.${{secrets.CACHE_ENDPOINT}}
-            access_key = ${{ secrets.CACHE_ACCESS_KEY}}
-            secret_key = ${{ secrets.CACHE_SECRET_KEY }}
+          [default]
+          check_ssl_certificate = False
+          check_ssl_hostname = False
+          host_base = ${{secrets.CACHE_ENDPOINT}}
+          host_bucket = %(bucket)s.${{secrets.CACHE_ENDPOINT}}
+          access_key = ${{ secrets.CACHE_ACCESS_KEY}}
+          secret_key = ${{ secrets.CACHE_SECRET_KEY }}
           EOF
             chmod 0600 /home/runner/.s3cfg
           fi
@@ -1285,7 +1285,7 @@ jobs:
         if: ${{ inputs.runs_on != '"ubuntu-latest"' }}
         run: |
           # yamllint disable-line rule:line-length
-          OUTPUT=$(s3cmd ls -r s3://oxideshop-ee|grep '${{ needs.init.outputs.init_cache_name }}|${{ needs.init.outputs.prepare_shop_cache_prefix }}|${{ needs.init.outputs.install_shop_cache_prefix }}|${{ needs.init.outputs.install_module_cache_prefix }}')
+          OUTPUT=$(s3cmd ls -r s3://oxideshop-ee|grep '${{ needs.init.outputs.init_cache_name }}|${{ needs.init.outputs.prepare_shop_cache_prefix }}|${{ needs.init.outputs.install_shop_cache_prefix }}|${{ needs.init.outputs.install_module_cache_prefix }}'||true)
           export IFS=''
           echo "${OUTPUT}" | while read -r LINE ; do
             FILE=$(echo "${LINE}"|awk '{print $4}')
