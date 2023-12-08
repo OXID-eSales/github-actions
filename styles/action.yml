@@ -68,7 +68,7 @@ runs:
           ${{ inputs.container_options }} \
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name}} \
-          composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
+          composer config github-oauth.github.com "${{ inputs.enterprise_github_token }}"
         cat 'source/dev-packages/${{ inputs.path }}/composer.json'
 
     - name: Run composer install

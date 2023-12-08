@@ -1,0 +1,44 @@
+name: 'composer_merge'
+description: 'This action merges json code into an existing composer.json'
+inputs:
+  file:
+    type: string
+    required: true
+    description: 'Name of the original composer.json'
+  transform:
+    type: string
+    required: true
+    description: 'JSON code to apply to the composer.json'
+  backup:
+    type: boolean
+    required: false
+    default: true
+    description: 'Schould we create a backup for composer.json'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Create files
+      shell: bash
+      run: |
+        # composer_merge.Create files
+        BACKUP="${{ inputs.backup }}"
+        if [ "${BACKUP}" == 'true' ]; then
+          cp "${{ inputs.file }}" "${{ inputs.file }}.bak"
+        fi
+        cat > .composer_merge.tmp.json <<EOF
+        ${{ inputs.transform }}
+        EOF
+
+    - name: Merge files
+      uses: 'joernott/load_testplan@cc324e5968cba0bb906ced60c375c7df2c91a172'
+      with:
+        files: '${{ inputs.file }},.composer_merge.tmp.json'
+        input_type: 'json'
+        yaml: '${{ inputs.file }}'
+
+    - name: Cleanup
+      shell: bash
+      run: |
+        # composer_merge.Cleanup
+        rm .composer_merge.tmp.json
