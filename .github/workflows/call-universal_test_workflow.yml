@@ -251,7 +251,7 @@ jobs:
       finish_matrix_mysql: ${{ steps.ltp.outputs.finish_matrix_mysql }}
       finish_matrix_php: ${{ steps.ltp.outputs.finish_matrix_php }}
       finish_skip: ${{ steps.ltp.outputs.finish_skip }}
-      finish_slack_title: ${{ steps.ltp.outputs.finish_slack_title }}      
+      finish_slack_title: ${{ steps.ltp.outputs.finish_slack_title }}
 
   prepare_shop:
     needs: init
@@ -1175,10 +1175,6 @@ jobs:
           transform: |
             ${{ steps.styles_testplan.outputs.styles_composer_transform }}
 
-
-
-
-
       - name: 'Run styles check'
         uses: 'OXID-eSales/github-actions/styles@v0'
         with:
@@ -1246,6 +1242,7 @@ jobs:
             echo -e "\033[0;35m###  Installing gh ###\033[0m"
             curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
             sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+            # yamllint disable-line rule:line-length
             echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
             sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update
             sudo apt-get -qq install gh
@@ -1270,7 +1267,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
-        # yamllint disable rule:line-length
         run: |
           GH=$(type -p 'gh'||true)
           if [ -n "${GH}" ]; then
