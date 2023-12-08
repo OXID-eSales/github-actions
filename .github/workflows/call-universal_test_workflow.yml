@@ -1244,6 +1244,7 @@ jobs:
             sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update
             sudo apt-get -qq install gh
           fi
+          ${GH} extension install actions/gh-actions-cache
           sudo DEBIAN_FRONTEND=noninteractive apt-get -qq install s3cmd
           RUNS_ON='${{ inputs.runs_on }}'
           if [[ "${RUNS_ON}" != *"ubuntu" ]]; then
@@ -1267,10 +1268,9 @@ jobs:
         run: |
           GH=$(type -p 'gh'||true)
           if [ -n "${GH}" ]; then
-            ${GH} extension install actions/gh-actions-cache
             # yamllint disable-line rule:line-length
             for CACHE in '${{ needs.init.outputs.init_cache_name }}' '${{ needs.init.outputs.prepare_shop_cache_prefix }}' '${{ needs.init.outputs.install_shop_cache_prefix }}' '${{ needs.init.outputs.install_module_cache_prefix }}'; do
-              ID_LIST="$(${GH} actions-cache list --key ${CACHE}|awk '{print $1}')"
+              ID_LIST="$(${GH} actions-cache list --key ${CACHE}|awk '{print $1}'||true)"
               for ID in ${ID_LIST}; do
               echo -e "\033[0;35m###  Cleaning cached object '${ID}' from github ###\033[0m"
                 ${GH} actions-cache delete "${ID}" --confirm
