@@ -61,10 +61,12 @@ runs:
         echo -e "\033[0;35m###  configure github access ###\033[0m"
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
+          --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name}} \
           composer config github-protocols https
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
+          --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name}} \
           composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
 
