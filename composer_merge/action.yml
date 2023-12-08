@@ -35,10 +35,11 @@ runs:
       with:
         files: '${{ inputs.file }},.composer_merge.tmp.json'
         input_type: 'json'
-        yaml: '${{ inputs.file }}'
+        json: '${{ inputs.file }}'
 
     - name: Cleanup
       shell: bash
       run: |
         # composer_merge.Cleanup
         rm .composer_merge.tmp.json
+        cat '${{ inputs.file }}'
