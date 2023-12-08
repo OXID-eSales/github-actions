@@ -191,6 +191,16 @@ prepare_shop:
     require:
       <<: *composer_require
       install: 'twig-component twig-admin-theme apex-theme'
+    file: 'source/composer-dummy.json'
+    transform: |
+      {
+          "require": {
+              "oxid-esales/twig-component": "dev-b-8.0.x",
+              "oxid-esales/twig-admin-theme": "dev-b-8.0.x",
+              "oxid-esales/apex-theme": "dev-b-8.0.x",
+          }
+      }
+    backup: true
 
   # These modify php "custom.ini"
   custom_ini:

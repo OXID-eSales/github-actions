@@ -253,6 +253,19 @@ jobs:
       finish_skip: ${{ steps.ltp.outputs.finish_skip }}
       finish_slack_title: ${{ steps.ltp.outputs.finish_slack_title }}
 
+  test_prepare_shop:
+    needs: init
+    strategy:
+      matrix:
+        php: ${{ fromJSON(needs.init.outputs.prepare_shop_matrix_php) }}
+        mysql: ${{ fromJSON(needs.init.outputs.prepare_shop_matrix_mysql) }}
+      fail-fast: false
+      max-parallel: ${{ fromJSON(needs.init.outputs.prepare_shop_max_parallel) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    steps:
+      - name: 'Prepare Shop'
+      
+
   prepare_shop:
     needs: init
     strategy:
