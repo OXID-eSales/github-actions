@@ -1281,7 +1281,7 @@ jobs:
             done
           fi
 
-      - name: s3cmd ls
+      - name: Clear s3 cache
         if: ${{ inputs.runs_on != '"ubuntu-latest"' }}
         run: |
           # yamllint disable-line rule:line-length
@@ -1289,6 +1289,8 @@ jobs:
           export IFS=''
           echo "${OUTPUT}" | while read -r LINE ; do
             FILE=$(echo "${LINE}"|awk '{print $4}')
-            echo -e "\033[0;35m###  Cleaning cached object '${FILE}' from s3 cache ###\033[0m"
-            s3cmd del "${FILE}"
+            if [ -n "${FILE}" ]; then
+              echo -e "\033[0;35m###  Cleaning cached object '${FILE}' from s3 cache ###\033[0m"
+              s3cmd del "${FILE}"
+            fi
           done
