@@ -54,6 +54,8 @@ runs:
         cat > .composer_merge.tmp.json <<EOF
         ${{ inputs.transform }}
         EOF
+        echo -e "\033[0;35m### JSON to merge\033[0m"
+        cat .composer_merge.tmp.json
 
     - name: Merge files
       uses: 'joernott/load_testplan@v1'
