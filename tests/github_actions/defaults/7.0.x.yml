@@ -10,15 +10,25 @@ global:
     enterprise_ref: &git_enterprise_ref 'b-7.0.x'
 
   composer: &composer
+    # Configure/Require are deprecated
     configure:
       ref: &dev_ref dev-b-7.0.x
     require:
       ref: *dev_ref
+    dev_ref: &dev_ref dev-b-7.0.x
 
 prepare_shop:
   matrix: *matrix
   git: *git
-  composer: *composer
+  composer:
+    transform: |
+      {
+          "require": {
+              "oxid-esales/twig-component": "dev-b-7.0.x",
+              "oxid-esales/twig-admin-theme": "dev-7.0.x",
+              "oxid-esales/apex-theme": "dev-b-7.0.x"
+          }
+      }
 
 install_shop:
   matrix: *matrix
@@ -54,6 +64,7 @@ phpcs_tests:
 
 styles:
   matrix: *matrix_slim
+  composer: *composer
 
 finish:
   matrix: *matrix

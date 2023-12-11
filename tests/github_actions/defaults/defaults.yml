@@ -118,6 +118,7 @@ global:
   # composer_require actions
   composer: &composer
     # Set the allow-plugins
+    # DEPRECATED: Use transform instead
     allow_plugins:
 
       # Space separated list of repositories
@@ -125,46 +126,79 @@ global:
 
     # Enterprise repositories to configure, this action also contains
     # the require part
+    # DEPRECATED: Use transform instead
     configure: &composer_configure
       # Space separated list of repositories to configure
+      # DEPRECATED: Use transform instead
       install: ''
 
       # The Github organisation for the repositories
+      # DEPRECATED: Use transform instead
       organisation: &composer_org 'OXID-eSales'
 
       # The git reference to install
+      # DEPRECATED: Use transform instead
       ref: &dev_ref dev-b-8.0.x
 
       # Options to pass along to composer when requiring the repositories
+      # DEPRECATED: Use transform instead
       options: '--no-update'
 
       # Run composer update after configuring all repositories
+      # DEPRECATED: Use transform instead
       update: true
 
       # Options to pass along to composer when running composer update
+      # DEPRECATED: Use transform instead
       update_options: '--no-interaction'
 
     # This does just run composer require, use if no repository
     # configuration is needed
+    # DEPRECATED: Use transform instead
     require: &composer_require
 
       # Space separated list of repositories to require
+      # DEPRECATED: Use transform instead
       install: ''
 
       # The Github organisation for the repositories
+      # DEPRECATED: Use transform instead
       organisation: 'OXID-eSales'
 
       # The git reference to install
+      # DEPRECATED: Use transform instead
       ref: *dev_ref
 
       # Options to pass along to composer during install
+      # DEPRECATED: Use transform instead
       options: '--with-all-dependencies'
 
       # Run composer update after requiring all repositories
+      # DEPRECATED: Use transform instead
       update: true
 
       # Options to pass along to composer when running composer update
+      # DEPRECATED: Use transform instead
       update_options: '--no-interaction'
+
+  # Use these settings below to merge a json configuration with an existing
+  # composer.json
+  
+  # Path to the composer.json folder on the runner (source/composer.json,
+  # not /var/www/composer.json)
+  file: 'source/composer.json'
+
+  # Should a backup of the original composer.json be created?
+  backup: true
+
+  # Merge this json data with composer.json. If this is empty,
+  # no transformation will be applied
+  transform: ''
+
+  # This is just a definition we can apply in later configs
+  # It will be overwritten by the 7.0.x and 7.1.x templates
+  # and can be used by referencing .Data.gobal_composer_dev_ref
+  dev_ref: &dev_ref dev-b-8.0.x
 
 # The init phase handles loading the testplans and creating report artifacts for the run
 init:
@@ -187,7 +221,7 @@ prepare_shop:
     bucket: *cache_bucket
     prefix: 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}'
   composer:
-    # This replaces composer require statements
+    # This replaces composer require statements to install the component/theme
     file: 'source/composer.json'
     transform: |
       {
@@ -238,7 +272,7 @@ install_shop:
   output:
     files: |
       docker-compose.yml
-      source/composer.json
+      source/composer.json*
       source/composer.lock
       source/source/config.inc.php
 
@@ -261,17 +295,17 @@ install_module:
   container: *container
   container_options: *container_options
   container_method: *container_method
+  composer: *composer
   cache:
     bucket: *cache_bucket
     # If we don't install a module, keep it the same as the prefix for
     # installed_shop. Otherwise set it to
     # 'moduleInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}'
     prefix: &install_module_prefix 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}'
-
   output:
     files: |
       docker-compose.yml
-      source/composer.json
+      source/composer.json*
       source/composer.lock
       source/source/config.inc.php
       files.txt
@@ -467,36 +501,18 @@ runtest:
   cache:
     bucket: *cache_bucket
   composer:
-    # Enterprise repositories to configure (and require)
-    configure:
-      # Space separated list of repositories to configure
-      install: ''
-      # The organisation for the repositories
-      organisation: *composer_org
-      # The git reference to install
-      ref: *dev_ref
-      # Options to pass along to composer when requiring the repositories
-      options: '--no-update'
-      # Run composer update after configuring all repositories
-      update: true
-      # Options to pass along to composer when running composer update
-      update_options: '--no-interaction'
-    require:
-      # Space separated list of repositories to install
-      install: |
-        tests-deprecated-ce
-        codeception/module-webdriver:^3.1
-        phpunit/phpunit:^9.1.1
-      # The organisation for the repositories
-      organisation: *composer_org
-      # The git reference to install
-      ref: *dev_ref
-      # Options to pass along to composer during install
-      options: '--with-all-dependencies'
-      # Run composer update after requiring all repositories
-      update: true
-      # Options to pass along to composer during install
-      update_options: '--no-interaction'
+    file: 'source/composer.json'
+    backup: true
+    transform: |
+      {
+          "require": {
+              "oxid-esales/tests-deprecated-ce": "dev-b-8.0.x",
+              "codeception/module-webdriver": "^3.1",
+              "phpunit/phpunit": "^9.1.1",
+          }
+      }
+    update: true
+    update_options: '--no-interaction'
 
   # Name of the config file to copy
   config_file: 'vendor/oxid-esales/testing-library/test_config.yml.dist'
@@ -590,6 +606,12 @@ styles:
   container: *container
   cache:
     bucket: *cache_bucket
+  composer:
+    file: 'source/dev-packages/test-module/composer.json'
+    backup: true
+    transform: ''
+    update: true
+    update_options: '--no-interaction'
 
   # The path pointing to the module relative to source/dev-packages needs to be the same as in install_module
   path: *module_path

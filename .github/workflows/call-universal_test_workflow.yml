@@ -784,6 +784,20 @@ jobs:
           update: ${{ steps.codeception_testplan.outputs.codeception_composer_require_update }}
           update_options: ${{ steps.codeception_testplan.outputs.codeception_composer_require_update_options }}
 
+      - name: 'Modify composer.json'
+        if: ${{ steps.codeception_testplan.outputs.codeception_composer_transform != '' }}
+        uses: 'OXID-eSales/github-actions/composer_merge@v0'
+        with:
+          file: '${{ steps.codeception_testplan.outputs.codeception_composer_path }}'
+          backup: true
+          transform: |
+            ${{ steps.codeception_testplan.outputs.codeception_composer_transform }}
+          update: ${{ steps.codeception_testplan.outputs.codeception_composer_update }}
+          update_options: ${{ steps.codeception_testplan.outputs.codeception_composer_update_options }}
+          container_name: ${{ steps.codeception_testplan.outputs.codeception_container_name }}
+          container_options: ${{ steps.codeception_testplan.outputs.codeception_container_options }}
+          container_method: 'exec'
+
       - name: 'Run codeception tests'
         id: codeception_run
         uses: 'OXID-eSales/github-actions/codeception@v3'
@@ -927,6 +941,20 @@ jobs:
           options: ${{ steps.runtest_testplan.outputs.runtest_composer_require_options }}
           update: ${{ steps.runtest_testplan.outputs.runtest_composer_require_update }}
           update_options: ${{ steps.runtest_testplan.outputs.runtest_composer_require_update_options }}
+
+      - name: 'Modify composer.json'
+        if: ${{ steps.runtest_testplan.outputs.runtest_composer_transform != '' }}
+        uses: 'OXID-eSales/github-actions/composer_merge@v0'
+        with:
+          file: '${{ steps.runtest_testplan.outputs.runtest_composer_path }}'
+          backup: true
+          transform: |
+            ${{ steps.runtest_testplan.outputs.runtest_composer_transform }}
+          update: ${{ steps.runtest_testplan.outputs.runtest_composer_update }}
+          update_options: ${{ steps.runtest_testplan.outputs.runtest_composer_update_options }}
+          container_name: ${{ steps.runtest_testplan.outputs.runtest_container_name }}
+          container_options: ${{ steps.runtest_testplan.outputs.runtest_container_options }}
+          container_method: 'exec'
 
       - name: Copy config file
         run: cp source/vendor/oxid-esales/testing-library/test_config.yml.dist source/test_config.yml
@@ -1197,6 +1225,11 @@ jobs:
           backup: true
           transform: |
             ${{ steps.styles_testplan.outputs.styles_composer_transform }}
+          update: ${{ steps.styles_testplan.outputs.styles_composer_update }}
+          update_options: ${{ steps.styles_testplan.outputs.styles_composer_update_options }}
+          container_name: ${{ steps.styles_testplan.outputs.styles_container_name }}
+          container_options: ${{ steps.styles_testplan.outputs.styles_container_options }}
+          container_method: 'exec'
 
       - name: 'Run styles check'
         uses: 'OXID-eSales/github-actions/styles@v0'
