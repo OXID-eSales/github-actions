@@ -83,7 +83,7 @@ runs:
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
-          cat /home/runner/.composer/*
+          cat /home/runner/.composer/config.json
 
         if [ '${{ inputs.update }}' == 'true' ]; then
           echo -e "\033[0;35m### Running composer update with ${{ inputs.update_options }}\033[0m"
