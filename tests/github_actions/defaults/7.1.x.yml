@@ -25,7 +25,7 @@ prepare_shop:
       {
           "require": {
               "oxid-esales/twig-component": "dev-b-7.1.x",
-              "oxid-esales/twig-admin-theme": "dev-7.1.x",
+              "oxid-esales/twig-admin-theme": "dev-b-7.1.x",
               "oxid-esales/apex-theme": "dev-b-7.1.x"
           }
       }
