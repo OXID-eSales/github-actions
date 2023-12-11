@@ -40,7 +40,7 @@ prepare_shop:
               "oxid-esales/twig-admin-theme": "dev-b-8.0.x",
               "oxid-esales/apex-theme": "dev-b-8.0.x",
               "oxid-esales/codeception-modules": "dev-b-8.0.x",
-              "oxid-esales/codeception-page-objects": "dev-b-8.0.x",
+              "oxid-esales/codeception-page-objects": "dev-b-8.0.x"
           },
           "repositories": {
               "oxid-esales/codeception-page-objects": {
