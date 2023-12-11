@@ -501,6 +501,8 @@ runtest:
   cache:
     bucket: *cache_bucket
   composer:
+    configure: *composer_configure
+    require: *composer_require
     file: 'source/composer.json'
     backup: true
     transform: |
