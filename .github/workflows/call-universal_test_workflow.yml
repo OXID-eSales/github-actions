@@ -168,6 +168,11 @@ jobs:
       prepare_shop_composer_require_ref: ${{ steps.ltp.outputs.prepare_shop_composer_require_ref }}
       prepare_shop_composer_require_update: ${{ steps.ltp.outputs.prepare_shop_composer_require_update }}
       prepare_shop_composer_require_update_options: ${{ steps.ltp.outputs.prepare_shop_composer_require_update_options }}
+      prepare_shop_composer_file: ${{ steps.ltp.outputs.prepare_shop_composer_file}}
+      prepare_shop_composer_transform: ${{ steps.ltp.outputs.prepare_shop_composer_transform}}
+      prepare_shop_composer_backup: ${{ steps.ltp.outputs.prepare_shop_composer_backup}}
+      prepare_shop_composer_update: ${{ steps.ltp.outputs.prepare_shop_composer_update}}
+      prepare_shop_composer_update_options: ${{ steps.ltp.outputs.prepare_shop_composer_update_options}}
       prepare_shop_container_method: ${{ steps.ltp.outputs.prepare_shop_container_method }}
       prepare_shop_container_name: ${{ steps.ltp.outputs.prepare_shop_container_name }}
       prepare_shop_container_options: ${{ steps.ltp.outputs.prepare_shop_container_options }}
@@ -265,7 +270,7 @@ jobs:
     steps:
       - name: 'Prepare Shop'
         id: prepare_shop
-        uses: 'OXID-eSales/github-actions/prepare_shop@v3'
+        uses: 'OXID-eSales/github-actions/prepare_shop@v0'
         with:
           container_name: ${{ needs.init.outputs.prepare_shop_container_name }}
           container_options: ${{ needs.init.outputs.prepare_shop_container_options }}
@@ -307,6 +312,12 @@ jobs:
           composer_require_options: ${{ needs.init.outputs.prepare_shop_composer_require_options}}
           composer_require_update: ${{ needs.init.outputs.prepare_shop_composer_require_update}}
           composer_require_update_options: ${{ needs.init.outputs.prepare_shop_composer_require_update_options}}
+          composer_file: ${{ needs.init.outputs.prepare_shop_composer_file }}
+          composer_transform: ${{ needs.init.outputs.prepare_shop_composer_transform}}
+          composer_backup: ${{ needs.init.outputs.prepare_shop_composer_backup}}
+          composer_update: ${{ needs.init.outputs.prepare_shop_composer_update}}
+          composer_update_options: ${{ needs.init.outputs.prepare_shop_composer_update_options}}
+
           enterprise_github_token: ${{ secrets.enterprise_github_token }}
           cache_name: '${{ needs.init.outputs.prepare_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.prepare_shop_cache_bucket }}
@@ -483,6 +494,20 @@ jobs:
               --single-branch 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}'
           fi
           find . -type f >files.txt
+
+      - name: 'Modify composer.json'
+        if: ${{ steps.install_module_testplan.outputs.install_module_composer_transform != '' }}
+        uses: 'OXID-eSales/github-actions/composer_merge@v0'
+        with:
+          file: 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}/composer.json'
+          backup: true
+          transform: |
+            ${{ steps.install_module_testplan.outputs.install_module_composer_transform }}
+          update: ${{ steps.install_module_testplan.outputs.install_module_composer_update }}
+          update_options: ${{ steps.install_module_testplan.outputs.install_module_composer_update_options }}
+          container_name: ${{ steps.install_module_testplan.outputs.install_module_container_name }}
+          container_options: ${{ steps.install_module_testplan.outputs.install_module_container_options }}
+          container_method: 'exec'
 
       - name: Install module
         if: ${{ matrix.testplan != 'skip' }}

@@ -13,7 +13,32 @@ inputs:
     type: boolean
     required: false
     default: true
-    description: 'Schould we create a backup for composer.json'
+    description: 'Should we create a backup for composer.json'
+  update:
+    type: boolean
+    required: false
+    description: 'Run composer update after configuring all repositories'
+    default: true
+  update_options:
+    type: string
+    required: false
+    description: 'Options to pass along to composer when running composer update'
+    default: '--no-interaction'
+  container_name:
+    type: string
+    required: false
+    description: 'Name of the container to run the test in'
+    default: 'php'
+  container_options:
+    type: string
+    required: false
+    description: 'Additional options to pass into the container'
+    default: ''
+  container_method:
+    type: string
+    required: false
+    description: 'Method to execute the commands inside a container, either "run" or "exec"'
+    default: 'exec'
 
 runs:
   using: "composite"
@@ -31,7 +56,7 @@ runs:
         EOF
 
     - name: Merge files
-      uses: 'joernott/load_testplan@cc324e5968cba0bb906ced60c375c7df2c91a172'
+      uses: 'joernott/load_testplan@v1'
       with:
         files: '${{ inputs.file }},.composer_merge.tmp.json'
         input_type: 'json'
@@ -43,3 +68,15 @@ runs:
         # composer_merge.Cleanup
         rm .composer_merge.tmp.json
         cat '${{ inputs.file }}'
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container_name }} \
+          composer config --list --global
+
+        if [ '${{ inputs.update }}' == 'true' ]; then
+          echo -e "\033[0;35m### Running composer update with ${{ inputs.update_options }}\033[0m"
+          docker-compose ${{ inputs.container_method }} -T \
+            ${{ inputs.container_options }} \
+            ${{ inputs.container_name}} \
+            composer update ${{ inputs.update_options }}
+        fi

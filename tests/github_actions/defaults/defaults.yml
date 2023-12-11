@@ -187,11 +187,8 @@ prepare_shop:
     bucket: *cache_bucket
     prefix: 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunNumber }}'
   composer:
-    configure: *composer_configure
-    require:
-      <<: *composer_require
-      install: 'twig-component twig-admin-theme apex-theme'
-    file: 'source/composer-dummy.json'
+    # This replaces composer require statements
+    file: 'source/composer.json'
     transform: |
       {
           "require": {
@@ -201,6 +198,8 @@ prepare_shop:
           }
       }
     backup: true
+    update: true
+    update-options: '--no-interaction'
 
   # These modify php "custom.ini"
   custom_ini:
