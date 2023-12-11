@@ -32,8 +32,8 @@ prepare_shop:
               "github-protocols": ["https"]
           },
           "require": {
-              "oxid-esales/twig-oxideshop_pe": "dev-b-8.0.x",
-              "oxid-esales/twig-oxideshop_ee": "dev-b-8.0.x",
+              "oxid-esales/twig-oxideshop-pe": "dev-b-8.0.x",
+              "oxid-esales/twig-oxideshop-ee": "dev-b-8.0.x",
               "oxid-esales/twig-component": "dev-b-8.0.x",
               "oxid-esales/twig-component-pe": "dev-b-8.0.x",
               "oxid-esales/twig-component-ee": "dev-b-8.0.x",
