@@ -85,11 +85,6 @@ global:
     # Branch to check out for the enterprise repos
     enterprise_ref: &git_enterprise_ref 'b-8.0.x'
 
-  # This is just a definition we can apply in later configs
-  # It will be overwritten by the 7.0.x and 7.1.x templates
-  # and can be used by referencing .Data.global_dev_ref
-  dev_ref: &dev_ref dev-b-8.0.x
-
   # When running on a self hosted runner with access to a local s3 cache:
   # Set the following secrets:
   # - secrets.CACHE_ENDPOINT
@@ -122,6 +117,11 @@ global:
   # These defaults are used when running the composer_configure and
   # composer_require actions
   composer: &composer
+    # This is just a definition we can apply in later configs
+    # It will be overwritten by the 7.0.x and 7.1.x templates
+    # and can be used by referencing .Data.global_composer_dev_ref
+    dev_ref: &dev_ref dev-b-8.0.x
+
     # Set the allow-plugins
     # DEPRECATED: Use transform instead
     allow_plugins:
@@ -143,7 +143,7 @@ global:
 
       # The git reference to install
       # DEPRECATED: Use transform instead
-      ref: &dev_ref dev-b-8.0.x
+      ref: *dev_ref
 
       # Options to pass along to composer when requiring the repositories
       # DEPRECATED: Use transform instead

@@ -8,12 +8,12 @@ global:
   git: &git
     shop_ref: &git_shop_ref b-7.1.x
     enterprise_ref: &git_enterprise_ref 'b-7.1.x'
-  dev_ref: &dev_ref dev-b-7.1.x
 
   composer: &composer
+    dev_ref: &dev_ref dev-b-7.1.x
     # Configure/Require are deprecated
     configure:
-      ref: &dev_ref dev-b-7.1.x
+      ref: *dev_ref
     require:
       ref: *dev_ref
 
