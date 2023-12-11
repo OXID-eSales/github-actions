@@ -56,7 +56,8 @@ runs:
         EOF
         echo -e "\033[0;35m### JSON to merge\033[0m"
         cat .composer_merge.tmp.json
-        cat /home/runner/.composer/config.json
+        ls -lA /home/runner/.composer
+        cat /home/runner/.composer/*
     - name: Merge files
       uses: 'joernott/load_testplan@v1'
       with:
