@@ -119,7 +119,7 @@ global:
   composer: &composer
     # This is just a definition we can apply in later configs
     # It will be overwritten by the 7.0.x and 7.1.x templates
-    # and can be used by referencing .Data.global_composer_dev_ref
+    # and can be used by referencing .Data.global.composer.dev_ref
     dev_ref: &dev_ref dev-b-8.0.x
 
     # Set the allow-plugins
