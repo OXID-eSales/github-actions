@@ -946,7 +946,7 @@ jobs:
         if: ${{ steps.runtest_testplan.outputs.runtest_composer_transform != '' }}
         uses: 'OXID-eSales/github-actions/composer_merge@v0'
         with:
-          file: '${{ steps.runtest_testplan.outputs.runtest_composer_path }}'
+          file: '${{ steps.runtest_testplan.outputs.runtest_composer_file }}'
           backup: true
           transform: |
             ${{ steps.runtest_testplan.outputs.runtest_composer_transform }}
