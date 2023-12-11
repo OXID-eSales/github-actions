@@ -70,20 +70,6 @@ runs:
         # composer_merge.Cleanup
         rm .composer_merge.tmp.json
         cat '${{ inputs.file }}'
-        docker-compose ${{ inputs.container_method }} -T \
-          ${{ inputs.container_options }} \
-          ${{ inputs.container_name }} \
-          composer config --list --global
-
-        docker-compose ${{ inputs.container_method }} -T \
-          ${{ inputs.container_options }} \
-          ${{ inputs.container_name }} \
-          ls -lA /home/runner/.composer
-
-        docker-compose ${{ inputs.container_method }} -T \
-          ${{ inputs.container_options }} \
-          ${{ inputs.container_name }} \
-          cat /home/runner/.composer/auth.json
 
         if [ '${{ inputs.update }}' == 'true' ]; then
           echo -e "\033[0;35m### Running composer update with ${{ inputs.update_options }}\033[0m"
