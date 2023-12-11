@@ -85,6 +85,11 @@ global:
     # Branch to check out for the enterprise repos
     enterprise_ref: &git_enterprise_ref 'b-8.0.x'
 
+  # This is just a definition we can apply in later configs
+  # It will be overwritten by the 7.0.x and 7.1.x templates
+  # and can be used by referencing .Data.global_dev_ref
+  dev_ref: &dev_ref dev-b-8.0.x
+
   # When running on a self hosted runner with access to a local s3 cache:
   # Set the following secrets:
   # - secrets.CACHE_ENDPOINT
@@ -181,24 +186,19 @@ global:
       # DEPRECATED: Use transform instead
       update_options: '--no-interaction'
 
-  # Use these settings below to merge a json configuration with an existing
-  # composer.json
-  
-  # Path to the composer.json folder on the runner (source/composer.json,
-  # not /var/www/composer.json)
-  file: 'source/composer.json'
+    # Use these settings below to merge a json configuration with an existing
+    # composer.json
+    
+    # Path to the composer.json folder on the runner (source/composer.json,
+    # not /var/www/composer.json)
+    file: 'source/composer.json'
 
-  # Should a backup of the original composer.json be created?
-  backup: true
+    # Should a backup of the original composer.json be created?
+    backup: true
 
-  # Merge this json data with composer.json. If this is empty,
-  # no transformation will be applied
-  transform: ''
-
-  # This is just a definition we can apply in later configs
-  # It will be overwritten by the 7.0.x and 7.1.x templates
-  # and can be used by referencing .Data.gobal_composer_dev_ref
-  dev_ref: &dev_ref dev-b-8.0.x
+    # Merge this json data with composer.json. If this is empty,
+    # no transformation will be applied
+    transform: ''
 
 # The init phase handles loading the testplans and creating report artifacts for the run
 init:

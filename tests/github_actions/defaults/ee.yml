@@ -32,15 +32,15 @@ prepare_shop:
               "github-protocols": ["https"]
           },
           "require": {
-              "oxid-esales/oxideshop-pe": "{{ .Data.gobal_composer_dev_ref }}",
-              "oxid-esales/oxideshop-ee": "{{ .Data.gobal_composer_dev_ref }}",
-              "oxid-esales/twig-component": "{{ .Data.gobal_composer_dev_ref }}",
-              "oxid-esales/twig-component-pe": "{{ .Data.gobal_composer_dev_ref }}",
-              "oxid-esales/twig-component-ee": "{{ .Data.gobal_composer_dev_ref }}",
-              "oxid-esales/twig-admin-theme": "{{ .Data.gobal_composer_dev_ref }}",
-              "oxid-esales/apex-theme": "{{ .Data.gobal_composer_dev_ref }}",
-              "oxid-esales/codeception-modules": "{{ .Data.gobal_composer_dev_ref }}",
-              "oxid-esales/codeception-page-objects": "{{ .Data.gobal_composer_dev_ref }}"
+              "oxid-esales/oxideshop-pe": "{{ .Data.global_dev_ref }}",
+              "oxid-esales/oxideshop-ee": "{{ .Data.global_dev_ref }}",
+              "oxid-esales/twig-component": "{{ .Data.global_dev_ref }}",
+              "oxid-esales/twig-component-pe": "{{ .Data.global_dev_ref }}",
+              "oxid-esales/twig-component-ee": "{{ .Data.global_dev_ref }}",
+              "oxid-esales/twig-admin-theme": "{{ .Data.global_dev_ref }}",
+              "oxid-esales/apex-theme": "{{ .Data.global_dev_ref }}",
+              "oxid-esales/codeception-modules": "{{ .Data.global_dev_ref }}",
+              "oxid-esales/codeception-page-objects": "{{ .Data.global_dev_ref }}"
           },
           "repositories": {
               "oxid-esales/codeception-page-objects": {
