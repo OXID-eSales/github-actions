@@ -56,8 +56,7 @@ runs:
         EOF
         echo -e "\033[0;35m### JSON to merge\033[0m"
         cat .composer_merge.tmp.json
-        ls -lA /home/runner/.composer
-        cat /home/runner/.composer/*
+
     - name: Merge files
       uses: 'joernott/load_testplan@v1'
       with:
@@ -75,6 +74,16 @@ runs:
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
           composer config --list --global
+
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container_name }} \
+          ls -lA /home/runner/.composer
+
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container_name }} \
+          cat /home/runner/.composer/*
 
         if [ '${{ inputs.update }}' == 'true' ]; then
           echo -e "\033[0;35m### Running composer update with ${{ inputs.update_options }}\033[0m"
