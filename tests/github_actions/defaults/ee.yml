@@ -33,7 +33,7 @@ prepare_shop:
           },
           "require": {
               "oxid-esales/oxideshop-pe": "{{ .Data.global.composer.dev_ref }}",
-              "oxid-esales/oxideshop-ee": "dev-{{ .Github.RefName }",
+              "oxid-esales/oxideshop-ee": "dev-{{ .Github.RefName }}",
               "oxid-esales/twig-component": "{{ .Data.global.composer.dev_ref }}",
               "oxid-esales/twig-component-pe": "{{ .Data.global.composer.dev_ref }}",
               "oxid-esales/twig-component-ee": "{{ .Data.global.composer.dev_ref }}",
