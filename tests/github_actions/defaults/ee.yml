@@ -19,7 +19,7 @@ global:
   # only configure/install is different
   composer: &composer
     configure:
-      install: 'oxideshop_pe oxideshop_ee twig-component-pe twig-component-ee codeception-modules codeception-page-objects'
+      install: 'oxideshop_pe oxideshop_ee:{{ .Github.RefName }} twig-component-pe twig-component-ee codeception-modules codeception-page-objects'
 
 
 # See docs/actions/prepare_shop.md for more information.
