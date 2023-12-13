@@ -347,7 +347,7 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v3'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: '${{ needs.init.outputs.prepare_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.install_shop_cache_bucket }}
@@ -458,7 +458,7 @@ jobs:
 
       - name: 'Start shop'
         if: ${{ matrix.testplan != 'skip' }}
-        uses: 'OXID-eSales/github-actions/start_shop@v3'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           # yamllint disable-line rule:line-length
           cached_shop: '${{ steps.install_module_testplan.outputs.install_module_load_shop}}_${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
@@ -631,7 +631,7 @@ jobs:
           token: ${{ secrets.enterprise_github_token }}
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v3'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: '${{ steps.phpunit_testplan.outputs.phpunit_load_shop}}_${{ steps.phpunit_testplan_name.outputs.matrix_suffix }}'
           cache_bucket: ${{ steps.phpunit_testplan.outputs.phpunit_cache_bucket }}
@@ -744,7 +744,7 @@ jobs:
           ${{ steps.codeception_testplan.outputs.codeception_pre_script }}
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v3'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: '${{ steps.codeception_testplan.outputs.codeception_load_shop}}_${{ steps.codeception_testplan_name.outputs.matrix_suffix }}'
           cache_bucket: ${{ steps.codeception_testplan.outputs.codeception_cache_bucket }}
@@ -902,7 +902,7 @@ jobs:
           path: swapfile
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v3'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: '${{ steps.runtest_testplan.outputs.runtest_load_shop}}_${{ steps.runtest_testplan_name.outputs.matrix_suffix }}'
           cache_bucket: ${{ steps.runtest_testplan.outputs.runtest_cache_bucket }}
@@ -976,6 +976,9 @@ jobs:
           coverage_path: ${{ steps.runtest_testplan.outputs.runtest_coverage_path }}
           coverage_artifact: ${{ steps.runtest_testplan.outputs.runtest_coverage_prefix }}_${{ steps.runtest_testplan_name.outputs.matrix_suffix }}
           failure_pattern: ${{ steps.runtest_testplan.outputs.runtest_failure_pattern }}
+          reset_shop: ${{ steps.runtest_testplan.outputs.runtest_reset_shop }}
+          reset_shop_binary: ${{ steps.runtest_testplan.outputs.runtest_reset_shop_binary }}
+          runtests_binary: ${{ steps.runtest_testplan.outputs.runtest_runtests_binary }}
 
       - name: 'Stop shop'
         uses: 'OXID-eSales/github-actions/stop_shop@v3'
@@ -1107,7 +1110,7 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v3'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.phpcs_tests_cache_bucket }}
@@ -1206,7 +1209,7 @@ jobs:
           token: ${{ secrets.enterprise_github_token }}
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v3'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: '${{ steps.styles_testplan.outputs.styles_load_shop}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ steps.styles_testplan.outputs.styles_cache_bucket }}

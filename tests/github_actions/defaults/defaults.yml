@@ -518,6 +518,10 @@ runtest:
 
   # Name of the config file to copy
   config_file: 'vendor/oxid-esales/testing-library/test_config.yml.dist'
+
+  # Should we run reset-shop
+  reset_shop: true
+
   test: 'AllTestsUnit'
   additional_options: '--coverage-clover=/var/www/deprecated_tests_coverage.xml'
   logfile:
@@ -534,6 +538,12 @@ runtest:
     path: 'source/deprecated_tests_coverage.xml'
     prefix: *coverage_prefix
   failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Fatal|Error|DID NOT FINISH'
+
+  # Where to find the reset-shop binary
+  reset_shop_binary: 'vendor/bin/reset-shop'
+
+  # Where to find the runtests binary
+  runtests_binary: 'vendor/bin/runtests'
 
 # Running the sonarcloud scanner on the gathered coverage reports
 sonarcloud:

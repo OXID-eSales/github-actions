@@ -94,12 +94,6 @@ runs:
     - name: Run runtest
       shell: bash
       run: |
-        ls -lA $(echo "${{ inputs.test }}"|sed -e 's|/var/www|source|')
-        docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
-          ${{ inputs.container_name}} \
-          ls -lA "${{ inputs.test }}" \
-          | tee "${{ inputs.logfile }}" 2>&1 || true
-
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           php ${{ inputs.runtests_binary }} \
