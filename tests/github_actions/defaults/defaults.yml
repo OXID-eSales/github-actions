@@ -267,6 +267,11 @@ install_shop:
   config:
     # Set iDebug in source/source/config.inc.php
     idebug: false
+  # Run custom script outside the container
+  custom_script: ''
+
+  # Run custom script inside the container like 'bin/oe-console oe:setup:demodata'
+  custom_script_container: ''
 
   # Exporting an artifact with Configuration files for the shop setup
   output:
@@ -326,6 +331,13 @@ install_module:
 
   # Path to install the module under dev-packages, should be the same as module_ids
   path: &module_path ''
+
+  # Run custom script outside the container'
+  custom_script: ''
+
+   # Run custom script inside the container like 'bin/oe-console oe:b2b:installdemodata --shop-id=1'
+  custom_script_container: ''
+
 
 # The unit tests we run on our code, this uses phpunit for the actual tests.
 # See docs/actions/start_shop.md and docs/actions/phpunit.md for more information.

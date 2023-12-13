@@ -202,6 +202,8 @@ jobs:
       install_shop_matrix_mysql: ${{ steps.ltp.outputs.install_shop_matrix_mysql }}
       install_shop_matrix_php: ${{ steps.ltp.outputs.install_shop_matrix_php }}
       install_shop_max_parallel: ${{ steps.ltp.outputs.install_shop_max_parallel }}
+      install_shop_custom_script: ${{ steps.ltp.outputs.install_shop_custom_script }}
+      install_shop_custom_script_container: ${{ steps.ltp.outputs.install_shop_custom_script_container }}
       install_shop_output_artifact_prefix: ${{ steps.ltp.outputs.install_shop_output_artifact_prefix }}
       install_shop_output_files: ${{ steps.ltp.outputs.install_shop_output_files }}
       # install_module variables
@@ -381,6 +383,19 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
+      - name: Run custom script
+        if: ${{ needs.init.outputs.install_shop_custom_script != ''}}
+        run: |
+          ${{ needs.init.outputs.install_shop_custom_script }}
+
+      - name: Run custom script inside the container
+        if: ${{ needs.init.outputs.install_shop_custom_script_container != ''}}
+        run: |
+          docker-compose ${{ needs.init.outputs.install_shop_container_method }} -T \
+            ${{ needs.init.outputs.install_shop_container_options }} \
+            ${{ needs.init.outputs.install_shop_container_name}} \
+            ${{ needs.init.outputs.install_shop_custom_script_container }}
+
       - name: 'Write Report'
         if: always()
         uses: OXID-eSales/github-actions/append_report@v3
@@ -532,6 +547,19 @@ jobs:
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+
+      - name: Run custom script
+        if: ${{ steps.install_module_testplan.outputs.install_module_custom_script != ''}}
+        run: |
+          ${{ steps.install_module_testplan.outputs.install_module_custom_script }}
+
+      - name: Run custom script inside the container
+        if: ${{ steps.install_module_testplan.outputs.install_module_custom_script_container != ''}}
+        run: |
+          docker-compose ${{ steps.install_module_testplan.outputs.install_module_container_method }} -T \
+            ${{ steps.install_module_testplan.outputs.install_module_container_options }} \
+            ${{ steps.install_module_testplan.outputs.install_module_container_name}} \
+            ${{ steps.install_module_testplan.outputs.install_module_custom_script_container }}
 
       - name: 'Write Report'
         if: ${{ always() && matrix.testplan != 'skip' }}
