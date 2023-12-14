@@ -184,18 +184,6 @@ runs:
           ${{ inputs.container_name}} \
           composer install
 
-    - name: Stop containers
-      if: always()
-      shell: bash
-      run: |
-        docker-compose down
-
-    - name: Show docker log
-      if: always()
-      shell: bash
-      run: |
-        docker-compose logs --tail=all
-
     - name: Write files list
       if: always()
       shell: bash

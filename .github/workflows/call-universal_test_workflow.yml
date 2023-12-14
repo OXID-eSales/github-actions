@@ -362,7 +362,7 @@ jobs:
 
       - name: 'Install shop'
         id: install_shop
-        uses: 'OXID-eSales/github-actions/install_shop@v3'
+        uses: 'OXID-eSales/github-actions/install_shop@v0'
         with:
           container_name: ${{ needs.init.outputs.install_shop_container_name }}
           container_options: ${{ needs.init.outputs.install_shop_container_options }}
@@ -391,10 +391,17 @@ jobs:
       - name: Run custom script inside the container
         if: ${{ needs.init.outputs.install_shop_custom_script_container != ''}}
         run: |
+          cat >source/install_shop_custom_script.sh <<EOF
+          ${{ needs.init.outputs.install_shop_custom_script_container }}
+          EOF
+          chmod 0755 source/install_shop_custom_script.sh
           docker-compose ${{ needs.init.outputs.install_shop_container_method }} -T \
             ${{ needs.init.outputs.install_shop_container_options }} \
             ${{ needs.init.outputs.install_shop_container_name}} \
-            ${{ needs.init.outputs.install_shop_custom_script_container }}
+            /var/www/install_shop_custom_script.sh
+
+      - name: 'Stop shop'
+        uses: 'OXID-eSales/github-actions/stop_shop@v3'
 
       - name: 'Write Report'
         if: always()
@@ -527,7 +534,7 @@ jobs:
       - name: Install module
         if: ${{ matrix.testplan != 'skip' }}
         id: install_module
-        uses: 'OXID-eSales/github-actions/install_module@v3'
+        uses: 'OXID-eSales/github-actions/install_module@v0'
         with:
           container_name: ${{ steps.install_module_testplan.outputs.install_module_container_name }}
           container_options: ${{ steps.install_module_testplan.outputs.install_module_container_options }}
@@ -549,17 +556,25 @@ jobs:
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
       - name: Run custom script
-        if: ${{ steps.install_module_testplan.outputs.install_module_custom_script != ''}}
+        if: ${{ matrix.testplan != 'skip' && steps.install_module_testplan.outputs.install_module_custom_script != ''}}
         run: |
           ${{ steps.install_module_testplan.outputs.install_module_custom_script }}
 
       - name: Run custom script inside the container
-        if: ${{ steps.install_module_testplan.outputs.install_module_custom_script_container != ''}}
+        if: ${{ matrix.testplan != 'skip' && steps.install_module_testplan.outputs.install_module_custom_script_container != ''}}
         run: |
+          cat >source/install_module_custom_script.sh <<EOF
+          ${{ steps.install_module_testplan.outputs.install_module_custom_script_container }}
+          EOF
+          chmod 0755 source/install_module_custom_script.sh
           docker-compose ${{ steps.install_module_testplan.outputs.install_module_container_method }} -T \
             ${{ steps.install_module_testplan.outputs.install_module_container_options }} \
             ${{ steps.install_module_testplan.outputs.install_module_container_name}} \
-            ${{ steps.install_module_testplan.outputs.install_module_custom_script_container }}
+            /var/www/install_module_custom_script.sh
+
+      - name: 'Stop shop'
+        if: ${{ matrix.testplan != 'skip' }}
+        uses: 'OXID-eSales/github-actions/stop_shop@v3'
 
       - name: 'Write Report'
         if: ${{ always() && matrix.testplan != 'skip' }}

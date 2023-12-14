@@ -141,12 +141,6 @@ runs:
           ${{ inputs.container_name }} \
           bin/oe-console oe:theme:activate apex
 
-    - name: Stop containers
-      if: always()
-      shell: bash
-      run: |
-        docker-compose down
-
     - name: Upload configuration artifacts
       if: always()
       uses: actions/upload-artifact@v3
