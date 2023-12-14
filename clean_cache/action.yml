@@ -1,6 +1,10 @@
 name: 'clean_cache'
 description: 'clean the cache'
 inputs:
+  s3cmd:
+    type: string
+    required: true
+    description: 'command line tool'
   cache_endpoint:
     type: string
     required: true
