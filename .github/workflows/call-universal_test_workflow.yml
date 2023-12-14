@@ -399,6 +399,7 @@ jobs:
             ${{ needs.init.outputs.install_shop_container_options }} \
             ${{ needs.init.outputs.install_shop_container_name}} \
             /var/www/install_shop_custom_script.sh
+          rm source/install_shop_custom_script.sh
 
       - name: 'Stop shop'
         uses: 'OXID-eSales/github-actions/stop_shop@v3'
@@ -571,6 +572,7 @@ jobs:
             ${{ steps.install_module_testplan.outputs.install_module_container_options }} \
             ${{ steps.install_module_testplan.outputs.install_module_container_name}} \
             /var/www/install_module_custom_script.sh
+          rm source/install_module_custom_script.sh
 
       - name: 'Stop shop'
         if: ${{ matrix.testplan != 'skip' }}
