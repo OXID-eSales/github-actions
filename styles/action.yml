@@ -45,6 +45,7 @@ inputs:
     required: false
     description: 'Github run artifact for the phpunit output'
     default: 'StylesLog'
+
 runs:
   using: "composite"
   steps:

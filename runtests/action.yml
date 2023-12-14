@@ -91,7 +91,7 @@ runs:
           ${{ inputs.container_name}} \
           php ${{ inputs.reset_shop_binary }}
 
-    - name: Run PHPUnit Unit tests
+    - name: Run runtest
       shell: bash
       run: |
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \

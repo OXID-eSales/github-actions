@@ -44,6 +44,11 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Confirm successful restore
+      shell: bash
+      run: |
+        echo -e "\033[0;31m### Load ${{ inputs.cached_shop }} from cache\033[0m"
+
     - name: Load cached shop from cache
       id: load_installed_shop
       uses: tespkg/actions-cache@v1

@@ -20,9 +20,9 @@ inputs:
 runs:
   using: composite
   steps:
-      - name: Install s3cmd and gh
-        if: ${{ inputs.install_ghcli == 'true' }}
-        shell:
+    - name: Install s3cmd and gh
+      if: ${{ inputs.install_ghcli == 'true' }}
+      shell:
         run: |
           GH=$(type -p 'gh'||true)
           if [ -z "${GH}" ]; then
@@ -52,18 +52,18 @@ runs:
             chmod 0600 /home/runner/.s3cfg
           fi
 
-      - name: Cleanup cached github objects
-        if: ${{ steps.generate_report.outputs.overall_status == 'success' }}
-        shell: bash
-        run: |
-          GH=$(type -p 'gh'||true)
-          if [ -n "${GH}" ]; then
-            # yamllint disable-line rule:line-length
-            for CACHE in '${{ needs.init.outputs.init_cache_name }}' \
-              '${{ needs.init.outputs.prepare_shop_cache_prefix }}' \
-              '${{ needs.init.outputs.install_shop_cache_prefix }}' \
-              '${{ needs.init.outputs.install_module_cache_prefix }}'; do
-              ID_LIST="$(${GH} actions-cache list --key ${CACHE}|awk '{print $1}'||true)"
+    - name: Cleanup cached github objects
+      if: ${{ steps.generate_report.outputs.overall_status == 'success' }}
+      shell: bash
+      run: |
+        GH=$(type -p 'gh'||true)
+        if [ -n "${GH}" ]; then
+         # yamllint disable-line rule:line-length
+          for CACHE in '${{ needs.init.outputs.init_cache_name }}' \
+            '${{ needs.init.outputs.prepare_shop_cache_prefix }}' \
+            '${{ needs.init.outputs.install_shop_cache_prefix }}' \
+            '${{ needs.init.outputs.install_module_cache_prefix }}'; do
+            ID_LIST="$(${GH} actions-cache list --key ${CACHE}|awk '{print $1}'||true)"
               for ID in ${ID_LIST}; do
               echo -e "\033[0;35m###  Cleaning cached object '${ID}' from github ###\033[0m"
                 ${GH} actions-cache delete "${ID}" --confirm

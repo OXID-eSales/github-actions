@@ -10,15 +10,25 @@ global:
     enterprise_ref: &git_enterprise_ref 'b-7.1.x'
 
   composer: &composer
+    dev_ref: &dev_ref dev-b-7.1.x
+    # Configure/Require are deprecated
     configure:
-      ref: &dev_ref dev-b-7.1.x
+      ref: *dev_ref
     require:
       ref: *dev_ref
 
 prepare_shop:
   matrix: *matrix
   git: *git
-  composer: *composer
+  composer:
+    transform: |
+      {
+          "require": {
+              "oxid-esales/twig-component": "dev-b-7.1.x",
+              "oxid-esales/twig-admin-theme": "dev-b-7.1.x",
+              "oxid-esales/apex-theme": "dev-b-7.1.x"
+          }
+      }
 
 install_shop:
   matrix: *matrix
@@ -40,7 +50,16 @@ codeception:
 
 runtest:
   matrix: *matrix
-  composer: *composer
+  composer:
+    transform: |
+      {
+          "require": {
+              "oxid-esales/tests-deprecated-ce": "dev-b-7.1.x",
+              "codeception/module-webdriver": "^3.1",
+              "phpunit/phpunit": "^9.1.1"
+          }
+      }
+
 
 sonarcloud:
   matrix: &matrix_slim
@@ -53,6 +72,7 @@ phpcs_tests:
 
 styles:
   matrix: *matrix_slim
+  composer: *composer
 
 finish:
   matrix: *matrix

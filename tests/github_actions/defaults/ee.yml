@@ -19,12 +19,57 @@ global:
   # only configure/install is different
   composer: &composer
     configure:
-      install: 'oxideshop_pe oxideshop_ee:dev-{{ .Github.RefName }} twig-component-pe twig-component-ee codeception-modules codeception-page-objects'
+      install: ''
+    transform: ''
 
 
 # See docs/actions/prepare_shop.md for more information.
 prepare_shop:
-  composer: *composer
+  composer:
+    transform: |
+      {
+          "config": {
+              "github-protocols": ["https"]
+          },
+          "require": {
+              "oxid-esales/oxideshop-pe": "{{ .Data.global.composer.dev_ref }}",
+              "oxid-esales/oxideshop-ee": "dev-{{ .Github.RefName }}",
+              "oxid-esales/twig-component": "{{ .Data.global.composer.dev_ref }}",
+              "oxid-esales/twig-component-pe": "{{ .Data.global.composer.dev_ref }}",
+              "oxid-esales/twig-component-ee": "{{ .Data.global.composer.dev_ref }}",
+              "oxid-esales/twig-admin-theme": "{{ .Data.global.composer.dev_ref }}",
+              "oxid-esales/apex-theme": "{{ .Data.global.composer.dev_ref }}",
+              "oxid-esales/codeception-modules": "{{ .Data.global.composer.dev_ref }}",
+              "oxid-esales/codeception-page-objects": "{{ .Data.global.composer.dev_ref }}"
+          },
+          "repositories": {
+              "oxid-esales/codeception-page-objects": {
+                  "type": "git",
+                  "url": "https://github.com/OXID-eSales/codeception-page-objects.git"
+              },
+              "oxid-esales/codeception-modules": {
+                  "type": "git",
+                  "url": "https://github.com/OXID-eSales/codeception-modules.git"
+              },
+              "oxid-esales/twig-component-ee": {
+                  "type": "git",
+                  "url": "https://github.com/OXID-eSales/twig-component-ee.git"
+              },
+              "oxid-esales/twig-component-pe": {
+                  "type": "git",
+                  "url": "https://github.com/OXID-eSales/twig-component-pe.git"
+              },
+              "oxid-esales/oxideshop-ee": {
+                  "type": "git",
+                  "url": "https://github.com/OXID-eSales/oxideshop_ee.git"
+              },
+              "oxid-esales/oxideshop-pe": {
+                  "type": "git",
+                  "url": "https://github.com/OXID-eSales/oxideshop_pe.git"
+              }
+          }
+      }
+
   git: *git
   is_enterprise: *is_enterprise
   cache:

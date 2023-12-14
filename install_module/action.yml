@@ -124,6 +124,32 @@ runs:
           ${{ inputs.container_name}} \
           composer require ${{ inputs.package_name }}:* --no-interaction --no-update
 
+    - name: 'Modify composer.json'
+      uses: 'OXID-eSales/github-actions/composer_merge@v0'
+      with:
+        file: 'source/composer.json'
+        backup: true
+        transform: |
+          {
+            "require": {
+              "${{ inputs.package_name }}": "*"
+            },
+            "repositories": {
+                "${{ inputs.package_name }}": {
+                     "type": "path",
+                      "url": "./${{inputs.module_path}}",
+                      "options": {
+                          "symlink": true
+                      }
+                }
+            }
+          }
+          ${{ steps.styles_testplan.outputs.styles_composer_transform }}
+        update: ${{ steps.styles_testplan.outputs.styles_composer_update }}
+        update_options: ${{ steps.styles_testplan.outputs.styles_composer_update_options }}
+        container_name: ${{ steps.styles_testplan.outputs.styles_container_name }}
+        container_options: ${{ steps.styles_testplan.outputs.styles_container_options }}
+        container_method: 'exec'
     - name: Install dependencies and reset shop
       shell: bash
       run: |
@@ -157,18 +183,6 @@ runs:
           --workdir=/var/www \
           ${{ inputs.container_name}} \
           composer install
-
-    - name: Stop containers
-      if: always()
-      shell: bash
-      run: |
-        docker-compose down
-
-    - name: Show docker log
-      if: always()
-      shell: bash
-      run: |
-        docker-compose logs --tail=all
 
     - name: Write files list
       if: always()

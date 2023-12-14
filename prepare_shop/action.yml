@@ -182,6 +182,32 @@ inputs:
     required: false
     description: 'Options to pass along to composer during install'
     default: '--no-interaction'
+  composer_file:
+    type: string
+    required: false
+    description: 'Name of the original composer.json'
+    default: 'source/composer.json'
+  composer_transform:
+    type: string
+    required: false
+    description: 'JSON code to apply to the composer.json'
+    default: ''
+  composer_backup:
+    type: boolean
+    required: false
+    description: 'Should we create a backup for composer.json'
+    default: true
+  composer_update:
+    type: string
+    required: false
+    description: 'Run composer update after transform'
+    default: true
+  composer_update_options:
+    type: string
+    required: false
+    description: 'Options to pass along to composer during install'
+    default: '--no-interaction'
+
   enterprise_github_token:
     type: string
     required: false
@@ -317,6 +343,21 @@ runs:
           docker logs -n 200 $c
         done
 
+    - name: Configure enterprise token
+      if: ${{ inputs.enterprise_github_token != '' }}
+      shell: bash
+      run: |
+        # prepare_shop.Configure enterprise token
+        echo -e "\033[0;35m###  configure enterprise token ###\033[0m"
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container_name}} \
+          composer config github-protocols https
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container_name}} \
+          composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
+
     - name: 'Composer allow plugins ${{ inputs.composer_allow_plugins_repositories }}'
       if: ${{ inputs.composer_allow_plugins_repositories != '' }}
       uses: 'OXID-eSales/github-actions/composer_allow_plugins@v3'
@@ -378,9 +419,23 @@ runs:
         update: ${{ inputs.composer_require_update }}
         update_options: ${{ inputs.composer_require_update_options }}
 
+    - name: 'Modify composer.json'
+      if: ${{ inputs.composer_transform != '' }}
+      uses: 'OXID-eSales/github-actions/composer_merge@v0'
+      with:
+        file: '${{ inputs.composer_file }}'
+        backup: true
+        transform: |
+          ${{ inputs.composer_transform }}
+        update: ${{ inputs.composer_update }}
+        update_options: ${{ inputs.composer_update_options }}
+        container_name: ${{ inputs.container_name }}
+        container_options: ${{ inputs.container_options }}
+        container_method: 'exec'
+
     - name: Install dependencies
       shell: bash
-      if: ${{ inputs.composer_configure_install == '' && inputs.composer_require_install == '' }}
+      if: ${{ inputs.composer_configure_install == '' && inputs.composer_require_install == '' && inputs.composer_transform == ''}}
       run: |
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
