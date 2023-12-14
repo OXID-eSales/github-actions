@@ -1,10 +1,6 @@
 name: 'clean_cache'
 description: 'clean the cache'
 inputs:
-  s3cmd:
-    type: string
-    required: true
-    description: 'command line tool'
   cache_endpoint:
     type: string
     required: true
@@ -26,7 +22,6 @@ runs:
   using: composite
   steps:
     - name: Install s3cmd and gh
-      if: ${{ inputs.install_ghcli == 'true' }}
       shell: bash
       run: |
         GH=$(type -p 'gh'||true)

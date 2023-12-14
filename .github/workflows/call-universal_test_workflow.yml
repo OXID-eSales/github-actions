@@ -1343,6 +1343,7 @@ jobs:
 
       - name: 'clean_cache'
         uses: 'OXID-eSales/github-actions/clean_cache@v0'
+        runs-on: ${{ fromJSON(inputs.runs_on) }}
         env:
           GH_TOKEN: ${{ github.token }}
         with:
