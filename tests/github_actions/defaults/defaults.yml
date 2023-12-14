@@ -188,7 +188,7 @@ global:
 
     # Use these settings below to merge a json configuration with an existing
     # composer.json
-    
+
     # Path to the composer.json folder on the runner (source/composer.json,
     # not /var/www/composer.json)
     file: 'source/composer.json'
@@ -335,7 +335,7 @@ install_module:
   # Run custom script outside the container'
   custom_script: ''
 
-   # Run custom script inside the container like 'bin/oe-console oe:b2b:installdemodata --shop-id=1'
+  # Run custom script inside the container like 'bin/oe-console oe:b2b:installdemodata --shop-id=1'
   custom_script_container: ''
 
 
@@ -524,7 +524,6 @@ runtest:
               "codeception/module-webdriver": "^3.1",
               "phpunit/phpunit": "^9.1.1"
           }
-          
       }
     update: true
     update_options: '--no-interaction'

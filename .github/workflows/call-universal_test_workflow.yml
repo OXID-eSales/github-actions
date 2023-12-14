@@ -392,6 +392,7 @@ jobs:
         if: ${{ needs.init.outputs.install_shop_custom_script_container != ''}}
         run: |
           cat >source/install_shop_custom_script.sh <<EOF
+          #!/bin/bash
           ${{ needs.init.outputs.install_shop_custom_script_container }}
           EOF
           chmod 0755 source/install_shop_custom_script.sh
@@ -565,6 +566,7 @@ jobs:
         if: ${{ matrix.testplan != 'skip' && steps.install_module_testplan.outputs.install_module_custom_script_container != ''}}
         run: |
           cat >source/install_module_custom_script.sh <<EOF
+          #!/bin/bash
           ${{ steps.install_module_testplan.outputs.install_module_custom_script_container }}
           EOF
           chmod 0755 source/install_module_custom_script.sh
@@ -1347,8 +1349,9 @@ jobs:
             echo -e "\033[0;35m###  Installing gh ###\033[0m"
             curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
             sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
-            # yamllint disable-line rule:line-length
-            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+            ARCH=$(dpkg --print-architecture)
+            echo "deb [arch=${ARCH} signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" |\
+              sudo tee /etc/apt/sources.list.d/github-cli.list >/dev/null
             sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update
             sudo apt-get -qq install gh
             GH=$(type -p 'gh'||true)
@@ -1378,7 +1381,10 @@ jobs:
           GH=$(type -p 'gh'||true)
           if [ -n "${GH}" ]; then
             # yamllint disable-line rule:line-length
-            for CACHE in '${{ needs.init.outputs.init_cache_name }}' '${{ needs.init.outputs.prepare_shop_cache_prefix }}' '${{ needs.init.outputs.install_shop_cache_prefix }}' '${{ needs.init.outputs.install_module_cache_prefix }}'; do
+            for CACHE in '${{ needs.init.outputs.init_cache_name }}' \
+              '${{ needs.init.outputs.prepare_shop_cache_prefix }}' \
+              '${{ needs.init.outputs.install_shop_cache_prefix }}' \
+              '${{ needs.init.outputs.install_module_cache_prefix }}'; do
               ID_LIST="$(${GH} actions-cache list --key ${CACHE}|awk '{print $1}'||true)"
               for ID in ${ID_LIST}; do
               echo -e "\033[0;35m###  Cleaning cached object '${ID}' from github ###\033[0m"
@@ -1389,8 +1395,8 @@ jobs:
 
       - name: Clear s3 cache
         if: ${{ inputs.runs_on != '"ubuntu-latest"' }}
+        # yamllint disable rule:line-length
         run: |
-          # yamllint disable-line rule:line-length
           OUTPUT=$(s3cmd ls -r s3://oxideshop-ee|grep '${{ needs.init.outputs.init_cache_name }}|${{ needs.init.outputs.prepare_shop_cache_prefix }}|${{ needs.init.outputs.install_shop_cache_prefix }}|${{ needs.init.outputs.install_module_cache_prefix }}'||true)
           export IFS=''
           echo "${OUTPUT}" | while read -r LINE ; do
