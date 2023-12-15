@@ -1324,7 +1324,7 @@ jobs:
   yamllint:
     needs: ['init', 'begin_report_phase']
     if: ${{ always() && needs.init.outputs.yamllint_skip != 'true' }}
-    runs-on: ${{ inputs.runs_on }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: Checkout
         id: checkout
@@ -1365,7 +1365,7 @@ jobs:
   actionlint:
     needs: ['init', 'begin_report_phase']
     if: ${{ always() && needs.init.outputs.actionlint_skip != 'true' }}
-    runs-on: ${{ inputs.runs_on }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: Checkout
         id: checkout
@@ -1413,6 +1413,8 @@ jobs:
       - sonarcloud
       - phpcs_tests
       - styles
+      - yamllint
+      - actionlint
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     env:
       SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"
