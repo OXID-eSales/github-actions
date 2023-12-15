@@ -42,6 +42,11 @@ inputs:
     required: false
     description: 'Branch, tag or hash of the commit to check out'
     default: true
+  update:
+    type: boolean
+    required: false
+    description: 'Run composer update and reset database after instlling the module'
+    default: true
   output_files:
     type: string
     required: false
@@ -154,10 +159,11 @@ runs:
         container_options: ${{ steps.styles_testplan.outputs.styles_container_options }}
         container_method: 'exec'
 
-    - name: Install dependencies and reset shop
+    - name: Install dependencies and reset database
+      if: ${{ inputs.update == 'true' }}
       shell: bash
       run: |
-        # install_module: Install dependencies and reset shop
+        # install_module: Install dependencies and reset database
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \

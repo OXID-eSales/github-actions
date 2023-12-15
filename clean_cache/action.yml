@@ -43,7 +43,7 @@ runs:
         fi
         ${GH} extension install actions/gh-actions-cache
         sudo DEBIAN_FRONTEND=noninteractive apt-get -qq install s3cmd
-        if [[ ${{ inputs.runs_on }} != *"ubuntu" ]]; then
+        if [[ '${{ inputs.runs_on }}' != *"ubuntu"* ]]; then
           cat >/home/runner/.s3cfg <<EOF
         [default]
         check_ssl_certificate = False
