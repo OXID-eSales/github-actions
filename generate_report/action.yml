@@ -144,9 +144,9 @@ runs:
       shell: bash
       run: |
         # generate_report: Generate cache list
-        echo "cache_list<<EOF" >>"${GITHUB_OUTPUTS}"
-        cat caches/*.txt >>"${GITHUB_OUTPUTS}"
-        echo "EOF" >>"${GITHUB_OUTPUTS}"
+        echo "cache_list<<EOF" | tee -a "${GITHUB_OUTPUTS}"
+        cat caches/*.txt | tee -a "${GITHUB_OUTPUTS}"
+        echo "EOF" | tee -a "${GITHUB_OUTPUTS}"
 
     - name: Upload Artifacts
       # yamllint enable rule:line-length

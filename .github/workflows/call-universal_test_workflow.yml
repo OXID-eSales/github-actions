@@ -125,11 +125,12 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           header: true
           phase: install
           priority: '001'
+          cached_object: ${{ steps.ltp.outputs.init_cache_name }}
 
       - name: Cache testplan
         uses: tespkg/actions-cache@v1
@@ -332,7 +333,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '010'
           phase: install
@@ -340,6 +341,7 @@ jobs:
           php: ${{matrix.php}}
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
+          cached_object: '${{ needs.init.outputs.prepare_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
 
   install_shop:
     needs: ['init', 'prepare_shop']
@@ -410,7 +412,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '020'
           phase: install
@@ -418,6 +420,7 @@ jobs:
           php: ${{matrix.php}}
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
+          cached_object: '${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
 
   install_module:
     needs: ['init', 'install_shop']
@@ -585,7 +588,7 @@ jobs:
 
       - name: 'Write Report'
         if: ${{ always() && matrix.testplan != 'skip' }}
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '030'
           phase: install
@@ -595,6 +598,7 @@ jobs:
           mysql: ${{matrix.mysql}}
           testplan: ${{matrix.testplan}}
           status: ${{job.status}}
+          cached_object: '${{ steps.install_module_testplan.outputs.install_module_cache_prefix}}_${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
 
       - name: 'Write Report'
         if: ${{ always() && matrix.testplan == 'skip' }}
