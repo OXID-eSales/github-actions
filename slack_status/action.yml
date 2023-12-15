@@ -36,6 +36,7 @@ runs:
     - name: Prepare payload
       shell: bash
       run: |
+        # slack_status: Prepare payload
         function generate_list() {
           local JOB=""
           local SNUM=3

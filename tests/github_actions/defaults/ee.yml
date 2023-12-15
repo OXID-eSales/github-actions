@@ -18,8 +18,9 @@ global:
 
   # only configure/install is different
   composer: &composer
-    configure:
+    configure: &composer_configure
       install: ''
+    require: &composer_require
     transform: ''
 
 

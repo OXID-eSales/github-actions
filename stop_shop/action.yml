@@ -7,4 +7,5 @@ runs:
       if: always()
       shell: bash
       run: |
+        # stop_shop: Stop containers
         docker-compose down

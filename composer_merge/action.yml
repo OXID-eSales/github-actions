@@ -46,7 +46,7 @@ runs:
     - name: Create files
       shell: bash
       run: |
-        # composer_merge.Create files
+        # composer_merge: Create files
         BACKUP="${{ inputs.backup }}"
         if [ "${BACKUP}" == 'true' ]; then
           cp "${{ inputs.file }}" "${{ inputs.file }}.bak"
@@ -67,7 +67,7 @@ runs:
     - name: Cleanup
       shell: bash
       run: |
-        # composer_merge.Cleanup
+        # composer_merge: Cleanup
         rm .composer_merge.tmp.json
         cat '${{ inputs.file }}'
 

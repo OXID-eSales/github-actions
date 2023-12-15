@@ -52,6 +52,7 @@ runs:
     - name: Run composer install
       shell: bash
       run: |
+        # styles: Run composer install
         mkdir -p source/tests/reports
         echo -e "\033[0;35m### Running composer install with ${{ inputs.install_options }}\033[0m"
         docker-compose ${{ inputs.container_method }} -T \
@@ -63,7 +64,8 @@ runs:
     - name: Run phpstan
       id: phpstan
       shell: bash
-      run: |
+      run: | 
+        # styles: Run phpstan
         echo -e "\033[0;35m###  Run phpstan-report in ${{ inputs.path }} ###\033[0m"
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
@@ -85,6 +87,7 @@ runs:
       continue-on-error: true
       shell: bash
       run: |
+        # styles: Run phpmd
         echo -e "\033[0;35m###  Run phpmd-report in ${{ inputs.path }} ###\033[0m"
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
@@ -104,6 +107,7 @@ runs:
       if: always()
       shell: bash
       run: |
+        # styles: Run phpcs
         echo -e "\033[0;35m###  Run phpcs-report in ${{ inputs.path }} ###\033[0m"
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \

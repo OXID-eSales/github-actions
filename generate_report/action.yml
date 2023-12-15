@@ -14,6 +14,10 @@ outputs:
   overall_status:
     description: 'Overall status of the tests'
     value: ${{ steps.process_slack.outputs.overall_status_plain }}
+  cache_list:
+    description: 'List of cached objects collected by append_report'
+    value: ${{ steps.cache_list.outputs.cache_list }}
+
 runs:
   using: "composite"
   steps:
@@ -26,6 +30,7 @@ runs:
       id: process_slack
       shell: bash
       run: |
+        # generate_report: Process job results for slack
         SKIPPED_EMOJI=':white_circle:'
         SUCCESS_EMOJI=':white_check_mark:'
         CANCELLED_EMOJI=':black_circle:'
@@ -87,6 +92,7 @@ runs:
     - name: 'Output reports'
       shell: bash
       run: |
+        # generate_report: Output reports
         for FILE in $(find reports -type f|sort); do
           cat "${FILE}" >>github_report.md
         done
@@ -132,6 +138,15 @@ runs:
           ]
         }
         EOF
+
+    - name: 'Generate cache list'
+      id: cache_list
+      shell: bash
+      run: |
+        # generate_report: Generate cache list
+        echo "cache_list<<EOF" >>"${GITHUB_OUTPUTS}"
+        cat caches/*.txt >>"${GITHUB_OUTPUTS}"
+        echo "EOF" >>"${GITHUB_OUTPUTS}"
 
     - name: Upload Artifacts
       # yamllint enable rule:line-length

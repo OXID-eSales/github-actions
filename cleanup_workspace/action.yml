@@ -21,6 +21,7 @@ runs:
       if: ${{ inputs.clean_workspace == 'true' }}
       shell: bash
       run: |
+        #cleanup_workspace: Cleanup workspace
         echo -e "\033[0;35m### Cleaning $(pwd)\033[0m"
         ls -la ./
         rm -rf ./* || true
@@ -31,6 +32,7 @@ runs:
       if: ${{ inputs.kill_containers == 'true' }}
       shell: bash
       run: |
+        #cleanup_workspace: Kill docker containers
         docker ps -a
         for c in $(docker ps -q); do
           echo -e "\033[0;35m### Killing container $c\033[0m"
@@ -41,5 +43,6 @@ runs:
       if: ${{ inputs.prune_docker == 'true' }}
       shell: bash
       run: |
+        #cleanup_workspace: Cleanup Docker
         echo -e "\033[0;35m### Pruning docker\033[0m"
         docker system prune --force

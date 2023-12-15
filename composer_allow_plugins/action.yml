@@ -37,6 +37,7 @@ runs:
     - name: Configure allow-plugins
       shell: bash
       run: |
+        # composer_allow_plugins: Configure allow-plugins
         REPOSITORIES=$(echo -n "${{ inputs.repositories }}"| tr '\n' ' ')
         for REPOSITORY in ${REPOSITORIES}; do
           # compensate for repos with _ and config with -

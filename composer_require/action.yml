@@ -67,6 +67,7 @@ runs:
     - name: Require Repositories
       shell: bash
       run: |
+        # composer_require: Require Repositories
         REPOSITORIES=$(echo -n "${{ inputs.repositories }}"| tr '\n' ' ')
         if [ -z "${{ inputs.ref }}" ]; then
           REFERENCE=""

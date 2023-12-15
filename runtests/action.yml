@@ -87,6 +87,7 @@ runs:
       if: ${{ inputs.reset_shop == 'true' }}
       shell: bash
       run: |
+        # runtests: Reset shop
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           php ${{ inputs.reset_shop_binary }}
@@ -94,6 +95,7 @@ runs:
     - name: Run runtest
       shell: bash
       run: |
+        # runtests: Run runtest
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           php ${{ inputs.runtests_binary }} \
@@ -132,6 +134,7 @@ runs:
     - name: Check results
       shell: bash
       run: |
+        # runtests: Check results
         PURPLE=$(echo -e "\033[0;31m")
         NOCOLOR=$(echo -e "\033[0m")
         if [ ! -s "${{ inputs.logfile }}" ]; then

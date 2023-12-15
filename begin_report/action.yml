@@ -27,6 +27,7 @@ runs:
     - name: 'Write Report header'
       shell: bash
       run: |
+        # begin_report: Write Report header
         mkdir -p reports job_status slack_reports
         cat >reports/000-header.md <<EOF
         # ${{inputs.title}}
@@ -39,7 +40,6 @@ runs:
         EOF
 
     - name: Upload Artifacts
-
       if: always()
       uses: actions/upload-artifact@v3
       with:

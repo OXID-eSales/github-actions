@@ -92,6 +92,7 @@ runs:
     - name: Locate Console
       shell: bash
       run: |
+        # install_module: Locate Console
         cd source
         OE_CONSOLE=$(find . -iname "oe-console" -type f|head -1|sed -e "s|^$(pwd)/||")
         echo "OE_CONSOLE=${OE_CONSOLE}"|tee -a "${GITHUB_ENV}"
@@ -99,6 +100,7 @@ runs:
     - name: Configure enterprise credentials
       shell: bash
       run: |
+        # install_module: Configure enterprise credentials
         if [ -n "${{ inputs.enterprise_github_token }}" ]; then
           echo -e "\033[0;35m###  configure github access ###\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
@@ -114,6 +116,7 @@ runs:
     - name: Install module
       shell: bash
       run: |
+        # install_module: Install module
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
@@ -150,9 +153,11 @@ runs:
         container_name: ${{ steps.styles_testplan.outputs.styles_container_name }}
         container_options: ${{ steps.styles_testplan.outputs.styles_container_options }}
         container_method: 'exec'
+
     - name: Install dependencies and reset shop
       shell: bash
       run: |
+        # install_module: Install dependencies and reset shop
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
@@ -166,6 +171,7 @@ runs:
     - name: Activate modules
       shell: bash
       run: |
+        # install_module: Activate modules
         MODULES=$(echo -n "${{ inputs.activate }}"| tr '\n' ' ')
         for MODULE in ${MODULES}; do
           echo -e "\033[0;35m###  activating module ${MODULE} ###\033[0m"
@@ -178,6 +184,7 @@ runs:
     - name: Install module dependencies
       shell: bash
       run: |
+        # install_module: Install module dependencies
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           --workdir=/var/www \

@@ -28,6 +28,7 @@ runs:
     - name: Install s3cmd and gh
       shell: bash
       run: |
+        # clean_cache: Install s3cmd and gh
         GH=$(type -p 'gh'||true)
         if [ -z "${GH}" ]; then
           echo -e "\033[0;35m###  Installing gh ###\033[0m"
@@ -58,6 +59,7 @@ runs:
     - name: Cleanup cached github objects
       shell: bash
       run: |
+        # clean_cache: Cleanup cached github objects
         GH=$(type -p 'gh'||true)
         if [ -n "${GH}" ]; then
           PATTERN=$(echo  '${{inputs.cache_objects}}' | tr  '\n' ' ' )
@@ -74,6 +76,7 @@ runs:
       if: ${{ inputs.runs_on != '"ubuntu-latest"' }}
       shell: bash
       run: |
+        # clean_cache: Clear s3 cache
         PATTERN=$(echo  '${{inputs.cache_objects}}' | tr  '\n' '|' )
         OUTPUT=$(s3cmd ls -r s3://oxideshop-ee|grep "${PATTERN}"||true)
         export IFS=''

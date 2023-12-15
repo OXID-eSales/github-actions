@@ -327,6 +327,9 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
+      - name: 'Stop shop'
+        uses: 'OXID-eSales/github-actions/stop_shop@v3'
+
       - name: 'Write Report'
         if: always()
         uses: OXID-eSales/github-actions/append_report@v3

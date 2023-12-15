@@ -36,6 +36,7 @@ runs:
     - name: 'Initialize default values'
       shell: bash
       run: |
+        # load_testplan: Initialize default values
         cat >.testplan.yml <<EOF
         github:
           action: &github_action '${{ github.action }}'
@@ -84,6 +85,7 @@ runs:
       if: ${{ inputs.repository == '' }}
       shell: bash
       run: |
+        # load_testplan: Append testplan from URL
         curl -sSjkL "${{ inputs.testplan }}" >>.testplan.yml
         cat .testplan.yml
         if [ -n "${{ inputs.override }}" ]; then
@@ -94,6 +96,7 @@ runs:
       if: ${{ inputs.repository != '' }}
       shell: bash
       run: |
+        # load_testplan: Append testplan from file
         cat "${{ inputs.testplan }}" >>.testplan.yml
         if [ -n "${{ inputs.override }}" ]; then
           echo "${{ inputs.override }}" >>.testplan_override.yml
@@ -109,7 +112,9 @@ runs:
     - name: 'Dump Testplan on failure'
       if: failure()
       shell: bash
-      run: cat .testplan.yml
+      run: |
+        # load_testplan: Dump Testplan on failure
+        cat .testplan.yml
 
     - name: 'Load overrides'
       uses: actions-tools/yaml-outputs@v2
@@ -121,11 +126,14 @@ runs:
     - name: 'Dump Testplan on failure'
       if: ${{ failure() && inputs.override != '' }}
       shell: bash
-      run: cat .testplan_override.yml
+      run: |
+        # load_testplan: Dump Testplan on failure
+        cat .testplan_override.yml
 
     - name: 'Dump variables'
       shell: bash
       run: |
+        # load_testplan: Dump variables
         echo -e "\033[0;35m### Environment"
         env
         echo -e "\033[0m"
@@ -133,9 +141,10 @@ runs:
     - name: 'Generate deprecation warning to summary page'
       shell: bash
       run: |
+        # load_testplan: Generate deprecation warning to summary page
         cat  >> $GITHUB_STEP_SUMMARY <<EOF
         # Deprecation Warning:
-        This load_testplan actions are deprecated and may not be supported.
+        This load_testplan action is deprecated and may not be supported.
         EOF
 
 outputs:

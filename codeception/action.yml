@@ -90,6 +90,7 @@ runs:
       if: ${{ inputs.build == 'true' }}
       shell: bash
       run: |
+        # codeception: Build Codeception
         docker-compose exec -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
@@ -104,6 +105,7 @@ runs:
     - name: Run Codeception tests
       shell: bash
       run: |
+        # codeception: Run Codeception tests
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
            ${{ inputs.container_name}} \
@@ -143,6 +145,7 @@ runs:
     - name: Check results
       shell: bash
       run: |
+        # codeception: Check results
         PURPLE=$(echo -e "\033[0;31m")
         NOCOLOR=$(echo -e "\033[0m")
         if [ ! -s "${{ inputs.logfile }}" ]; then
