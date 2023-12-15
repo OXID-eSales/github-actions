@@ -64,7 +64,7 @@ runs:
     - name: Run phpstan
       id: phpstan
       shell: bash
-      run: | 
+      run: |
         # styles: Run phpstan
         echo -e "\033[0;35m###  Run phpstan-report in ${{ inputs.path }} ###\033[0m"
         docker-compose ${{ inputs.container_method }} -T \
