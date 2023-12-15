@@ -1316,6 +1316,85 @@ jobs:
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
 
+  yamllint:
+    needs: ['init', 'begin_report_phase']
+    if: ${{ always() && needs.init.outputs.yamllint_skip != 'true' }}
+    runs-on: ${{ inputs.runs_on }}
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Lint yaml files
+        id: yamllint
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          file_or_dir: ${{ needs.init.outputs.yamllint_file_or_dir }}
+          format: 'github'
+          config_data: |
+            extends: default
+            ignore: .git/*
+            rules:
+              document-start: disable
+              line-length:
+                max: 160
+                level: warning
+              new-line-at-end-of-file:
+                level: warning
+              trailing-spaces:
+                level: warning
+
+      - name: 'Write yamllint Report'
+        if: always()
+        uses: OXID-eSales/github-actions/append_report@v3
+        with:
+          priority: '240'
+          phase: report
+          title: ''
+          job: 'yamllint'
+          php: ''
+          mysql: ''
+          testplan: ''
+          status: ${{job.status}}
+
+  actionlint:
+    needs: ['init', 'begin_report_phase']
+    if: ${{ always() && needs.init.outputs.actionlint_skip != 'true' }}
+    runs-on: ${{ inputs.runs_on }}
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Run actionlint
+        id: actionlint
+        uses: raven-actions/actionlint@v1
+
+      - name: actionlint Summary
+        if: always()
+        run: |
+          echo "Used actionlint version ${{ steps.actionlint.outputs.version-semver }}"
+          echo "Used actionlint release ${{ steps.actionlint.outputs.version-tag }}"
+          echo "actionlint ended with ${{ steps.actionlint.outputs.exit-code }} exit code"
+          echo "actionlint ended because '${{ steps.actionlint.outputs.exit-message }}'"
+          echo "actionlint found ${{ steps.actionlint.outputs.total-errors }} errors"
+          echo "actionlint checked ${{ steps.actionlint.outputs.total-files }} files"
+          echo "actionlint cache used: ${{ steps.actionlint.outputs.cache-hit }}"
+
+      - name: 'Write actionlint Report'
+        if: always()
+        uses: OXID-eSales/github-actions/append_report@v3
+        with:
+          priority: '250'
+          phase: report
+          job: 'actionlint'
+          title: ''
+          php: ''
+          mysql: ''
+          testplan: ''
+          status: ${{job.status}}
+
+
   finish:
     if: ${{ always() && needs.init.outputs.finish_skip != 'true' }}
     needs:
@@ -1359,7 +1438,4 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
           cache_objects: |
-            ${{ needs.init.outputs.init_cache_name }}
-            ${{ needs.init.outputs.prepare_shop_cache_prefix }}
-            ${{ needs.init.outputs.install_shop_cache_prefix }}
-            ${{ needs.init.outputs.install_module_cache_prefix }}
+            ${{ steps.generate_report.outputs.cache_objects }}

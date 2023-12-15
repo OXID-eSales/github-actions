@@ -658,6 +658,19 @@ styles:
       source/tests/reports/phpcs*.report.txt
     prefix: 'styles_artifacts'
 
+# yamllint validates the github actions/testplan yaml files
+yamllint:
+  # Skip this part of the test run
+  skip: false
+
+  # Space separated list of files or directories
+  file_or_dir: '.github tests/github_actions'
+
+# actionlint validates the github actions workflows (not actions)
+actionlint:
+  # Skip this part of the test run
+  skip: false
+
 # This is the final cleanup at the end
 finish:
   # Skip this part of the test run
