@@ -255,6 +255,11 @@ jobs:
       styles_matrix_php: ${{ steps.ltp.outputs.styles_matrix_php }}
       styles_matrix_testplan: ${{ steps.ltp.outputs.styles_matrix_testplan }}
       styles_max_parallel: ${{ steps.ltp.outputs.styles_max_parallel }}
+      # yamllint variables
+      yamllint_skip: ${{ steps.ltp.outputs.yamllint_skip }}
+      yamllint_file_or_dir: ${{ steps.ltp.outputs.yamllint_file_or_dir }}
+      # actionlint variables
+      actionlint_skip: ${{ steps.ltp.outputs.actionlint_skip }}
       # finish variables
       finish_matrix_mysql: ${{ steps.ltp.outputs.finish_matrix_mysql }}
       finish_matrix_php: ${{ steps.ltp.outputs.finish_matrix_php }}
