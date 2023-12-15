@@ -119,13 +119,23 @@ runtest:
     options: '-e ACTIVE_THEME=apex'
     method: 'run'
   composer:
-    configure:
-      install: 'oxideshop_pe oxideshop_ee twig-component-pe twig-component-ee tests-deprecated-pe tests-deprecated-ee'
-    require:
-      install: |
-        tests-deprecated-ce
-        codeception/module-webdriver:^3.1
-        phpunit/phpunit:^9.1.1
+    configure: *composer_configure
+    require: *composer_require
+    file: 'source/composer.json'
+    backup: true
+    transform: |
+      {
+          "require": {
+              "oxid-esales/testing-library": "{{ .Data.global.composer.dev_ref }}",
+              "oxid-esales/tests-deprecated-ce": "{{ .Data.global.composer.dev_ref }}",
+              "oxid-esales/tests-deprecated-pe": "{{ .Data.global.composer.dev_ref }}",
+              "oxid-esales/tests-deprecated-ee": "{{ .Data.global.composer.dev_ref }}",
+              "codeception/module-webdriver": "^3.1",
+              "phpunit/phpunit": "^9.1.1"
+          }
+      }
+    update: true
+    update_options: '--no-interaction'
   # yamllint disable-line rule:line-length
   additional_options: '--filter "/^((?!(testFrontendVAT)).)*$/" --exclude-group quarantine,varnish,paypal_buyerlogin,paypal_external,paypal_graphql,adminFunctionality,flow_theme'
   coverage:
