@@ -1354,6 +1354,5 @@ jobs:
           cache_objects: |
             ${{ needs.init.outputs.init_cache_name }}
             ${{ needs.init.outputs.prepare_shop_cache_prefix }}
-            ${{ needs.init.outputs.install_shop_cache_prefix }} 
+            ${{ needs.init.outputs.install_shop_cache_prefix }}
             ${{ needs.init.outputs.install_module_cache_prefix }}
-
