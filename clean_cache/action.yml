@@ -17,6 +17,10 @@ inputs:
     type: string
     required: true
     description: 'objects to delete for cleanup'
+  runs_on:
+    type: string
+    required: true
+    description: 'Runner for this workflow'
 
 runs:
   using: composite
@@ -38,8 +42,7 @@ runs:
         fi
         ${GH} extension install actions/gh-actions-cache
         sudo DEBIAN_FRONTEND=noninteractive apt-get -qq install s3cmd
-        RUNS_ON='${{ inputs.runs_on }}'
-        if [[ "${RUNS_ON}" != *"ubuntu" ]]; then
+        if [[ ${{ inputs.runs_on }} != *"ubuntu" ]]; then
           cat >/home/runner/.s3cfg <<EOF
         [default]
         check_ssl_certificate = False

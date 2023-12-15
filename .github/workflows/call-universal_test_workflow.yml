@@ -1346,7 +1346,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         with:
-          RUNS_ON: ${{ inputs.runs_on }}
+          runs_on: ${{ inputs.runs_on }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
