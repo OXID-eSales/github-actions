@@ -1342,6 +1342,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 'clean_cache'
+        if: ${{ steps.generate_report.outputs.overall_status == 'success' }}
         uses: 'OXID-eSales/github-actions/clean_cache@v0'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -1350,4 +1351,9 @@ jobs:
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
-          cache_objects: '${{ needs.init.outputs.init_cache_name }} ${{ needs.init.outputs.prepare_shop_cache_prefix }} ${{ needs.init.outputs.install_shop_cache_prefix }} ${{ needs.init.outputs.install_module_cache_prefix }}'
+          cache_objects: |
+            ${{ needs.init.outputs.init_cache_name }}
+            ${{ needs.init.outputs.prepare_shop_cache_prefix }}
+            ${{ needs.init.outputs.install_shop_cache_prefix }} 
+            ${{ needs.init.outputs.install_module_cache_prefix }}
+

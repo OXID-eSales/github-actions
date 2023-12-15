@@ -56,27 +56,25 @@ runs:
         fi
 
     - name: Cleanup cached github objects
-      if: ${{ steps.generate_report.outputs.overall_status == 'success' }}
       shell: bash
       run: |
         GH=$(type -p 'gh'||true)
         if [ -n "${GH}" ]; then
-         # yamllint disable-line rule:line-length
-           for CACHE in ${{ inputs.cache_objects }} ; do
+          PATTERN=$(echo  '${{inputs.cache_objects}}' | tr  '\n' ' ' )
+          for CACHE in ${PATTERN} ; do
             ID_LIST="$(${GH} actions-cache list --key ${CACHE}|awk '{print $1}'||true)"
-              for ID in ${ID_LIST}; do
+            for ID in ${ID_LIST}; do
               echo -e "\033[0;35m###  Cleaning cached object '${ID}' from github ###\033[0m"
-                ${GH} actions-cache delete "${ID}" --confirm
-              done
+              ${GH} actions-cache delete "${ID}" --confirm
             done
-          fi
+          done
+        fi
 
     - name: Clear s3 cache
       if: ${{ inputs.runs_on != '"ubuntu-latest"' }}
-      # yamllint disable rule:line-length
       shell: bash
       run: |
-        PATTERN=$(echo  '${{inputs.cache_objects}}' | tr  ' ' '|' )
+        PATTERN=$(echo  '${{inputs.cache_objects}}' | tr  '\n' '|' )
         OUTPUT=$(s3cmd ls -r s3://oxideshop-ee|grep "${PATTERN}"||true)
         export IFS=''
         echo "${OUTPUT}" | while read -r LINE ; do
