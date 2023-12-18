@@ -133,7 +133,7 @@ runs:
           composer require ${{ inputs.package_name }}:* --no-interaction --no-update
 
     - name: 'Modify composer.json'
-      uses: 'OXID-eSales/github-actions/composer_merge@v0'
+      uses: 'OXID-eSales/github-actions/composer_merge@v3'
       with:
         file: 'source/composer.json'
         backup: true
@@ -205,7 +205,7 @@ runs:
 
     - name: Upload configuration artifacts
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.output_artifact }}
         path: ${{ inputs.output_files }}

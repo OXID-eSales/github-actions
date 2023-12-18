@@ -430,7 +430,7 @@ runs:
 
     - name: 'Modify composer.json'
       if: ${{ inputs.composer_transform != '' }}
-      uses: 'OXID-eSales/github-actions/composer_merge@v0'
+      uses: 'OXID-eSales/github-actions/composer_merge@v3'
       with:
         file: '${{ inputs.composer_file }}'
         backup: true
