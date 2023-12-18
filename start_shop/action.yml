@@ -58,12 +58,15 @@ runs:
         secretKey: ${{ inputs.cache_secret_key }}
         bucket: ${{ inputs.cache_bucket }}
 
-    - name: Confirm successful restore
+    - name: Confirm restore
       shell: bash
       run: |
+        # start_shop: Confirm restore
         if [ "${{ steps.load_installed_shop.outputs.cache-hit }}" != "true" ]; then
-          echo -e "\033[0;31m### Failed to load ${{ inputs.installed_shop }} from cache\033[0m"
+          echo -e "\033[0;31m### Load ${{ inputs.installed_shop }} from cache: FAIL\033[0m"
           exit 1
+        else
+          echo -e "\033[0;32m### Load ${{ inputs.cached_shop }} from cache: SUCCESS\033[0m"
         fi
 
     - name: Login to Docker Hub
@@ -76,6 +79,7 @@ runs:
     - name: Start containers
       shell: bash
       run: |
+        # start_shop: Start containers
         echo -e "\033[0;35m### Starting containers\033[0m"
         make up
 
@@ -83,6 +87,7 @@ runs:
       if: failure()
       shell: bash
       run: |
+        # start_shop: Output docker logs if make up failed
         echo -e "\033[0;31m### Starting containers failed\033[0m"
         cat docker-compose.yml
         docker-compose logs --tail=all

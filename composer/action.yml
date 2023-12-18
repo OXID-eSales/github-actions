@@ -46,6 +46,7 @@ runs:
     - name: Run composer
       shell: bash
       run: |
+        # composer: Run composer
         echo "${{ inputs.parameters }}%" | while IFS=$'\n' read -d '%' -r PARAMETER ; do
           echo -e "\033[0;35m### composer ${{ inputs.action }} ${PARAMETER} ${{inputs.options}} ###\033[0m"
           docker-compose ${{ inputs.container_method }} -T \

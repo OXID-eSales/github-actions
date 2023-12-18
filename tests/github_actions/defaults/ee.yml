@@ -18,13 +18,59 @@ global:
 
   # only configure/install is different
   composer: &composer
-    configure:
-      install: 'oxideshop_pe oxideshop_ee:dev-{{ .Github.RefName }} twig-component-pe twig-component-ee codeception-modules codeception-page-objects'
+    configure: &composer_configure
+      install: ''
+    require: &composer_require
+    transform: ''
 
 
 # See docs/actions/prepare_shop.md for more information.
 prepare_shop:
-  composer: *composer
+  composer:
+    transform: |
+      {
+          "config": {
+              "github-protocols": ["https"]
+          },
+          "require": {
+              "oxid-esales/oxideshop-pe": "{{ .Data.global.composer.dev_ref }}",
+              "oxid-esales/oxideshop-ee": "dev-{{ .Github.RefName }}",
+              "oxid-esales/twig-component": "{{ .Data.global.composer.dev_ref }}",
+              "oxid-esales/twig-component-pe": "{{ .Data.global.composer.dev_ref }}",
+              "oxid-esales/twig-component-ee": "{{ .Data.global.composer.dev_ref }}",
+              "oxid-esales/twig-admin-theme": "{{ .Data.global.composer.dev_ref }}",
+              "oxid-esales/apex-theme": "{{ .Data.global.composer.dev_ref }}",
+              "oxid-esales/codeception-modules": "{{ .Data.global.composer.dev_ref }}",
+              "oxid-esales/codeception-page-objects": "{{ .Data.global.composer.dev_ref }}"
+          },
+          "repositories": {
+              "oxid-esales/codeception-page-objects": {
+                  "type": "git",
+                  "url": "https://github.com/OXID-eSales/codeception-page-objects.git"
+              },
+              "oxid-esales/codeception-modules": {
+                  "type": "git",
+                  "url": "https://github.com/OXID-eSales/codeception-modules.git"
+              },
+              "oxid-esales/twig-component-ee": {
+                  "type": "git",
+                  "url": "https://github.com/OXID-eSales/twig-component-ee.git"
+              },
+              "oxid-esales/twig-component-pe": {
+                  "type": "git",
+                  "url": "https://github.com/OXID-eSales/twig-component-pe.git"
+              },
+              "oxid-esales/oxideshop-ee": {
+                  "type": "git",
+                  "url": "https://github.com/OXID-eSales/oxideshop_ee.git"
+              },
+              "oxid-esales/oxideshop-pe": {
+                  "type": "git",
+                  "url": "https://github.com/OXID-eSales/oxideshop_pe.git"
+              }
+          }
+      }
+
   git: *git
   is_enterprise: *is_enterprise
   cache:
@@ -74,13 +120,23 @@ runtest:
     options: '-e ACTIVE_THEME=apex'
     method: 'run'
   composer:
-    configure:
-      install: 'oxideshop_pe oxideshop_ee twig-component-pe twig-component-ee tests-deprecated-pe tests-deprecated-ee'
-    require:
-      install: |
-        tests-deprecated-ce
-        codeception/module-webdriver:^3.1
-        phpunit/phpunit:^9.1.1
+    configure: *composer_configure
+    require: *composer_require
+    file: 'source/composer.json'
+    backup: true
+    transform: |
+      {
+          "require": {
+              "oxid-esales/testing-library": "{{ .Data.global.composer.dev_ref }}",
+              "oxid-esales/tests-deprecated-ce": "{{ .Data.global.composer.dev_ref }}",
+              "oxid-esales/tests-deprecated-pe": "{{ .Data.global.composer.dev_ref }}",
+              "oxid-esales/tests-deprecated-ee": "{{ .Data.global.composer.dev_ref }}",
+              "codeception/module-webdriver": "^3.1",
+              "phpunit/phpunit": "^9.1.1"
+          }
+      }
+    update: true
+    update_options: '--no-interaction'
   # yamllint disable-line rule:line-length
   additional_options: '--filter "/^((?!(testFrontendVAT)).)*$/" --exclude-group quarantine,varnish,paypal_buyerlogin,paypal_external,paypal_graphql,adminFunctionality,flow_theme'
   coverage:

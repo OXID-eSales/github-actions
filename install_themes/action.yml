@@ -42,6 +42,7 @@ runs:
     - name: Install themes
       shell: bash
       run: |
+        # install_themes: Install themes
         for THEME in ${{ inputs.themes }}; do
           echo -e "\033[0;35m### Installing ${THEME} with ${{ inputs.options }}\033[0m"
           docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
@@ -58,7 +59,8 @@ runs:
     - name: Generate deprecation warning to summary page
       shell: bash
       run: |
+        # install_themes: Generate deprecation warning to summary page
         cat  >> $GITHUB_STEP_SUMMARY <<EOF
         # Deprecation Warning:
-        This install_theme actions are deprecated and may not be supported.
+        This install_theme action is deprecated and may not be supported.
         EOF

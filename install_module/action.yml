@@ -42,6 +42,11 @@ inputs:
     required: false
     description: 'Branch, tag or hash of the commit to check out'
     default: true
+  update:
+    type: boolean
+    required: false
+    description: 'Run composer update and reset database after instlling the module'
+    default: true
   output_files:
     type: string
     required: false
@@ -92,6 +97,7 @@ runs:
     - name: Locate Console
       shell: bash
       run: |
+        # install_module: Locate Console
         cd source
         OE_CONSOLE=$(find . -iname "oe-console" -type f|head -1|sed -e "s|^$(pwd)/||")
         echo "OE_CONSOLE=${OE_CONSOLE}"|tee -a "${GITHUB_ENV}"
@@ -99,6 +105,7 @@ runs:
     - name: Configure enterprise credentials
       shell: bash
       run: |
+        # install_module: Configure enterprise credentials
         if [ -n "${{ inputs.enterprise_github_token }}" ]; then
           echo -e "\033[0;35m###  configure github access ###\033[0m"
           docker-compose ${{ inputs.container_method }} -T \
@@ -114,6 +121,7 @@ runs:
     - name: Install module
       shell: bash
       run: |
+        # install_module: Install module
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
@@ -124,9 +132,38 @@ runs:
           ${{ inputs.container_name}} \
           composer require ${{ inputs.package_name }}:* --no-interaction --no-update
 
-    - name: Install dependencies and reset shop
+    - name: 'Modify composer.json'
+      uses: 'OXID-eSales/github-actions/composer_merge@v3'
+      with:
+        file: 'source/composer.json'
+        backup: true
+        transform: |
+          {
+            "require": {
+              "${{ inputs.package_name }}": "*"
+            },
+            "repositories": {
+                "${{ inputs.package_name }}": {
+                     "type": "path",
+                      "url": "./${{inputs.module_path}}",
+                      "options": {
+                          "symlink": true
+                      }
+                }
+            }
+          }
+          ${{ steps.styles_testplan.outputs.styles_composer_transform }}
+        update: ${{ steps.styles_testplan.outputs.styles_composer_update }}
+        update_options: ${{ steps.styles_testplan.outputs.styles_composer_update_options }}
+        container_name: ${{ steps.styles_testplan.outputs.styles_container_name }}
+        container_options: ${{ steps.styles_testplan.outputs.styles_container_options }}
+        container_method: 'exec'
+
+    - name: Install dependencies and reset database
+      if: ${{ inputs.update == 'true' }}
       shell: bash
       run: |
+        # install_module: Install dependencies and reset database
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
@@ -140,6 +177,7 @@ runs:
     - name: Activate modules
       shell: bash
       run: |
+        # install_module: Activate modules
         MODULES=$(echo -n "${{ inputs.activate }}"| tr '\n' ' ')
         for MODULE in ${MODULES}; do
           echo -e "\033[0;35m###  activating module ${MODULE} ###\033[0m"
@@ -152,23 +190,12 @@ runs:
     - name: Install module dependencies
       shell: bash
       run: |
+        # install_module: Install module dependencies
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           --workdir=/var/www \
           ${{ inputs.container_name}} \
           composer install
-
-    - name: Stop containers
-      if: always()
-      shell: bash
-      run: |
-        docker-compose down
-
-    - name: Show docker log
-      if: always()
-      shell: bash
-      run: |
-        docker-compose logs --tail=all
 
     - name: Write files list
       if: always()
@@ -178,7 +205,7 @@ runs:
 
     - name: Upload configuration artifacts
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.output_artifact }}
         path: ${{ inputs.output_files }}

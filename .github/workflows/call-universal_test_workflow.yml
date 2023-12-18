@@ -103,7 +103,7 @@ jobs:
 
       - name: 'Upload generated test plan'
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: 'testplan'
           path: |
@@ -130,6 +130,7 @@ jobs:
           header: true
           phase: install
           priority: '001'
+          cached_object: ${{ steps.ltp.outputs.init_cache_name }}
 
       - name: Cache testplan
         uses: tespkg/actions-cache@v1
@@ -168,6 +169,11 @@ jobs:
       prepare_shop_composer_require_ref: ${{ steps.ltp.outputs.prepare_shop_composer_require_ref }}
       prepare_shop_composer_require_update: ${{ steps.ltp.outputs.prepare_shop_composer_require_update }}
       prepare_shop_composer_require_update_options: ${{ steps.ltp.outputs.prepare_shop_composer_require_update_options }}
+      prepare_shop_composer_file: ${{ steps.ltp.outputs.prepare_shop_composer_file}}
+      prepare_shop_composer_transform: ${{ steps.ltp.outputs.prepare_shop_composer_transform}}
+      prepare_shop_composer_backup: ${{ steps.ltp.outputs.prepare_shop_composer_backup}}
+      prepare_shop_composer_update: ${{ steps.ltp.outputs.prepare_shop_composer_update}}
+      prepare_shop_composer_update_options: ${{ steps.ltp.outputs.prepare_shop_composer_update_options}}
       prepare_shop_container_method: ${{ steps.ltp.outputs.prepare_shop_container_method }}
       prepare_shop_container_name: ${{ steps.ltp.outputs.prepare_shop_container_name }}
       prepare_shop_container_options: ${{ steps.ltp.outputs.prepare_shop_container_options }}
@@ -197,6 +203,8 @@ jobs:
       install_shop_matrix_mysql: ${{ steps.ltp.outputs.install_shop_matrix_mysql }}
       install_shop_matrix_php: ${{ steps.ltp.outputs.install_shop_matrix_php }}
       install_shop_max_parallel: ${{ steps.ltp.outputs.install_shop_max_parallel }}
+      install_shop_custom_script: ${{ steps.ltp.outputs.install_shop_custom_script }}
+      install_shop_custom_script_container: ${{ steps.ltp.outputs.install_shop_custom_script_container }}
       install_shop_output_artifact_prefix: ${{ steps.ltp.outputs.install_shop_output_artifact_prefix }}
       install_shop_output_files: ${{ steps.ltp.outputs.install_shop_output_files }}
       # install_module variables
@@ -247,6 +255,11 @@ jobs:
       styles_matrix_php: ${{ steps.ltp.outputs.styles_matrix_php }}
       styles_matrix_testplan: ${{ steps.ltp.outputs.styles_matrix_testplan }}
       styles_max_parallel: ${{ steps.ltp.outputs.styles_max_parallel }}
+      # yamllint variables
+      yamllint_skip: ${{ steps.ltp.outputs.yamllint_skip }}
+      yamllint_file_or_dir: ${{ steps.ltp.outputs.yamllint_file_or_dir }}
+      # actionlint variables
+      actionlint_skip: ${{ steps.ltp.outputs.actionlint_skip }}
       # finish variables
       finish_matrix_mysql: ${{ steps.ltp.outputs.finish_matrix_mysql }}
       finish_matrix_php: ${{ steps.ltp.outputs.finish_matrix_php }}
@@ -307,12 +320,21 @@ jobs:
           composer_require_options: ${{ needs.init.outputs.prepare_shop_composer_require_options}}
           composer_require_update: ${{ needs.init.outputs.prepare_shop_composer_require_update}}
           composer_require_update_options: ${{ needs.init.outputs.prepare_shop_composer_require_update_options}}
+          composer_file: ${{ needs.init.outputs.prepare_shop_composer_file }}
+          composer_transform: ${{ needs.init.outputs.prepare_shop_composer_transform}}
+          composer_backup: ${{ needs.init.outputs.prepare_shop_composer_backup}}
+          composer_update: ${{ needs.init.outputs.prepare_shop_composer_update}}
+          composer_update_options: ${{ needs.init.outputs.prepare_shop_composer_update_options}}
+
           enterprise_github_token: ${{ secrets.enterprise_github_token }}
           cache_name: '${{ needs.init.outputs.prepare_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.prepare_shop_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+
+      - name: 'Stop shop'
+        uses: 'OXID-eSales/github-actions/stop_shop@v3'
 
       - name: 'Write Report'
         if: always()
@@ -324,6 +346,7 @@ jobs:
           php: ${{matrix.php}}
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
+          cached_object: '${{ needs.init.outputs.prepare_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
 
   install_shop:
     needs: ['init', 'prepare_shop']
@@ -370,6 +393,28 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
+      - name: Run custom script
+        if: ${{ needs.init.outputs.install_shop_custom_script != ''}}
+        run: |
+          ${{ needs.init.outputs.install_shop_custom_script }}
+
+      - name: Run custom script inside the container
+        if: ${{ needs.init.outputs.install_shop_custom_script_container != ''}}
+        run: |
+          cat >source/install_shop_custom_script.sh <<EOF
+          #!/bin/bash
+          ${{ needs.init.outputs.install_shop_custom_script_container }}
+          EOF
+          chmod 0755 source/install_shop_custom_script.sh
+          docker-compose ${{ needs.init.outputs.install_shop_container_method }} -T \
+            ${{ needs.init.outputs.install_shop_container_options }} \
+            ${{ needs.init.outputs.install_shop_container_name}} \
+            /var/www/install_shop_custom_script.sh
+          rm source/install_shop_custom_script.sh
+
+      - name: 'Stop shop'
+        uses: 'OXID-eSales/github-actions/stop_shop@v3'
+
       - name: 'Write Report'
         if: always()
         uses: OXID-eSales/github-actions/append_report@v3
@@ -380,6 +425,7 @@ jobs:
           php: ${{matrix.php}}
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
+          cached_object: '${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
 
   install_module:
     needs: ['init', 'install_shop']
@@ -484,6 +530,20 @@ jobs:
           fi
           find . -type f >files.txt
 
+      - name: 'Modify composer.json'
+        if: ${{ steps.install_module_testplan.outputs.install_module_composer_transform != '' }}
+        uses: 'OXID-eSales/github-actions/composer_merge@v3'
+        with:
+          file: 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}/composer.json'
+          backup: true
+          transform: |
+            ${{ steps.install_module_testplan.outputs.install_module_composer_transform }}
+          update: ${{ steps.install_module_testplan.outputs.install_module_composer_update }}
+          update_options: ${{ steps.install_module_testplan.outputs.install_module_composer_update_options }}
+          container_name: ${{ steps.install_module_testplan.outputs.install_module_container_name }}
+          container_options: ${{ steps.install_module_testplan.outputs.install_module_container_options }}
+          container_method: 'exec'
+
       - name: Install module
         if: ${{ matrix.testplan != 'skip' }}
         id: install_module
@@ -508,6 +568,29 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
+      - name: Run custom script
+        if: ${{ matrix.testplan != 'skip' && steps.install_module_testplan.outputs.install_module_custom_script != ''}}
+        run: |
+          ${{ steps.install_module_testplan.outputs.install_module_custom_script }}
+
+      - name: Run custom script inside the container
+        if: ${{ matrix.testplan != 'skip' && steps.install_module_testplan.outputs.install_module_custom_script_container != ''}}
+        run: |
+          cat >source/install_module_custom_script.sh <<EOF
+          #!/bin/bash
+          ${{ steps.install_module_testplan.outputs.install_module_custom_script_container }}
+          EOF
+          chmod 0755 source/install_module_custom_script.sh
+          docker-compose ${{ steps.install_module_testplan.outputs.install_module_container_method }} -T \
+            ${{ steps.install_module_testplan.outputs.install_module_container_options }} \
+            ${{ steps.install_module_testplan.outputs.install_module_container_name}} \
+            /var/www/install_module_custom_script.sh
+          rm source/install_module_custom_script.sh
+
+      - name: 'Stop shop'
+        if: ${{ matrix.testplan != 'skip' }}
+        uses: 'OXID-eSales/github-actions/stop_shop@v3'
+
       - name: 'Write Report'
         if: ${{ always() && matrix.testplan != 'skip' }}
         uses: OXID-eSales/github-actions/append_report@v3
@@ -520,6 +603,7 @@ jobs:
           mysql: ${{matrix.mysql}}
           testplan: ${{matrix.testplan}}
           status: ${{job.status}}
+          cached_object: '${{ steps.install_module_testplan.outputs.install_module_cache_prefix}}_${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
 
       - name: 'Write Report'
         if: ${{ always() && matrix.testplan == 'skip' }}
@@ -759,6 +843,20 @@ jobs:
           update: ${{ steps.codeception_testplan.outputs.codeception_composer_require_update }}
           update_options: ${{ steps.codeception_testplan.outputs.codeception_composer_require_update_options }}
 
+      - name: 'Modify composer.json'
+        if: ${{ steps.codeception_testplan.outputs.codeception_composer_transform != '' }}
+        uses: 'OXID-eSales/github-actions/composer_merge@v3'
+        with:
+          file: '${{ steps.codeception_testplan.outputs.codeception_composer_path }}'
+          backup: true
+          transform: |
+            ${{ steps.codeception_testplan.outputs.codeception_composer_transform }}
+          update: ${{ steps.codeception_testplan.outputs.codeception_composer_update }}
+          update_options: ${{ steps.codeception_testplan.outputs.codeception_composer_update_options }}
+          container_name: ${{ steps.codeception_testplan.outputs.codeception_container_name }}
+          container_options: ${{ steps.codeception_testplan.outputs.codeception_container_options }}
+          container_method: 'exec'
+
       - name: 'Run codeception tests'
         id: codeception_run
         uses: 'OXID-eSales/github-actions/codeception@v3'
@@ -820,6 +918,7 @@ jobs:
           path: |
             tests/github_actions/*
           key: ${{ needs.init.outputs.init_cache_name }}
+
           restore-keys: ${{ needs.init.outputs.init_cache_name }}
           endpoint: ${{ secrets.CACHE_ENDPOINT }}
           accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
@@ -903,6 +1002,20 @@ jobs:
           update: ${{ steps.runtest_testplan.outputs.runtest_composer_require_update }}
           update_options: ${{ steps.runtest_testplan.outputs.runtest_composer_require_update_options }}
 
+      - name: 'Modify composer.json'
+        if: ${{ steps.runtest_testplan.outputs.runtest_composer_transform != '' }}
+        uses: 'OXID-eSales/github-actions/composer_merge@v3'
+        with:
+          file: '${{ steps.runtest_testplan.outputs.runtest_composer_file }}'
+          backup: true
+          transform: |
+            ${{ steps.runtest_testplan.outputs.runtest_composer_transform }}
+          update: ${{ steps.runtest_testplan.outputs.runtest_composer_update }}
+          update_options: ${{ steps.runtest_testplan.outputs.runtest_composer_update_options }}
+          container_name: ${{ steps.runtest_testplan.outputs.runtest_container_name }}
+          container_options: ${{ steps.runtest_testplan.outputs.runtest_container_options }}
+          container_method: 'exec'
+
       - name: Copy config file
         run: cp source/vendor/oxid-esales/testing-library/test_config.yml.dist source/test_config.yml
 
@@ -923,6 +1036,9 @@ jobs:
           coverage_path: ${{ steps.runtest_testplan.outputs.runtest_coverage_path }}
           coverage_artifact: ${{ steps.runtest_testplan.outputs.runtest_coverage_prefix }}_${{ steps.runtest_testplan_name.outputs.matrix_suffix }}
           failure_pattern: ${{ steps.runtest_testplan.outputs.runtest_failure_pattern }}
+          reset_shop: ${{ steps.runtest_testplan.outputs.runtest_reset_shop }}
+          reset_shop_binary: ${{ steps.runtest_testplan.outputs.runtest_reset_shop_binary }}
+          runtests_binary: ${{ steps.runtest_testplan.outputs.runtest_runtests_binary }}
 
       - name: 'Stop shop'
         uses: 'OXID-eSales/github-actions/stop_shop@v3'
@@ -1164,6 +1280,20 @@ jobs:
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
+      - name: 'Modify composer.json'
+        if: ${{ steps.styles_testplan.outputs.styles_composer_transform != '' }}
+        uses: 'OXID-eSales/github-actions/composer_merge@v3'
+        with:
+          file: 'source/dev-packages/${{ steps.styles_testplan.outputs.styles_path }}/composer.json'
+          backup: true
+          transform: |
+            ${{ steps.styles_testplan.outputs.styles_composer_transform }}
+          update: ${{ steps.styles_testplan.outputs.styles_composer_update }}
+          update_options: ${{ steps.styles_testplan.outputs.styles_composer_update_options }}
+          container_name: ${{ steps.styles_testplan.outputs.styles_container_name }}
+          container_options: ${{ steps.styles_testplan.outputs.styles_container_options }}
+          container_method: 'exec'
+
       - name: 'Run styles check'
         uses: 'OXID-eSales/github-actions/styles@v3'
         with:
@@ -1191,6 +1321,85 @@ jobs:
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
 
+  yamllint:
+    needs: ['init', 'begin_report_phase']
+    if: ${{ always() && needs.init.outputs.yamllint_skip != 'true' }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Lint yaml files
+        id: yamllint
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          file_or_dir: ${{ needs.init.outputs.yamllint_file_or_dir }}
+          format: 'github'
+          config_data: |
+            extends: default
+            ignore: .git/*
+            rules:
+              document-start: disable
+              line-length:
+                max: 160
+                level: warning
+              new-line-at-end-of-file:
+                level: warning
+              trailing-spaces:
+                level: warning
+
+      - name: 'Write yamllint Report'
+        if: always()
+        uses: OXID-eSales/github-actions/append_report@v3
+        with:
+          priority: '240'
+          phase: report
+          title: ''
+          job: 'yamllint'
+          php: ''
+          mysql: ''
+          testplan: ''
+          status: ${{job.status}}
+
+  actionlint:
+    needs: ['init', 'begin_report_phase']
+    if: ${{ always() && needs.init.outputs.actionlint_skip != 'true' }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Run actionlint
+        id: actionlint
+        uses: raven-actions/actionlint@v1
+
+      - name: actionlint Summary
+        if: always()
+        run: |
+          echo "Used actionlint version ${{ steps.actionlint.outputs.version-semver }}"
+          echo "Used actionlint release ${{ steps.actionlint.outputs.version-tag }}"
+          echo "actionlint ended with ${{ steps.actionlint.outputs.exit-code }} exit code"
+          echo "actionlint ended because '${{ steps.actionlint.outputs.exit-message }}'"
+          echo "actionlint found ${{ steps.actionlint.outputs.total-errors }} errors"
+          echo "actionlint checked ${{ steps.actionlint.outputs.total-files }} files"
+          echo "actionlint cache used: ${{ steps.actionlint.outputs.cache-hit }}"
+
+      - name: 'Write actionlint Report'
+        if: always()
+        uses: OXID-eSales/github-actions/append_report@v3
+        with:
+          priority: '250'
+          phase: report
+          job: 'actionlint'
+          title: ''
+          php: ''
+          mysql: ''
+          testplan: ''
+          status: ${{job.status}}
+
+
   finish:
     if: ${{ always() && needs.init.outputs.finish_skip != 'true' }}
     needs:
@@ -1204,12 +1413,14 @@ jobs:
       - sonarcloud
       - phpcs_tests
       - styles
+      - yamllint
+      - actionlint
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     env:
       SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"
     steps:
       - name: 'Download job results'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: testplan
 
@@ -1223,60 +1434,15 @@ jobs:
       - name: Checkout the repo
         uses: actions/checkout@v4
 
-      - name: Install s3cmd and gh
-        run: |
-          GH=$(type -p 'gh'||true)
-          if [ -z "${GH}" ]; then
-            echo -e "\033[0;35m###  Installing gh ###\033[0m"
-            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-            sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
-            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-            sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update
-            sudo apt-get -qq install gh
-          fi
-          sudo DEBIAN_FRONTEND=noninteractive apt-get -qq install s3cmd
-          RUNS_ON='${{ inputs.runs_on }}'
-          if [[ "${RUNS_ON}" != *"ubuntu" ]]; then
-            cat >/home/runner/.s3cfg <<EOF
-            [default]
-            check_ssl_certificate = False
-            check_ssl_hostname = False
-            host_base = ${{secrets.CACHE_ENDPOINT}}
-            host_bucket = %(bucket)s.${{secrets.CACHE_ENDPOINT}}
-            access_key = ${{ secrets.CACHE_ACCESS_KEY}}
-            secret_key = ${{ secrets.CACHE_SECRET_KEY }}
-          EOF
-            chmod 0600 /home/runner/.s3cfg
-          fi
-
-      - name: Cleanup cached github objects
+      - name: 'clean_cache'
         if: ${{ steps.generate_report.outputs.overall_status == 'success' }}
+        uses: 'OXID-eSales/github-actions/clean_cache@v3'
         env:
           GH_TOKEN: ${{ github.token }}
-        shell: bash
-        # yamllint disable rule:line-length
-        run: |
-          GH=$(type -p 'gh'||true)
-          if [ -n "${GH}" ]; then
-            ${GH} extension install actions/gh-actions-cache
-            # yamllint disable-line rule:line-length
-            for CACHE in '${{ needs.init.outputs.init_cache_name }}' '${{ needs.init.outputs.prepare_shop_cache_prefix }}' '${{ needs.init.outputs.install_shop_cache_prefix }}' '${{ needs.init.outputs.install_module_cache_prefix }}'; do
-              ID_LIST="$(${GH} actions-cache list --key ${CACHE}|awk '{print $1}')"
-              for ID in ${ID_LIST}; do
-              echo -e "\033[0;35m###  Cleaning cached object '${ID}' from github ###\033[0m"
-                ${GH} actions-cache delete "${ID}" --confirm
-              done
-            done
-          fi
-
-      - name: s3cmd ls
-        if: ${{ inputs.runs_on != '"ubuntu-latest"' }}
-        run: |
-          # yamllint disable-line rule:line-length
-          OUTPUT=$(s3cmd ls -r s3://oxideshop-ee|grep '${{ needs.init.outputs.init_cache_name }}|${{ needs.init.outputs.prepare_shop_cache_prefix }}|${{ needs.init.outputs.install_shop_cache_prefix }}|${{ needs.init.outputs.install_module_cache_prefix }}')
-          export IFS=''
-          echo "${OUTPUT}" | while read -r LINE ; do
-            FILE=$(echo "${LINE}"|awk '{print $4}')
-            echo -e "\033[0;35m###  Cleaning cached object '${FILE}' from s3 cache ###\033[0m"
-            s3cmd del "${FILE}"
-          done
+        with:
+          runs_on: ${{ inputs.runs_on }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          cache_objects: |
+            ${{ steps.generate_report.outputs.cache_objects }}

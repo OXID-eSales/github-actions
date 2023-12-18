@@ -106,6 +106,7 @@ runs:
     - name: Locate Console
       shell: bash
       run: |
+        # install_shop: Locate Console
         cd source
         OE_CONSOLE=$(find . -iname "oe-console" -type f|head -1|sed -e "s|^$(pwd)/||")
         echo "OE_CONSOLE=${OE_CONSOLE}"|tee -a "${GITHUB_ENV}"
@@ -113,6 +114,7 @@ runs:
     - name: Run Install Shop
       shell: bash
       run: |
+        # install_shop: Run Install Shop
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
@@ -130,26 +132,22 @@ runs:
       if: ${{ inputs.config_idebug == 'true' }}
       shell: bash
       run: |
+        # install_shop: Activate iDebug
         perl -pi -e 's#iDebug = 0;#iDebug = -1;#g;' source/source/config.inc.php
 
     - name: Activate shop's theme
       if: ${{ inputs.is_enterprise == 'true' }}
       shell: bash
       run: |
+        # install_shop: Activate shop's theme
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
           bin/oe-console oe:theme:activate apex
 
-    - name: Stop containers
-      if: always()
-      shell: bash
-      run: |
-        docker-compose down
-
     - name: Upload configuration artifacts
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.output_artifact }}
         path: ${{ inputs.output_files }}

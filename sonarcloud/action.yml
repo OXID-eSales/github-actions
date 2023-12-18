@@ -64,7 +64,7 @@ runs:
   using: "composite"
   steps:
     - name: Download coverage artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: ${{ inputs.coverage_artifact }}
         path: coverage-reports
@@ -72,18 +72,20 @@ runs:
     - name: Fix Paths In Coverage Reports
       shell: bash
       run: |
-          COVERAGE_FILES=""
-          for FILE in $(find coverage-reports -iname '*_coverage.xml'); do
-            echo -e "\033[0;35mFixing paths in ${FILE}\033[0m"
-            sed -e 's#/var/www/##' -i ${FILE}
-            COVERAGE_FILES="${COVERAGE_FILES},${FILE}"
-          done
-          # remove leading comma when adding this
-          echo "COVERAGE_FILES=${COVERAGE_FILES:1}" | tee -a $GITHUB_ENV
+        # sonarcloud: Fix Paths In Coverage Reports
+        COVERAGE_FILES=""
+        for FILE in $(find coverage-reports -iname '*_coverage.xml'); do
+          echo -e "\033[0;35mFixing paths in ${FILE}\033[0m"
+          sed -e 's#/var/www/##' -i ${FILE}
+          COVERAGE_FILES="${COVERAGE_FILES},${FILE}"
+        done
+        # remove leading comma when adding this
+        echo "COVERAGE_FILES=${COVERAGE_FILES:1}" | tee -a $GITHUB_ENV
 
     - name: Set target branch
       shell: bash
       run: |
+        # sonarcloud: Set target branch
         TARGET_BRANCH_PARAM="-Dsonar.branch.target=${{ inputs.target_branch }}"
         if [ "${{ github.ref_name}}" == "${{ github.event.repository.default_branch }}" ]; then
           TARGET_BRANCH_PARAM=""

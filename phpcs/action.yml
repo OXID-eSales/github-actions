@@ -58,6 +58,7 @@ runs:
       id: diff
       shell: bash
       run: |
+        # phpcs: List changed files
         set -x
         cd source
         if [ "${{ inputs.diff_only }}" == "true" ]; then
@@ -87,6 +88,7 @@ runs:
       shell: bash
       if: ${{ steps.diff.outputs.skip == 'false' }}
       run: |
+        # phpcs: Run PHP_CS check
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           php vendor/bin/phpcs --version \
@@ -101,7 +103,7 @@ runs:
 
     - name: Upload Log
       if: ${{ always() && steps.diff.outputs.skip == 'false' }}
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.logfile_artifact }}
         path: |
@@ -113,6 +115,7 @@ runs:
     - name: Check results
       shell: bash
       run: |
+        # phpcs: Check results
         PURPLE=$(echo -e "\033[0;31m")
         NOCOLOR=$(echo -e "\033[0m")
         if [ '${{steps.diff.outputs.skip}}' == 'true' ]; then

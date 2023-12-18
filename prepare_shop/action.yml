@@ -182,6 +182,32 @@ inputs:
     required: false
     description: 'Options to pass along to composer during install'
     default: '--no-interaction'
+  composer_file:
+    type: string
+    required: false
+    description: 'Name of the original composer.json'
+    default: 'source/composer.json'
+  composer_transform:
+    type: string
+    required: false
+    description: 'JSON code to apply to the composer.json'
+    default: ''
+  composer_backup:
+    type: boolean
+    required: false
+    description: 'Should we create a backup for composer.json'
+    default: true
+  composer_update:
+    type: string
+    required: false
+    description: 'Run composer update after transform'
+    default: true
+  composer_update_options:
+    type: string
+    required: false
+    description: 'Options to pass along to composer during install'
+    default: '--no-interaction'
+
   enterprise_github_token:
     type: string
     required: false
@@ -236,13 +262,16 @@ runs:
   steps:
     - name: Clone testing environment master
       shell: bash
-      run: git clone --depth 1 ${{ inputs.git_sdk_url }} --branch ${{ inputs.git_sdk_ref }} --single-branch .
+      run: |
+        # prepare_shop: Clone testing environment master
+        git clone --depth 1 ${{ inputs.git_sdk_url }} --branch ${{ inputs.git_sdk_ref }} --single-branch .
 
     - name: Clone the shop  (${{ inputs.git_shop_ref }})
       # yamllint disable-line rule:line-length
       if: ${{ inputs.github_event_name != 'pull_request' || ( github.repository != 'OXID-eSales/oxideshop_ce' && github.repository != 'OXID-eSales/oxideshop_ee' ) }}
       shell: bash
       run: |
+        # prepare_shop: Clone the shop
         git clone --depth 2 ${{ inputs.git_shop_url }} --branch ${{ inputs.git_shop_ref }} --single-branch source
         mkdir source/dev-packages
 
@@ -251,6 +280,7 @@ runs:
       if: ${{ inputs.github_event_name == 'pull_request' && ( github.repository == 'OXID-eSales/oxideshop_ce' || github.repository == 'OXID-eSales/oxideshop_ee' ) }}
       shell: bash
       run: |
+        # prepare_shop: Clone the shop (PR)
         echo -e "\033[0;35mHandling the pull request\033[0m"
         git clone --depth 2 ${{ inputs.git_shop_url }} --branch ${{ inputs.github_base_ref }} --single-branch source
         git -C source fetch origin refs/pull/${{ inputs.github_event_number }}/head:pr_${{ inputs.github_event_number }}
@@ -260,6 +290,7 @@ runs:
     - name: Prepare container configuration
       shell: bash
       run: |
+        # prepare_shop: Prepare container configuration
         make setup
         make addbasicservices
 
@@ -300,6 +331,7 @@ runs:
     - name: Start containers
       shell: bash
       run: |
+        # prepare_shop: Start containers
         make up
         docker-compose ps --all
 
@@ -307,6 +339,7 @@ runs:
       if: failure()
       shell: bash
       run: |
+        # prepare_shop: Output docker logs if make up failed
         echo -e "\033[0;31m### Starting docker failed\033[0m"
         echo -e "\033[0;35m###  docker-compose.yml ###\033[0m"
         cat docker-compose.yml
@@ -316,6 +349,21 @@ runs:
           echo -e "\033[0;35m###  Logs for $c ###\033[0m"
           docker logs -n 200 $c
         done
+
+    - name: Configure enterprise token
+      if: ${{ inputs.enterprise_github_token != '' }}
+      shell: bash
+      run: |
+        # prepare_shop: Configure enterprise token
+        echo -e "\033[0;35m###  configure enterprise token ###\033[0m"
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container_name}} \
+          composer config github-protocols https
+        docker-compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container_name}} \
+          composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
 
     - name: 'Composer allow plugins ${{ inputs.composer_allow_plugins_repositories }}'
       if: ${{ inputs.composer_allow_plugins_repositories != '' }}
@@ -330,6 +378,7 @@ runs:
       if: ${{ inputs.composer_rm_parameters != '' }}
       shell: bash
       run: |
+        # prepare_shop: Prepare composer RM list
         {
           echo "COMPOSER_RM_PARAMETERS<<_composer_rm_parameters_delim_"
           echo "${{inputs.composer_rm_parameters}}"|tr ' ' '\n'
@@ -378,10 +427,25 @@ runs:
         update: ${{ inputs.composer_require_update }}
         update_options: ${{ inputs.composer_require_update_options }}
 
+    - name: 'Modify composer.json'
+      if: ${{ inputs.composer_transform != '' }}
+      uses: 'OXID-eSales/github-actions/composer_merge@v3'
+      with:
+        file: '${{ inputs.composer_file }}'
+        backup: true
+        transform: |
+          ${{ inputs.composer_transform }}
+        update: ${{ inputs.composer_update }}
+        update_options: ${{ inputs.composer_update_options }}
+        container_name: ${{ inputs.container_name }}
+        container_options: ${{ inputs.container_options }}
+        container_method: 'exec'
+
     - name: Install dependencies
       shell: bash
-      if: ${{ inputs.composer_configure_install == '' && inputs.composer_require_install == '' }}
+      if: ${{ inputs.composer_configure_install == '' && inputs.composer_require_install == '' && inputs.composer_transform == ''}}
       run: |
+        # prepare_shop: Install dependencies
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
@@ -390,17 +454,11 @@ runs:
     - name: Setup config inc file
       shell: bash
       run: |
+        # prepare_shop: Setup config inc file
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
           cp source/config.inc.php.dist source/config.inc.php
-
-    - name: Stop containers
-      if: always()
-      shell: bash
-      run: |
-        echo -e "\033[0;35m### Stopping containers $c\033[0m"
-        docker-compose down
 
     - name: Cache current installation
       uses: tespkg/actions-cache@v1

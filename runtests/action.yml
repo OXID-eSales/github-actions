@@ -87,13 +87,15 @@ runs:
       if: ${{ inputs.reset_shop == 'true' }}
       shell: bash
       run: |
+        # runtests: Reset shop
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           php ${{ inputs.reset_shop_binary }}
 
-    - name: Run PHPUnit Unit tests
+    - name: Run runtest
       shell: bash
       run: |
+        # runtests: Run runtest
         docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           php ${{ inputs.runtests_binary }} \
@@ -103,7 +105,7 @@ runs:
 
     - name: Upload Log
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.logfile_artifact }}
         path: ${{ inputs.logfile }}
@@ -112,7 +114,7 @@ runs:
 
     - name: Upload Artifacts
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.output_artifact }}
         path: ${{ inputs.output_files }}
@@ -121,7 +123,7 @@ runs:
 
     - name: Upload Coverage Report
       if: ${{  always() && inputs.coverage_path != '' }}
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.coverage_artifact }}
         path: ${{ inputs.coverage_path }}
@@ -132,6 +134,7 @@ runs:
     - name: Check results
       shell: bash
       run: |
+        # runtests: Check results
         PURPLE=$(echo -e "\033[0;31m")
         NOCOLOR=$(echo -e "\033[0m")
         if [ ! -s "${{ inputs.logfile }}" ]; then

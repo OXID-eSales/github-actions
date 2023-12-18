@@ -67,6 +67,7 @@ runs:
     - name: Configure repositories
       shell: bash
       run: |
+        # composer_configure: Configure repositories
         REPOSITORIES=$(echo -n "${{ inputs.repositories }}"| tr '\n' ' ')
         if [ -z "${{ inputs.ref }}" ]; then
           REFERENCE=""
