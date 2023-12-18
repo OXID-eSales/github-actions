@@ -355,7 +355,6 @@ runs:
       shell: bash
       run: |
         # prepare_shop: Configure enterprise token
-        # prepare_shop.Configure enterprise token
         echo -e "\033[0;35m###  configure enterprise token ###\033[0m"
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
