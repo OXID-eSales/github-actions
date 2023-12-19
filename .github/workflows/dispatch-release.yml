@@ -1,0 +1,103 @@
+name: dispatch_release
+# Create a new release of the github-actions module
+
+# yamllint disable-line rule:truthy
+on:
+  workflow_dispatch:
+    inputs:
+      feature_branch:
+        type: string
+        required: false
+        description: 'Name of the feature branch, if empty, use the current branch'
+        default: ''
+      major:
+        type: number
+        required: true
+        description: 'Major version number (X.?.?)'
+        default: ''
+      minor:
+        type: number
+        required: true
+        description: 'Minor version number (?.X.?)'
+        default: ''
+      patch:
+        type: number
+        required: true
+        description: 'Patch version number (?.?.X)'
+        default: ''
+      reviewer:
+        type: choice
+        required: true
+        description: 'who should review the PR'
+        options:
+          - joernott
+          - snehasreeramini
+jobs:
+  prepare_release:
+    runs-on: 'ubuntu-latest'
+    steps:         
+      - name: 'Get branch'
+        id: branch
+        run: |
+          # Get branch
+          BRANCH='${{ inputs.feature_branch }}'
+          if [ -z "${BRANCH}" ]; then
+            BRANCH="${GITHUB_REF}"
+          fi
+          echo "branch=${BRANCH}" >>${GITHUB_OUTPUTS}
+
+      - name: 'Checkout testplan defaults'
+        uses: actions/checkout@v4
+        with:
+          repository: 'OXID-eSales/github-actions'
+          ref: '${{ steps.branch.outputs.branch }}'
+          path: 'github-actions'
+
+      - name: Validate version
+        run: |
+          # Validate version
+          cd github-actions
+          CHECK=$(git tag --list|grep "v${{inputs.major}}.${{inputs.minor}}.${{inputs.patch}}"||true)
+          if [ -n "${CHECK}" ]; then
+            cat <<EOF
+          *******************************************************************
+          * Tag v${{inputs.major}}.${{inputs.minor}}.${{inputs.patch}} already exists. Aborting
+          *******************************************************************
+          EOF
+            exit 1
+          fi
+
+      - name: 'Create release'
+        run: |
+          # Merge main branch
+          cd github-actions
+          git checkout main
+          git pull
+          git checkout '${{ steps.branch.outputs.branch }}'
+          git merge main
+          STATUS=$(git status -s)
+          if [ -n "${STATUS}" ]; then
+            git add --all
+            git commit -m "Merge main branch"
+          fi
+          git checkout -b "release/${{inputs.major}}.${{inputs.minor}}.${{inputs.patch}}"
+          FILES=$(find . -iname *.yml)
+          for FILE in ${FILES}; do
+          sed -i "${FILE}" \
+              -E 's|OXID-eSales/github-actions/(.*)@v(.*)|OXID-eSales/github-actions/\1@v${{ inputs.major}}|g'
+          done
+          STATUS=$(git status -s)
+          if [ -n "${STATUS}" ]; then
+            git add --all
+            git commit -m "Bump major version to ${{inputs.major}}"
+          fi
+
+      - name: Create branch and Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          path: 'github-actions'
+          base: 'main'
+          branch: 'release/${{inputs.major}}.${{inputs.minor}}.${{inputs.patch}}'
+          assignees: 'joernott'
+          reviewers: '${{inputs.reviewer}}'
+          title: 'Update github-actions to ${{inputs.major}}.${{inputs.minor}}.${{inputs.patch}}'

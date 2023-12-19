@@ -1,0 +1,60 @@
+name: merge_release
+# Create a new release of the github-actions module
+
+# yamllint disable-line rule:truthy
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+jobs:
+  if_merged:
+    if: github.event.pull_request.merged
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Get data'
+        id: data
+        run: |
+          # Get data
+          VERSION=$(echo "${{github.event.pull_request.title}}"|sed -e 's|.* ||')
+          MAJOR=${echo "${VERSION}"|awk -F '.' '{print $1}'}
+          MINOR=${echo "${VERSION}"|awk -F '.' '{print $2}'}
+          PATCH=${echo "${VERSION}"|awk -F '.' '{print $3}'}
+          echo "version=${VERSION}" | tee -a "${GITHUB_OUTPUTS}"
+          echo "major=${MAJOR}" | tee -a "${GITHUB_OUTPUTS}"
+          echo "minor=${MINOR}" | tee -a "${GITHUB_OUTPUTS}"
+          echo "patch=${PATCH}" | tee -a "${GITHUB_OUTPUTS}"
+
+      - name: 'Checkout testplan defaults'
+        uses: actions/checkout@v4
+        with:
+          repository: 'OXID-eSales/github-actions'
+          ref: 'main'
+          path: 'github-actions'
+
+      - name: 'Tagging'
+        run: |
+          # Tagging
+          git tag -a "v${{steps.data.outputs.major}}.${{steps.data.outputs.minor}}.${{steps.data.outputs.patch}}" -m "Release v${{steps.data.outputs.major}}.${{steps.data.outputs.minor}}.${{steps.data.outputs.patch}}"
+          CHECK=$(git tag --list|grep "v${{steps.data.outputs.major}}.${{steps.data.outputs.minor}}"||true)
+          if [ -n "${CHECK}" ]; then
+            echo "Moving tag v${{steps.data.outputs.major}}.${{steps.data.outputs.minor}}"
+            git push --delete origin v${{steps.data.outputs.major}}.${{steps.data.outputs.minor}}
+            git tag -d v${{steps.data.outputs.major}}.${{steps.data.outputs.minor}}
+          fi
+          git tag -a v${{steps.data.outputs.major}}.${{steps.data.outputs.minor}} -m "Release v${{steps.data.outputs.major}}.${{steps.data.outputs.minor}}.${{steps.data.outputs.patch}}"
+          CHECK=$(git tag --list|grep "v${{steps.data.outputs.major}}"||true)
+          if [ -n "${CHECK}" ]; then
+            echo "Moving tag v${{steps.data.outputs.major}}"
+            git push --delete origin v${{steps.data.outputs.major}}
+            git tag -d v${{steps.data.outputs.major}}
+          fi
+          git tag -a v${{steps.data.outputs.major}} -m "Release v${{steps.data.outputs.major}}.${{steps.data.outputs.minor}}.${{steps.data.outputs.patch}}"
+          git push --tags
+
+      - uses: ncipollo/release-action@v1
+        with:
+          token: ${{github.token}}
+          tag: 'v${{steps.data.outputs.major}}.${{steps.data.outputs.minor}}.${{steps.data.outputs.patch}}'
