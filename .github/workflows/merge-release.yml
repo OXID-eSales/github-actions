@@ -21,7 +21,7 @@ jobs:
         run: |
           # Get data
           if [[ "${TITLE}" != "Update github-actions to "* ]]; then
-            echo "skip=true" | tee -a "${GITHUB_OUTPUTS}"
+            echo "skip=true" | tee -a "${GITHUB_OUTPUT}"
           fi
           # shellcheck disable=SC2001
           VERSION=$(echo "${TITLE}"|sed -e 's|.* ||')
@@ -31,10 +31,10 @@ jobs:
           MINOR=${echo "${VERSION}"|awk -F '.' '{print $2}'}
           # shellcheck disable=SC2016
           PATCH=${echo "${VERSION}"|awk -F '.' '{print $3}'}
-          echo "version=${VERSION}" | tee -a "${GITHUB_OUTPUTS}"
-          echo "major=${MAJOR}" | tee -a "${GITHUB_OUTPUTS}"
-          echo "minor=${MINOR}" | tee -a "${GITHUB_OUTPUTS}"
-          echo "patch=${PATCH}" | tee -a "${GITHUB_OUTPUTS}"
+          echo "version=${VERSION}" | tee -a "${GITHUB_OUTPUT}"
+          echo "major=${MAJOR}" | tee -a "${GITHUB_OUTPUT}"
+          echo "minor=${MINOR}" | tee -a "${GITHUB_OUTPUT}"
+          echo "patch=${PATCH}" | tee -a "${GITHUB_OUTPUT}"
 
       - name: 'Checkout testplan defaults'
         if: ${{ steps.data.outputs.skip != 'true' }}
