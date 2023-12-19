@@ -82,8 +82,8 @@ jobs:
           git checkout -b "release/${{inputs.major}}.${{inputs.minor}}.${{inputs.patch}}"
           FILES=$(find . -iname '*.yml')
           for FILE in ${FILES}; do
-          sed -i "${FILE}" \
-              -E 's|OXID-eSales/github-actions/(.*)@v(.*)|OXID-eSales/github-actions/\1@v${{ inputs.major}}|g'
+          sed -E 's|OXID-eSales/github-actions/(.*)@v(.*)|OXID-eSales/github-actions/\1@v${{ inputs.major}}|g' \
+              -i "${FILE}"
           done
           STATUS=$(git status -s)
           if [ -n "${STATUS}" ]; then
