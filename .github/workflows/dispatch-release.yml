@@ -14,17 +14,14 @@ on:
         type: number
         required: true
         description: 'Major version number (X.?.?)'
-        default: ''
       minor:
         type: number
         required: true
         description: 'Minor version number (?.X.?)'
-        default: ''
       patch:
         type: number
         required: true
         description: 'Patch version number (?.?.X)'
-        default: ''
       reviewer:
         type: choice
         required: true
@@ -44,7 +41,7 @@ jobs:
           if [ -z "${BRANCH}" ]; then
             BRANCH="${GITHUB_REF}"
           fi
-          echo "branch=${BRANCH}" >>${GITHUB_OUTPUTS}
+          echo "branch=${BRANCH}" >>"${GITHUB_OUTPUTS}"
 
       - name: 'Checkout testplan defaults'
         uses: actions/checkout@v4
@@ -81,7 +78,7 @@ jobs:
             git commit -m "Merge main branch"
           fi
           git checkout -b "release/${{inputs.major}}.${{inputs.minor}}.${{inputs.patch}}"
-          FILES=$(find . -iname *.yml)
+          FILES=$(find . -iname '*.yml')
           for FILE in ${FILES}; do
           sed -i "${FILE}" \
               -E 's|OXID-eSales/github-actions/(.*)@v(.*)|OXID-eSales/github-actions/\1@v${{ inputs.major}}|g'
