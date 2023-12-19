@@ -41,7 +41,7 @@ jobs:
           if [ -z "${BRANCH}" ]; then
             BRANCH="${GITHUB_REF}"
           fi
-          echo "branch=${BRANCH}" >>"${GITHUB_OUTPUTS}"
+          echo "branch=${BRANCH}" >>"${GITHUB_OUTPUT}"
 
       - name: 'Checkout testplan defaults'
         uses: actions/checkout@v4
