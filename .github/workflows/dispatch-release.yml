@@ -32,7 +32,7 @@ on:
 jobs:
   prepare_release:
     runs-on: 'ubuntu-latest'
-    steps:         
+    steps:
       - name: 'Get branch'
         id: branch
         run: |

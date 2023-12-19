@@ -16,9 +16,10 @@ jobs:
     steps:
       - name: 'Get data'
         id: data
+        env:
+          TITLE: ${{github.event.pull_request.title}}
         run: |
           # Get data
-          TITLE="${{github.event.pull_request.title}}"
           if [[ "${TITLE}" != "Update github-actions to "* ]]; then
             echo "skip=true" | tee -a "${GITHUB_OUTPUTS}"
           fi
