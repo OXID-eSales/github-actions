@@ -93,7 +93,6 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           path: 'github-actions'
-          base: 'main'
           branch: 'release_${{inputs.major}}_${{inputs.minor}}_${{inputs.patch}}'
           assignees: '${{inputs.reviewer}}'
           reviewers: '${{inputs.reviewer}}'
