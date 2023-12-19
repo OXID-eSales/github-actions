@@ -103,7 +103,7 @@ runs:
 
     - name: Upload Log
       if: ${{ always() && steps.diff.outputs.skip == 'false' }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
         name: ${{ inputs.logfile_artifact }}
         path: |

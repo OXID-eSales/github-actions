@@ -22,7 +22,7 @@ runs:
   using: "composite"
   steps:
     - name: Download Artifact
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v3
       with:
         name: testplan
 
@@ -144,15 +144,18 @@ runs:
       shell: bash
       run: |
         # generate_report: Generate cache list
-        echo "cache_objects<<EOF" | tee -a "${GITHUB_OUTPUTS}"
-        cat caches/*.txt | tee -a "${GITHUB_OUTPUTS}"
-        echo "EOF" | tee -a "${GITHUB_OUTPUTS}"
+        FILES=$(find caches -iname '*.txt')
+        if [ -n "${FILES}" ]; then
+          echo "cache_objects<<EOF" | tee -a "${GITHUB_OUTPUTS}"
+          cat caches/*.txt | tee -a "${GITHUB_OUTPUTS}"
+          echo "EOF" | tee -a "${GITHUB_OUTPUTS}"
+        else
+          echo "cache_objects=" | tee -a "${GITHUB_OUTPUTS}"
+        fi
 
     - name: Upload Artifacts
-      # yamllint enable rule:line-length
-
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
         name: testplan
         path: |
