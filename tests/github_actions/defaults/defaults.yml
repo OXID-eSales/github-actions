@@ -332,6 +332,10 @@ install_module:
   # Path to install the module under dev-packages, should be the same as module_ids
   path: &module_path ''
 
+  # What modules should be activated
+  activate: *module_ids
+
+
   # Run custom script outside the container'
   custom_script: ''
 
