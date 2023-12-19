@@ -79,7 +79,6 @@ jobs:
           if [ -n "${STATUS}" ]; then
             git add --all
           fi
-          git checkout -b "release_${{inputs.major}}.${{inputs.minor}}.${{inputs.patch}}"
           FILES=$(find . -iname '*.yml')
           for FILE in ${FILES}; do
           sed -E 's|OXID-eSales/github-actions/(.*)@v(.*)|OXID-eSales/github-actions/\1@v${{ inputs.major}}|g' \
@@ -95,7 +94,7 @@ jobs:
         with:
           path: 'github-actions'
           base: 'main'
-          branch: 'release_${{inputs.major}}.${{inputs.minor}}.${{inputs.patch}}'
+          branch: 'release_${{inputs.major}}_${{inputs.minor}}_${{inputs.patch}}'
           assignees: '${{inputs.reviewer}}'
           reviewers: '${{inputs.reviewer}}'
           title: 'Update github-actions to ${{inputs.major}}.${{inputs.minor}}.${{inputs.patch}}'
