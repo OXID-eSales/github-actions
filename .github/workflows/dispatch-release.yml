@@ -79,7 +79,7 @@ jobs:
           if [ -n "${STATUS}" ]; then
             git add --all
           fi
-          git checkout -b "release/${{inputs.major}}.${{inputs.minor}}.${{inputs.patch}}"
+          git checkout -b "release_${{inputs.major}}.${{inputs.minor}}.${{inputs.patch}}"
           FILES=$(find . -iname '*.yml')
           for FILE in ${FILES}; do
           sed -E 's|OXID-eSales/github-actions/(.*)@v(.*)|OXID-eSales/github-actions/\1@v${{ inputs.major}}|g' \
