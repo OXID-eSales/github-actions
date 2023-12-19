@@ -23,6 +23,7 @@ jobs:
           if [[ "${TITLE}" != "Update github-actions to "* ]]; then
             echo "skip=true" | tee -a "${GITHUB_OUTPUTS}"
           fi
+          # shellcheck disable=SC2001
           VERSION=$(echo "${TITLE}"|sed -e 's|.* ||')
           # shellcheck disable=SC2016
           MAJOR=${echo "${VERSION}"|awk -F '.' '{print $1}'}
