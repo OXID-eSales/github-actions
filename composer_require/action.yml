@@ -121,3 +121,12 @@ runs:
             ${{ inputs.container_name}} \
             composer update ${{ inputs.update_options }}
         fi
+
+    - name: Generate deprecation warning to summary page
+      shell: bash
+      run: |
+        # composer_require : Generate deprecation warning to summary page
+        cat  >> $GITHUB_STEP_SUMMARY <<EOF
+        # Deprecation Warning:
+        This composer_require action is deprecated and may not be supported.
+        EOF
