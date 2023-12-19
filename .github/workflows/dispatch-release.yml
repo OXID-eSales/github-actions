@@ -49,6 +49,7 @@ jobs:
           repository: 'OXID-eSales/github-actions'
           ref: '${{ steps.branch.outputs.branch }}'
           path: 'github-actions'
+          fetch-depth: 0
 
       - name: Validate version
         run: |

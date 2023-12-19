@@ -44,6 +44,7 @@ jobs:
           repository: 'OXID-eSales/github-actions'
           ref: 'main'
           path: 'github-actions'
+          fetch-depth: 0
 
       - name: 'Tagging'
         if: ${{ steps.data.outputs.skip != 'true' }}
