@@ -18,6 +18,9 @@ jobs:
         id: data
         run: |
           # Get data
+          if [[ "${{github.event.pull_request.title}}" != "Update github-actions to "* ]]; then
+            echo "skip=true" | tee -a "${GITHUB_OUTPUTS}"
+          fi
           VERSION=$(echo "${{github.event.pull_request.title}}"|sed -e 's|.* ||')
           MAJOR=${echo "${VERSION}"|awk -F '.' '{print $1}'}
           MINOR=${echo "${VERSION}"|awk -F '.' '{print $2}'}
@@ -28,6 +31,7 @@ jobs:
           echo "patch=${PATCH}" | tee -a "${GITHUB_OUTPUTS}"
 
       - name: 'Checkout testplan defaults'
+        if: ${{ steps.data.outputs.skip != 'true' }}
         uses: actions/checkout@v4
         with:
           repository: 'OXID-eSales/github-actions'
@@ -35,6 +39,7 @@ jobs:
           path: 'github-actions'
 
       - name: 'Tagging'
+        if: ${{ steps.data.outputs.skip != 'true' }}
         run: |
           # Tagging
           git tag -a "v${{steps.data.outputs.major}}.${{steps.data.outputs.minor}}.${{steps.data.outputs.patch}}" -m "Release v${{steps.data.outputs.major}}.${{steps.data.outputs.minor}}.${{steps.data.outputs.patch}}"
@@ -55,6 +60,7 @@ jobs:
           git push --tags
 
       - uses: ncipollo/release-action@v1
+        if: ${{ steps.data.outputs.skip != 'true' }}
         with:
           token: ${{github.token}}
           tag: 'v${{steps.data.outputs.major}}.${{steps.data.outputs.minor}}.${{steps.data.outputs.patch}}'
