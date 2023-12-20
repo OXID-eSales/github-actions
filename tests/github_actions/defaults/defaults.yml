@@ -335,7 +335,6 @@ install_module:
   # What modules should be activated
   activate: *module_ids
 
-
   # Run custom script outside the container'
   custom_script: ''
 
@@ -369,6 +368,12 @@ phpunit:
     method: *container_method
   cache:
     bucket: *cache_bucket
+
+  # Run custom script outside the container'
+  custom_script: ''
+
+  # Run custom script inside the container like 'bin/oe-console oe:b2b:installdemodata --shop-id=1'
+  custom_script_container: ''
 
   # Name of the configuration file
   configuration: 'phpunit.xml'
@@ -458,6 +463,13 @@ codeception:
     fi
     echo "CODECEPTION_CONTAINER_OPTIONS=-e THEME_ID=apex ${MODULE_OPTIONS}" | tee -a "${GITHUB_ENV}"
     echo "container_options=-e THEME_ID=apex ${MODULE_OPTIONS}" | tee -a "${GITHUB_OUTPUT}"
+
+  # Run custom script outside the container'
+  custom_script: ''
+
+  # Run custom script inside the container like 'bin/oe-console oe:b2b:installdemodata --shop-id=1'
+  custom_script_container: ''
+
   configuration: 'tests/codeception.yml'
 
   # Whether to run the codeception build step before running codeception itself
@@ -533,6 +545,12 @@ runtest:
     update: true
     update_options: '--no-interaction'
 
+  # Run custom script outside the container'
+  custom_script: ''
+
+  # Run custom script inside the container like 'bin/oe-console oe:b2b:installdemodata --shop-id=1'
+  custom_script_container: ''
+
   # Name of the config file to copy
   config_file: 'vendor/oxid-esales/testing-library/test_config.yml.dist'
 
@@ -575,6 +593,13 @@ sonarcloud:
   # There is only one matrix combination
   max_parallel: 1
   docker_login: *docker_login
+
+  # Run custom script outside the container'
+  custom_script: ''
+
+  # Run custom script inside the container like 'bin/oe-console oe:b2b:installdemodata --shop-id=1'
+  custom_script_container: ''
+
   coverage:
     prefix: *coverage_prefix
   target_branch: b-8.0.x
@@ -589,7 +614,7 @@ sonarcloud:
     -Dsonar.sources=source
     -Dsonar.tests=tests
 
-  # for the internal run, leave the project key empty if you don't have a need
+  # DEPRECATED: (we use a separate config for this now) for the internal run, leave the project key empty if you don't have a need
   # for this second run with different settings
   internal_project_key: 'OXID-eSales_oxideshop_ce_internal'
   internal_project_name: 'oxideshop_ce_internal'
@@ -641,6 +666,12 @@ styles:
     transform: ''
     update: true
     update_options: '--no-interaction'
+
+  # Run custom script outside the container'
+  custom_script: ''
+
+  # Run custom script inside the container like 'bin/oe-console oe:b2b:installdemodata --shop-id=1'
+  custom_script_container: ''
 
   # The path pointing to the module relative to source/dev-packages needs to be the same as in install_module
   path: *module_path
