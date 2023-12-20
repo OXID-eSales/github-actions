@@ -146,11 +146,11 @@ runs:
         # generate_report: Generate cache list
         FILES=$(find caches -iname '*.txt')
         if [ -n "${FILES}" ]; then
-          echo "cache_objects<<EOF" | tee -a "${GITHUB_OUTPUTS}"
-          cat caches/*.txt | tee -a "${GITHUB_OUTPUTS}"
-          echo "EOF" | tee -a "${GITHUB_OUTPUTS}"
+          echo "cache_objects<<EOF" | tee -a "${GITHUB_OUTPUT}"
+          cat caches/*.txt | tee -a "${GITHUB_OUTPUT}"
+          echo "EOF" | tee -a "${GITHUB_OUTPUT}"
         else
-          echo "cache_objects=" | tee -a "${GITHUB_OUTPUTS}"
+          echo "cache_objects=" | tee -a "${GITHUB_OUTPUT}"
         fi
 
     - name: Upload Artifacts
