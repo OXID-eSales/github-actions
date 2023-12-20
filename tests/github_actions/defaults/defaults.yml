@@ -567,6 +567,7 @@ runtest:
     files: |
       source/unit.cov
       source/source/log/oxideshop.log
+      source/test_config.yml
       data/php/logs/error_log.txt
     prefix: 'deprecated_tests_artifacts'
   coverage:
