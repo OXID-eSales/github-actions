@@ -101,13 +101,6 @@ jobs:
           app-id: ${{ secrets.ACTIONS_RELEASE_APP_ID }}
           private-key: ${{ secrets.ACTIONS_RELEASE_APP_PRIVATE_KEY }}
 
-      - name: Generate a token
-        id: generate_token
-        uses: actions/create-github-app-token@v1
-        with:
-          app-id: ${{ secrets.ACTIONS_RELEASE_APP_ID }}
-          private-key: ${{ secrets.ACTIONS_RELEASE_APP_PRIVATE_KEY }}
-
       - name: Create branch and Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
