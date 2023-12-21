@@ -37,11 +37,11 @@ runs:
       run: |
         # shellcheck disable=SC2086
 
-        YL=$(type -p 'gh'||true)
+        YL=$(type -p 'yamllint'||true)
         if [ -z "${YL}" ]; then
           echo -e "\033[0;35m###  Installing yamllint ###\033[0m"
           sudo apt-get update
-          sudo apt-get -qq install gh
+          sudo apt-get -qq install yamllint
         fi
         set -o pipefail
         if [[ -z "$LOGFILE" ]]; then
