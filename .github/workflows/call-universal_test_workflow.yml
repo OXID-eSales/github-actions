@@ -1392,7 +1392,6 @@ jobs:
         uses: OXID-eSales/github-actions/yamllint@v0
         with:
           file_or_dir: ${{ needs.init.outputs.yamllint_file_or_dir }}
-          format: 'github'
           config_data: |
             extends: default
             ignore: .git/*
