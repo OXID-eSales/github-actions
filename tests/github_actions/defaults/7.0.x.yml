@@ -8,6 +8,7 @@ global:
   git: &git
     shop_ref: &git_shop_ref b-7.0.x
     enterprise_ref: &git_enterprise_ref 'b-7.0.x'
+    default_ref: &default_ref 'b-7.0.x'
 
   composer: &composer
     dev_ref: &dev_ref dev-b-7.0.x
@@ -39,7 +40,7 @@ install_module:
   matrix: *matrix
   git:
     module:
-      ref: 'b-7.0.x'
+      ref: *default_ref
   composer: *composer
 
 phpunit:

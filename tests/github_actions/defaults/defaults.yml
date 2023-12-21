@@ -85,6 +85,9 @@ global:
     # Branch to check out for the enterprise repos
     enterprise_ref: &git_enterprise_ref 'b-8.0.x'
 
+    # Branch to check out for modules/plugins etc
+    default_ref: &default_ref 'b-8.0.x'
+
   # When running on a self hosted runner with access to a local s3 cache:
   # Set the following secrets:
   # - secrets.CACHE_ENDPOINT
@@ -324,7 +327,7 @@ install_module:
       url: ''
 
       # Branch to check out/test
-      ref: ''
+      ref: *default_ref
 
   # Name of the package on github (organization/repository)
   package_name: ''
@@ -503,7 +506,7 @@ codeception:
     # nothing will be added to the codeception artifact
     path: 'source/codeception_coverage.xml'
     prefix: *coverage_prefix
-  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found|Cannot open file'
+  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found|Cannot open file|No tests executed'
 
 # These deprecated tests use the runtests action. Many options are similar to
 # codeception/phpunit

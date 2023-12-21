@@ -1389,7 +1389,7 @@ jobs:
 
       - name: Lint yaml files
         id: yamllint
-        uses: ibiqlik/action-yamllint@v3
+        uses: OXID-eSales/github-actions/action-yamllint@v0
         with:
           file_or_dir: ${{ needs.init.outputs.yamllint_file_or_dir }}
           format: 'github'
@@ -1424,6 +1424,16 @@ jobs:
     if: ${{ always() && needs.init.outputs.actionlint_skip != 'true' }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
+      - name: Install npm on private runner
+        if: ${{ inputs.runs_on != '"ubuntu-latest"'}}
+        run: |
+          NPM=$(type -p 'npm'||true)
+          if [ -z "${NPM}" ]; then
+            echo -e "\033[0;35m###  Installing npm ###\033[0m"
+            sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update
+            sudo apt-get -qq install npm
+          fi
+
       - name: Checkout
         id: checkout
         uses: actions/checkout@v4
