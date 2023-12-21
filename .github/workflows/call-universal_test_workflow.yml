@@ -701,6 +701,25 @@ jobs:
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
+      - name: Run custom script
+        if: ${{ steps.phpunit_testplan.outputs.phpunit_custom_script != ''}}
+        run: |
+          ${{ steps.phpunit_testplan.outputs.phpunit_custom_script }}
+
+      - name: Run custom script inside the container
+        if: ${{ steps.phpunit_testplan.outputs.phpunit_custom_script_container != ''}}
+        run: |
+          cat >source/install_module_custom_script.sh <<EOF
+          #!/bin/bash
+          ${{ steps.phpunit_testplan.outputs.phpunit_custom_script_container }}
+          EOF
+          chmod 0755 source/install_module_custom_script.sh
+          docker-compose ${{ steps.phpunit_testplan.outputs.phpunit_container_method }} -T \
+            ${{ steps.phpunit_testplan.outputs.phpunit_container_options }} \
+            ${{ steps.phpunit_testplan.outputs.phpunit_container_name}} \
+            /var/www/install_module_custom_script.sh
+          rm source/install_module_custom_script.sh
+
       - name: 'Run phpunit tests'
         id: phpunit_run
         uses: 'OXID-eSales/github-actions/phpunit@v3'
@@ -856,6 +875,25 @@ jobs:
           container_name: ${{ steps.codeception_testplan.outputs.codeception_container_name }}
           container_options: ${{ steps.codeception_testplan.outputs.codeception_container_options }}
           container_method: 'exec'
+
+      - name: Run custom script
+        if: ${{ steps.codeception_testplan.outputs.codeceptiont_custom_script != ''}}
+        run: |
+          ${{ steps.codeception_testplan.outputs.codeception_custom_script }}
+
+      - name: Run custom script inside the container
+        if: ${{ steps.codeception_testplan.outputs.codeception_custom_script_container != ''}}
+        run: |
+          cat >source/install_module_custom_script.sh <<EOF
+          #!/bin/bash
+          ${{ steps.codeception_testplan.outputs.codeception_custom_script_container }}
+          EOF
+          chmod 0755 source/install_module_custom_script.sh
+          docker-compose ${{ steps.codeception_testplan.outputs.codeception_container_method }} -T \
+            ${{ steps.codeception_testplan.outputs.codeception_container_options }} \
+            ${{ steps.codeception_testplan.outputs.codeception_container_name}} \
+            /var/www/install_module_custom_script.sh
+          rm source/install_module_custom_script.sh
 
       - name: 'Run codeception tests'
         id: codeception_run
@@ -1018,6 +1056,25 @@ jobs:
 
       - name: Copy config file
         run: cp source/vendor/oxid-esales/testing-library/test_config.yml.dist source/test_config.yml
+
+      - name: Run custom script
+        if: ${{ steps.runtest_testplan.outputs.runtest_custom_script != ''}}
+        run: |
+          ${{ steps.runtest_testplan.outputs.runtest_custom_script }}
+
+      - name: Run custom script inside the container
+        if: ${{ steps.runtest_testplan.outputs.runtest_custom_script_container != ''}}
+        run: |
+          cat >source/install_module_custom_script.sh <<EOF
+          #!/bin/bash
+          ${{ steps.runtest_testplan.outputs.runtest_custom_script_container }}
+          EOF
+          chmod 0755 source/install_module_custom_script.sh
+          docker-compose ${{ steps.runtest_testplan.outputs.runtest_container_method }} -T \
+            ${{ steps.runtest_testplan.outputs.runtest_container_options }} \
+            ${{ steps.runtest_testplan.outputs.runtest_container_name}} \
+            /var/www/install_module_custom_script.sh
+          rm source/install_module_custom_script.sh
 
       - name: 'Run tests'
         id: runtest_run
