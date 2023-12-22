@@ -425,7 +425,7 @@ phpunit:
 
   # This grep pattern is applied to the generated phpunit log file. If we have
   # a hit matching the pattern below, the step will fail.
-  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|Test file ".+" not found|Cannot open file'
+  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|Test file ".+" not found|Cannot open file|Could not read'
 
 # This step usesd the codeception custom action. Many inputs are similar to the
 # ones in the unit tests.
@@ -506,7 +506,7 @@ codeception:
     # nothing will be added to the codeception artifact
     path: 'source/codeception_coverage.xml'
     prefix: *coverage_prefix
-  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found|Cannot open file|No tests executed'
+  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found|Cannot open file|No tests executed|Could not read'
 
 # These deprecated tests use the runtests action. Many options are similar to
 # codeception/phpunit
