@@ -41,6 +41,11 @@ inputs:
     required: false
     description: 'Optional: Additional options to pass to codeception'
     default: ''
+  build_additional_options:
+    type: string
+    required: false
+    description: 'Optional: Additional options to pass to codecept build'
+    default: ''
   logfile:
     type: string
     required: false
@@ -100,7 +105,8 @@ runs:
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
           php vendor/bin/codecept build \
-          -c ${{ inputs.configuration }}
+          -c ${{ inputs.configuration }} \
+          ${{ inputs.build_additional_options }}
 
     - name: Run Codeception tests
       shell: bash

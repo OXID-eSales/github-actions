@@ -483,8 +483,12 @@ codeception:
 
   # Name of the test to run
   test: ''
+
   # Additional options to pass to codeception
   additional_options: '--coverage-xml=/var/www/codeception_coverage.xml -x flow_theme'
+
+  # Additional options to pass to codecept build
+  build_additional_options: ''
 
   logfile:
     prefix: 'codeception'

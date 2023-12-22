@@ -897,7 +897,7 @@ jobs:
 
       - name: 'Run codeception tests'
         id: codeception_run
-        uses: 'OXID-eSales/github-actions/codeception@v3'
+        uses: 'OXID-eSales/github-actions/codeception@v0'
         with:
           container_name: ${{ steps.codeception_testplan.outputs.codeception_container_name }}
           container_options: '${{ steps.codeception_testplan.outputs.codeception_container_options }} ${{ steps.pre_script.outputs.container_options }}'
@@ -907,6 +907,7 @@ jobs:
           suite: ${{ steps.codeception_testplan.outputs.codeception_suite }}
           test: ${{ steps.codeception_testplan.outputs.codeception_test }}
           additional_options: ${{ steps.codeception_testplan.outputs.codeception_additional_options }}
+          build_additional_options: ${{ steps.codeception_testplan.outputs.codeception_build_additional_options }}
           # yamllint disable-line rule:line-length
           logfile: ${{steps.codeception_testplan.outputs.codeception_logfile_prefix}}-${{steps.codeception_testplan.outputs.codeception_title}}-${{steps.codeception_testplan_name.outputs.matrix_suffix}}.txt
           logfile_artifact: ${{ steps.codeception_testplan.outputs.codeception_logfile_artifact }}
