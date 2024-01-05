@@ -99,12 +99,7 @@ runs:
         docker-compose exec -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
-          find . -iname "codeception.yml"
-
-        docker-compose exec -T \
-          ${{ inputs. container_options }} \
-          ${{ inputs.container_name}} \
-          php vendor/bin/codecept build \
+          vendor/bin/codecept build \
           -c ${{ inputs.configuration }} \
           ${{ inputs.build_additional_options }}
 
