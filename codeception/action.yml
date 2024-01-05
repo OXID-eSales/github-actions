@@ -96,7 +96,7 @@ runs:
       shell: bash
       run: |
         # codeception: Build Codeception
-        docker-compose exec -T \
+        docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
           vendor/bin/codecept build \
