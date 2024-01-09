@@ -258,6 +258,7 @@ jobs:
       # yamllint variables
       yamllint_skip: ${{ steps.ltp.outputs.yamllint_skip }}
       yamllint_file_or_dir: ${{ steps.ltp.outputs.yamllint_file_or_dir }}
+      yamllint_rules: ${{ steps.ltp.outputs.yamllint_rules }}
       # actionlint variables
       actionlint_skip: ${{ steps.ltp.outputs.actionlint_skip }}
       # finish variables
@@ -907,6 +908,7 @@ jobs:
           suite: ${{ steps.codeception_testplan.outputs.codeception_suite }}
           test: ${{ steps.codeception_testplan.outputs.codeception_test }}
           additional_options: ${{ steps.codeception_testplan.outputs.codeception_additional_options }}
+          build_additional_options: ${{ steps.codeception_testplan.outputs.codeception_build_additional_options }}
           # yamllint disable-line rule:line-length
           logfile: ${{steps.codeception_testplan.outputs.codeception_logfile_prefix}}-${{steps.codeception_testplan.outputs.codeception_title}}-${{steps.codeception_testplan_name.outputs.matrix_suffix}}.txt
           logfile_artifact: ${{ steps.codeception_testplan.outputs.codeception_logfile_artifact }}
@@ -1389,22 +1391,10 @@ jobs:
 
       - name: Lint yaml files
         id: yamllint
-        uses: ibiqlik/action-yamllint@v3
+        uses: OXID-eSales/github-actions/yamllint@v3
         with:
           file_or_dir: ${{ needs.init.outputs.yamllint_file_or_dir }}
-          format: 'github'
-          config_data: |
-            extends: default
-            ignore: .git/*
-            rules:
-              document-start: disable
-              line-length:
-                max: 160
-                level: warning
-              new-line-at-end-of-file:
-                level: warning
-              trailing-spaces:
-                level: warning
+          config_data: ${{ needs.init.outputs.yamllint_rules }}
 
       - name: 'Write yamllint Report'
         if: always()
@@ -1424,6 +1414,16 @@ jobs:
     if: ${{ always() && needs.init.outputs.actionlint_skip != 'true' }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
+      - name: Install npm on private runner
+        if: ${{ inputs.runs_on != '"ubuntu-latest"'}}
+        run: |
+          NPM=$(type -p 'npm'||true)
+          if [ -z "${NPM}" ]; then
+            echo -e "\033[0;35m###  Installing npm ###\033[0m"
+            sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update
+            sudo apt-get -qq install npm
+          fi
+
       - name: Checkout
         id: checkout
         uses: actions/checkout@v4
@@ -1455,7 +1455,6 @@ jobs:
           mysql: ''
           testplan: ''
           status: ${{job.status}}
-
 
   finish:
     if: ${{ always() && needs.init.outputs.finish_skip != 'true' }}

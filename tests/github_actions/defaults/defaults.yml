@@ -85,6 +85,9 @@ global:
     # Branch to check out for the enterprise repos
     enterprise_ref: &git_enterprise_ref 'b-8.0.x'
 
+    # Branch to check out for modules/plugins etc
+    default_ref: &default_ref 'b-8.0.x'
+
   # When running on a self hosted runner with access to a local s3 cache:
   # Set the following secrets:
   # - secrets.CACHE_ENDPOINT
@@ -324,7 +327,7 @@ install_module:
       url: ''
 
       # Branch to check out/test
-      ref: ''
+      ref: *default_ref
 
   # Name of the package on github (organization/repository)
   package_name: ''
@@ -422,7 +425,7 @@ phpunit:
 
   # This grep pattern is applied to the generated phpunit log file. If we have
   # a hit matching the pattern below, the step will fail.
-  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|Test file ".+" not found|Cannot open file'
+  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|Test file ".+" not found|Cannot open file|Could not read'
 
 # This step usesd the codeception custom action. Many inputs are similar to the
 # ones in the unit tests.
@@ -446,7 +449,6 @@ codeception:
     name: *container_name
 
     # For codeception, we need different options than the empty default
-    # yamllint disable-line rule:line-length
     options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e XDEBUG_MODE=coverage'
 
     method: *container_method
@@ -480,8 +482,12 @@ codeception:
 
   # Name of the test to run
   test: ''
+
   # Additional options to pass to codeception
   additional_options: '--coverage-xml=/var/www/codeception_coverage.xml -x flow_theme'
+
+  # Additional options to pass to codecept build
+  build_additional_options: ''
 
   logfile:
     prefix: 'codeception'
@@ -503,7 +509,8 @@ codeception:
     # nothing will be added to the codeception artifact
     path: 'source/codeception_coverage.xml'
     prefix: *coverage_prefix
-  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found|Cannot open file'
+  # yamllint disable-line rule:line-length
+  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found|Cannot open file|No tests executed|Could not read'
 
 # These deprecated tests use the runtests action. Many options are similar to
 # codeception/phpunit
@@ -535,7 +542,7 @@ runtest:
     backup: true
     transform: |
       {
-          "require": {
+          "require-dev": {
               "oxid-esales/testing-library": "dev-b-8.0.x",
               "oxid-esales/tests-deprecated-ce": "dev-b-8.0.x",
               "codeception/module-webdriver": "^3.1",
@@ -698,6 +705,21 @@ styles:
 yamllint:
   # Skip this part of the test run
   skip: false
+
+  # Rules for the linter
+  rules: |
+    extends: default
+    ignore: .git/*
+    rules:
+      document-start: disable
+      line-length:
+        max: 160
+        level: warning
+      new-line-at-end-of-file:
+        level: warning
+      trailing-spaces:
+        level: warning
+      truthy: disable
 
   # Space separated list of files or directories
   file_or_dir: '.github tests/github_actions'
