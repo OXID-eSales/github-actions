@@ -56,7 +56,7 @@ runtest:
   composer:
     transform: |
       {
-          "require": {
+          "require-dev": {
               "oxid-esales/tests-deprecated-ce": "dev-b-7.0.x",
               "codeception/module-webdriver": "^3.1",
               "phpunit/phpunit": "^9.1.1"

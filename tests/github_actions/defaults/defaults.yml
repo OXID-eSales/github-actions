@@ -542,7 +542,7 @@ runtest:
     backup: true
     transform: |
       {
-          "require": {
+          "require-dev": {
               "oxid-esales/testing-library": "dev-b-8.0.x",
               "oxid-esales/tests-deprecated-ce": "dev-b-8.0.x",
               "codeception/module-webdriver": "^3.1",
