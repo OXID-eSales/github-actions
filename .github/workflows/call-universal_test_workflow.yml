@@ -1391,7 +1391,7 @@ jobs:
 
       - name: Lint yaml files
         id: yamllint
-        uses: OXID-eSales/github-actions/yamllint@v0
+        uses: OXID-eSales/github-actions/yamllint@v3
         with:
           file_or_dir: ${{ needs.init.outputs.yamllint_file_or_dir }}
           config_data: ${{ needs.init.outputs.yamllint_rules }}
