@@ -1405,6 +1405,7 @@ jobs:
                 level: warning
               trailing-spaces:
                 level: warning
+              truthy: disable
 
       - name: 'Write yamllint Report'
         if: always()
