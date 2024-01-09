@@ -258,6 +258,7 @@ jobs:
       # yamllint variables
       yamllint_skip: ${{ steps.ltp.outputs.yamllint_skip }}
       yamllint_file_or_dir: ${{ steps.ltp.outputs.yamllint_file_or_dir }}
+      yamllint_rules: ${{ steps.ltp.outputs.yamllint_rules }}
       # actionlint variables
       actionlint_skip: ${{ steps.ltp.outputs.actionlint_skip }}
       # finish variables
@@ -1393,19 +1394,7 @@ jobs:
         uses: OXID-eSales/github-actions/yamllint@v0
         with:
           file_or_dir: ${{ needs.init.outputs.yamllint_file_or_dir }}
-          config_data: |
-            extends: default
-            ignore: .git/*
-            rules:
-              document-start: disable
-              line-length:
-                max: 160
-                level: warning
-              new-line-at-end-of-file:
-                level: warning
-              trailing-spaces:
-                level: warning
-              truthy: disable
+          config_data: ${{ needs.init.outputs.yamllint_rules }}
 
       - name: 'Write yamllint Report'
         if: always()
@@ -1466,7 +1455,6 @@ jobs:
           mysql: ''
           testplan: ''
           status: ${{job.status}}
-
 
   finish:
     if: ${{ always() && needs.init.outputs.finish_skip != 'true' }}

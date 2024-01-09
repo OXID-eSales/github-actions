@@ -706,6 +706,21 @@ yamllint:
   # Skip this part of the test run
   skip: false
 
+  # Rules for the linter
+  rules: |
+    extends: default
+    ignore: .git/*
+    rules:
+      document-start: disable
+      line-length:
+        max: 160
+        level: warning
+      new-line-at-end-of-file:
+        level: warning
+      trailing-spaces:
+        level: warning
+      truthy: disable
+
   # Space separated list of files or directories
   file_or_dir: '.github tests/github_actions'
 
