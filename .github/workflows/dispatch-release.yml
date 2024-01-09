@@ -89,7 +89,7 @@ jobs:
           STATUS=$(git status -s)
           if [ -n "${STATUS}" ]; then
             git add --all
-            git commit -m "Update versions"                               
+            git commit -m "Update versions"
           fi
           git checkout main
           git merge '${{ steps.branch.outputs.branch }}'

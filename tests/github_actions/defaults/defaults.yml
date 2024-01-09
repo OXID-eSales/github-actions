@@ -449,7 +449,6 @@ codeception:
     name: *container_name
 
     # For codeception, we need different options than the empty default
-    # yamllint disable-line rule:line-length
     options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e XDEBUG_MODE=coverage'
 
     method: *container_method
@@ -510,6 +509,7 @@ codeception:
     # nothing will be added to the codeception artifact
     path: 'source/codeception_coverage.xml'
     prefix: *coverage_prefix
+  # yamllint disable-line rule:line-length
   failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found|Cannot open file|No tests executed|Could not read'
 
 # These deprecated tests use the runtests action. Many options are similar to
