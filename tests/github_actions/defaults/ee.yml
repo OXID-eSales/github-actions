@@ -126,7 +126,7 @@ runtest:
     backup: true
     transform: |
       {
-          "require": {
+          "require-dev": {
               "oxid-esales/testing-library": "{{ .Data.global.composer.dev_ref }}",
               "oxid-esales/tests-deprecated-ce": "{{ .Data.global.composer.dev_ref }}",
               "oxid-esales/tests-deprecated-pe": "{{ .Data.global.composer.dev_ref }}",
