@@ -283,7 +283,7 @@ install_shop:
       source/composer.json*
       source/composer.lock
       source/source/config.inc.php
-
+      files.txt
     # The configuration file name is dynamic, the matrix variables will be appended
     artifact_prefix: 'configs_install_shop'
 
