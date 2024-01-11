@@ -41,7 +41,7 @@ runs:
       uses: docker/build-push-action@v5
       with:
         context: ${{ inputs.image_name }}
-        file: ${{ inputs.image_name}/Dockerfile
+        file: ${{ inputs.image_name }}/Dockerfile
         platforms: linux/amd64,linux/arm64
         push: ${{ github.event_name != 'pull_request' && inputs.dockerhub_username != '' }}
         tags: ${{ inputs.tags }}
