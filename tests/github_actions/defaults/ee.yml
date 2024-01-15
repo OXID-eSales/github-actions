@@ -13,7 +13,7 @@ global:
   git: &git
     # Using the stable branch for the ce shop here, and .Github.RefName refers to
     # the ee shop commit/tag/branch
-    shop_ref: &git_shop_ref 'b-8.0.x'
+    shop_ref: &git_shop_ref '{{ .Data.global.git.default_ref }}'
     enterprise_ref: '{{ .Github.RefName }}'
 
   # only configure/install is different
