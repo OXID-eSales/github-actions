@@ -17,7 +17,7 @@ inputs:
     type: string
     required: false
     description: 'version of the image'
-  build_args:
+  build-args:
     type: string
     required: false
     description: 'matrix versions and dependencies'
