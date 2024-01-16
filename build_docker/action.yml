@@ -21,6 +21,10 @@ inputs:
     type: string
     required: false
     description: 'matrix versions and dependencies'
+  platforms:
+    type: string
+    required: true
+    description: 'describe the platforms to be used'
 
 runs:
   using: "composite"
@@ -42,7 +46,7 @@ runs:
       with:
         context: ${{ inputs.image_name }}
         file: ${{ inputs.image_name }}/Dockerfile
-        platforms: linux/amd64,linux/arm64
+        platforms: ${{ inputs.platforms }}
         push: ${{ github.event_name != 'pull_request' && inputs.dockerhub_username != '' }}
         tags: ${{ inputs.tags }}
         build-args: ${{ inputs.build-args }}
