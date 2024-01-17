@@ -156,15 +156,18 @@ runs:
         EOF
           exit 1
         fi
-        if grep -q -Ei '${{ inputs.failure_pattern}}' "${{ inputs.logfile }}"; then
-          cat <<EOF
-        ${PURPLE}###############################################################################
-        codeception test ${{ inputs.test }} failed
-        ###############################################################################
+        cat >failure_pattern.tmp <<EOF
+        ${{ inputs.failure_pattern}}
         EOF
-          grep -Ei '${{ inputs.failure_pattern}}' "${{ inputs.logfile }}"
-          exit 1
+        while read -r LINE ; do
+            if grep -q -E "${LINE}" "logfile.txt"; then
+            echo -e "\033[0;31m phpunit test foobar failed matching pattern ${LINE}"
+            grep -Ei "${LINE}" "logfile.txt"
+            exit 1
+        else
+            echo -e "\033[0;32m phpunit test foobar passed matching pattern ${LINE}"
         fi
+        done <failure_pattern.tmp
         if [[ -n "${{ inputs.coverage_path }}" && ! -s "${{ inputs.coverage_path }}" ]]; then
           cat <<EOF
         ${PURPLE}###############################################################################
