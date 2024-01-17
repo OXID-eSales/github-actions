@@ -426,7 +426,24 @@ phpunit:
 
   # This grep pattern is applied to the generated phpunit log file. If we have
   # a hit matching the pattern below, the step will fail.
-  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|Test file ".+" not found|Cannot open file|Could not read'
+  failure_pattern: |
+    fail
+    \\.\\=\\=
+    Warning
+    Notice
+    Deprecated
+    Fatal
+    Error
+    DID NOT FINISH
+    Test file ".+" not found
+    Cannot open file
+    No tests executed
+    Could not read
+    Warnings: [1-9][0-9]*
+    Errors: [1-9][0-9]*
+    Failed: [1-9][0-9]*
+    Deprecations: [1-9][0-9]*
+
 
 # This step usesd the codeception custom action. Many inputs are similar to the
 # ones in the unit tests.
@@ -511,7 +528,23 @@ codeception:
     path: 'source/codeception_coverage.xml'
     prefix: *coverage_prefix
   # yamllint disable-line rule:line-length
-  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found|Cannot open file|No tests executed|Could not read'
+  failure_pattern: |
+    fail
+    \\.\\=\\=
+    Warning
+    Notice
+    Deprecated
+    Fatal
+    Error
+    DID NOT FINISH
+    Test file ".+" not found
+    Cannot open file
+    No tests executed
+    Could not read
+    Warnings: [1-9][0-9]*
+    Errors: [1-9][0-9]*
+    Failed: [1-9][0-9]*
+    Deprecations: [1-9][0-9]*
 
 # These deprecated tests use the runtests action. Many options are similar to
 # codeception/phpunit
@@ -581,7 +614,23 @@ runtest:
   coverage:
     path: 'source/deprecated_tests_coverage.xml'
     prefix: *coverage_prefix
-  failure_pattern: 'fail|\\.\\=\\=|Warning|Notice|Fatal|Error|DID NOT FINISH'
+  failure_pattern: |
+    fail
+    \\.\\=\\=
+    Warning
+    Notice
+    Deprecated
+    Fatal
+    Error
+    DID NOT FINISH
+    Test file ".+" not found
+    Cannot open file
+    No tests executed
+    Could not read
+    Warnings: [1-9][0-9]*
+    Errors: [1-9][0-9]*
+    Failed: [1-9][0-9]*
+    Deprecations: [1-9][0-9]*
 
   # Where to find the reset-shop binary
   reset_shop_binary: 'vendor/bin/reset-shop'

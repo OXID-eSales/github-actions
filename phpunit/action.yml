@@ -139,15 +139,19 @@ runs:
         EOF
           exit 1
         fi
-        if grep -q -Ei '${{ inputs.failure_pattern}}' "${{ inputs.logfile }}"; then
-          cat <<EOF
-        ${PURPLE}###############################################################################
-        ### phpunit test ${{ inputs.test }} failed
-        ###############################################################################${NOCOLOR}
+        cat >failure_pattern.tmp <<EOF
+        ${{ inputs.failure_pattern}}
         EOF
-          grep -Ei '${{ inputs.failure_pattern}}' "${{ inputs.logfile }}"
-          exit 1
+        sed -e 's|(.*)\r|$1|' -i failure_pattern.tmp
+        while read -r LINE ; do
+            if grep -q -E "${LINE}" "${{ inputs.logfile }}"; then
+            echo -e "\033[0;31m phpunit test failed matching pattern ${LINE}"
+            grep -E "${LINE}" "${{ inputs.logfile }}"
+            exit 1
+        else
+            echo -e "\033[0;32m phpunit test passed matching pattern ${LINE}"
         fi
+        done <failure_pattern.tmp
         if [[ -n "${{ inputs.coverage_path }}" && ! -s "${{ inputs.coverage_path }}" ]]; then
           cat <<EOF
         ${PURPLE}###############################################################################
