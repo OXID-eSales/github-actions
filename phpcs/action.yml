@@ -148,12 +148,12 @@ runs:
         EOF
         sed -e 's|(.*)\r|$1|' -i failure_pattern.tmp
         while read -r LINE ; do
-            if grep -q -E "${LINE}" "logfile.txt"; then
-            echo -e "\033[0;31m phpunit test foobar failed matching pattern ${LINE}"
-            grep -E "${LINE}" "logfile.txt"
+            if grep -q -E "${LINE}" "${{ inputs.logfile }}"; then
+            echo -e "\033[0;31m phpcs test failed matching pattern ${LINE}"
+            grep -E "${LINE}" "${{ inputs.logfile }}"
             exit 1
         else
-            echo -e "\033[0;32m phpunit test foobar passed matching pattern ${LINE}"
+            echo -e "\033[0;32m phpcs test passed matching pattern ${LINE}"
         fi
         done <failure_pattern.tmp
         if [[ -n "${{ inputs.coverage_path }}" && ! -s "${{ inputs.coverage_path }}" ]]; then
