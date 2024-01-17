@@ -172,10 +172,11 @@ runs:
         cat >failure_pattern.tmp <<EOF
         ${{ inputs.failure_pattern}}
         EOF
+        sed -e 's|(.*)\r|$1|' -i failure_pattern.tmp
         while read -r LINE ; do
             if grep -q -E "${LINE}" "logfile.txt"; then
             echo -e "\033[0;31m phpunit test foobar failed matching pattern ${LINE}"
-            grep -Ei "${LINE}" "logfile.txt"
+            grep -E "${LINE}" "logfile.txt"
             exit 1
         else
             echo -e "\033[0;32m phpunit test foobar passed matching pattern ${LINE}"
