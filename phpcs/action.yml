@@ -59,7 +59,6 @@ runs:
       shell: bash
       run: |
         # phpcs: List changed files
-        set -x
         cd source
         if [ "${{ inputs.diff_only }}" == "true" ]; then
           echo -e "\033[0;35m###  Use git diff for phpcs using filter '${{ inputs.filter }}' ###\033[0m"
