@@ -373,7 +373,7 @@ jobs:
 
       - name: 'Install shop'
         id: install_shop
-        uses: 'OXID-eSales/github-actions/install_shop@v0'
+        uses: 'OXID-eSales/github-actions/install_shop@v3'
         with:
           container_name: ${{ needs.init.outputs.install_shop_container_name }}
           container_options: ${{ needs.init.outputs.install_shop_container_options }}
@@ -549,7 +549,7 @@ jobs:
       - name: Install module
         if: ${{ matrix.testplan != 'skip' }}
         id: install_module
-        uses: 'OXID-eSales/github-actions/install_module@v0'
+        uses: 'OXID-eSales/github-actions/install_module@v3'
         with:
           container_name: ${{ steps.install_module_testplan.outputs.install_module_container_name }}
           container_options: ${{ steps.install_module_testplan.outputs.install_module_container_options }}
@@ -724,7 +724,7 @@ jobs:
 
       - name: 'Run phpunit tests'
         id: phpunit_run
-        uses: 'OXID-eSales/github-actions/phpunit@v0'
+        uses: 'OXID-eSales/github-actions/phpunit@v3'
         with:
           container_name: ${{ steps.phpunit_testplan.outputs.phpunit_container_name }}
           container_options: ${{ steps.phpunit_testplan.outputs.phpunit_container_options }}
@@ -899,7 +899,7 @@ jobs:
 
       - name: 'Run codeception tests'
         id: codeception_run
-        uses: 'OXID-eSales/github-actions/codeception@v0'
+        uses: 'OXID-eSales/github-actions/codeception@v3'
         with:
           container_name: ${{ steps.codeception_testplan.outputs.codeception_container_name }}
           container_options: '${{ steps.codeception_testplan.outputs.codeception_container_options }} ${{ steps.pre_script.outputs.container_options }}'
@@ -1081,7 +1081,7 @@ jobs:
 
       - name: 'Run tests'
         id: runtest_run
-        uses: 'OXID-eSales/github-actions/runtests@v0'
+        uses: 'OXID-eSales/github-actions/runtests@v3'
         with:
           container_name: ${{ steps.runtest_testplan.outputs.runtest_container_name }}
           container_options: ${{ steps.runtest_testplan.outputs.runtest_container_options }}
@@ -1242,7 +1242,7 @@ jobs:
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: 'Run phpcs tests'
-        uses: 'OXID-eSales/github-actions/phpcs@v0'
+        uses: 'OXID-eSales/github-actions/phpcs@v3'
         with:
           container_name: ${{ needs.init.outputs.phpcs_tests_container_name }}
           container_options: ${{ needs.init.outputs.phpcs_tests_container_options }}
@@ -1355,7 +1355,7 @@ jobs:
           container_method: 'exec'
 
       - name: 'Run styles check'
-        uses: 'OXID-eSales/github-actions/styles@v0'
+        uses: 'OXID-eSales/github-actions/styles@v3'
         with:
           path: ${{ steps.styles_testplan.outputs.styles_path }}
           module_ids: ${{ steps.styles_testplan.outputs.styles_module_ids }}
