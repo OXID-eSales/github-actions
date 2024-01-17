@@ -67,6 +67,8 @@ inputs:
       source/composer.json
       source/composer.lock
       source/source/config.inc.php
+      data/php/logs/error_log.txt
+      files.txt
   output_artifact:
     type: string
     required: false
@@ -135,11 +137,11 @@ runs:
         # install_shop: Activate iDebug
         perl -pi -e 's#iDebug = 0;#iDebug = -1;#g;' source/source/config.inc.php
 
-    - name: Activate shop's theme
+    - name: Activate theme
       if: ${{ inputs.is_enterprise == 'true' }}
       shell: bash
       run: |
-        # install_shop: Activate shop's theme
+        # install_shop: Activate theme
         docker-compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
@@ -149,7 +151,18 @@ runs:
       if: always()
       shell: bash
       run: |
-        find . -type f >files.txt
+        # install_shop: Write files list
+        find . >files.txt
+
+    - name: Output php error log
+      if: always()
+      shell: bash
+      run: |
+        # install_shop: Output php error log
+        if [ -s data/php/logs/error_log.txt ]; then
+          echo -e "\033[0;35mPHP error log\033[0m"
+          cat data/php/logs/error_log.txt
+        fi
 
     - name: Upload configuration artifacts
       if: always()

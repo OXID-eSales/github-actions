@@ -283,6 +283,7 @@ install_shop:
       source/composer.json*
       source/composer.lock
       source/source/config.inc.php
+      data/php/logs/error_log.txt
       files.txt
     # The configuration file name is dynamic, the matrix variables will be appended
     artifact_prefix: 'configs_install_shop'
@@ -699,6 +700,7 @@ styles:
       source/tests/reports/phpstan*.report.txt
       source/tests/reports/phpmd*.report.txt
       source/tests/reports/phpcs*.report.txt
+      data/php/logs/error_log.txt
     prefix: 'styles_artifacts'
 
 # yamllint validates the github actions/testplan yaml files
