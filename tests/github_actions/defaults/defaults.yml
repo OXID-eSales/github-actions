@@ -443,6 +443,7 @@ phpunit:
     Errors: [1-9][0-9]*
     Failed: [1-9][0-9]*
     Deprecations: [1-9][0-9]*
+    Risky: [1-9][0-9]*
 
 
 # This step usesd the codeception custom action. Many inputs are similar to the
@@ -545,6 +546,7 @@ codeception:
     Errors: [1-9][0-9]*
     Failed: [1-9][0-9]*
     Deprecations: [1-9][0-9]*
+    Risky: [1-9][0-9]*
 
 # These deprecated tests use the runtests action. Many options are similar to
 # codeception/phpunit
@@ -631,6 +633,7 @@ runtest:
     Errors: [1-9][0-9]*
     Failed: [1-9][0-9]*
     Deprecations: [1-9][0-9]*
+    Risky: [1-9][0-9]*
 
   # Where to find the reset-shop binary
   reset_shop_binary: 'vendor/bin/reset-shop'
