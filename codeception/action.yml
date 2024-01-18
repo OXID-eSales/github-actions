@@ -174,13 +174,15 @@ runs:
         EOF
         sed -e 's|(.*)\r|$1|' -i failure_pattern.tmp
         while read -r LINE ; do
+          if [ -n "${LINE}" ]; then
             if grep -q -E "${LINE}" "${{ inputs.logfile }}"; then
-            echo -e "\033[0;31m codeception test failed matching pattern ${LINE}"
-            grep -E "${LINE}" "${{ inputs.logfile }}"
-            exit 1
-        else
-            echo -e "\033[0;32m codeception test passed matching pattern ${LINE}"
-        fi
+              echo -e "\033[0;31m codeception test failed matching pattern ${LINE}"
+              grep -E "${LINE}" "${{ inputs.logfile }}"
+              exit 1
+            else
+                echo -e "\033[0;32m codeception test passed matching pattern ${LINE}"
+            fi
+          fi
         done <failure_pattern.tmp
         if [[ -n "${{ inputs.coverage_path }}" && ! -s "${{ inputs.coverage_path }}" ]]; then
           cat <<EOF
