@@ -879,7 +879,7 @@ jobs:
           container_method: 'exec'
 
       - name: Run custom script
-        if: ${{ steps.codeception_testplan.outputs.codeceptiont_custom_script != ''}}
+        if: ${{ steps.codeception_testplan.outputs.codeception_custom_script != ''}}
         run: |
           ${{ steps.codeception_testplan.outputs.codeception_custom_script }}
 
