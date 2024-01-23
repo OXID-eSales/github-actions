@@ -318,6 +318,7 @@ install_module:
       source/composer.lock
       source/source/config.inc.php
       files.txt
+      generated_testplan.yaml
     artifact_prefix: 'configs-install_module'
   # Unique module id
   ids: &module_ids ''
@@ -405,6 +406,7 @@ phpunit:
       source/source/log/oxideshop.log
       data/php/logs/error_log.txt
       job_status*.txt
+      generated_testplan.yaml
 
   # Github run artifact for the phpunit output - This is dynamic, so we set it
   # in the workflow to '<prefix_PHP<matrix.php>_MYSQL<matrix.mysql>'
@@ -521,6 +523,7 @@ codeception:
       data/php/logs/error_log.txt
       source/tests/Codeception/_output
       job_status*.txt
+      generated_testplan.yaml
     prefix: 'codeception_artifacts'
 
   coverage:
