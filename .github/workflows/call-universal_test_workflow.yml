@@ -82,7 +82,7 @@ jobs:
           if [ -d workflow/Tests/github_actions ]; then
             mv workflow/Tests/github_actions tests/
           fi
-          if [ -f composer.json ]; then
+          if [ -f workflow/composer.json ]; then
             mv workflow/composer.json tests/github_actions/
           fi
           mv defaults/tests/github_actions/defaults tests/github_actions/
