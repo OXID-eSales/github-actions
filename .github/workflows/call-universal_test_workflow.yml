@@ -69,6 +69,7 @@ jobs:
           sparse-checkout: |
             tests/github_actions
             Tests/github_actions
+            composer.json
           path: workflow
 
       - name: 'Consolidate plans'
@@ -80,6 +81,9 @@ jobs:
           fi
           if [ -d workflow/Tests/github_actions ]; then
             mv workflow/Tests/github_actions tests/
+          fi
+          if [ -f composer.json ]; then
+            mv composer.json tests/github_actions/
           fi
           mv defaults/tests/github_actions/defaults tests/github_actions/
 
@@ -142,7 +146,6 @@ jobs:
           accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
           secretKey: ${{ secrets.CACHE_SECRET_KEY }}
           bucket: ${{ steps.ltp.outputs.init_cache_bucket }}
-
 
     outputs:
       # init variables
