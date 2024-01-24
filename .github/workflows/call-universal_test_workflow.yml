@@ -531,7 +531,7 @@ jobs:
             MODULE_REF="$(echo "${{ steps.install_module_testplan.outputs.install_module_git_module_ref }}"|sed -e 's|^dev-||')"
             git clone --depth 2 \
               https://${AUTH}@github.com/${{ steps.install_module_testplan.outputs.install_module_git_module_url }}.git \
-              --branch "${MODULE_REF}"" \
+              --branch "${MODULE_REF}" \
               --single-branch 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}'
           fi
           find . -type f >files.txt
