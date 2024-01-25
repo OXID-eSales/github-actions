@@ -824,7 +824,7 @@ jobs:
           ${{ steps.codeception_testplan.outputs.codeception_pre_script }}
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v0'
+        uses: 'OXID-eSales/github-actions/start_shop@v3'
         with:
           cached_shop: '${{ steps.codeception_testplan.outputs.codeception_load_shop}}_${{ steps.codeception_testplan_name.outputs.matrix_suffix }}'
           cache_bucket: ${{ steps.codeception_testplan.outputs.codeception_cache_bucket }}
