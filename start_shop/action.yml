@@ -107,7 +107,7 @@ runs:
         done
 
     - name: Wait for selenium
-      if: ${{ wait_for_selenium == 'true' }}
+      if: ${{ inputs.wait_for_selenium == 'true' }}
       shell: bash
       run: |
         # start_shop: Wait for selenium
