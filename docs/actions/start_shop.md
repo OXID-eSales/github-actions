@@ -36,3 +36,9 @@ Populate with ${{ secrets.DOCKER_HUB_USER }}, its content will be hidden by GitH
 **docker_token:** *not required*, *default:* ''  
 Needed for docker login.
 Populate with ${{ secrets.DOCKER_HUB_TOKEN }}, its content will be hidden by GitHub.
+
+**wait_for_selenium:** *not required*, *default:*  false  
+Set to true if you want to wait for selenium to be ready.
+
+**container_name:** *not required*, *default:*  php  
+Name of the container to run the wait command in.

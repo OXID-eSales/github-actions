@@ -834,6 +834,8 @@ jobs:
           docker_login: ${{ steps.codeception_testplan.outputs.codeception_docker_login }}
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+          wait_for_selenium: ${{ steps.codeception_testplan.outputs.codeception_wait_for_selenium }}
+          container_name: ${{ steps.codeception_testplan.outputs.codeception_container_name }}
 
       - name: 'Composer configure and require ${{ steps.codeception_testplan.outputs.codeception_composer_configure_install }}'
         if: ${{ steps.codeception_testplan.outputs.codeception_composer_configure_install != '' }}

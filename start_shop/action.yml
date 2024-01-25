@@ -40,6 +40,16 @@ inputs:
     required: false
     description: 'secrets.DOCKER_HUB_TOKEN for docker login'
     default: ''
+  wait_for_selenium:
+    type: boolean
+    required: false
+    description: 'Set to true if you want to wait for selenium to be ready'
+    default: false
+  container_name:
+    type: string
+    required: false
+    description: 'Name of the container to run the wait command in'
+    default: 'php'
 
 runs:
   using: "composite"
@@ -95,3 +105,24 @@ runs:
           echo "*** Logs for $c ***"
           docker logs -n 200 $c
         done
+
+    - name: Wait for selenium
+      if: ${{ inputs.wait_for_selenium == 'true' }}
+      shell: bash
+      run: |
+        # start_shop: Wait for selenium
+        cat >source/wait_for_selenium.sh <<EOF
+        #!/bin/bash
+        set +e
+        until  curl -sSjkL http://selenium:4444/status &>/dev/null; do
+          echo "."
+          sleep 1
+        done
+        set -e
+        curl -sSjkL http://selenium:4444/status
+        EOF
+        chmod 0755 source/wait_for_selenium.sh
+        docker-compose exec -T \
+          ${{ inputs.container_name}} \
+          bash -c "timeout 60 /var/www/wait_for_selenium.sh"
+        rm source/wait_for_selenium.sh
