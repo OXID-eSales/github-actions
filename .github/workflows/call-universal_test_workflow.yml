@@ -96,7 +96,7 @@ jobs:
           if [ -f workflow/composer.json ]; then
             mv workflow/composer.json '${{ inputs.plan_folder }}/'
           fi
-          mv defaults/${{ inputs.default_plan_folder}}/* '${{ inputs.plan_folder }}/defaults/'
+          mv defaults/${{ inputs.default_plan_folder}} '${{ inputs.plan_folder }}/defaults'
 
       - name: 'Load Testplan'
         id: ltp
