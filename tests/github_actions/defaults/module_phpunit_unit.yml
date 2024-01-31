@@ -6,9 +6,9 @@ phpunit:
   test: '/var/www/vendor/{{ .Data.install_module.package_name }}/tests/Unit'
   additional_options: '--bootstrap=/var/www/source/bootstrap.php --coverage-clover=/var/www/unit_coverage.xml'
   logfile:
-    prefix: 'phpunit_unit'
+    prefix: 'phpunit-unit--{{ .Data.install_module.ids }}'
   output:
-    prefix: 'unit_artifacts'
+    prefix: 'phpunit-unit-{{ .Data.install_module.ids }}-artifacts'
     files: |
       source/unit_coverage.xml
       generated_testplan.yaml

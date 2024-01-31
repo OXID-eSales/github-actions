@@ -8,6 +8,17 @@ codeception:
   logfile:
     prefix: 'codeception'
   output:
-    prefix: 'codeception-artifacts'
+    prefix: 'codeception-artifacts-{{ .Data.install_module.ids }}'
+    files: |
+      docker-compose.yml
+      source/composer.json
+      source/composer.lock
+      source/source/config.inc.php
+      source/source/log/oxideshop.log
+      data/php/logs/error_log.txt
+      source/tests/Codeception/_output
+      source/dev-packages/{{ .Data.install_module.ids }}/tests/Codeception/_output
+      source/vendor/{{ .Data.install_module.package_name }}/tests/Codeception/_output
+      job_status*.txt
   coverage:
     path: 'source/codeception_coverage.xml'
