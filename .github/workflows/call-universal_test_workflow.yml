@@ -465,7 +465,8 @@ jobs:
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
-          testplan: ${{ matrix.testplan }}
+          root_testplan: ${{ inputs.testplan }}
+          matrix_testplan: ${{ matrix.testplan }}
           plan_folder: ${{ inputs.plan_folder }}
           cache_name: ${{ needs.init.outputs.init_cache_name }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
@@ -648,7 +649,8 @@ jobs:
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
-          testplan: ${{ matrix.testplan }}
+          root_testplan: ${{ inputs.testplan }}
+          matrix_testplan: ${{ matrix.testplan }}
           plan_folder: ${{ inputs.plan_folder }}
           cache_name: ${{ needs.init.outputs.init_cache_name }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
@@ -756,7 +758,8 @@ jobs:
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
-          testplan: ${{ matrix.testplan }}
+          root_testplan: ${{ inputs.testplan }}
+          matrix_testplan: ${{ matrix.testplan }}
           plan_folder: ${{ inputs.plan_folder }}
           cache_name: ${{ needs.init.outputs.init_cache_name }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
@@ -919,7 +922,8 @@ jobs:
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
-          testplan: ${{ matrix.testplan }}
+          root_testplan: ${{ inputs.testplan }}
+          matrix_testplan: ${{ matrix.testplan }}
           plan_folder: ${{ inputs.plan_folder }}
           cache_name: ${{ needs.init.outputs.init_cache_name }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
@@ -1094,7 +1098,8 @@ jobs:
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
-          testplan: ${{ matrix.testplan }}
+          root_testplan: ${{ inputs.testplan }}
+          matrix_testplan: ${{ matrix.testplan }}
           plan_folder: ${{ inputs.plan_folder }}
           cache_name: ${{ needs.init.outputs.init_cache_name }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
@@ -1218,7 +1223,8 @@ jobs:
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
-          testplan: ${{ matrix.testplan }}
+          root_testplan: ${{ inputs.testplan }}
+          matrix_testplan: ${{ matrix.testplan }}
           plan_folder: ${{ inputs.plan_folder }}
           cache_name: ${{ needs.init.outputs.init_cache_name }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}

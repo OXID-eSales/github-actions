@@ -11,10 +11,14 @@ inputs:
     required: false
     description: 'Version of MySQL for this instance'
     default: '8.0'
-  testplan:
+  root_testplan:
     type: string
     required: true
-    description: 'Test plans to load'
+    description: 'Base testplan list'
+  matrix_testplan:
+    type: string
+    required: true
+    description: 'Current matrix test plans to add'
   plan_folder:
     type: string
     required: true
@@ -82,10 +86,10 @@ runs:
       shell: bash
       run: |
         # load_cached_testplan: Get testplan name
-        DEFAULT_TESTPLAN='${{ inputs.plan_folder}}/defaults/defaults.yml,${{ inputs.testplan }}'
+        DEFAULT_TESTPLAN='${{ inputs.plan_folder}}/defaults/defaults.yml,${{ inputs.root_testplan }}'
         if [ '${{ inputs.testplan}}' == '-' ]; then
           echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
         else
-          echo "testplan=${DEFAULT_TESTPLAN},${{inputs.testplan}}" | tee -a "${GITHUB_OUTPUT}"
+          echo "testplan=${DEFAULT_TESTPLAN},${{inputs.matrix_testplan}}" | tee -a "${GITHUB_OUTPUT}"
         fi
         echo "matrix_suffix=PHP${{inputs.php}}-MYSQL${{inputs.mysql}}" | tee -a "${GITHUB_OUTPUT}"
