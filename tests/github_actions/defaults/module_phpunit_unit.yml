@@ -1,5 +1,5 @@
 phpunit:
-  title: 'unit_tests'
+  title: 'unit_tests_{{ .Data.install_module.ids }}'
   container:
     options: '-e XDEBUG_MODE=coverage'
   configuration: '/var/www/vendor/{{ .Data.install_module.package_name }}/tests/phpunit.xml'
@@ -15,4 +15,4 @@ phpunit:
       source/source/log/oxideshop.log
       data/php/logs/error_log.txt
   coverage:
-    path: 'source/unit_coverage.xml'
+    path: 'source/unit_coverage_{{ .Data.install_module.ids }}.xml'
