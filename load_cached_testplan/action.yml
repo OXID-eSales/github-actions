@@ -67,16 +67,17 @@ runs:
     - name: Confirm successful restore
       shell: bash
       run: |
+        # load_cached_testplan: Confirm successful restore
         if [ "${{ steps.load_testplan_cache.outputs.cache-hit }}" != "true" ]; then
           echo -e "\033[0;31m### Failed to load ${{ inputs.cache_name }} from cache\033[0m"
           exit 1
         fi
 
     - name: 'Get testplan name'
-      if: ${{ inputs.testplan != 'skip' }}
       id: testplan_name
       shell: bash
       run: |
+        # load_cached_testplan: Get testplan name
         DEFAULT_TESTPLAN='${{ inputs.plan_folder}}/defaults/defaults.yml,${{ inputs.testplan }}'
         if [ '${{ inputs.testplan}}' == '-' ]; then
           echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
