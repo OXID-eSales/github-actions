@@ -43,6 +43,10 @@ inputs:
     required: false
     description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
     default: ''
+outputs:
+  # workflow variables
+  testplan: ${{ steps.testplan_name.outputs.testplan }}
+  matrix_suffix: ${{ steps.testplan_name.outputs.matrix_suffix }}
 
 runs:
   using: "composite"
@@ -80,8 +84,3 @@ runs:
           echo "testplan=${DEFAULT_TESTPLAN},${{inputs.testplan}}" | tee -a "${GITHUB_OUTPUT}"
         fi
         echo "matrix_suffix=PHP${{inputs.php}}-MYSQL${{inputs.mysql}}" | tee -a "${GITHUB_OUTPUT}"
-
-outputs:
-  # workflow variables
-  testplan: ${{ steps.testplan_name.outputs.testplan }}
-  matrix_suffix: ${{ steps.testplan_name.outputs.matrix_suffix }}
