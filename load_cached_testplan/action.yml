@@ -1,4 +1,4 @@
-name: 'load_testplan'
+name: 'load_cached_testplan'
 description: 'Fetches the testplan and sets environment variables for it'
 inputs:
   php:
@@ -45,8 +45,12 @@ inputs:
     default: ''
 outputs:
   # workflow variables
-  testplan: ${{ steps.testplan_name.outputs.testplan }}
-  matrix_suffix: ${{ steps.testplan_name.outputs.matrix_suffix }}
+  testplan:
+    description: 'Final testplan list'
+    value: ${{ steps.testplan_name.outputs.testplan }}
+  matrix_suffix:
+    description: 'Suffix for this matrix run, consisting of php and mysql version'
+    value: ${{ steps.testplan_name.outputs.matrix_suffix }}
 
 runs:
   using: "composite"
