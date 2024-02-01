@@ -1,18 +1,18 @@
 phpunit:
-  title: 'unit_tests'
+  title: 'unit_tests_{{ .Data.install_module.ids }}'
   container:
     options: '-e XDEBUG_MODE=coverage'
   configuration: '/var/www/vendor/{{ .Data.install_module.package_name }}/tests/phpunit.xml'
   test: '/var/www/vendor/{{ .Data.install_module.package_name }}/tests/Unit'
   additional_options: '--bootstrap=/var/www/source/bootstrap.php --coverage-clover=/var/www/unit_coverage.xml'
   logfile:
-    prefix: 'phpunit_unit'
+    prefix: 'phpunit-unit--{{ .Data.install_module.ids }}'
   output:
-    prefix: 'unit_artifacts'
+    prefix: 'phpunit-unit-{{ .Data.install_module.ids }}-artifacts'
     files: |
       source/unit_coverage.xml
       generated_testplan.yaml
       source/source/log/oxideshop.log
       data/php/logs/error_log.txt
   coverage:
-    path: 'source/unit_coverage.xml'
+    path: 'source/unit_coverage_{{ .Data.install_module.ids }}.xml'
