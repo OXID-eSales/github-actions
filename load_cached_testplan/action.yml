@@ -87,7 +87,7 @@ runs:
       run: |
         # load_cached_testplan: Get testplan name
         DEFAULT_TESTPLAN='${{ inputs.plan_folder}}/defaults/defaults.yml,${{ inputs.root_testplan }}'
-        if [ '${{ inputs.testplan}}' == '-' ]; then
+        if [ '${{ inputs.matrix_testplan}}' == '-' ]; then
           echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
         else
           echo "testplan=${DEFAULT_TESTPLAN},${{inputs.matrix_testplan}}" | tee -a "${GITHUB_OUTPUT}"
