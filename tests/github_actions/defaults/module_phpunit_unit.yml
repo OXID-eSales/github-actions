@@ -4,7 +4,7 @@ phpunit:
     options: '-e XDEBUG_MODE=coverage'
   configuration: '/var/www/vendor/{{ .Data.install_module.package_name }}/tests/phpunit.xml'
   test: '/var/www/vendor/{{ .Data.install_module.package_name }}/tests/Unit'
-  additional_options: '--bootstrap=/var/www/source/bootstrap.php --coverage-clover=/var/www/unit_coverage.xml'
+  additional_options: '--bootstrap=/var/www/source/bootstrap.php --coverage-clover=/var/www/unit_coverage_{{ .Data.install_module.ids }}.xml'
   logfile:
     prefix: 'phpunit-unit--{{ .Data.install_module.ids }}'
   output:
