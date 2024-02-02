@@ -671,6 +671,12 @@ sonarcloud:
   coverage:
     prefix: *coverage_prefix
   target_branch: b-8.0.x
+
+  # Part of the absolute path to strip from the paths inside the coverage.xml,
+  # This ist /var/www/ (note the trailing slash) fort the shop and should be set to
+  # /var/www/dev-packages/<module_ids>/ for modules
+  strip_path: '/var/www/'
+
   # Sonarcloud settings, get them from https://sonarcloud.io/organizations/oxid-esales/projects
   organization: 'oxid-esales'
   project_key: 'OXID-eSales_oxideshop_ce'

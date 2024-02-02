@@ -1123,10 +1123,11 @@ jobs:
           fetch-depth: 0
 
       - name: 'SonarCloud Scan'
-        uses: 'OXID-eSales/github-actions/sonarcloud@v3'
+        uses: 'OXID-eSales/github-actions/sonarcloud@v0'
         with:
           coverage_artifact: coverage-reports_${{ steps.sonarcloud_testplan_name.outputs.matrix_suffix }}
           target_branch: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_target_branch }}
+          strip_path: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_strip_path }}
           github_ref_name: ${{ github.ref_name }}
           sonarcloud_organization: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_organization }}
           sonarcloud_project_key: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_project_key }}
