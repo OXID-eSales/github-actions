@@ -84,7 +84,7 @@ runs:
           cp "${FILE}" "${FILE}.orig"
           sed -e 's|${{ inputs.strip_path }}||' -i ${FILE}
           COVERAGE_FILES="${COVERAGE_FILES},${FILE}"
-          diff -y --color=always "${FILE}.orig" "${FILE}"
+          diff -y --color=always "${FILE}.orig" "${FILE}" || true
           rm "${FILE}.orig"
         done
         # remove leading comma when adding this
