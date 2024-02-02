@@ -461,7 +461,7 @@ jobs:
       - name: Load cached testplan
         if: ${{ matrix.testplan != 'skip' }}
         id: install_module_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v0
+        uses: OXID-eSales/github-actions/load_cached_testplan@v3
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -645,7 +645,7 @@ jobs:
       - name: Load cached testplan
         if: ${{ matrix.testplan != 'skip' }}
         id: phpunit_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v0
+        uses: OXID-eSales/github-actions/load_cached_testplan@v3
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -754,7 +754,7 @@ jobs:
       - name: Load cached testplan
         if: ${{ matrix.testplan != 'skip' }}
         id: codeception_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v0
+        uses: OXID-eSales/github-actions/load_cached_testplan@v3
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -918,7 +918,7 @@ jobs:
       - name: Load cached testplan
         if: ${{ matrix.testplan != 'skip' }}
         id: runtest_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v0
+        uses: OXID-eSales/github-actions/load_cached_testplan@v3
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -1094,7 +1094,7 @@ jobs:
       - name: Load cached testplan
         if: ${{ matrix.testplan != 'skip' }}
         id: sonarcloud_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v0
+        uses: OXID-eSales/github-actions/load_cached_testplan@v3
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -1123,7 +1123,7 @@ jobs:
           fetch-depth: 0
 
       - name: 'SonarCloud Scan'
-        uses: 'OXID-eSales/github-actions/sonarcloud@v0'
+        uses: 'OXID-eSales/github-actions/sonarcloud@v3'
         with:
           coverage_artifact: coverage-reports_${{ steps.sonarcloud_testplan_name.outputs.matrix_suffix }}
           target_branch: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_target_branch }}
@@ -1220,7 +1220,7 @@ jobs:
       - name: Load cached testplan
         if: ${{ matrix.testplan != 'skip' }}
         id: styles_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v0
+        uses: OXID-eSales/github-actions/load_cached_testplan@v3
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
