@@ -79,7 +79,7 @@ runs:
       run: |
         # sonarcloud: Fix Paths In Coverage Reports
         COVERAGE_FILES=""
-        for FILE in $(find coverage-reports -iname '*_coverage.xml'); do
+        for FILE in $(find coverage-reports -iname '*.xml'); do
           echo -e "\033[0;35mFixing paths in ${FILE}\033[0m"
           cp "${FILE}" "${FILE}.orig"
           sed -e 's|${{ inputs.strip_path }}||' -i ${FILE}
