@@ -16,3 +16,4 @@ phpunit:
       data/php/logs/error_log.txt
   coverage:
     path: 'source/integration_coverage_{{ .Data.install_module.ids }}.xml'
+    prefix: coverage-reports-phpunit-{{ .Data.install_module.ids }}

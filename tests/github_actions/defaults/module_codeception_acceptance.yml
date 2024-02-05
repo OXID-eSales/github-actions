@@ -22,3 +22,4 @@ codeception:
       job_status*.txt
   coverage:
     path: 'source/codeception_coverage_{{ .Data.install_module.ids }}.xml'
+    prefix: coverage-reports-codeception-{{ .Data.install_module.ids }}
