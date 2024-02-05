@@ -67,7 +67,7 @@ jobs:
           repository: 'OXID-eSales/github-actions'
           ref: '${{ inputs.defaults }}'
           path: 'defaults'
-          sparse-checkout: '${{ inputs.default_plan_folder}}'
+          sparse-checkout: '${{ inputs.default_plan_folder }}'
 
       - name: 'Show files'
         run: |
