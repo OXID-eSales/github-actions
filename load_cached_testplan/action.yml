@@ -1,0 +1,95 @@
+name: 'load_cached_testplan'
+description: 'Fetches the testplan and sets environment variables for it'
+inputs:
+  php:
+    type: string
+    required: false
+    description: 'Version of PHP for this instance'
+    default: '8.2'
+  mysql:
+    type: string
+    required: false
+    description: 'Version of MySQL for this instance'
+    default: '8.0'
+  root_testplan:
+    type: string
+    required: true
+    description: 'Base testplan list'
+  matrix_testplan:
+    type: string
+    required: true
+    description: 'Current matrix test plans to add'
+  plan_folder:
+    type: string
+    required: true
+    description: 'Name of the cached testplan object'
+  cache_name:
+    type: string
+    required: true
+    description: 'Name of the cached testplan object'
+  cache_bucket:
+    type: string
+    required: false
+    description: 'Name of the local s3 cache bucket'
+    default: 'oxideshop-ee'
+  cache_endpoint:
+    type: string
+    required: false
+    description: 'secrets.CACHE_ENDPOINT for actions-cache'
+    default: ''
+  cache_access_key:
+    type: string
+    required: false
+    description: 'secrets.CACHE_ACCESS_KEY for actions-cache'
+    default: ''
+  cache_secret_key:
+    type: string
+    required: false
+    description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
+    default: ''
+outputs:
+  # workflow variables
+  testplan:
+    description: 'Final testplan list'
+    value: ${{ steps.testplan_name.outputs.testplan }}
+  matrix_suffix:
+    description: 'Suffix for this matrix run, consisting of php and mysql version'
+    value: ${{ steps.testplan_name.outputs.matrix_suffix }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Load cached testplan
+      id: load_testplan_cache
+      uses: tespkg/actions-cache@v1
+      with:
+        path: |
+          ${{ inputs.plan_folder}}/*
+        key: ${{ inputs.cache_name }}
+        restore-keys: ${{ inputs.cache_name }}
+        endpoint: ${{ inputs.cache_endpoint }}
+        accessKey: ${{ inputs.cache_access_key }}
+        secretKey: ${{ inputs.cache_secret_key }}
+        bucket: ${{ inputs.cache_bucket }}
+
+    - name: Confirm successful restore
+      shell: bash
+      run: |
+        # load_cached_testplan: Confirm successful restore
+        if [ "${{ steps.load_testplan_cache.outputs.cache-hit }}" != "true" ]; then
+          echo -e "\033[0;31m### Failed to load ${{ inputs.cache_name }} from cache\033[0m"
+          exit 1
+        fi
+
+    - name: 'Get testplan name'
+      id: testplan_name
+      shell: bash
+      run: |
+        # load_cached_testplan: Get testplan name
+        DEFAULT_TESTPLAN='${{ inputs.plan_folder}}/defaults/defaults.yml,${{ inputs.root_testplan }}'
+        if [ '${{ inputs.matrix_testplan}}' == '-' ]; then
+          echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
+        else
+          echo "testplan=${DEFAULT_TESTPLAN},${{inputs.matrix_testplan}}" | tee -a "${GITHUB_OUTPUT}"
+        fi
+        echo "matrix_suffix=PHP${{inputs.php}}-MYSQL${{inputs.mysql}}" | tee -a "${GITHUB_OUTPUT}"

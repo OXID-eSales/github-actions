@@ -20,6 +20,16 @@ on:
         description: 'Which ref do we want to use for the plan defaults'
         required: false
         default: 'v3'
+      plan_folder:
+        type: string
+        description: 'Folder containing the test plans'
+        required: false
+        default: 'tests/github_actions'
+      default_plan_folder:
+        type: string
+        description: 'Folder containing the test plans'
+        required: false
+        default: 'tests/github_actions/defaults'
 
     secrets:
       DOCKER_HUB_USER:
@@ -57,7 +67,7 @@ jobs:
           repository: 'OXID-eSales/github-actions'
           ref: '${{ inputs.defaults }}'
           path: 'defaults'
-          sparse-checkout: 'tests/github_actions/defaults'
+          sparse-checkout: '${{ inputs.default_plan_folder }}'
 
       - name: 'Show files'
         run: |
@@ -67,27 +77,35 @@ jobs:
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
+            ${{ inputs.plan_folder}}
             tests/github_actions
             Tests/github_actions
+            composer.json
           path: workflow
 
       - name: 'Consolidate plans'
         run: |
           find . -type f
-          mkdir tests
+          mkdir -p '${{ inputs.plan_folder }}'
+          if [ -d workflow/${{ inputs.plan_folder }} ]; then
+            mv workflow/${{ inputs.plan_folder }}/* '${{ inputs.plan_folder }}/'
+          fi
           if [ -d workflow/tests/github_actions ]; then
-            mv workflow/tests/github_actions tests/
+            mv workflow/tests/github_actions/* '${{ inputs.plan_folder }}/'
           fi
           if [ -d workflow/Tests/github_actions ]; then
-            mv workflow/Tests/github_actions tests/
+            mv workflow/Tests/github_actions/* '${{ inputs.plan_folder }}/'
           fi
-          mv defaults/tests/github_actions/defaults tests/github_actions/
+          if [ -f workflow/composer.json ]; then
+            mv workflow/composer.json '${{ inputs.plan_folder }}/'
+          fi
+          mv defaults/${{ inputs.default_plan_folder}} '${{ inputs.plan_folder }}/defaults'
 
       - name: 'Load Testplan'
         id: ltp
         uses: 'joernott/load_testplan@v1'
         with:
-          files: 'tests/github_actions/defaults/defaults.yml,${{ inputs.testplan }}'
+          files: '${{ inputs.plan_folder }}/defaults/defaults.yml,${{ inputs.testplan }}'
           set_output: true
           set_env: true
           set_print: true
@@ -107,7 +125,7 @@ jobs:
         with:
           name: 'testplan'
           path: |
-            tests/github_actions/*
+            ${{ inputs.plan_folder}}/*
             generated_testplan.yaml
             generated_output.txt
             generated_env.txt
@@ -136,13 +154,12 @@ jobs:
         uses: tespkg/actions-cache@v1
         with:
           path: |
-            tests/github_actions/*
+            ${{ inputs.plan_folder }}/*
           key: '${{ steps.ltp.outputs.init_cache_name }}'
           endpoint: ${{ secrets.CACHE_ENDPOINT }}
           accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
           secretKey: ${{ secrets.CACHE_SECRET_KEY }}
           bucket: ${{ steps.ltp.outputs.init_cache_bucket }}
-
 
     outputs:
       # init variables
@@ -445,42 +462,20 @@ jobs:
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
       - name: Load cached testplan
-        id: load_testplan_cache
-        uses: tespkg/actions-cache@v1
-        with:
-          path: |
-            tests/github_actions/*
-          key: ${{ needs.init.outputs.init_cache_name }}
-          restore-keys: ${{ needs.init.outputs.init_cache_name }}
-          endpoint: ${{ secrets.CACHE_ENDPOINT }}
-          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
-          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
-          bucket: ${{ needs.init.outputs.init_cache_bucket }}
-
-      - name: Confirm successful restore
-        shell: bash
-        run: |
-          if [ "${{ steps.load_testplan_cache.outputs.cache-hit }}" != "true" ]; then
-            echo -e "\033[0;31m### Failed to load ${{ needs.init.outputs.init_cache_name }} from cache\033[0m"
-            exit 1
-          fi
-
-      - name: 'Get testplan name'
         if: ${{ matrix.testplan != 'skip' }}
         id: install_module_testplan_name
-        run: |
-          DEFAULT_TESTPLAN='tests/github_actions/defaults/defaults.yml,${{ inputs.testplan }}'
-          if [ '${{ matrix.testplan}}' == '-' ]; then
-            echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
-          else
-            echo "testplan=${DEFAULT_TESTPLAN},${{matrix.testplan}}" | tee -a "${GITHUB_OUTPUT}"
-          fi
-          echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}" | tee -a "${GITHUB_OUTPUT}"
-          if [ -z '${{ secrets.enterprise_github_token }}' ]; then
-            echo -e "\033[0;35mUsing enterprise github token\033[0m"
-          else
-            echo -e "\033[0;35mUsing default github token\033[0m"
-          fi
+        uses: OXID-eSales/github-actions/load_cached_testplan@v3
+        with:
+          php: ${{ matrix.php }}
+          mysql: ${{ matrix.mysql }}
+          root_testplan: ${{ inputs.testplan }}
+          matrix_testplan: ${{ matrix.testplan }}
+          plan_folder: ${{ inputs.plan_folder }}
+          cache_name: ${{ needs.init.outputs.init_cache_name }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          cache_bucket: ${{ needs.init.outputs.init_cache_bucket }}
 
       - name: 'Load Testplan'
         id: install_module_testplan
@@ -525,9 +520,10 @@ jobs:
             git -C 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}' checkout pr_${{ github.event.number }}
 
           else
+            MODULE_REF="$(echo "${{ steps.install_module_testplan.outputs.install_module_git_module_ref }}"|sed -e 's|^dev-||')"
             git clone --depth 2 \
               https://${AUTH}@github.com/${{ steps.install_module_testplan.outputs.install_module_git_module_url }}.git \
-              --branch ${{ steps.install_module_testplan.outputs.install_module_git_module_ref }} \
+              --branch "${MODULE_REF}" \
               --single-branch 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}'
           fi
           find . -type f >files.txt
@@ -650,36 +646,19 @@ jobs:
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
       - name: Load cached testplan
-        id: load_testplan_cache
-        uses: tespkg/actions-cache@v1
-        with:
-          path: |
-            tests/github_actions/*
-          key: ${{ needs.init.outputs.init_cache_name }}
-          restore-keys: ${{ needs.init.outputs.init_cache_name }}
-          endpoint: ${{ secrets.CACHE_ENDPOINT }}
-          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
-          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
-          bucket: ${{ needs.init.outputs.init_cache_bucket }}
-
-      - name: Confirm successful restore
-        shell: bash
-        run: |
-          if [ "${{ steps.load_testplan_cache.outputs.cache-hit }}" != "true" ]; then
-            echo -e "\033[0;31m### Failed to load ${{ needs.init.outputs.init_cache_name }} from cache\033[0m"
-            exit 1
-          fi
-
-      - name: 'Get testplan name'
         id: phpunit_testplan_name
-        run: |
-          DEFAULT_TESTPLAN='tests/github_actions/defaults/defaults.yml,${{ inputs.testplan }}'
-          if [ '${{ matrix.testplan}}' == '-' ]; then
-            echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
-          else
-            echo "testplan=${DEFAULT_TESTPLAN},${{matrix.testplan}}" | tee -a "${GITHUB_OUTPUT}"
-          fi
-          echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}" | tee -a "${GITHUB_OUTPUT}"
+        uses: OXID-eSales/github-actions/load_cached_testplan@v3
+        with:
+          php: ${{ matrix.php }}
+          mysql: ${{ matrix.mysql }}
+          root_testplan: ${{ inputs.testplan }}
+          matrix_testplan: ${{ matrix.testplan }}
+          plan_folder: ${{ inputs.plan_folder }}
+          cache_name: ${{ needs.init.outputs.init_cache_name }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          cache_bucket: ${{ needs.init.outputs.init_cache_bucket }}
 
       - name: 'Load Testplan'
         id: phpunit_testplan
@@ -775,36 +754,19 @@ jobs:
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
       - name: Load cached testplan
-        id: load_testplan_cache
-        uses: tespkg/actions-cache@v1
-        with:
-          path: |
-            tests/github_actions/*
-          key: ${{ needs.init.outputs.init_cache_name }}
-          restore-keys: ${{ needs.init.outputs.init_cache_name }}
-          endpoint: ${{ secrets.CACHE_ENDPOINT }}
-          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
-          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
-          bucket: ${{ needs.init.outputs.init_cache_bucket }}
-
-      - name: Confirm successful restore
-        shell: bash
-        run: |
-          if [ "${{ steps.load_testplan_cache.outputs.cache-hit }}" != "true" ]; then
-            echo -e "\033[0;31m### Failed to load ${{ needs.init.outputs.init_cache_name }} from cache\033[0m"
-            exit 1
-          fi
-
-      - name: 'Get testplan name'
         id: codeception_testplan_name
-        run: |
-          DEFAULT_TESTPLAN='tests/github_actions/defaults/defaults.yml,${{ inputs.testplan }}'
-          if [ '${{ matrix.testplan}}' == '-' ]; then
-            echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
-          else
-            echo "testplan=${DEFAULT_TESTPLAN},${{matrix.testplan}}" | tee -a "${GITHUB_OUTPUT}"
-          fi
-          echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}" | tee -a "${GITHUB_OUTPUT}"
+        uses: OXID-eSales/github-actions/load_cached_testplan@v3
+        with:
+          php: ${{ matrix.php }}
+          mysql: ${{ matrix.mysql }}
+          root_testplan: ${{ inputs.testplan }}
+          matrix_testplan: ${{ matrix.testplan }}
+          plan_folder: ${{ inputs.plan_folder }}
+          cache_name: ${{ needs.init.outputs.init_cache_name }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          cache_bucket: ${{ needs.init.outputs.init_cache_bucket }}
 
       - name: 'Load Testplan'
         id: codeception_testplan
@@ -881,7 +843,7 @@ jobs:
           container_method: 'exec'
 
       - name: Run custom script
-        if: ${{ steps.codeception_testplan.outputs.codeceptiont_custom_script != ''}}
+        if: ${{ steps.codeception_testplan.outputs.codeception_custom_script != ''}}
         run: |
           ${{ steps.codeception_testplan.outputs.codeception_custom_script }}
 
@@ -955,37 +917,19 @@ jobs:
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
       - name: Load cached testplan
-        id: load_testplan_cache
-        uses: tespkg/actions-cache@v1
-        with:
-          path: |
-            tests/github_actions/*
-          key: ${{ needs.init.outputs.init_cache_name }}
-
-          restore-keys: ${{ needs.init.outputs.init_cache_name }}
-          endpoint: ${{ secrets.CACHE_ENDPOINT }}
-          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
-          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
-          bucket: ${{ needs.init.outputs.init_cache_bucket }}
-
-      - name: Confirm successful restore
-        shell: bash
-        run: |
-          if [ "${{ steps.load_testplan_cache.outputs.cache-hit }}" != "true" ]; then
-            echo -e "\033[0;31m### Failed to load ${{ needs.init.outputs.init_cache_name }} from cache\033[0m"
-            exit 1
-          fi
-
-      - name: 'Get testplan name'
         id: runtest_testplan_name
-        run: |
-          DEFAULT_TESTPLAN='tests/github_actions/defaults/defaults.yml,${{ inputs.testplan }}'
-          if [ '${{ matrix.testplan}}' == '-' ]; then
-            echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
-          else
-            echo "testplan=${DEFAULT_TESTPLAN},${{matrix.testplan}}" | tee -a "${GITHUB_OUTPUT}"
-          fi
-          echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}" | tee -a "${GITHUB_OUTPUT}"
+        uses: OXID-eSales/github-actions/load_cached_testplan@v3
+        with:
+          php: ${{ matrix.php }}
+          mysql: ${{ matrix.mysql }}
+          root_testplan: ${{ inputs.testplan }}
+          matrix_testplan: ${{ matrix.testplan }}
+          plan_folder: ${{ inputs.plan_folder }}
+          cache_name: ${{ needs.init.outputs.init_cache_name }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          cache_bucket: ${{ needs.init.outputs.init_cache_bucket }}
 
       - name: 'Load Testplan'
         id: runtest_testplan
@@ -1148,36 +1092,19 @@ jobs:
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
       - name: Load cached testplan
-        id: load_testplan_cache
-        uses: tespkg/actions-cache@v1
-        with:
-          path: |
-            tests/github_actions/*
-          key: ${{ needs.init.outputs.init_cache_name }}
-          restore-keys: ${{ needs.init.outputs.init_cache_name }}
-          endpoint: ${{ secrets.CACHE_ENDPOINT }}
-          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
-          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
-          bucket: ${{ needs.init.outputs.init_cache_bucket }}
-
-      - name: Confirm successful restore
-        shell: bash
-        run: |
-          if [ "${{ steps.load_testplan_cache.outputs.cache-hit }}" != "true" ]; then
-            echo -e "\033[0;31m### Failed to load ${{ needs.init.outputs.init_cache_name }} from cache\033[0m"
-            exit 1
-          fi
-
-      - name: 'Get testplan name'
         id: sonarcloud_testplan_name
-        run: |
-          DEFAULT_TESTPLAN='tests/github_actions/defaults/defaults.yml,${{ inputs.testplan }}'
-          if [ '${{ matrix.testplan}}' == '-' ]; then
-            echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
-          else
-            echo "testplan=${DEFAULT_TESTPLAN},${{matrix.testplan}}" | tee -a "${GITHUB_OUTPUT}"
-          fi
-          echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}" | tee -a "${GITHUB_OUTPUT}"
+        uses: OXID-eSales/github-actions/load_cached_testplan@v3
+        with:
+          php: ${{ matrix.php }}
+          mysql: ${{ matrix.mysql }}
+          root_testplan: ${{ inputs.testplan }}
+          matrix_testplan: ${{ matrix.testplan }}
+          plan_folder: ${{ inputs.plan_folder }}
+          cache_name: ${{ needs.init.outputs.init_cache_name }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          cache_bucket: ${{ needs.init.outputs.init_cache_bucket }}
 
       - name: 'Load Testplan'
         id: sonarcloud_testplan
@@ -1199,6 +1126,7 @@ jobs:
         with:
           coverage_artifact: coverage-reports_${{ steps.sonarcloud_testplan_name.outputs.matrix_suffix }}
           target_branch: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_target_branch }}
+          strip_path: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_strip_path }}
           github_ref_name: ${{ github.ref_name }}
           sonarcloud_organization: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_organization }}
           sonarcloud_project_key: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_project_key }}
@@ -1289,36 +1217,19 @@ jobs:
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
       - name: Load cached testplan
-        id: load_testplan_cache
-        uses: tespkg/actions-cache@v1
-        with:
-          path: |
-            tests/github_actions/*
-          key: ${{ needs.init.outputs.init_cache_name }}
-          restore-keys: ${{ needs.init.outputs.init_cache_name }}
-          endpoint: ${{ secrets.CACHE_ENDPOINT }}
-          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
-          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
-          bucket: ${{ needs.init.outputs.init_cache_bucket }}
-
-      - name: Confirm successful restore
-        shell: bash
-        run: |
-          if [ "${{ steps.load_testplan_cache.outputs.cache-hit }}" != "true" ]; then
-            echo -e "\033[0;31m### Failed to load ${{ needs.init.outputs.init_cache_name }} from cache\033[0m"
-            exit 1
-          fi
-
-      - name: 'Get testplan name'
         id: styles_testplan_name
-        run: |
-          DEFAULT_TESTPLAN='tests/github_actions/defaults/defaults.yml,${{ inputs.testplan }}'
-          if [ '${{ matrix.testplan}}' == '-' ]; then
-            echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
-          else
-            echo "testplan=${DEFAULT_TESTPLAN},${{matrix.testplan}}" | tee -a "${GITHUB_OUTPUT}"
-          fi
-          echo "matrix_suffix=PHP${{matrix.php}}-MYSQL${{matrix.mysql}}" | tee -a "${GITHUB_OUTPUT}"
+        uses: OXID-eSales/github-actions/load_cached_testplan@v3
+        with:
+          php: ${{ matrix.php }}
+          mysql: ${{ matrix.mysql }}
+          root_testplan: ${{ inputs.testplan }}
+          matrix_testplan: ${{ matrix.testplan }}
+          plan_folder: ${{ inputs.plan_folder }}
+          cache_name: ${{ needs.init.outputs.init_cache_name }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          cache_bucket: ${{ needs.init.outputs.init_cache_bucket }}
 
       - name: 'Load Testplan'
         id: styles_testplan

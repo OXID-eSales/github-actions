@@ -6,6 +6,11 @@ inputs:
     required: false
     description: 'Name of the artifact containing the coverage reports'
     default: 'coverage-reports'
+  strip_path:
+    type: string
+    required: false
+    description: 'What should be stripped from the absolute path in the coverage files'
+    default: '/var/www/'
   target_branch:
     type: string
     required: false
@@ -74,10 +79,13 @@ runs:
       run: |
         # sonarcloud: Fix Paths In Coverage Reports
         COVERAGE_FILES=""
-        for FILE in $(find coverage-reports -iname '*_coverage.xml'); do
+        for FILE in $(find coverage-reports -iname '*.xml'); do
           echo -e "\033[0;35mFixing paths in ${FILE}\033[0m"
-          sed -e 's#/var/www/##' -i ${FILE}
+          cp "${FILE}" "${FILE}.orig"
+          sed -e 's|${{ inputs.strip_path }}||' -i ${FILE}
           COVERAGE_FILES="${COVERAGE_FILES},${FILE}"
+          diff -y --color=always "${FILE}.orig" "${FILE}" || true
+          rm "${FILE}.orig"
         done
         # remove leading comma when adding this
         echo "COVERAGE_FILES=${COVERAGE_FILES:1}" | tee -a $GITHUB_ENV

@@ -7,7 +7,7 @@
 # - enterprise_github_token
 
 global:
-  # {{ $shop_type := "ee" }}$shop_type: {{ printf "%q" $shop_type }}
+  # {{ $shop_type := "pe" }}$shop_type: {{ printf "%q" $shop_type }}
   is_enterprise: &is_enterprise true
 
   git: &git
@@ -34,27 +34,17 @@ prepare_shop:
           },
           "require": {
               "oxid-esales/oxideshop-pe": "{{ .Data.global.composer.dev_ref }}",
-              "oxid-esales/oxideshop-ee": "dev-{{ .Github.RefName }}",
               "oxid-esales/twig-component": "{{ .Data.global.composer.dev_ref }}",
               "oxid-esales/twig-component-pe": "{{ .Data.global.composer.dev_ref }}",
-              "oxid-esales/twig-component-ee": "{{ .Data.global.composer.dev_ref }}",
               "oxid-esales/twig-admin-theme": "{{ .Data.global.composer.dev_ref }}",
               "oxid-esales/apex-theme": "{{ .Data.global.composer.dev_ref }}",
               "oxid-esales/codeception-modules": "{{ .Data.global.composer.dev_ref }}",
               "oxid-esales/codeception-page-objects": "{{ .Data.global.composer.dev_ref }}"
           },
           "repositories": {
-              "oxid-esales/twig-component-ee": {
-                  "type": "git",
-                  "url": "https://github.com/OXID-eSales/twig-component-ee.git"
-              },
               "oxid-esales/twig-component-pe": {
                   "type": "git",
                   "url": "https://github.com/OXID-eSales/twig-component-pe.git"
-              },
-              "oxid-esales/oxideshop-ee": {
-                  "type": "git",
-                  "url": "https://github.com/OXID-eSales/oxideshop_ee.git"
               },
               "oxid-esales/oxideshop-pe": {
                   "type": "git",
@@ -92,7 +82,7 @@ codeception:
     options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex'
     method: &selenium_container_method 'run'
   composer: *composer
-  configuration: 'vendor/oxid-esales/oxideshop-ee/Tests/codeception.yml'
+  configuration: 'vendor/oxid-esales/oxideshop-pe/Tests/codeception.yml'
   additional_options: ''
   output:
     files: |
@@ -102,7 +92,7 @@ codeception:
       source/source/config.inc.php
       source/source/log/oxideshop.log
       data/php/logs/error_log.txt
-      source/vendor/oxid-esales/oxideshop-ee/Tests/Codeception/_output
+      source/vendor/oxid-esales/oxideshop-pe/Tests/Codeception/_output
   coverage:
     path: ''
 
@@ -122,15 +112,9 @@ runtest:
               "oxid-esales/testing-library": "{{ .Data.global.composer.dev_ref }}",
               "oxid-esales/tests-deprecated-ce": "{{ .Data.global.composer.dev_ref }}",
               "oxid-esales/tests-deprecated-pe": "{{ .Data.global.composer.dev_ref }}",
-              "oxid-esales/tests-deprecated-ee": "{{ .Data.global.composer.dev_ref }}",
               "codeception/module-webdriver": "^3.1",
               "phpunit/phpunit": "^9.1.1"
           },
-          "repositories": {
-              "oxid-esales/tests-deprecated-ee": {
-                  "type": "git",
-                  "url": "https://github.com/OXID-eSales/tests-deprecated-ee.git"
-              },
               "oxid-esales/tests-deprecated-pe": {
                   "type": "git",
                   "url": "https://github.com/OXID-eSales/tests-deprecated-pe.git"
@@ -149,4 +133,4 @@ sonarcloud:
     testplan: 'skip'
 
 phpcs_tests:
-  filter: '^\./source/(Internal|vendor/oxid-esales/oxideshop-[ep]e/Internal)/.*\.php$'
+  filter: '^\./source/(Internal|vendor/oxid-esales/oxideshop-pe/Internal)/.*\.php$'
