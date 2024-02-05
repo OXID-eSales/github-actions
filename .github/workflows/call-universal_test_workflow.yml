@@ -69,10 +69,6 @@ jobs:
           path: 'defaults'
           sparse-checkout: '${{ inputs.default_plan_folder }}'
 
-      - name: 'Show files'
-        run: |
-          find . -type f
-
       - name: 'Checkout testplans'
         uses: actions/checkout@v4
         with:
@@ -85,8 +81,9 @@ jobs:
 
       - name: 'Consolidate plans'
         run: |
+          set +x
           find . -type f
-          mkdir -p '${{ inputs.plan_folder }}'
+          mkdir -p '${{ inputs.plan_folder }}/defaults'
           if [ -d workflow/${{ inputs.plan_folder }} ]; then
             mv workflow/${{ inputs.plan_folder }}/* '${{ inputs.plan_folder }}/'
           fi
@@ -99,7 +96,7 @@ jobs:
           if [ -f workflow/composer.json ]; then
             mv workflow/composer.json '${{ inputs.plan_folder }}/'
           fi
-          mv defaults/${{ inputs.default_plan_folder}} '${{ inputs.plan_folder }}/defaults'
+          mv defaults/${{ inputs.default_plan_folder}}/* '${{ inputs.plan_folder }}/defaults/'
 
       - name: 'Load Testplan'
         id: ltp
