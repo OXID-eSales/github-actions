@@ -81,18 +81,20 @@ jobs:
 
       - name: 'Consolidate plans'
         run: |
-          set +x
           find . -type f
           mkdir -p '${{ inputs.plan_folder }}/defaults'
           if [ -d workflow/${{ inputs.plan_folder }} ]; then
             mv workflow/${{ inputs.plan_folder }}/* '${{ inputs.plan_folder }}/'
+            /bin/rm -r 'workflow/${{ inputs.plan_folder }}'
           fi
+          # Backwards compatibility settings, can be removed in v4
           if [ -d workflow/tests/github_actions ]; then
             mv workflow/tests/github_actions/* '${{ inputs.plan_folder }}/'
           fi
           if [ -d workflow/Tests/github_actions ]; then
             mv workflow/Tests/github_actions/* '${{ inputs.plan_folder }}/'
           fi
+          # End of backwards-compatibility settings
           if [ -f workflow/composer.json ]; then
             mv workflow/composer.json '${{ inputs.plan_folder }}/'
           fi
