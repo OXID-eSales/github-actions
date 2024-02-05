@@ -119,31 +119,25 @@ jobs:
           cp "${GITHUB_OUTPUT}" generated_output.txt
           cp "${GITHUB_ENV}" generated_env.txt
 
-      - name: 'Upload generated test plan'
+      - name: 'Create testplan archive'
         if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: 'testplan'
-          path: |
-            ${{ inputs.plan_folder}}/*
-            generated_testplan.yaml
-            generated_output.txt
-            generated_env.txt
-            load_testplan.log
-          retention-days: 7
-
-      - name: 'Write Report Header'
-        if: always()
-        uses: OXID-eSales/github-actions/begin_report@v3
+        uses: OXID-eSales/github-actions/begin_report@v0
         with:
           title: ${{ steps.ltp.outputs.finish_slack_title }}
           repository: '${{ github.server_url }}/${{ github.repository }}'
           job: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
           testplan: '${{ inputs.testplan }}'
+          files: |
+            ${{ inputs.plan_folder}}/*
+            generated_testplan.yaml
+            generated_output.txt
+            generated_env.txt
+            load_testplan.log
+
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           header: true
           phase: install
@@ -356,7 +350,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '010'
           phase: install
@@ -436,7 +430,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '020'
           phase: install
@@ -591,7 +585,7 @@ jobs:
 
       - name: 'Write Report'
         if: ${{ always() && matrix.testplan != 'skip' }}
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '030'
           phase: install
@@ -605,7 +599,7 @@ jobs:
 
       - name: 'Write Report'
         if: ${{ always() && matrix.testplan == 'skip' }}
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '030'
           phase: install
@@ -622,7 +616,7 @@ jobs:
     steps:
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           header: true
           priority: '100'
@@ -725,7 +719,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '110'
           phase: test
@@ -888,7 +882,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '120'
           phase: test
@@ -1051,7 +1045,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '130'
           phase: test
@@ -1068,7 +1062,7 @@ jobs:
     steps:
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           header: true
           priority: '200'
@@ -1137,7 +1131,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '210'
           phase: report
@@ -1190,7 +1184,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           priority: '220'
           phase: report
@@ -1389,22 +1383,14 @@ jobs:
     env:
       SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"
     steps:
-      - name: 'Download job results'
-        uses: actions/download-artifact@v3
-        with:
-          name: testplan
-
       - name: 'Generate report'
         id: generate_report
-        uses: 'OXID-eSales/github-actions/generate_report@v3'
+        uses: 'OXID-eSales/github-actions/generate_report@v0'
         with:
           slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           title: '${{ needs.init.outputs.finish_slack_title }}'
 
-      - name: Checkout the repo
-        uses: actions/checkout@v4
-
-      - name: 'clean_cache'
+      - name: 'Clean Cache'
         if: ${{ steps.generate_report.outputs.overall_status == 'success' }}
         uses: 'OXID-eSales/github-actions/clean_cache@v3'
         env:
