@@ -69,9 +69,10 @@ runs:
   using: "composite"
   steps:
     - name: Download coverage artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
-        name: ${{ inputs.coverage_artifact }}
+        pattern: '${{ inputs.coverage_artifact }}-*'
+        merge-multiple: true
         path: coverage-reports
 
     - name: Fix Paths In Coverage Reports
@@ -85,10 +86,22 @@ runs:
           sed -e 's|${{ inputs.strip_path }}||' -i ${FILE}
           COVERAGE_FILES="${COVERAGE_FILES},${FILE}"
           diff -y --color=always "${FILE}.orig" "${FILE}" || true
-          rm "${FILE}.orig"
         done
         # remove leading comma when adding this
         echo "COVERAGE_FILES=${COVERAGE_FILES:1}" | tee -a $GITHUB_ENV
+
+    - name: Upload consolidated coverage artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.coverage_artifact }}
+        merge-multiple: true
+        path: coverage-reports
+
+    - name: 'Remove temporary coverage artifacts'
+      uses: geekyeggo/delete-artifact@v4
+      with:
+        name: '${{ inputs.coverage_artifact }}-*'
+        failOnError: false
 
     - name: Set target branch
       shell: bash
