@@ -42,14 +42,6 @@ prepare_shop:
               "oxid-esales/codeception-page-objects": "{{ .Data.global.composer.dev_ref }}"
           },
           "repositories": {
-              "oxid-esales/codeception-page-objects": {
-                  "type": "git",
-                  "url": "https://github.com/OXID-eSales/codeception-page-objects.git"
-              },
-              "oxid-esales/codeception-modules": {
-                  "type": "git",
-                  "url": "https://github.com/OXID-eSales/codeception-modules.git"
-              },
               "oxid-esales/twig-component-pe": {
                   "type": "git",
                   "url": "https://github.com/OXID-eSales/twig-component-pe.git"

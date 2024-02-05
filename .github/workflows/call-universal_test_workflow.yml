@@ -22,12 +22,12 @@ on:
         default: 'v3'
       plan_folder:
         type: string
-        description: 'Folder containing the tets plans'
+        description: 'Folder containing the test plans'
         required: false
         default: 'tests/github_actions'
       default_plan_folder:
         type: string
-        description: 'Folder containing the tets plans'
+        description: 'Folder containing the test plans'
         required: false
         default: 'tests/github_actions/defaults'
 
@@ -87,6 +87,9 @@ jobs:
         run: |
           find . -type f
           mkdir -p '${{ inputs.plan_folder }}'
+          if [ -d workflow/${{ inputs.plan_folder }} ]; then
+            mv workflow/${{ inputs.plan_folder }}/* '${{ inputs.plan_folder }}/'
+          fi
           if [ -d workflow/tests/github_actions ]; then
             mv workflow/tests/github_actions/* '${{ inputs.plan_folder }}/'
           fi
@@ -643,7 +646,6 @@ jobs:
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
       - name: Load cached testplan
-        if: ${{ matrix.testplan != 'skip' }}
         id: phpunit_testplan_name
         uses: OXID-eSales/github-actions/load_cached_testplan@v3
         with:
@@ -752,7 +754,6 @@ jobs:
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
       - name: Load cached testplan
-        if: ${{ matrix.testplan != 'skip' }}
         id: codeception_testplan_name
         uses: OXID-eSales/github-actions/load_cached_testplan@v3
         with:
@@ -916,7 +917,6 @@ jobs:
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
       - name: Load cached testplan
-        if: ${{ matrix.testplan != 'skip' }}
         id: runtest_testplan_name
         uses: OXID-eSales/github-actions/load_cached_testplan@v3
         with:
@@ -1092,7 +1092,6 @@ jobs:
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
       - name: Load cached testplan
-        if: ${{ matrix.testplan != 'skip' }}
         id: sonarcloud_testplan_name
         uses: OXID-eSales/github-actions/load_cached_testplan@v3
         with:
@@ -1218,7 +1217,6 @@ jobs:
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
       - name: Load cached testplan
-        if: ${{ matrix.testplan != 'skip' }}
         id: styles_testplan_name
         uses: OXID-eSales/github-actions/load_cached_testplan@v3
         with:
