@@ -92,7 +92,7 @@ runs:
         echo "${JOB_STATUS}" >"${STATUS_FILE}"
         echo "${{inputs.cached_object}}" >"${CACHE_FILE}"
         if [ -f 'generated_testplan.yaml' ]; then
-          mv generated_testplan.yaml
+          mv generated_testplan.yaml "${PLAN_FILE}"
         fi
 
     - name: Upload Artifacts
