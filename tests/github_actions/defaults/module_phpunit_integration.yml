@@ -15,5 +15,5 @@ phpunit:
       source/source/log/oxideshop.log
       data/php/logs/error_log.txt
   coverage:
-    path: 'source/coverage_phpunit_integration_{{ .Data.install_module.ids }}.xml
-    prefix: coverage-reports-phpunit_integration_{{ .Data.install_module.ids }}
+    path: 'source/coverage_phpunit_integration_{{ .Data.install_module.ids }}.xml'
+    prefix: 'coverage-reports-phpunit_integration_{{ .Data.install_module.ids }}'

@@ -4,9 +4,9 @@ phpunit:
     options: '-e XDEBUG_MODE=coverage'
   configuration: '/var/www/vendor/{{ .Data.install_module.package_name }}/tests/phpunit.xml'
   test: '/var/www/vendor/{{ .Data.install_module.package_name }}/tests/Unit'
-  additional_options: '--bootstrap=/var/www/source/bootstrap.php --coverage-clover=/var/www/coverage_phpunit_unit_{{ .Data.install_module.ids }}.xml
+  additional_options: '--bootstrap=/var/www/source/bootstrap.php --coverage-clover=/var/www/coverage_phpunit_unit_{{ .Data.install_module.ids }}.xml'
   logfile:
-    prefix: 'phpunit-unit--{{ .Data.install_module.ids }}'
+    prefix: 'phpunit-unit-{{ .Data.install_module.ids }}'
   output:
     prefix: 'phpunit-unit-{{ .Data.install_module.ids }}-artifacts'
     files: |
@@ -16,4 +16,4 @@ phpunit:
       data/php/logs/error_log.txt
   coverage:
     path: 'source/coverage_phpunit_unit_{{ .Data.install_module.ids }}.xml'
-    prefix: coverage-reports-phpunit_unit_{{ .Data.install_module.ids }}
+    prefix: 'coverage-reports-phpunit_unit_{{ .Data.install_module.ids }}'
