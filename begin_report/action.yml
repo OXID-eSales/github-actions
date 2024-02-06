@@ -56,6 +56,6 @@ runs:
         path: |
           reports/000-header.md
           slack_reports/000-header.md
-          ${{ files }}
+          ${{ inputs.files }}
         if-no-files-found: ignore
-        retention-days: 7
+        retention-days: 2

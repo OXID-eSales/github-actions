@@ -107,4 +107,4 @@ runs:
           caches/*.txt
           generated_testplan-*.yaml
         if-no-files-found: ignore
-        retention-days: 7
+        retention-days: 2
