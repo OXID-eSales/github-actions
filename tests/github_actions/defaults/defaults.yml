@@ -362,7 +362,7 @@ phpunit:
   max_parallel: 8
   # The title is used in the matrix testplan runs to distinguish their output
   # Overwrite it with a unique name in each iteration
-  title: 'phpunit'
+  title: 'phpunit_unit'
   docker_login: *docker_login
   # Which cached shop do we want to load.
   load_shop: *install_module_prefix
