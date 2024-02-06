@@ -165,7 +165,8 @@ runs:
     - name: 'Remove temporary testplan artifacts'
       uses: geekyeggo/delete-artifact@v4
       with:
-        name: 'testplan-**'
+        name: 'testplan-*'
+        useGlob: true
         failOnError: false
 
     - name: Send custom JSON data to Slack workflow
