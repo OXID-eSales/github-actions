@@ -708,9 +708,9 @@ jobs:
           logfile: ${{steps.phpunit_testplan.outputs.phpunit_logfile_prefix}}-${{ steps.phpunit_testplan.outputs.phpunit_title }}-${{steps.phpunit_testplan_name.outputs.matrix_suffix}}.txt
           logfile_artifact: ${{ steps.phpunit_testplan.outputs.phpunit_logfile_artifact }}
           output_files: ${{ steps.phpunit_testplan.outputs.phpunit_output_files }}
-          output_artifact: ${{steps.phpunit_testplan.outputs.phpunit_output_prefix}}_${{steps.phpunit_testplan_name.outputs.matrix_suffix}}
+          output_artifact: ${{steps.phpunit_testplan.outputs.phpunit_output_prefix}}-${{steps.phpunit_testplan_name.outputs.matrix_suffix}}
           coverage_path: ${{ steps.phpunit_testplan.outputs.phpunit_coverage_path }}
-          coverage_artifact: ${{ steps.phpunit_testplan.outputs.phpunit_coverage_prefix }}_${{steps.phpunit_testplan_name.outputs.matrix_suffix}}
+          coverage_artifact: ${{ steps.phpunit_testplan.outputs.phpunit_coverage_prefix }}-${{steps.phpunit_testplan_name.outputs.matrix_suffix}}
           failure_pattern: ${{ steps.phpunit_testplan.outputs.phpunit_failure_pattern }}
 
       - name: 'Stop shop'
@@ -871,9 +871,9 @@ jobs:
           logfile: ${{steps.codeception_testplan.outputs.codeception_logfile_prefix}}-${{steps.codeception_testplan.outputs.codeception_title}}-${{steps.codeception_testplan_name.outputs.matrix_suffix}}.txt
           logfile_artifact: ${{ steps.codeception_testplan.outputs.codeception_logfile_artifact }}
           output_files: ${{ steps.codeception_testplan.outputs.codeception_output_files }}
-          output_artifact: ${{steps.codeception_testplan.outputs.codeception_output_prefix}}_${{steps.codeception_testplan_name.outputs.matrix_suffix}}
+          output_artifact: ${{steps.codeception_testplan.outputs.codeception_output_prefix}}-${{steps.codeception_testplan_name.outputs.matrix_suffix}}
           coverage_path: ${{ steps.codeception_testplan.outputs.codeception_coverage_path }}
-          coverage_artifact: ${{ steps.codeception_testplan.outputs.codeception_coverage_prefix }}_${{steps.codeception_testplan_name.outputs.matrix_suffix}}
+          coverage_artifact: ${{ steps.codeception_testplan.outputs.codeception_coverage_prefix }}-${{steps.codeception_testplan_name.outputs.matrix_suffix}}
           failure_pattern: ${{ steps.codeception_testplan.outputs.codeception_failure_pattern }}
 
       - name: 'Stop shop'
@@ -1031,9 +1031,9 @@ jobs:
           logfile: ${{ steps.runtest_testplan.outputs.runtest_logfile_prefix}}-${{ steps.runtest_testplan.outputs.runtest_title}}-${{ steps.runtest_testplan_name.outputs.matrix_suffix }}.txt
           logfile_artifact: ${{ steps.runtest_testplan.outputs.runtest_logfile_artifact }}
           output_files: ${{ steps.runtest_testplan.outputs.runtest_output_files }}
-          output_artifact: ${{ steps.runtest_testplan.outputs.runtest_output_prefix }}_${{ steps.runtest_testplan_name.outputs.matrix_suffix }}
+          output_artifact: ${{ steps.runtest_testplan.outputs.runtest_output_prefix }}-${{ steps.runtest_testplan_name.outputs.matrix_suffix }}
           coverage_path: ${{ steps.runtest_testplan.outputs.runtest_coverage_path }}
-          coverage_artifact: ${{ steps.runtest_testplan.outputs.runtest_coverage_prefix }}_${{ steps.runtest_testplan_name.outputs.matrix_suffix }}
+          coverage_artifact: ${{ steps.runtest_testplan.outputs.runtest_coverage_prefix }}-${{ steps.runtest_testplan_name.outputs.matrix_suffix }}
           failure_pattern: ${{ steps.runtest_testplan.outputs.runtest_failure_pattern }}
           reset_shop: ${{ steps.runtest_testplan.outputs.runtest_reset_shop }}
           reset_shop_binary: ${{ steps.runtest_testplan.outputs.runtest_reset_shop_binary }}
@@ -1117,7 +1117,7 @@ jobs:
       - name: 'SonarCloud Scan'
         uses: 'OXID-eSales/github-actions/sonarcloud@v0'
         with:
-          coverage_artifact: 'coverage-reports-**${{ steps.sonarcloud_testplan_name.outputs.matrix_suffix }}'
+          coverage_artifact: 'coverage-reports-**-${{ steps.sonarcloud_testplan_name.outputs.matrix_suffix }}'
           output_artifact: 'coverage-reports'
           target_branch: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_target_branch }}
           strip_path: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_strip_path }}
