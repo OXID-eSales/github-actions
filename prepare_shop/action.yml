@@ -107,7 +107,7 @@ inputs:
   composer_transform:
     type: string
     required: false
-    description: 'JSON code to apply to the composer.json'
+    description: 'JSON code to merge into composer.json'
     default: ''
   composer_backup:
     type: boolean

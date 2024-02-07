@@ -92,55 +92,19 @@ xdebug settings for php custom.ini.
 **add_services:** *not required*, *default:* selenium-chrome  
 Space separated list of extra services to add.
 
-**composer_allow_plugins_repositories:**  *not required*,
-Space separated list of repository:value pairs to manage allow-plugins.
+**composer_file:** *not required*, *default:* source/composer.json  
+Name of the original composer.json.
 
-**composer_rm_parameters:** *not required*,
-Space separated list of things to be removed.
+**composer_transform:** *not required*, *default:* ''  
+JSON code to merge into composer.json.
 
-**composer_rm_options:** *not required*,
-Options to pass along to composer when requiring the repositories.
+**composer_backup:** *not required*, *default:* true  
+Should we create a backup for composer.json?
 
-**composer_rm_update:** *not required*,
-Run composer update after requiring all repositories.
+**composer_update:** *not required*,
+Run composer update after transform.
 
-**composer_rm_update_options:** *not required*,
-Options to pass along to composer during install.
-
-**composer_configure_install:** *not required*,
-Space separated list of repositories to configure.
-
-**composer_configure_organisation:** *not required*,
-The organisation for the repositories.
-
-**composer_configure_ref:** *not required*,
-Git reference used in require.
-
-**composer_configure_options:** *not required*,
-Options to pass along to composer when requiring the repositories.
-
-**composer_configure_update:** *not required*,
-Run composer update after requiring all repositories.
-
-**composer_configure_update_options:** *not required*,
-Options to pass along to composer during install.
-
-**composer_require_install:** *notrequired*,
-Space separated list of repositories to require.
-
-**composer_require_organisation:** *not required*,
-The organisation for the repositories.
-
-**composer_require_ref:** ,
-Git reference used in require.
-
-**composer_require_options:** *not required*,
-Options to pass along to composer when requiring the repositories.
-
-**composer_require_update:** *not required*,
-Run composer update after requiring all repositories.
-
-**composer_require_update_options:** *not required*,
+**composer_update_options:** *not required*,
 Options to pass along to composer during install.
 
 **enterprise_github_token:** *not required*, *default:* ''  

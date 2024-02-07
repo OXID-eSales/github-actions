@@ -27,7 +27,7 @@ on:
         default: 'tests/github_actions'
       default_plan_folder:
         type: string
-        description: 'Folder containing the test plans'
+        description: 'Folder containing the test plan templates'
         required: false
         default: 'tests/github_actions/defaults'
 

@@ -23,9 +23,6 @@ Optional: Additional options to pass to phpunit. Example: "--bootstrap bootstrap
 **logfile:** *not required*, *default:*  deprecated_tests_log.txt  
 Name of the output logfile.
 
-**logfile_artifact:** *not required*, *default:*  phpunit_logs  
-Github run artifact to put the logfile in.
-
 **output_files:** *not required*, *default:* source/unit.cov, source/source/log/oxideshop.log and data/php/logs/error_log.txt  
 Output files of the phpunit run to put into the output artifact.
 
