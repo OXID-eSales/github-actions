@@ -99,89 +99,6 @@ inputs:
     required: false
     description: 'Space separated list of extra services to add'
     default: 'selenium-chrome'
-  composer_allow_plugins_repositories:
-    type: string
-    required: false
-    description: 'Space separated list of repository:value pairs to manage allow-plugins'
-    default: ''
-  composer_rm_parameters:
-    type: string
-    required: false
-    description: 'Space separated list of things to be removed'
-    default: ''
-  composer_rm_options:
-    type: string
-    required: false
-    description: 'Options to pass along to composer when requiring the repositories'
-    default: '--no-update'
-  composer_rm_update:
-    type: string
-    required: false
-    description: 'Run composer update after requiring all repositories'
-    default: false
-  composer_rm_update_options:
-    type: string
-    required: false
-    description: 'Options to pass along to composer during install'
-    default: '--no-interaction'
-  composer_configure_install:
-    type: string
-    required: false
-    description: 'Space separated list of repositories to configure'
-    default: ''
-  composer_configure_organisation:
-    type: string
-    required: false
-    description: 'The organisation for the repositories'
-    default: 'oxid-esales'
-  composer_configure_ref:
-    type: string
-    description: 'Git reference used in require'
-    default: ''
-  composer_configure_options:
-    type: string
-    required: false
-    description: 'Options to pass along to composer when requiring the repositories'
-    default: '--with-all-dependencies'
-  composer_configure_update:
-    type: string
-    required: false
-    description: 'Run composer update after requiring all repositories'
-    default: true
-  composer_configure_update_options:
-    type: string
-    required: false
-    description: 'Options to pass along to composer during install'
-    default: '--no-interaction'
-  composer_require_install:
-    type: string
-    required: false
-    description: 'Space separated list of repositories to require'
-    default: ''
-  composer_require_organisation:
-    type: string
-    required: false
-    description: 'The organisation for the repositories'
-    default: 'oxid-esales'
-  composer_require_ref:
-    type: string
-    description: 'Git reference used in require'
-    default: ''
-  composer_require_options:
-    type: string
-    required: false
-    description: 'Options to pass along to composer when requiring the repositories'
-    default: '--with-all-dependencies'
-  composer_require_update:
-    type: string
-    required: false
-    description: 'Run composer update after requiring all repositories'
-    default: true
-  composer_require_update_options:
-    type: string
-    required: false
-    description: 'Options to pass along to composer during install'
-    default: '--no-interaction'
   composer_file:
     type: string
     required: false
@@ -207,7 +124,6 @@ inputs:
     required: false
     description: 'Options to pass along to composer during install'
     default: '--no-interaction'
-
   enterprise_github_token:
     type: string
     required: false
@@ -365,68 +281,6 @@ runs:
           ${{ inputs.container_name}} \
           composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
 
-    - name: 'Composer allow plugins ${{ inputs.composer_allow_plugins_repositories }}'
-      if: ${{ inputs.composer_allow_plugins_repositories != '' }}
-      uses: 'OXID-eSales/github-actions/composer_allow_plugins@v3'
-      with:
-        container_name: ${{ inputs.container_name }}
-        container_options: ${{ inputs.container_options }}
-        container_method: 'exec'
-        repositories: ${{ inputs.composer_allow_plugins_repositories }}
-
-    - name: 'Prepare composer RM list'
-      if: ${{ inputs.composer_rm_parameters != '' }}
-      shell: bash
-      run: |
-        # prepare_shop: Prepare composer RM list
-        {
-          echo "COMPOSER_RM_PARAMETERS<<_composer_rm_parameters_delim_"
-          echo "${{inputs.composer_rm_parameters}}"|tr ' ' '\n'
-          echo "_composer_rm_parameters_delim_"
-        } >>"${GITHUB_ENV}"
-
-    - name: 'Composer rm'
-      if: ${{ inputs.composer_rm_parameters != '' }}
-      uses: 'OXID-eSales/github-actions/composer@v3'
-      with:
-        container_name: ${{ inputs.container_name }}
-        container_options: ${{ inputs.container_options }}
-        container_method: 'exec'
-        action: 'rm'
-        parameters: ${{ env.COMPOSER_RM_PARAMETERS }}
-        options: ${{ inputs.composer_rm_options}}
-        update: ${{ inputs.composer_rm_update }}
-        update_options: ${{ inputs.composer_rm_update_options }}
-
-    - name: 'Composer configure and require ${{ inputs.composer_configure_install }}'
-      if: ${{ inputs.composer_configure_install != '' }}
-      uses: 'OXID-eSales/github-actions/composer_configure@v3'
-      with:
-        container_name: ${{ inputs.container_name }}
-        container_options: ${{ inputs.container_options }}
-        container_method: 'exec'
-        organisation: ${{ inputs.composer_configure_organisation }}
-        repositories: ${{ inputs.composer_configure_install }}
-        ref: ${{ inputs.composer_configure_ref }}
-        options: ${{ inputs.composer_configure_options }}
-        update: ${{ inputs.composer_configure_update }}
-        update_options: ${{ inputs.composer_configure_update_options }}
-        enterprise_github_token: ${{ inputs.enterprise_github_token }}
-
-    - name: 'Composer require ${{ inputs.composer_require_install }}'
-      if: ${{ inputs.composer_require_install != '' }}
-      uses: 'OXID-eSales/github-actions/composer_require@v3'
-      with:
-        container_name: ${{ inputs.container_name }}
-        container_options: ${{ inputs.container_options }}
-        container_method: 'exec'
-        organisation: ${{ inputs.composer_require_organisation }}
-        repositories: ${{ inputs.composer_require_install }}
-        ref: ${{ inputs.composer_require_ref }}
-        options: ${{ inputs.composer_require_options }}
-        update: ${{ inputs.composer_require_update }}
-        update_options: ${{ inputs.composer_require_update_options }}
-
     - name: 'Modify composer.json'
       if: ${{ inputs.composer_transform != '' }}
       uses: 'OXID-eSales/github-actions/composer_merge@v3'
@@ -443,7 +297,7 @@ runs:
 
     - name: Install dependencies
       shell: bash
-      if: ${{ inputs.composer_configure_install == '' && inputs.composer_require_install == '' && inputs.composer_transform == ''}}
+      if: ${{ inputs.composer_transform == ''}}
       run: |
         # prepare_shop: Install dependencies
         docker-compose ${{ inputs.container_method }} -T \

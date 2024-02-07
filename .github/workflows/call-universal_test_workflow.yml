@@ -118,7 +118,7 @@ jobs:
           cp "${GITHUB_OUTPUT}" generated_output.txt
           cp "${GITHUB_ENV}" generated_env.txt
 
-      - name: 'Create testplan archive'
+      - name: 'Create first testplan archive'
         if: always()
         uses: OXID-eSales/github-actions/begin_report@release-v4
         with:
@@ -162,23 +162,6 @@ jobs:
       prepare_shop_add_services: ${{ steps.ltp.outputs.prepare_shop_add_services }}
       prepare_shop_cache_bucket: ${{ steps.ltp.outputs.prepare_shop_cache_bucket }}
       prepare_shop_cache_prefix: ${{ steps.ltp.outputs.prepare_shop_cache_prefix }}
-      prepare_shop_composer_allow_plugins_repositories: ${{ steps.ltp.outputs.prepare_shop_composer_allow_plugins_repositories }}
-      prepare_shop_composer_rm_parameters: ${{ steps.ltp.outputs.prepare_shop_composer_rm_parameters }}
-      prepare_shop_composer_rm_options: ${{ steps.ltp.outputs.prepare_shop_composer_rm_options }}
-      prepare_shop_composer_rm_update: ${{ steps.ltp.outputs.prepare_shop_composer_rm_update }}
-      prepare_shop_composer_rm_update_options: ${{ steps.ltp.outputs.prepare_shop_composer_rm_update_options }}
-      prepare_shop_composer_configure_install: ${{ steps.ltp.outputs.prepare_shop_composer_configure_install }}
-      prepare_shop_composer_configure_options: ${{ steps.ltp.outputs.prepare_shop_composer_configure_options }}
-      prepare_shop_composer_configure_organisation: ${{ steps.ltp.outputs.prepare_shop_composer_configure_organisation }}
-      prepare_shop_composer_configure_ref: ${{ steps.ltp.outputs.prepare_shop_composer_configure_ref }}
-      prepare_shop_composer_configure_update: ${{ steps.ltp.outputs.prepare_shop_composer_configure_update }}
-      prepare_shop_composer_configure_update_options: ${{ steps.ltp.outputs.prepare_shop_composer_configure_update_options }}
-      prepare_shop_composer_require_install: ${{ steps.ltp.outputs.prepare_shop_composer_require_install }}
-      prepare_shop_composer_require_options: ${{ steps.ltp.outputs.prepare_shop_composer_require_options }}
-      prepare_shop_composer_require_organisation: ${{ steps.ltp.outputs.prepare_shop_composer_require_organisation }}
-      prepare_shop_composer_require_ref: ${{ steps.ltp.outputs.prepare_shop_composer_require_ref }}
-      prepare_shop_composer_require_update: ${{ steps.ltp.outputs.prepare_shop_composer_require_update }}
-      prepare_shop_composer_require_update_options: ${{ steps.ltp.outputs.prepare_shop_composer_require_update_options }}
       prepare_shop_composer_file: ${{ steps.ltp.outputs.prepare_shop_composer_file}}
       prepare_shop_composer_transform: ${{ steps.ltp.outputs.prepare_shop_composer_transform}}
       prepare_shop_composer_backup: ${{ steps.ltp.outputs.prepare_shop_composer_backup}}
@@ -314,29 +297,11 @@ jobs:
           custom_ini_error_reporting: ${{ needs.init.outputs.prepare_shop_custom_ini_error_reporting }}
           custom_ini_xdebug: ${{ needs.init.outputs.prepare_shop_custom_ini_xdebug }}
           add_services: ${{ needs.init.outputs.prepare_shop_add_services }}
-          composer_allow_plugins_repositories: '${{ needs.init.outputs.prepare_shop_composer_allow_plugins_repositories }}'
-          composer_rm_parameters: ${{ needs.init.outputs.prepare_shop_composer_rm_parameters}}
-          composer_rm_options: ${{ needs.init.outputs.prepare_shop_composer_rm_options}}
-          composer_rm_update: ${{ needs.init.outputs.prepare_shop_composer_rm_update}}
-          composer_rm_update_options: ${{ needs.init.outputs.prepare_shop_composer_rm_update_options}}
-          composer_configure_organisation: ${{ needs.init.outputs.prepare_shop_composer_configure_organisation}}
-          composer_configure_install: '${{ needs.init.outputs.prepare_shop_composer_configure_install}}'
-          composer_configure_ref: ${{ needs.init.outputs.prepare_shop_composer_configure_ref}}
-          composer_configure_options: ${{ needs.init.outputs.prepare_shop_composer_configure_options}}
-          composer_configure_update: ${{ needs.init.outputs.prepare_shop_composer_configure_update}}
-          composer_configure_update_options: ${{ needs.init.outputs.prepare_shop_composer_configure_update_options}}
-          composer_require_organisation: ${{ needs.init.outputs.prepare_shop_composer_require_organisation}}
-          composer_require_install: '${{ needs.init.outputs.prepare_shop_composer_require_install}}'
-          composer_require_ref: ${{ needs.init.outputs.prepare_shop_composer_require_ref}}
-          composer_require_options: ${{ needs.init.outputs.prepare_shop_composer_require_options}}
-          composer_require_update: ${{ needs.init.outputs.prepare_shop_composer_require_update}}
-          composer_require_update_options: ${{ needs.init.outputs.prepare_shop_composer_require_update_options}}
           composer_file: ${{ needs.init.outputs.prepare_shop_composer_file }}
           composer_transform: ${{ needs.init.outputs.prepare_shop_composer_transform}}
           composer_backup: ${{ needs.init.outputs.prepare_shop_composer_backup}}
           composer_update: ${{ needs.init.outputs.prepare_shop_composer_update}}
           composer_update_options: ${{ needs.init.outputs.prepare_shop_composer_update_options}}
-
           enterprise_github_token: ${{ secrets.enterprise_github_token }}
           cache_name: '${{ needs.init.outputs.prepare_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.prepare_shop_cache_bucket }}
@@ -706,7 +671,6 @@ jobs:
           additional_options: ${{ steps.phpunit_testplan.outputs.phpunit_additional_options }}
           # yamllint disable-line rule:line-length
           logfile: ${{steps.phpunit_testplan.outputs.phpunit_logfile_prefix}}-${{ steps.phpunit_testplan.outputs.phpunit_title }}-${{steps.phpunit_testplan_name.outputs.matrix_suffix}}.txt
-          logfile_artifact: ${{ steps.phpunit_testplan.outputs.phpunit_logfile_artifact }}
           output_files: ${{ steps.phpunit_testplan.outputs.phpunit_output_files }}
           output_artifact: ${{steps.phpunit_testplan.outputs.phpunit_output_prefix}}-${{steps.phpunit_testplan_name.outputs.matrix_suffix}}
           coverage_path: ${{ steps.phpunit_testplan.outputs.phpunit_coverage_path }}
@@ -792,35 +756,6 @@ jobs:
           wait_for_selenium: ${{ steps.codeception_testplan.outputs.codeception_wait_for_selenium }}
           container_name: ${{ steps.codeception_testplan.outputs.codeception_container_name }}
 
-      - name: 'Composer configure and require ${{ steps.codeception_testplan.outputs.codeception_composer_configure_install }}'
-        if: ${{ steps.codeception_testplan.outputs.codeception_composer_configure_install != '' }}
-        uses: 'OXID-eSales/github-actions/composer_configure@v3'
-        with:
-          container_name: ${{ steps.codeception_testplan.outputs.codeception_container_name }}
-          container_options: '${{ steps.codeception_testplan.outputs.codeception_container_options }} ${{ steps.pre_script.outputs.container_options }}'
-          container_method: 'exec'
-          organisation: ${{ steps.codeception_testplan.outputs.codeception_composer_configure_organisation }}
-          repositories: ${{ steps.codeception_testplan.outputs.codeception_composer_configure_install }}
-          ref: ${{ steps.codeception_testplan.outputs.codeception_composer_configure_ref }}
-          options: ${{ steps.codeception_testplan.outputs.codeception_composer_configure_options }}
-          update: ${{ steps.codeception_testplan.outputs.codeception_composer_configure_update }}
-          update_options: ${{ steps.codeception_testplan.outputs.codeception_composer_configure_update_options }}
-          enterprise_github_token: ${{ secrets.enterprise_github_token }}
-
-      - name: 'Composer require ${{ steps.codeception_testplan.outputs.codeception_composer_require_install }}'
-        if: ${{ steps.codeception_testplan.outputs.codeception_composer_require_install != '' }}
-        uses: 'OXID-eSales/github-actions/composer_require@v3'
-        with:
-          container_name: ${{ steps.codeception_testplan.outputs.codeception_container_name }}
-          container_options: '${{ steps.codeception_testplan.outputs.codeception_container_options }} ${{ steps.pre_script.outputs.container_options }}'
-          container_method: 'exec'
-          organisation: ${{ steps.codeception_testplan.outputs.codeception_composer_require_organisation }}
-          repositories: ${{ steps.codeception_testplan.outputs.codeception_composer_require_install }}
-          ref: ${{ steps.codeception_testplan.outputs.codeception_composer_require_ref }}
-          options: ${{ steps.codeception_testplan.outputs.codeception_composer_require_options }}
-          update: ${{ steps.codeception_testplan.outputs.codeception_composer_require_update }}
-          update_options: ${{ steps.codeception_testplan.outputs.codeception_composer_require_update_options }}
-
       - name: 'Modify composer.json'
         if: ${{ steps.codeception_testplan.outputs.codeception_composer_transform != '' }}
         uses: 'OXID-eSales/github-actions/composer_merge@v3'
@@ -869,7 +804,6 @@ jobs:
           build_additional_options: ${{ steps.codeception_testplan.outputs.codeception_build_additional_options }}
           # yamllint disable-line rule:line-length
           logfile: ${{steps.codeception_testplan.outputs.codeception_logfile_prefix}}-${{steps.codeception_testplan.outputs.codeception_title}}-${{steps.codeception_testplan_name.outputs.matrix_suffix}}.txt
-          logfile_artifact: ${{ steps.codeception_testplan.outputs.codeception_logfile_artifact }}
           output_files: ${{ steps.codeception_testplan.outputs.codeception_output_files }}
           output_artifact: ${{steps.codeception_testplan.outputs.codeception_output_prefix}}-${{steps.codeception_testplan_name.outputs.matrix_suffix}}
           coverage_path: ${{ steps.codeception_testplan.outputs.codeception_coverage_path }}
@@ -953,35 +887,6 @@ jobs:
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
-      - name: 'Composer configure and require ${{ steps.runtest_testplan.outputs.runtest_composer_configure_install }}'
-        if: ${{ steps.runtest_testplan.outputs.runtest_composer_configure_install != '' }}
-        uses: 'OXID-eSales/github-actions/composer_configure@v3'
-        with:
-          container_name: ${{ steps.runtest_testplan.outputs.runtest_container_name }}
-          container_options: ${{ steps.runtest_testplan.outputs.runtest_container_options }}
-          container_method: 'exec'
-          organisation: ${{ steps.runtest_testplan.outputs.runtest_composer_configure_organisation }}
-          repositories: ${{ steps.runtest_testplan.outputs.runtest_composer_configure_install }}
-          ref: ${{ steps.runtest_testplan.outputs.runtest_composer_configure_ref }}
-          options: ${{ steps.runtest_testplan.outputs.runtest_composer_configure_options }}
-          update: ${{ steps.runtest_testplan.outputs.runtest_composer_configure_update }}
-          update_options: ${{ steps.runtest_testplan.outputs.runtest_composer_configure_update_options }}
-          enterprise_github_token: ${{ secrets.enterprise_github_token }}
-
-      - name: 'Composer require ${{ steps.runtest_testplan.outputs.runtest_composer_require_install }}'
-        if: ${{ steps.runtest_testplan.outputs.runtest_composer_require_install != '' }}
-        uses: 'OXID-eSales/github-actions/composer_require@v3'
-        with:
-          container_name: ${{ steps.runtest_testplan.outputs.runtest_container_name }}
-          container_options: ${{ steps.runtest_testplan.outputs.runtest_container_options }}
-          container_method: 'exec'
-          organisation: ${{ steps.runtest_testplan.outputs.runtest_composer_require_organisation }}
-          repositories: ${{ steps.runtest_testplan.outputs.runtest_composer_require_install }}
-          ref: ${{ steps.runtest_testplan.outputs.runtest_composer_require_ref }}
-          options: ${{ steps.runtest_testplan.outputs.runtest_composer_require_options }}
-          update: ${{ steps.runtest_testplan.outputs.runtest_composer_require_update }}
-          update_options: ${{ steps.runtest_testplan.outputs.runtest_composer_require_update_options }}
-
       - name: 'Modify composer.json'
         if: ${{ steps.runtest_testplan.outputs.runtest_composer_transform != '' }}
         uses: 'OXID-eSales/github-actions/composer_merge@v3'
@@ -1029,7 +934,6 @@ jobs:
           additional_options: ${{ steps.runtest_testplan.outputs.runtest_additional_options }}
           # yamllint disable-line rule:line-length
           logfile: ${{ steps.runtest_testplan.outputs.runtest_logfile_prefix}}-${{ steps.runtest_testplan.outputs.runtest_title}}-${{ steps.runtest_testplan_name.outputs.matrix_suffix }}.txt
-          logfile_artifact: ${{ steps.runtest_testplan.outputs.runtest_logfile_artifact }}
           output_files: ${{ steps.runtest_testplan.outputs.runtest_output_files }}
           output_artifact: ${{ steps.runtest_testplan.outputs.runtest_output_prefix }}-${{ steps.runtest_testplan_name.outputs.matrix_suffix }}
           coverage_path: ${{ steps.runtest_testplan.outputs.runtest_coverage_path }}
