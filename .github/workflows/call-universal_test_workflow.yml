@@ -80,6 +80,7 @@ jobs:
           path: workflow
 
       - name: 'Consolidate plans'
+        id: consolidate_plans
         run: |
           find . -type f
           mkdir -p '${{ inputs.plan_folder }}/defaults'
@@ -87,18 +88,12 @@ jobs:
             mv workflow/${{ inputs.plan_folder }}/* '${{ inputs.plan_folder }}/'
             /bin/rm -r 'workflow/${{ inputs.plan_folder }}'
           fi
-          # Backwards compatibility settings, can be removed in v4
-          if [ -d workflow/tests/github_actions ]; then
-            mv workflow/tests/github_actions/* '${{ inputs.plan_folder }}/'
-          fi
-          if [ -d workflow/Tests/github_actions ]; then
-            mv workflow/Tests/github_actions/* '${{ inputs.plan_folder }}/'
-          fi
-          # End of backwards-compatibility settings
           if [ -f workflow/composer.json ]; then
             mv workflow/composer.json '${{ inputs.plan_folder }}/'
           fi
           mv defaults/${{ inputs.default_plan_folder}}/* '${{ inputs.plan_folder }}/defaults/'
+          TESTPLAN=$(echo "${{ inputs.testplan }}"|sed -e 's|~|${{ inputs.plan_folder }}|g')
+          echo "testplan=${{ inputs.plan_folder }}/defaults/defaults.yml,${TESTPLAN}" >>"${GITHUB_OUTPUT}"
 
       - name: 'Load Testplan'
         id: ltp
