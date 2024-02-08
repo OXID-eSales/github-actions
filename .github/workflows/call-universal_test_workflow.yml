@@ -29,7 +29,7 @@ on:
         type: string
         description: 'Folder containing the test plan templates'
         required: false
-        default: 'tests/github_actions/defaults'
+        default: '.github/oxid-esales/defaults'
 
     secrets:
       DOCKER_HUB_USER:
