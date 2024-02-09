@@ -99,7 +99,7 @@ jobs:
         id: ltp
         uses: 'joernott/load_testplan@v1'
         with:
-          files: '${{ inputs.plan_folder }}/defaults/defaults.yml,${{ inputs.testplan }}'
+          files: '${{ steps.consolidate_plans.outputs.testplan }}'
           set_output: true
           set_env: true
           set_print: true
@@ -151,6 +151,7 @@ jobs:
 
     outputs:
       # init variables
+      testplan: ${{ steps.consolidate_plans.outputs.testplan }}
       init_cache_bucket: ${{ steps.ltp.outputs.init_cache_bucket }}
       init_cache_name: ${{ steps.ltp.outputs.init_cache_name }}
       # prepare_shop variables
@@ -421,7 +422,7 @@ jobs:
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
-          root_testplan: ${{ inputs.testplan }}
+          root_testplan: ${{ needs.init.outputs.testplan }}
           matrix_testplan: ${{ matrix.testplan }}
           plan_folder: ${{ inputs.plan_folder }}
           cache_name: ${{ needs.init.outputs.init_cache_name }}
@@ -604,7 +605,7 @@ jobs:
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
-          root_testplan: ${{ inputs.testplan }}
+          root_testplan: ${{ needs.init.outputs.testplan }}
           matrix_testplan: ${{ matrix.testplan }}
           plan_folder: ${{ inputs.plan_folder }}
           cache_name: ${{ needs.init.outputs.init_cache_name }}
@@ -711,7 +712,7 @@ jobs:
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
-          root_testplan: ${{ inputs.testplan }}
+          root_testplan: ${{ needs.init.outputs.testplan }}
           matrix_testplan: ${{ matrix.testplan }}
           plan_folder: ${{ inputs.plan_folder }}
           cache_name: ${{ needs.init.outputs.init_cache_name }}
@@ -844,7 +845,7 @@ jobs:
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
-          root_testplan: ${{ inputs.testplan }}
+          root_testplan: ${{ needs.init.outputs.testplan }}
           matrix_testplan: ${{ matrix.testplan }}
           plan_folder: ${{ inputs.plan_folder }}
           cache_name: ${{ needs.init.outputs.init_cache_name }}
@@ -989,7 +990,7 @@ jobs:
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
-          root_testplan: ${{ inputs.testplan }}
+          root_testplan: ${{ needs.init.outputs.testplan }}
           matrix_testplan: ${{ matrix.testplan }}
           plan_folder: ${{ inputs.plan_folder }}
           cache_name: ${{ needs.init.outputs.init_cache_name }}
@@ -1115,7 +1116,7 @@ jobs:
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
-          root_testplan: ${{ inputs.testplan }}
+          root_testplan: ${{ needs.init.outputs.testplan }}
           matrix_testplan: ${{ matrix.testplan }}
           plan_folder: ${{ inputs.plan_folder }}
           cache_name: ${{ needs.init.outputs.init_cache_name }}
