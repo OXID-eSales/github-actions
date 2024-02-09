@@ -166,7 +166,7 @@ runs:
 
     - name: Upload configuration artifacts
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.output_artifact }}
         path: ${{ inputs.output_files }}

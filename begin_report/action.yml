@@ -20,6 +20,15 @@ inputs:
     required: false
     description: 'Title of the job'
     default: 'default'
+  files:
+    type: string
+    required: false
+    description: 'Additional files to archive'
+    default: |
+      generated_testplan.yaml
+      generated_output.txt
+      generated_env.txt
+      load_testplan.log
 
 runs:
   using: "composite"
@@ -28,7 +37,7 @@ runs:
       shell: bash
       run: |
         # begin_report: Write Report header
-        mkdir -p reports job_status slack_reports
+        mkdir -p reports slack_reports
         cat >reports/000-header.md <<EOF
         # ${{inputs.title}}
         EOF
@@ -41,11 +50,12 @@ runs:
 
     - name: Upload Artifacts
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: testplan
+        name: testplan-000_header
         path: |
-          reports/000-header.md.md
+          reports/000-header.md
           slack_reports/000-header.md
+          ${{ inputs.files }}
         if-no-files-found: ignore
-        retention-days: 7
+        retention-days: 2

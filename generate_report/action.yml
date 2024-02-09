@@ -21,10 +21,11 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Download Artifact
-      uses: actions/download-artifact@v3
+    - name: 'Download job results'
+      uses: actions/download-artifact@v4
       with:
-        name: testplan
+        pattern: 'testplan-*'
+        merge-multiple: true
 
     - name: 'Process job results for slack'
       id: process_slack
@@ -155,16 +156,18 @@ runs:
 
     - name: Upload Artifacts
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: testplan
-        path: |
-          slack_reports/*.md
-          github_report.md
-          slack_report.md
-          slack.json
-        if-no-files-found: ignore
+        path: '**'
         retention-days: 7
+
+    - name: 'Remove temporary testplan artifacts'
+      uses: geekyeggo/delete-artifact@v4
+      with:
+        name: 'testplan-*'
+        useGlob: true
+        failOnError: false
 
     - name: Send custom JSON data to Slack workflow
       if: ${{ inputs.slack_webhook != '' }}

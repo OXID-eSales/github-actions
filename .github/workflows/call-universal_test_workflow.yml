@@ -118,31 +118,25 @@ jobs:
           cp "${GITHUB_OUTPUT}" generated_output.txt
           cp "${GITHUB_ENV}" generated_env.txt
 
-      - name: 'Upload generated test plan'
+      - name: 'Create testplan archive'
         if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: 'testplan'
-          path: |
-            ${{ inputs.plan_folder}}/*
-            generated_testplan.yaml
-            generated_output.txt
-            generated_env.txt
-            load_testplan.log
-          retention-days: 7
-
-      - name: 'Write Report Header'
-        if: always()
-        uses: OXID-eSales/github-actions/begin_report@v3
+        uses: OXID-eSales/github-actions/begin_report@release-v4
         with:
           title: ${{ steps.ltp.outputs.finish_slack_title }}
           repository: '${{ github.server_url }}/${{ github.repository }}'
           job: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
           testplan: '${{ inputs.testplan }}'
+          files: |
+            ${{ inputs.plan_folder}}/*
+            generated_testplan.yaml
+            generated_output.txt
+            generated_env.txt
+            load_testplan.log
+
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@release-v4
         with:
           header: true
           phase: install
@@ -355,7 +349,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@release-v4
         with:
           priority: '010'
           phase: install
@@ -389,7 +383,7 @@ jobs:
 
       - name: 'Install shop'
         id: install_shop
-        uses: 'OXID-eSales/github-actions/install_shop@v3'
+        uses: 'OXID-eSales/github-actions/install_shop@release-v4'
         with:
           container_name: ${{ needs.init.outputs.install_shop_container_name }}
           container_options: ${{ needs.init.outputs.install_shop_container_options }}
@@ -435,7 +429,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@release-v4
         with:
           priority: '020'
           phase: install
@@ -544,7 +538,7 @@ jobs:
       - name: Install module
         if: ${{ matrix.testplan != 'skip' }}
         id: install_module
-        uses: 'OXID-eSales/github-actions/install_module@v3'
+        uses: 'OXID-eSales/github-actions/install_module@release-v4'
         with:
           container_name: ${{ steps.install_module_testplan.outputs.install_module_container_name }}
           container_options: ${{ steps.install_module_testplan.outputs.install_module_container_options }}
@@ -590,7 +584,7 @@ jobs:
 
       - name: 'Write Report'
         if: ${{ always() && matrix.testplan != 'skip' }}
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@release-v4
         with:
           priority: '030'
           phase: install
@@ -604,7 +598,7 @@ jobs:
 
       - name: 'Write Report'
         if: ${{ always() && matrix.testplan == 'skip' }}
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@release-v4
         with:
           priority: '030'
           phase: install
@@ -621,7 +615,7 @@ jobs:
     steps:
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@release-v4
         with:
           header: true
           priority: '100'
@@ -702,7 +696,7 @@ jobs:
 
       - name: 'Run phpunit tests'
         id: phpunit_run
-        uses: 'OXID-eSales/github-actions/phpunit@v3'
+        uses: 'OXID-eSales/github-actions/phpunit@release-v4'
         with:
           container_name: ${{ steps.phpunit_testplan.outputs.phpunit_container_name }}
           container_options: ${{ steps.phpunit_testplan.outputs.phpunit_container_options }}
@@ -714,9 +708,9 @@ jobs:
           logfile: ${{steps.phpunit_testplan.outputs.phpunit_logfile_prefix}}-${{ steps.phpunit_testplan.outputs.phpunit_title }}-${{steps.phpunit_testplan_name.outputs.matrix_suffix}}.txt
           logfile_artifact: ${{ steps.phpunit_testplan.outputs.phpunit_logfile_artifact }}
           output_files: ${{ steps.phpunit_testplan.outputs.phpunit_output_files }}
-          output_artifact: ${{steps.phpunit_testplan.outputs.phpunit_output_prefix}}_${{steps.phpunit_testplan_name.outputs.matrix_suffix}}
+          output_artifact: ${{steps.phpunit_testplan.outputs.phpunit_output_prefix}}-${{steps.phpunit_testplan_name.outputs.matrix_suffix}}
           coverage_path: ${{ steps.phpunit_testplan.outputs.phpunit_coverage_path }}
-          coverage_artifact: ${{ steps.phpunit_testplan.outputs.phpunit_coverage_prefix }}_${{steps.phpunit_testplan_name.outputs.matrix_suffix}}
+          coverage_artifact: ${{ steps.phpunit_testplan.outputs.phpunit_coverage_prefix }}-${{steps.phpunit_testplan_name.outputs.matrix_suffix}}
           failure_pattern: ${{ steps.phpunit_testplan.outputs.phpunit_failure_pattern }}
 
       - name: 'Stop shop'
@@ -724,7 +718,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@release-v4
         with:
           priority: '110'
           phase: test
@@ -862,7 +856,7 @@ jobs:
 
       - name: 'Run codeception tests'
         id: codeception_run
-        uses: 'OXID-eSales/github-actions/codeception@v3'
+        uses: 'OXID-eSales/github-actions/codeception@release-v4'
         with:
           container_name: ${{ steps.codeception_testplan.outputs.codeception_container_name }}
           container_options: '${{ steps.codeception_testplan.outputs.codeception_container_options }} ${{ steps.pre_script.outputs.container_options }}'
@@ -877,9 +871,9 @@ jobs:
           logfile: ${{steps.codeception_testplan.outputs.codeception_logfile_prefix}}-${{steps.codeception_testplan.outputs.codeception_title}}-${{steps.codeception_testplan_name.outputs.matrix_suffix}}.txt
           logfile_artifact: ${{ steps.codeception_testplan.outputs.codeception_logfile_artifact }}
           output_files: ${{ steps.codeception_testplan.outputs.codeception_output_files }}
-          output_artifact: ${{steps.codeception_testplan.outputs.codeception_output_prefix}}_${{steps.codeception_testplan_name.outputs.matrix_suffix}}
+          output_artifact: ${{steps.codeception_testplan.outputs.codeception_output_prefix}}-${{steps.codeception_testplan_name.outputs.matrix_suffix}}
           coverage_path: ${{ steps.codeception_testplan.outputs.codeception_coverage_path }}
-          coverage_artifact: ${{ steps.codeception_testplan.outputs.codeception_coverage_prefix }}_${{steps.codeception_testplan_name.outputs.matrix_suffix}}
+          coverage_artifact: ${{ steps.codeception_testplan.outputs.codeception_coverage_prefix }}-${{steps.codeception_testplan_name.outputs.matrix_suffix}}
           failure_pattern: ${{ steps.codeception_testplan.outputs.codeception_failure_pattern }}
 
       - name: 'Stop shop'
@@ -887,7 +881,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@release-v4
         with:
           priority: '120'
           phase: test
@@ -1026,7 +1020,7 @@ jobs:
 
       - name: 'Run tests'
         id: runtest_run
-        uses: 'OXID-eSales/github-actions/runtests@v3'
+        uses: 'OXID-eSales/github-actions/runtests@release-v4'
         with:
           container_name: ${{ steps.runtest_testplan.outputs.runtest_container_name }}
           container_options: ${{ steps.runtest_testplan.outputs.runtest_container_options }}
@@ -1037,9 +1031,9 @@ jobs:
           logfile: ${{ steps.runtest_testplan.outputs.runtest_logfile_prefix}}-${{ steps.runtest_testplan.outputs.runtest_title}}-${{ steps.runtest_testplan_name.outputs.matrix_suffix }}.txt
           logfile_artifact: ${{ steps.runtest_testplan.outputs.runtest_logfile_artifact }}
           output_files: ${{ steps.runtest_testplan.outputs.runtest_output_files }}
-          output_artifact: ${{ steps.runtest_testplan.outputs.runtest_output_prefix }}_${{ steps.runtest_testplan_name.outputs.matrix_suffix }}
+          output_artifact: ${{ steps.runtest_testplan.outputs.runtest_output_prefix }}-${{ steps.runtest_testplan_name.outputs.matrix_suffix }}
           coverage_path: ${{ steps.runtest_testplan.outputs.runtest_coverage_path }}
-          coverage_artifact: ${{ steps.runtest_testplan.outputs.runtest_coverage_prefix }}_${{ steps.runtest_testplan_name.outputs.matrix_suffix }}
+          coverage_artifact: ${{ steps.runtest_testplan.outputs.runtest_coverage_prefix }}-${{ steps.runtest_testplan_name.outputs.matrix_suffix }}
           failure_pattern: ${{ steps.runtest_testplan.outputs.runtest_failure_pattern }}
           reset_shop: ${{ steps.runtest_testplan.outputs.runtest_reset_shop }}
           reset_shop_binary: ${{ steps.runtest_testplan.outputs.runtest_reset_shop_binary }}
@@ -1050,7 +1044,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@release-v4
         with:
           priority: '130'
           phase: test
@@ -1067,7 +1061,7 @@ jobs:
     steps:
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@release-v4
         with:
           header: true
           priority: '200'
@@ -1121,9 +1115,10 @@ jobs:
           fetch-depth: 0
 
       - name: 'SonarCloud Scan'
-        uses: 'OXID-eSales/github-actions/sonarcloud@v3'
+        uses: 'OXID-eSales/github-actions/sonarcloud@release-v4'
         with:
-          coverage_artifact: coverage-reports_${{ steps.sonarcloud_testplan_name.outputs.matrix_suffix }}
+          coverage_artifact: 'coverage-reports-**-${{ steps.sonarcloud_testplan_name.outputs.matrix_suffix }}'
+          output_artifact: 'coverage-reports'
           target_branch: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_target_branch }}
           strip_path: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_strip_path }}
           github_ref_name: ${{ github.ref_name }}
@@ -1136,7 +1131,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@release-v4
         with:
           priority: '210'
           phase: report
@@ -1171,7 +1166,7 @@ jobs:
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: 'Run phpcs tests'
-        uses: 'OXID-eSales/github-actions/phpcs@v3'
+        uses: 'OXID-eSales/github-actions/phpcs@release-v4'
         with:
           container_name: ${{ needs.init.outputs.phpcs_tests_container_name }}
           container_options: ${{ needs.init.outputs.phpcs_tests_container_options }}
@@ -1189,7 +1184,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@release-v4
         with:
           priority: '220'
           phase: report
@@ -1267,7 +1262,7 @@ jobs:
           container_method: 'exec'
 
       - name: 'Run styles check'
-        uses: 'OXID-eSales/github-actions/styles@v3'
+        uses: 'OXID-eSales/github-actions/styles@release-v4'
         with:
           path: ${{ steps.styles_testplan.outputs.styles_path }}
           module_ids: ${{ steps.styles_testplan.outputs.styles_module_ids }}
@@ -1283,7 +1278,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@release-v4
         with:
           priority: '230'
           phase: report
@@ -1311,7 +1306,7 @@ jobs:
 
       - name: 'Write yamllint Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@release-v4
         with:
           priority: '240'
           phase: report
@@ -1358,7 +1353,7 @@ jobs:
 
       - name: 'Write actionlint Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v3
+        uses: OXID-eSales/github-actions/append_report@release-v4
         with:
           priority: '250'
           phase: report
@@ -1388,22 +1383,17 @@ jobs:
     env:
       SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"
     steps:
-      - name: 'Download job results'
-        uses: actions/download-artifact@v3
-        with:
-          name: testplan
+      - name: 'Wait a minute'
+        run: sleep 60
 
       - name: 'Generate report'
         id: generate_report
-        uses: 'OXID-eSales/github-actions/generate_report@v3'
+        uses: 'OXID-eSales/github-actions/generate_report@release-v4'
         with:
           slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           title: '${{ needs.init.outputs.finish_slack_title }}'
 
-      - name: Checkout the repo
-        uses: actions/checkout@v4
-
-      - name: 'clean_cache'
+      - name: 'Clean Cache'
         if: ${{ steps.generate_report.outputs.overall_status == 'success' }}
         uses: 'OXID-eSales/github-actions/clean_cache@v3'
         env:

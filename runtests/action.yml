@@ -103,18 +103,9 @@ runs:
             "${{ inputs.test }}" \
           | tee "${{ inputs.logfile }}" 2>&1 || true
 
-    - name: Upload Log
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ inputs.logfile_artifact }}
-        path: ${{ inputs.logfile }}
-        if-no-files-found: error
-        retention-days: 7
-
     - name: Upload Artifacts
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.output_artifact }}
         path: |
@@ -126,7 +117,7 @@ runs:
 
     - name: Upload Coverage Report
       if: ${{  always() && inputs.coverage_path != '' }}
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.coverage_artifact }}
         path: ${{ inputs.coverage_path }}

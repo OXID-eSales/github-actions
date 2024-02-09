@@ -11,15 +11,15 @@ on:
         description: 'Name of the feature branch, if empty, use the current branch'
         default: ''
       major:
-        type: number
+        type: string
         required: true
         description: 'Major version number (X.?.?)'
       minor:
-        type: number
+        type: string
         required: true
         description: 'Minor version number (?.X.?)'
       patch:
-        type: number
+        type: string
         required: true
         description: 'Patch version number (?.?.X)'
       reviewer:
