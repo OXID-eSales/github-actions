@@ -418,7 +418,7 @@ jobs:
       - name: Load cached testplan
         if: ${{ matrix.testplan != 'skip' }}
         id: install_module_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v3
+        uses: OXID-eSales/github-actions/load_cached_testplan@v4alpha
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -601,7 +601,7 @@ jobs:
     steps:
       - name: Load cached testplan
         id: phpunit_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v3
+        uses: OXID-eSales/github-actions/load_cached_testplan@v4alpha
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -708,7 +708,7 @@ jobs:
     steps:
       - name: Load cached testplan
         id: codeception_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v3
+        uses: OXID-eSales/github-actions/load_cached_testplan@v4alpha
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -841,7 +841,7 @@ jobs:
     steps:
       - name: Load cached testplan
         id: runtest_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v3
+        uses: OXID-eSales/github-actions/load_cached_testplan@v4alpha
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -986,7 +986,7 @@ jobs:
     steps:
       - name: Load cached testplan
         id: sonarcloud_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v3
+        uses: OXID-eSales/github-actions/load_cached_testplan@v4alpha
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -1112,7 +1112,7 @@ jobs:
     steps:
       - name: Load cached testplan
         id: styles_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v3
+        uses: OXID-eSales/github-actions/load_cached_testplan@v4alpha
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
