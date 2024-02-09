@@ -189,7 +189,6 @@ runs:
       run: |
         # prepare_shop: Clone the shop
         git clone --depth 2 ${{ inputs.git_shop_url }} --branch ${{ inputs.git_shop_ref }} --single-branch source
-        mkdir source/dev-packages
 
     - name: Clone the shop (PR ${{ inputs.github_event_number }})
       # yamllint disable-line rule:line-length
@@ -201,12 +200,13 @@ runs:
         git clone --depth 2 ${{ inputs.git_shop_url }} --branch ${{ inputs.github_base_ref }} --single-branch source
         git -C source fetch origin refs/pull/${{ inputs.github_event_number }}/head:pr_${{ inputs.github_event_number }}
         git -C source checkout pr_${{ inputs.github_event_number }}
-        mkdir source/dev-packages
+        
 
     - name: Prepare container configuration
       shell: bash
       run: |
         # prepare_shop: Prepare container configuration
+        mkdir source/dev-packages
         make setup
         make addbasicservices
 
