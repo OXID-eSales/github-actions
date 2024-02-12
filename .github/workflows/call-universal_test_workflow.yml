@@ -268,7 +268,7 @@ jobs:
     steps:
       - name: 'Prepare Shop'
         id: prepare_shop
-        uses: 'OXID-eSales/github-actions/prepare_shop@v3'
+        uses: 'OXID-eSales/github-actions/prepare_shop@v4alpha'
         with:
           container_name: ${{ needs.init.outputs.prepare_shop_container_name }}
           container_options: ${{ needs.init.outputs.prepare_shop_container_options }}
@@ -306,7 +306,7 @@ jobs:
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
 
       - name: 'Stop shop'
-        uses: 'OXID-eSales/github-actions/stop_shop@v3'
+        uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
 
       - name: 'Write Report'
         if: always()
@@ -331,7 +331,7 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v3'
+        uses: 'OXID-eSales/github-actions/start_shop@v4alpha'
         with:
           cached_shop: '${{ needs.init.outputs.prepare_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.install_shop_cache_bucket }}
@@ -349,13 +349,6 @@ jobs:
           container_name: ${{ needs.init.outputs.install_shop_container_name }}
           container_options: ${{ needs.init.outputs.install_shop_container_options }}
           container_method: ${{ needs.init.outputs.install_shop_container_method }}
-          git_shop_ref: ${{ needs.init.outputs.install_shop_git_shop_ref }}
-          git_enterprise_ref: ${{ needs.init.outputs.install_shop_git_enterprise_ref }}
-          github_sha: ${{ github.sha }}
-          github_run_number: ${{ github.run_number }}
-          github_run_attempt: ${{ github.run_attempt }}
-          php: ${{ matrix.php }}
-          mysql: ${{ matrix.mysql }}
           is_enterprise: ${{ needs.init.outputs.install_shop_is_enterprise }}
           config_idebug: ${{ needs.init.outputs.install_shop_config_idebug }}
           output_files: ${{ needs.init.outputs.install_shop_output_files }}
@@ -386,7 +379,7 @@ jobs:
           rm source/install_shop_custom_script.sh
 
       - name: 'Stop shop'
-        uses: 'OXID-eSales/github-actions/stop_shop@v3'
+        uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
 
       - name: 'Write Report'
         if: always()
@@ -444,7 +437,7 @@ jobs:
 
       - name: 'Start shop'
         if: ${{ matrix.testplan != 'skip' }}
-        uses: 'OXID-eSales/github-actions/start_shop@v3'
+        uses: 'OXID-eSales/github-actions/start_shop@v4alpha'
         with:
           # yamllint disable-line rule:line-length
           cached_shop: '${{ steps.install_module_testplan.outputs.install_module_load_shop}}_${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
@@ -541,7 +534,7 @@ jobs:
 
       - name: 'Stop shop'
         if: ${{ matrix.testplan != 'skip' }}
-        uses: 'OXID-eSales/github-actions/stop_shop@v3'
+        uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
 
       - name: 'Write Report'
         if: ${{ always() && matrix.testplan != 'skip' }}
@@ -625,7 +618,7 @@ jobs:
           token: ${{ secrets.enterprise_github_token }}
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v3'
+        uses: 'OXID-eSales/github-actions/start_shop@v4alpha'
         with:
           cached_shop: '${{ steps.phpunit_testplan.outputs.phpunit_load_shop}}_${{ steps.phpunit_testplan_name.outputs.matrix_suffix }}'
           cache_bucket: ${{ steps.phpunit_testplan.outputs.phpunit_cache_bucket }}
@@ -674,7 +667,7 @@ jobs:
           failure_pattern: ${{ steps.phpunit_testplan.outputs.phpunit_failure_pattern }}
 
       - name: 'Stop shop'
-        uses: 'OXID-eSales/github-actions/stop_shop@v3'
+        uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
 
       - name: 'Write Report'
         if: always()
@@ -739,7 +732,7 @@ jobs:
           ${{ steps.codeception_testplan.outputs.codeception_pre_script }}
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v3'
+        uses: 'OXID-eSales/github-actions/start_shop@v4alpha'
         with:
           cached_shop: '${{ steps.codeception_testplan.outputs.codeception_load_shop}}_${{ steps.codeception_testplan_name.outputs.matrix_suffix }}'
           cache_bucket: ${{ steps.codeception_testplan.outputs.codeception_cache_bucket }}
@@ -807,7 +800,7 @@ jobs:
           failure_pattern: ${{ steps.codeception_testplan.outputs.codeception_failure_pattern }}
 
       - name: 'Stop shop'
-        uses: 'OXID-eSales/github-actions/stop_shop@v3'
+        uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
 
       - name: 'Write Report'
         if: always()
@@ -872,7 +865,7 @@ jobs:
           path: swapfile
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v3'
+        uses: 'OXID-eSales/github-actions/start_shop@v4alpha'
         with:
           cached_shop: '${{ steps.runtest_testplan.outputs.runtest_load_shop}}_${{ steps.runtest_testplan_name.outputs.matrix_suffix }}'
           cache_bucket: ${{ steps.runtest_testplan.outputs.runtest_cache_bucket }}
@@ -940,7 +933,7 @@ jobs:
           runtests_binary: ${{ steps.runtest_testplan.outputs.runtest_runtests_binary }}
 
       - name: 'Stop shop'
-        uses: 'OXID-eSales/github-actions/stop_shop@v3'
+        uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
 
       - name: 'Write Report'
         if: always()
@@ -1054,7 +1047,7 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v3'
+        uses: 'OXID-eSales/github-actions/start_shop@v4alpha'
         with:
           cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.phpcs_tests_cache_bucket }}
@@ -1080,7 +1073,7 @@ jobs:
           failure_pattern: ${{ needs.init.outputs.phpcs_tests_failure_pattern }}
 
       - name: 'Stop shop'
-        uses: 'OXID-eSales/github-actions/stop_shop@v3'
+        uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
 
       - name: 'Write Report'
         if: always()
@@ -1136,7 +1129,7 @@ jobs:
           token: ${{ secrets.enterprise_github_token }}
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v3'
+        uses: 'OXID-eSales/github-actions/start_shop@v4alpha'
         with:
           cached_shop: '${{ steps.styles_testplan.outputs.styles_load_shop}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ steps.styles_testplan.outputs.styles_cache_bucket }}
@@ -1174,7 +1167,7 @@ jobs:
           output_artifact: ${{ steps.styles_testplan.outputs.styles_output_prefix}}_PHP${{ matrix.php }}
 
       - name: 'Stop shop'
-        uses: 'OXID-eSales/github-actions/stop_shop@v3'
+        uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
 
       - name: 'Write Report'
         if: always()
