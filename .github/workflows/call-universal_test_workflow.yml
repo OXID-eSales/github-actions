@@ -232,7 +232,7 @@ jobs:
       phpcs_tests_filter: ${{ steps.ltp.outputs.phpcs_tests_filter }}
       phpcs_tests_git_ref: ${{ steps.ltp.outputs.phpcs_tests_git_ref }}
       phpcs_tests_logfile_prefix: ${{ steps.ltp.outputs.phpcs_tests_logfile_prefix }}
-      phpcs_tests_output_artifact: ${{ steps.ltp.outputs.phpcs_tests_output_artifact }}
+      phpcs_tests_output_prefix: ${{ steps.ltp.outputs.phpcs_tests_output_prefix }}
       phpcs_tests_output_files: ${{ steps.ltp.outputs.phpcs_tests_output_files }}
       phpcs_tests_matrix_mysql: ${{ steps.ltp.outputs.phpcs_tests_matrix_mysql }}
       phpcs_tests_matrix_php: ${{ steps.ltp.outputs.phpcs_tests_matrix_php }}
@@ -1068,7 +1068,7 @@ jobs:
           filter: ${{ needs.init.outputs.phpcs_tests_filter}}
           additional_options: ${{ needs.init.outputs.phpcs_tests_additional_options }}
           logfile: phpcs-PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_codesniff_log.txt
-          output_artifact: ${{ needs.init.outputs.phpcs_tests_output_artifact }}
+          output_artifact: ${{ needs.init.outputs.phpcs_tests_output_prefix }}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}
           output_files: ${{ needs.init.outputs.phpcs_tests_output_files }}
           failure_pattern: ${{ needs.init.outputs.phpcs_tests_failure_pattern }}
 
