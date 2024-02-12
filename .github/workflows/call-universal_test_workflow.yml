@@ -315,6 +315,7 @@ jobs:
           github_sha: ${{ github.sha }}
           github_run_number: ${{ github.run_number }}
           github_run_attempt: ${{ github.run_attempt }}
+          github_ref_name: ${{ github.ref_name }}
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
           is_enterprise: ${{ needs.init.outputs.prepare_shop_is_enterprise }}

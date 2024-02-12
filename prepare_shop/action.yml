@@ -69,6 +69,11 @@ inputs:
     required: false
     description: 'github.run_number and github.run_attempts are used in generating the cache id'
     default: '0'
+  github_ref_name:
+    type: string
+    required: false
+    description: 'Current branch (github.ref_name) for modifying composer.json'
+    default: ''
   php:
     type: string
     required: false
@@ -330,7 +335,7 @@ runs:
       run: |
         # prepare_shop: Modify composer.json to allow the same feature-branch
         if [ -d source/composer.json ]; then
-          sed -e 's|"oxid-esales/\(.*\)":[[:space:]]*"${{ inputs.composer_dev_ref }}"|"oxid-esales/\1": "${{ inputs.composer_dev_ref }} \|\| dev-${{ inputs.git_shop_ref }}"|' \
+          sed -e 's|"oxid-esales/\(.*\)":[[:space:]]*"${{ inputs.composer_dev_ref }}"|"oxid-esales/\1": "${{ inputs.composer_dev_ref }} \|\| dev-${{ inputs.github_ref_name }}"|' \
               -i source/composer.json
         fi
 
