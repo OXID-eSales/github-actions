@@ -186,8 +186,6 @@ jobs:
       install_shop_container_name: ${{ steps.ltp.outputs.install_shop_container_name }}
       install_shop_container_options: ${{ steps.ltp.outputs.install_shop_container_options }}
       install_shop_docker_login: ${{ steps.ltp.outputs.install_shop_docker_login }}
-      install_shop_git_enterprise_ref: ${{ steps.ltp.outputs.install_shop_git_enterprise_ref }}
-      install_shop_git_shop_ref: ${{ steps.ltp.outputs.install_shop_git_shop_ref }}
       install_shop_is_enterprise: ${{ steps.ltp.outputs.install_shop_is_enterprise }}
       install_shop_matrix_mysql: ${{ steps.ltp.outputs.install_shop_matrix_mysql }}
       install_shop_matrix_php: ${{ steps.ltp.outputs.install_shop_matrix_php }}
@@ -233,8 +231,9 @@ jobs:
       phpcs_tests_failure_pattern: ${{ steps.ltp.outputs.phpcs_tests_failure_pattern }}
       phpcs_tests_filter: ${{ steps.ltp.outputs.phpcs_tests_filter }}
       phpcs_tests_git_ref: ${{ steps.ltp.outputs.phpcs_tests_git_ref }}
-      phpcs_tests_logfile_artifact: ${{ steps.ltp.outputs.phpcs_tests_logfile_artifact }}
       phpcs_tests_logfile_prefix: ${{ steps.ltp.outputs.phpcs_tests_logfile_prefix }}
+      phpcs_tests_output_artifact: ${{ steps.ltp.outputs.phpcs_tests_output_artifact }}
+      phpcs_tests_output_files: ${{ steps.ltp.outputs.phpcs_tests_output_files }}
       phpcs_tests_matrix_mysql: ${{ steps.ltp.outputs.phpcs_tests_matrix_mysql }}
       phpcs_tests_matrix_php: ${{ steps.ltp.outputs.phpcs_tests_matrix_php }}
       phpcs_tests_max_parallel: ${{ steps.ltp.outputs.phpcs_tests_max_parallel }}
@@ -1069,7 +1068,8 @@ jobs:
           filter: ${{ needs.init.outputs.phpcs_tests_filter}}
           additional_options: ${{ needs.init.outputs.phpcs_tests_additional_options }}
           logfile: phpcs-PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_codesniff_log.txt
-          logfile_artifact: ${{ needs.init.outputs.phpcs_tests_logfile_artifact }}
+          output_artifact: ${{ needs.init.outputs.phpcs_tests_output_artifact }}
+          output_files: ${{ needs.init.outputs.phpcs_tests_output_files }}
           failure_pattern: ${{ needs.init.outputs.phpcs_tests_failure_pattern }}
 
       - name: 'Stop shop'

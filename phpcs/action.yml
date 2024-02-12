@@ -41,11 +41,18 @@ inputs:
     required: false
     description: 'Name of the output logfile'
     default: 'phpcs_log.txt'
-  logfile_artifact:
+  output_artifact:
     type: string
     required: false
     description: 'Github run artifact to put the logfile in'
     default: 'phpcs-log'
+  output_files:
+    type: string
+    required: false
+    description: 'Github run artifact to put the logfile and ph0p error log in'
+    default: |
+      data/php/logs/error_log.txt
+
   failure_pattern:
     type: string
     required: false
@@ -100,14 +107,14 @@ runs:
             ${{ steps.diff.outputs.files }} \
           | tee "${{ inputs.logfile }}" 2>&1 || true
 
-    - name: Upload Log
+    - name: Upload Artifact
       if: ${{ always() && steps.diff.outputs.skip == 'false' }}
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.logfile_artifact }}
+        name: ${{ inputs.output_artifact }}
         path: |
           ${{ inputs.logfile }}
-          changed-files.txt
+          ${{ inputs.output_files }}
         if-no-files-found: error
         retention-days: 7
 
