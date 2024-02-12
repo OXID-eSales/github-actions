@@ -185,11 +185,12 @@ jobs:
       prepare_shop_composer_require_ref: ${{ steps.ltp.outputs.prepare_shop_composer_require_ref }}
       prepare_shop_composer_require_update: ${{ steps.ltp.outputs.prepare_shop_composer_require_update }}
       prepare_shop_composer_require_update_options: ${{ steps.ltp.outputs.prepare_shop_composer_require_update_options }}
-      prepare_shop_composer_file: ${{ steps.ltp.outputs.prepare_shop_composer_file}}
-      prepare_shop_composer_transform: ${{ steps.ltp.outputs.prepare_shop_composer_transform}}
-      prepare_shop_composer_backup: ${{ steps.ltp.outputs.prepare_shop_composer_backup}}
-      prepare_shop_composer_update: ${{ steps.ltp.outputs.prepare_shop_composer_update}}
+      prepare_shop_composer_file: ${{ steps.ltp.outputs.prepare_shop_composer_file }}
+      prepare_shop_composer_transform: ${{ steps.ltp.outputs.prepare_shop_composer_transform }}
+      prepare_shop_composer_backup: ${{ steps.ltp.outputs.prepare_shop_composer_backup }}
+      prepare_shop_composer_update: ${{ steps.ltp.outputs.prepare_shop_composer_update }}
       prepare_shop_composer_update_options: ${{ steps.ltp.outputs.prepare_shop_composer_update_options}}
+      prepare_shop_composer_composer_dev_ref: ${{ steps.ltp.outputs.prepare_shop_composer_dev_ref }}
       prepare_shop_container_method: ${{ steps.ltp.outputs.prepare_shop_container_method }}
       prepare_shop_container_name: ${{ steps.ltp.outputs.prepare_shop_container_name }}
       prepare_shop_container_options: ${{ steps.ltp.outputs.prepare_shop_container_options }}

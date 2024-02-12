@@ -207,6 +207,11 @@ inputs:
     required: false
     description: 'Options to pass along to composer during install'
     default: '--no-interaction'
+  composer_dev_ref:
+    type: string
+    required: false
+    description: 'Development package reference'
+    default: 'dev-b-8.0.x'
 
   enterprise_github_token:
     type: string
@@ -320,6 +325,11 @@ runs:
             -e 's#/var/www/#/var/www/source/#g;'\
             containers/httpd/project.conf
 
+    - name: Modify composer.json to allow the same feature-branch
+    - shell: bash
+      run: |
+        sed -e 's|"oxid-esales/\(.*\)":[[:space:]]*"${{ inputs.composer_dev_ref }}"|"oxid-esales/\1": "${{ inputs.composer_dev_ref }} \|\| dev-${{ inputs.git_shop_ref }}"|' \
+            -i composer.json
 
     - name: Login to Docker Hub
       if: ${{ inputs.docker_login == 'true' }}
