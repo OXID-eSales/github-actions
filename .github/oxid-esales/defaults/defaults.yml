@@ -288,8 +288,6 @@ phpunit:
   matrix:
     php: *matrix_php
     mysql: *matrix_mysql
-    # @ToDo: deprecated, can be removed when 3.2 is out
-    template_engine: *template_engine
 
     # Providing a list of testplans to be executed with phpunit
     # by default, these are the unit and integration tests
@@ -386,8 +384,6 @@ codeception:
   matrix:
     php: *matrix_php
     mysql: *matrix_mysql
-    # @ToDo: deprecated, can be removed when 3.2 is out
-    template_engine: *template_engine
 
     # Providing a list of testplans to be executed with codeception
     # by default, these are the regular Acceptance and shop setup tests
@@ -492,8 +488,6 @@ runtest:
   matrix:
     php: *matrix_php
     mysql: *matrix_mysql
-    # @ToDo: deprecated, can be removed when 3.2 is out
-    template_engine: *template_engine
 
     # Providing a list of testplans to be executed with runtests
     # by default, these are the deprecated tests
@@ -582,8 +576,6 @@ sonarcloud:
   matrix:
     php: '["8.1"]'
     mysql: '["5.7"]'
-    # @ToDo: deprecated, can be removed when 3.2 is out
-    template_engine: '["twig"]'
     testplan: '["-"]'
 
   # There is only one matrix combination
