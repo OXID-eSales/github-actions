@@ -334,9 +334,9 @@ runs:
       shell: bash
       run: |
         # prepare_shop: Modify composer.json to allow the same feature-branch
-        if [ -d source/composer.json ]; then
-          sed -e 's|"oxid-esales/\(.*\)":[[:space:]]*"${{ inputs.composer_dev_ref }}"|"oxid-esales/\1": "${{ inputs.composer_dev_ref }} \|\| dev-${{ inputs.github_ref_name }}"|' \
-              -i source/composer.json
+        if [ -f '${{ inputs.composer_file }}' ]; then
+          sed -e 's#"oxid-esales/\(.*\)":[[:space:]]*"${{ inputs.composer_dev_ref }}"#"oxid-esales/\1": "${{ inputs.composer_dev_ref }} || dev-${{ inputs.github_ref_name }}"#' \
+              -i '${{ inputs.composer_file }}'
         fi
 
     - name: Login to Docker Hub
