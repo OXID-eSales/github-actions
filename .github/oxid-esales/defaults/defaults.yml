@@ -175,6 +175,7 @@ prepare_shop:
 
     update: true
     update-options: '--no-interaction'
+    dev_ref: *dev_ref
 
   # These modify php "custom.ini"
   custom_ini:
