@@ -90,6 +90,11 @@ inputs:
     required: false
     description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
     default: ''
+  debug:
+    type: boolean
+    description: 'Enable debugging'
+    default: false
+    required: false
 
 runs:
   using: "composite"

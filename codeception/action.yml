@@ -83,6 +83,12 @@ inputs:
     required: false
     description: 'Grep pattern which indicate that the test failed'
     default: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found|Cannot open file'
+  debug:
+    type: boolean
+    description: 'Enable debugging'
+    default: false
+    required: false
+
 runs:
   using: "composite"
   steps:

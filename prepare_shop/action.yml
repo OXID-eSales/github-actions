@@ -179,6 +179,11 @@ inputs:
     required: false
     description: 'secrets.DOCKER_HUB_TOKEN for docker login'
     default: ''
+  debug:
+    type: boolean
+    description: 'Enable debugging'
+    default: false
+    required: false
 
 outputs:
   prepared_shop:

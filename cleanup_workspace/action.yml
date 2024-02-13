@@ -13,6 +13,11 @@ inputs:
     type: boolean
     description: 'Prune docker'
     default: true
+  debug:
+    type: boolean
+    description: 'Enable debugging'
+    default: false
+    required: false
 
 runs:
   using: "composite"

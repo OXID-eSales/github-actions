@@ -29,6 +29,11 @@ inputs:
       generated_output.txt
       generated_env.txt
       load_testplan.log
+  debug:
+    type: boolean
+    description: 'Enable debugging'
+    default: false
+    required: false
 
 runs:
   using: "composite"

@@ -74,6 +74,11 @@ inputs:
     required: false
     description: 'Location of the runtests binary'
     default: 'vendor/bin/runtests'
+  debug:
+    type: boolean
+    description: 'Enable debugging'
+    default: false
+    required: false
 
 runs:
   using: "composite"

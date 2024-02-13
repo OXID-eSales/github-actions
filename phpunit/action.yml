@@ -64,6 +64,12 @@ inputs:
     required: false
     description: 'Grep pattern which indicate that the test failed'
     default: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error'
+  debug:
+    type: boolean
+    description: 'Enable debugging'
+    default: false
+    required: false
+
 runs:
   using: "composite"
   steps:

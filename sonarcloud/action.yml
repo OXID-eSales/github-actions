@@ -64,6 +64,11 @@ inputs:
     required: false
     description: 'Github run artifact for the sonarcloud output'
     default: 'sonarcloud-artifacts'
+  debug:
+    type: boolean
+    description: 'Enable debugging'
+    default: false
+    required: false
 
 runs:
   using: "composite"

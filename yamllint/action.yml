@@ -24,6 +24,11 @@ inputs:
     description: 'Output only error level problems'
     required: false
     default: "false"
+  debug:
+    type: boolean
+    description: 'Enable debugging'
+    default: false
+    required: false
 
 outputs:
   logfile:

@@ -50,6 +50,11 @@ inputs:
     required: false
     description: 'Name of the container to run the wait command in'
     default: 'php'
+  debug:
+    type: boolean
+    description: 'Enable debugging'
+    default: false
+    required: false
 
 runs:
   using: "composite"

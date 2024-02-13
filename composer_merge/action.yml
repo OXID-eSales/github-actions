@@ -39,6 +39,11 @@ inputs:
     required: false
     description: 'Method to execute the commands inside a container, either "run" or "exec"'
     default: 'exec'
+  debug:
+    type: boolean
+    description: 'Enable debugging'
+    default: false
+    required: false
 
 runs:
   using: "composite"

@@ -10,6 +10,11 @@ inputs:
     required: false
     description: 'Title of the job'
     default: 'default'
+  debug:
+    type: boolean
+    description: 'Enable debugging'
+    default: false
+    required: false
 outputs:
   overall_status:
     description: 'Overall status of the tests'

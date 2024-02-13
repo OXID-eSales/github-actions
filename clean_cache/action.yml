@@ -21,6 +21,11 @@ inputs:
     type: string
     required: true
     description: 'Runner for this workflow'
+  debug:
+    type: boolean
+    description: 'Enable debugging'
+    default: false
+    required: false
 
 runs:
   using: composite

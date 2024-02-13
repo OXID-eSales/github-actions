@@ -30,6 +30,11 @@ on:
         description: 'Folder containing the test plan templates'
         required: false
         default: '.github/oxid-esales/defaults'
+      debug:
+        type: boolean
+        description: 'Enable debugging'
+        default: false
+        required: false
 
     secrets:
       DOCKER_HUB_USER:
@@ -127,7 +132,7 @@ jobs:
             generated_output.txt
             generated_env.txt
             load_testplan.log
-
+          debug: ${{ inputs.debug }}
 
       - name: 'Write Report'
         if: always()
@@ -137,6 +142,7 @@ jobs:
           phase: install
           priority: '001'
           cached_object: ${{ steps.ltp.outputs.init_cache_name }}
+          debug: ${{ inputs.debug }}
 
       - name: Cache testplan
         uses: tespkg/actions-cache@v1
@@ -306,9 +312,12 @@ jobs:
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Stop shop'
         uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
+        with:
+          debug: ${{ inputs.debug }}
 
       - name: 'Write Report'
         if: always()
@@ -321,6 +330,7 @@ jobs:
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
           cached_object: '${{ needs.init.outputs.prepare_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          debug: ${{ inputs.debug }}
 
   install_shop:
     needs: ['init', 'prepare_shop']
@@ -343,6 +353,7 @@ jobs:
           docker_login: ${{ needs.init.outputs.install_shop_docker_login }}
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Install shop'
         id: install_shop
@@ -360,6 +371,7 @@ jobs:
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          debug: ${{ inputs.debug }}
 
       - name: Run custom script
         if: ${{ needs.init.outputs.install_shop_custom_script != ''}}
@@ -382,6 +394,8 @@ jobs:
 
       - name: 'Stop shop'
         uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
+        with:
+          debug: ${{ inputs.debug }}
 
       - name: 'Write Report'
         if: always()
@@ -394,6 +408,7 @@ jobs:
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
           cached_object: '${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          debug: ${{ inputs.debug }}
 
   install_module:
     needs: ['init', 'install_shop']
@@ -425,6 +440,7 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
           cache_bucket: ${{ needs.init.outputs.init_cache_bucket }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Load Testplan'
         id: install_module_testplan
@@ -450,6 +466,7 @@ jobs:
           docker_login: ${{ steps.install_module_testplan.outputs.install_module_docker_login }}
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+          debug: ${{ inputs.debug }}
 
       - name: Checkout module
         if: ${{ matrix.testplan != 'skip' }}
@@ -490,6 +507,7 @@ jobs:
           container_name: ${{ steps.install_module_testplan.outputs.install_module_container_name }}
           container_options: ${{ steps.install_module_testplan.outputs.install_module_container_options }}
           container_method: 'exec'
+          debug: ${{ inputs.debug }}
 
       - name: Install module
         if: ${{ matrix.testplan != 'skip' }}
@@ -514,6 +532,7 @@ jobs:
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          debug: ${{ inputs.debug }}
 
       - name: Run custom script
         if: ${{ matrix.testplan != 'skip' && steps.install_module_testplan.outputs.install_module_custom_script != ''}}
@@ -537,6 +556,8 @@ jobs:
       - name: 'Stop shop'
         if: ${{ matrix.testplan != 'skip' }}
         uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
+        with:
+          debug: ${{ inputs.debug }}
 
       - name: 'Write Report'
         if: ${{ always() && matrix.testplan != 'skip' }}
@@ -551,6 +572,7 @@ jobs:
           testplan: ${{matrix.testplan}}
           status: ${{job.status}}
           cached_object: '${{ steps.install_module_testplan.outputs.install_module_cache_prefix}}_${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
+          debug: ${{ inputs.debug }}
 
       - name: 'Write Report'
         if: ${{ always() && matrix.testplan == 'skip' }}
@@ -564,6 +586,7 @@ jobs:
           mysql: ${{matrix.mysql}}
           testplan: ${{matrix.testplan}}
           status: 'skipped'
+          debug: ${{ inputs.debug }}
 
   begin_test_phase:
     needs: ['install_module']
@@ -576,6 +599,7 @@ jobs:
           header: true
           priority: '100'
           phase: test
+          debug: ${{ inputs.debug }}
 
   phpunit:
     needs: ['init', 'install_module', 'begin_test_phase']
@@ -608,6 +632,7 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
           cache_bucket: ${{ needs.init.outputs.init_cache_bucket }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Load Testplan'
         id: phpunit_testplan
@@ -630,6 +655,7 @@ jobs:
           docker_login: ${{ steps.phpunit_testplan.outputs.phpunit_docker_login }}
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+          debug: ${{ inputs.debug }}
 
       - name: Run custom script
         if: ${{ steps.phpunit_testplan.outputs.phpunit_custom_script != ''}}
@@ -667,9 +693,12 @@ jobs:
           coverage_path: ${{ steps.phpunit_testplan.outputs.phpunit_coverage_path }}
           coverage_artifact: ${{ steps.phpunit_testplan.outputs.phpunit_coverage_prefix }}-${{steps.phpunit_testplan_name.outputs.matrix_suffix}}
           failure_pattern: ${{ steps.phpunit_testplan.outputs.phpunit_failure_pattern }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Stop shop'
         uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
+        with:
+          debug: ${{ inputs.debug }}
 
       - name: 'Write Report'
         if: always()
@@ -683,6 +712,7 @@ jobs:
           mysql: ${{matrix.mysql}}
           testplan: ${{matrix.testplan}}
           status: ${{job.status}}
+          debug: ${{ inputs.debug }}
 
   codeception:
     needs: ['init', 'install_module', 'begin_test_phase']
@@ -715,6 +745,7 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
           cache_bucket: ${{ needs.init.outputs.init_cache_bucket }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Load Testplan'
         id: codeception_testplan
@@ -746,6 +777,7 @@ jobs:
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
           wait_for_selenium: ${{ steps.codeception_testplan.outputs.codeception_wait_for_selenium }}
           container_name: ${{ steps.codeception_testplan.outputs.codeception_container_name }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Modify composer.json'
         if: ${{ steps.codeception_testplan.outputs.codeception_composer_transform != '' }}
@@ -760,6 +792,7 @@ jobs:
           container_name: ${{ steps.codeception_testplan.outputs.codeception_container_name }}
           container_options: ${{ steps.codeception_testplan.outputs.codeception_container_options }}
           container_method: 'exec'
+          debug: ${{ inputs.debug }}
 
       - name: Run custom script
         if: ${{ steps.codeception_testplan.outputs.codeception_custom_script != ''}}
@@ -800,9 +833,12 @@ jobs:
           coverage_path: ${{ steps.codeception_testplan.outputs.codeception_coverage_path }}
           coverage_artifact: ${{ steps.codeception_testplan.outputs.codeception_coverage_prefix }}-${{steps.codeception_testplan_name.outputs.matrix_suffix}}
           failure_pattern: ${{ steps.codeception_testplan.outputs.codeception_failure_pattern }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Stop shop'
         uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
+        with:
+          debug: ${{ inputs.debug }}
 
       - name: 'Write Report'
         if: always()
@@ -816,6 +852,7 @@ jobs:
           mysql: ${{matrix.mysql}}
           testplan: ${{matrix.testplan}}
           status: ${{job.status}}
+          debug: ${{ inputs.debug }}
 
   runtest:
     needs: ['init', 'install_module', 'begin_test_phase']
@@ -848,6 +885,7 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
           cache_bucket: ${{ needs.init.outputs.init_cache_bucket }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Load Testplan'
         id: runtest_testplan
@@ -877,6 +915,7 @@ jobs:
           docker_login: ${{ steps.runtest_testplan.outputs.runtest_docker_login }}
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Modify composer.json'
         if: ${{ steps.runtest_testplan.outputs.runtest_composer_transform != '' }}
@@ -891,6 +930,7 @@ jobs:
           container_name: ${{ steps.runtest_testplan.outputs.runtest_container_name }}
           container_options: ${{ steps.runtest_testplan.outputs.runtest_container_options }}
           container_method: 'exec'
+          debug: ${{ inputs.debug }}
 
       - name: Copy config file
         run: cp source/vendor/oxid-esales/testing-library/test_config.yml.dist source/test_config.yml
@@ -933,9 +973,12 @@ jobs:
           reset_shop: ${{ steps.runtest_testplan.outputs.runtest_reset_shop }}
           reset_shop_binary: ${{ steps.runtest_testplan.outputs.runtest_reset_shop_binary }}
           runtests_binary: ${{ steps.runtest_testplan.outputs.runtest_runtests_binary }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Stop shop'
         uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
+        with:
+          debug: ${{ inputs.debug }}
 
       - name: 'Write Report'
         if: always()
@@ -949,6 +992,7 @@ jobs:
           mysql: ${{matrix.mysql}}
           testplan: ${{matrix.testplan}}
           status: ${{job.status}}
+          debug: ${{ inputs.debug }}
 
   begin_report_phase:
     needs: ['install_module']
@@ -961,6 +1005,7 @@ jobs:
           header: true
           priority: '200'
           phase: report
+          debug: ${{ inputs.debug }}
 
   sonarcloud:
     needs: ['init', 'install_module', 'phpunit', 'codeception', 'begin_report_phase']
@@ -993,6 +1038,7 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
           cache_bucket: ${{ needs.init.outputs.init_cache_bucket }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Load Testplan'
         id: sonarcloud_testplan
@@ -1023,6 +1069,7 @@ jobs:
           sonarcloud_parameters: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_parameters }}
           sonar_token: ${{ secrets.SONAR_TOKEN }}
           github_token: ${{ github.token }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Write Report'
         if: always()
@@ -1036,6 +1083,7 @@ jobs:
           mysql: ${{matrix.mysql}}
           testplan: ${{matrix.testplan}}
           status: ${{job.status}}
+          debug: ${{ inputs.debug }}
 
   phpcs_tests:
     needs: ['init', 'install_module', 'begin_report_phase']
@@ -1059,6 +1107,7 @@ jobs:
           docker_login: ${{ needs.init.outputs.phpcs_tests_docker_login }}
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Run phpcs tests'
         uses: 'OXID-eSales/github-actions/phpcs@v4alpha'
@@ -1074,9 +1123,12 @@ jobs:
           output_artifact: ${{ needs.init.outputs.phpcs_tests_output_prefix }}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}
           output_files: ${{ needs.init.outputs.phpcs_tests_output_files }}
           failure_pattern: ${{ needs.init.outputs.phpcs_tests_failure_pattern }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Stop shop'
         uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
+        with:
+          debug: ${{ inputs.debug }}
 
       - name: 'Write Report'
         if: always()
@@ -1089,6 +1141,7 @@ jobs:
           php: ${{matrix.php}}
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
+          debug: ${{ inputs.debug }}
 
   styles:
     needs: ['init', 'install_module', 'begin_report_phase']
@@ -1120,6 +1173,7 @@ jobs:
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
           cache_bucket: ${{ needs.init.outputs.init_cache_bucket }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Load Testplan'
         id: styles_testplan
@@ -1142,6 +1196,7 @@ jobs:
           docker_login: ${{ steps.styles_testplan.outputs.styles_docker_login }}
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Modify composer.json'
         if: ${{ steps.styles_testplan.outputs.styles_composer_transform != '' }}
@@ -1156,6 +1211,7 @@ jobs:
           container_name: ${{ steps.styles_testplan.outputs.styles_container_name }}
           container_options: ${{ steps.styles_testplan.outputs.styles_container_options }}
           container_method: 'exec'
+          debug: ${{ inputs.debug }}
 
       - name: 'Run styles check'
         uses: 'OXID-eSales/github-actions/styles@v4alpha'
@@ -1168,9 +1224,12 @@ jobs:
           container_method: ${{ steps.styles_testplan.outputs.styles_container_method }}
           output_files: ${{ steps.styles_testplan.outputs.styles_output_files }}
           output_artifact: ${{ steps.styles_testplan.outputs.styles_output_prefix}}_PHP${{ matrix.php }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Stop shop'
         uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
+        with:
+          debug: ${{ inputs.debug }}
 
       - name: 'Write Report'
         if: always()
@@ -1183,6 +1242,7 @@ jobs:
           php: ${{matrix.php}}
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
+          debug: ${{ inputs.debug }}
 
   yamllint:
     needs: ['init', 'begin_report_phase']
@@ -1199,6 +1259,7 @@ jobs:
         with:
           file_or_dir: ${{ needs.init.outputs.yamllint_file_or_dir }}
           config_data: ${{ needs.init.outputs.yamllint_rules }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Write yamllint Report'
         if: always()
@@ -1212,6 +1273,7 @@ jobs:
           mysql: ''
           testplan: ''
           status: ${{job.status}}
+          debug: ${{ inputs.debug }}
 
   actionlint:
     needs: ['init', 'begin_report_phase']
@@ -1259,6 +1321,7 @@ jobs:
           mysql: ''
           testplan: ''
           status: ${{job.status}}
+          debug: ${{ inputs.debug }}
 
   finish:
     if: ${{ always() && needs.init.outputs.finish_skip != 'true' }}
@@ -1288,6 +1351,7 @@ jobs:
         with:
           slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           title: '${{ needs.init.outputs.finish_slack_title }}'
+          debug: ${{ inputs.debug }}
 
       - name: 'Clean Cache'
         if: ${{ steps.generate_report.outputs.overall_status == 'success' }}
@@ -1301,3 +1365,4 @@ jobs:
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
           cache_objects: |
             ${{ steps.generate_report.outputs.cache_objects }}
+          debug: ${{ inputs.debug }}
