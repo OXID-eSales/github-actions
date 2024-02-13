@@ -23,6 +23,7 @@ prepare_shop:
   matrix: *matrix
   git: *git
   composer:
+    dev_ref: *dev_ref
     transform: |
       {
           "require": {
