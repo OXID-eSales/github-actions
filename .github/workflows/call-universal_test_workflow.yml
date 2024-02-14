@@ -763,6 +763,7 @@ jobs:
         run: |
           ${{ steps.codeception_testplan.outputs.codeception_pre_script }}
           if [ '${{ inputs.debug }}' == 'true' ]; then
+            mkdir -p debug
             cat >>debug/debug.sh <<EODS
               banner "codeception: Run pre-script"
               ${{ steps.codeception_testplan.outputs.codeception_pre_script }}
