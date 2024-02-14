@@ -100,6 +100,24 @@ runs:
           --shop-url http://localhost.local \
           --shop-directory /var/www/source \
           --compile-directory /var/www/source/tmp
+        if [ '${{ inputs.debug }}' == 'true' ]; then
+          mkdir -p debug
+          cat >>debug/debug.sh <<EODS            
+            banner "install_shop: Run Install Shop"
+            docker-compose ${{ inputs.container_method }} -T \\
+              ${{ inputs.container_options }} \\
+              ${{ inputs.container_name }} \\
+              ${{ env.OE_CONSOLE }} oe:setup:shop \\
+              --db-host mysql \\
+              --db-port 3306 \\
+              --db-name example \\
+              --db-user root \\
+              --db-password root \\
+              --shop-url http://localhost.local \\
+              --shop-directory /var/www/source \\
+              --compile-directory /var/www/source/tmp
+        EODS
+        fi
 
     - name: Activate iDebug
       if: ${{ inputs.config_idebug == 'true' }}
@@ -107,6 +125,12 @@ runs:
       run: |
         # install_shop: Activate iDebug
         perl -pi -e 's#iDebug = 0;#iDebug = -1;#g;' source/source/config.inc.php
+        if [ '${{ inputs.debug }}' == 'true' ]; then
+          cat >>debug/debug.sh <<EODS
+            banner "install_shop: Activate iDebug"
+            perl -pi -e 's#iDebug = 0;#iDebug = -1;#g;' source/source/config.inc.php
+        EODS
+        fi
 
     - name: Activate theme
       if: ${{ inputs.is_enterprise == 'true' }}
@@ -117,6 +141,15 @@ runs:
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
           bin/oe-console oe:theme:activate apex
+        if [ '${{ inputs.debug }}' == 'true' ]; then
+          cat >>debug/debug.sh <<EODS
+            banner "install_shop: Activate theme"
+            docker-compose ${{ inputs.container_method }} -T \\
+              ${{ inputs.container_options }} \\
+              ${{ inputs.container_name }} \\
+              bin/oe-console oe:theme:activate apex
+        EODS
+        fi
 
     - name: Write files list
       if: always()
@@ -133,6 +166,15 @@ runs:
         if [ -s data/php/logs/error_log.txt ]; then
           echo -e "\033[0;35mPHP error log\033[0m"
           cat data/php/logs/error_log.txt
+        fi
+        if [ '${{ inputs.debug }}' == 'true' ]; then
+          cat >>debug/debug.sh <<EODS
+            banner "install_shop: Output php error log"
+            if [ -s data/php/logs/error_log.txt ]; then
+              echo -e "\\033[0;35mPHP error log\\033[0m"
+              cat data/php/logs/error_log.txt
+            fi
+        EODS
         fi
 
     - name: Upload configuration artifacts
