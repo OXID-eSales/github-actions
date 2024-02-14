@@ -167,6 +167,7 @@ runs:
           cp debug/000-start.sh "${SCRIPT}.sh"
           FILES=$(find "${SCRIPT}" -type f -iname "*.sh"|sort)
           for FILE in ${FILES}; do
+            echo "# ${FILE}" >>"${SCRIPT}.sh"
             sed -e 's|^[[:space:]]*EOF|EOF|' "${FILE}" >>"${SCRIPT}.sh"
           done
           chmod 0755 "${SCRIPT}.sh"

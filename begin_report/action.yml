@@ -64,8 +64,8 @@ runs:
         set -x
 
         function banner() {
-          PURPLE=$(echo -e "\\033[0;31m")
-          NOCOLOR=$(echo -e "\\033[0m")
+          PURPLE=\$(echo -e "\\033[0;31m")
+          NOCOLOR=\$(echo -e "\\033[0m")
           cat <<EOF
         \${PURPLE}###############################################################################
         ### \$1

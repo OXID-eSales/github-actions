@@ -379,8 +379,8 @@ jobs:
           container_name: ${{ needs.init.outputs.install_shop_container_name }}
           container_options: ${{ needs.init.outputs.install_shop_container_options }}
           container_method: ${{ needs.init.outputs.install_shop_container_method }}
-          custom_script: ${{ needs.init.outputs.install_shop_custom_script != ''}}
-          custom_script_container: ${{ needs.init.outputs.install_shop_custom_script_container != ''}}
+          custom_script: ${{ needs.init.outputs.install_shop_custom_script }}
+          custom_script_container: ${{ needs.init.outputs.install_shop_custom_script_container }}
           debug: ${{ inputs.debug }}
 
       - name: 'Stop shop'
