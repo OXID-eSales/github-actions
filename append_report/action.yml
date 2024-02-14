@@ -108,7 +108,7 @@ runs:
         DEBUG_DIR="debug-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}"
         DEBUG_FILE="${DEBUG_DIR}/debug-${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}.sh"
         if [ -f debug/debug.sh ]; then
-          mkdir "${DEBUG_DIR}"
+          mkdir -p "${DEBUG_DIR}"
           mv debug/debug.sh "${DEBUG_FILE}"
         fi
 
