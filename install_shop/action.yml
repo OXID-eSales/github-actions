@@ -88,7 +88,7 @@ runs:
       shell: bash
       run: |
         # install_shop: Run Install Shop
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
           ${{ env.OE_CONSOLE }} oe:setup:shop \
@@ -104,7 +104,7 @@ runs:
           mkdir -p debug
           cat >>debug/debug.sh <<EODS            
             banner "install_shop: Run Install Shop"
-            docker-compose ${{ inputs.container_method }} -T \\
+            docker compose ${{ inputs.container_method }} -T \\
               ${{ inputs.container_options }} \\
               ${{ inputs.container_name }} \\
               ${{ env.OE_CONSOLE }} oe:setup:shop \\
@@ -137,14 +137,14 @@ runs:
       shell: bash
       run: |
         # install_shop: Activate theme
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
           bin/oe-console oe:theme:activate apex
         if [ '${{ inputs.debug }}' == 'true' ]; then
           cat >>debug/debug.sh <<EODS
             banner "install_shop: Activate theme"
-            docker-compose ${{ inputs.container_method }} -T \\
+            docker compose ${{ inputs.container_method }} -T \\
               ${{ inputs.container_options }} \\
               ${{ inputs.container_name }} \\
               bin/oe-console oe:theme:activate apex

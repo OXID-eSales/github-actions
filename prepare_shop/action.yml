@@ -340,12 +340,12 @@ runs:
       run: |
         # prepare_shop: Start containers
         make up
-        docker-compose ps --all
+        docker compose ps --all
         if [ '${{ inputs.debug }}' == 'true' ]; then
           cat >>debug/debug.sh <<EODS
             banner "prepare_shop: Start containers"
             make up
-            docker-compose ps --all
+            docker compose ps --all
         EODS
         fi
 
@@ -358,8 +358,8 @@ runs:
         echo -e "\033[0;31m### Starting docker failed\033[0m"
         echo -e "\033[0;35m###  docker-compose.yml ###\033[0m"
         cat docker-compose.yml
-        echo -e "\033[0;35m###  docker-compose logs ###\033[0m"
-        docker-compose logs --tail=all
+        echo -e "\033[0;35m###  docker compose logs ###\033[0m"
+        docker compose logs --tail=all
         for c in $(docker ps -aq); do
           echo -e "\033[0;35m###  Logs for $c ###\033[0m"
           docker logs -n 200 $c
@@ -371,11 +371,11 @@ runs:
       run: |
         # prepare_shop: Configure enterprise token
         echo -e "\033[0;35m###  configure enterprise token ###\033[0m"
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           composer config github-protocols https
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
@@ -384,11 +384,11 @@ runs:
           cat >>debug/debug.sh <<EODS
             banner "prepare_shop: Configure enterprise token"
             echo -e "\\033[0;35m###  configure enterprise token ###\\033[0m"
-            docker-compose ${{ inputs.container_method }} -T \\
+            docker compose ${{ inputs.container_method }} -T \\
               ${{ inputs.container_options }} \\
               ${{ inputs.container_name}} \\
               composer config github-protocols https
-            docker-compose ${{ inputs.container_method }} -T \\
+            docker compose ${{ inputs.container_method }} -T \\
               ${{ inputs.container_options }} \\
               ${{ inputs.container_name}} \\
               composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
@@ -415,14 +415,14 @@ runs:
       if: ${{ inputs.composer_transform == ''}}
       run: |
         # prepare_shop: Install dependencies
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
           composer update --no-interaction
         if [ '${{ inputs.debug }}' == 'true' ]; then
           cat >>debug/debug.sh <<EODS
             banner "prepare_shop: Install dependencies"
-            docker-compose ${{ inputs.container_method }} -T \\
+            docker compose ${{ inputs.container_method }} -T \\
               ${{ inputs.container_options }} \\
               ${{ inputs.container_name }} \\
               composer update --no-interaction

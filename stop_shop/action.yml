@@ -15,10 +15,10 @@ runs:
       shell: bash
       run: |
         # stop_shop: Stop containers
-        docker-compose down
+        docker compose down
         if [ '${{ inputs.debug }}' == 'true' ]; then
           cat >>debug/debug.sh <<EODS
             banner "stop_shop: Stop containers"
-            docker-compose down
+            docker compose down
         EODS
         fi

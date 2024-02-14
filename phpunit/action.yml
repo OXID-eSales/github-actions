@@ -78,7 +78,7 @@ runs:
       run: |
         # phpunit: Run PHPUnit tests
         touch "${{ inputs.logfile }}"
-        docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
+        docker compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           php vendor/bin/phpunit \
             -c "${{ inputs.configuration }}" \

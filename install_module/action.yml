@@ -113,11 +113,11 @@ runs:
         # install_module: Configure enterprise credentials
         if [ -n "${{ inputs.enterprise_github_token }}" ]; then
           echo -e "\033[0;35m###  configure github access ###\033[0m"
-          docker-compose ${{ inputs.container_method }} -T \
+          docker compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
             ${{ inputs.container_name}} \
             composer config github-protocols https
-          docker-compose ${{ inputs.container_method }} -T \
+          docker compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
             ${{ inputs.container_name}} \
             composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
@@ -128,11 +128,11 @@ runs:
             banner "install_module: Configure enterprise credentials"
             if [ -n "${{ inputs.enterprise_github_token }}" ]; then
               echo -e "\\033[0;35m###  configure github access ###\\033[0m"
-              docker-compose ${{ inputs.container_method }} -T \\
+              docker compose ${{ inputs.container_method }} -T \\
                 ${{ inputs.container_options }} \\
                 ${{ inputs.container_name}} \\
                 composer config github-protocols https
-              docker-compose ${{ inputs.container_method }} -T \\
+              docker compose ${{ inputs.container_method }} -T \\
                 ${{ inputs.container_options }} \\
                 ${{ inputs.container_name}} \\
                 composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
@@ -144,24 +144,24 @@ runs:
       shell: bash
       run: |
         # install_module: Install module
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
           composer config repositories.${{ inputs.package_name }} \
           --json '{"type":"path", "url":"./${{inputs.module_path}}", "options": {"symlink": true}}'
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
           composer require ${{ inputs.package_name }}:* --no-interaction --no-update
         if [ '${{ inputs.debug }}' == 'true' ]; then
           cat >>debug/debug.sh <<EODS
             banner "install_module: Install module"
-            docker-compose ${{ inputs.container_method }} -T \\
+            docker compose ${{ inputs.container_method }} -T \\
               ${{ inputs. container_options }} \\
               ${{ inputs.container_name}} \\
               composer config repositories.${{ inputs.package_name }} \\
               --json '{"type":"path", "url":"./${{inputs.module_path}}", "options": {"symlink": true}}'
-            docker-compose ${{ inputs.container_method }} -T \\
+            docker compose ${{ inputs.container_method }} -T \\
               ${{ inputs. container_options }} \\
               ${{ inputs.container_name}} \\
               composer require ${{ inputs.package_name }}:* --no-interaction --no-update
@@ -199,11 +199,11 @@ runs:
       shell: bash
       run: |
         # install_module: Install dependencies and reset database
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
           composer update --no-interaction
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
           ${{ env.OE_CONSOLE }} oe:database:reset \
@@ -211,11 +211,11 @@ runs:
         if [ '${{ inputs.debug }}' == 'true' ]; then
           cat >>debug/debug.sh <<EODS
             banner "install_module: Install dependencies and reset database"
-            docker-compose ${{ inputs.container_method }} -T \\
+            docker compose ${{ inputs.container_method }} -T \\
               ${{ inputs. container_options }} \\
               ${{ inputs.container_name}} \\
               composer update --no-interaction
-            docker-compose ${{ inputs.container_method }} -T \\
+            docker compose ${{ inputs.container_method }} -T \\
               ${{ inputs. container_options }} \\
               ${{ inputs.container_name}} \\
               ${{ env.OE_CONSOLE }} oe:database:reset \\
@@ -230,7 +230,7 @@ runs:
         MODULES=$(echo -n "${{ inputs.activate }}"| tr '\n' ' ')
         for MODULE in ${MODULES}; do
           echo -e "\033[0;35m###  activating module ${MODULE} ###\033[0m"
-          docker-compose ${{ inputs.container_method }} -T \
+          docker compose ${{ inputs.container_method }} -T \
             ${{ inputs. container_options }} \
             ${{ inputs.container_name}} \
             ${{ env.OE_CONSOLE }} oe:module:activate "${MODULE}"
@@ -241,7 +241,7 @@ runs:
             MODULES=$(echo -n "${{ inputs.activate }}"| tr '\\n' ' ')
             for MODULE in ${MODULES}; do
               echo -e "\\033[0;35m###  activating module ${MODULE} ###\\033[0m"
-              docker-compose ${{ inputs.container_method }} -T \\
+              docker compose ${{ inputs.container_method }} -T \\
                 ${{ inputs. container_options }} \\
                 ${{ inputs.container_name}} \\
                 ${{ env.OE_CONSOLE }} oe:module:activate "${MODULE}"
@@ -253,7 +253,7 @@ runs:
       shell: bash
       run: |
         # install_module: Install module dependencies
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           --workdir=/var/www \
           ${{ inputs.container_name}} \
@@ -261,7 +261,7 @@ runs:
         if [ '${{ inputs.debug }}' == 'true' ]; then
           cat >>debug/debug.sh <<EODS
             banner "install_module: Install module dependencies"
-            docker-compose ${{ inputs.container_method }} -T \\
+            docker compose ${{ inputs.container_method }} -T \\
               ${{ inputs. container_options }} \\
               --workdir=/var/www \\
               ${{ inputs.container_name}} \\

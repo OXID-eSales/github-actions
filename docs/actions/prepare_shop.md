@@ -7,7 +7,7 @@ apache, if the "nginx-rp" service is installed.
 
 Afterwards, the variables PHP_VERSION and MYSQL_VERSION are set in the ".env" file and the inputs "custom_ini_xdebug" and "custom_ini_error_reporting" are used to update containers/php/custom.ini and we substitute /var/www/ by /var/www/source/ in "containers/httpd/project.conf".
 
-The containers are started. Df the container start with docker-compose fails, the docker-compose and container logs are printed and the action fails.
+The containers are started. Df the container start with docker compose fails, the docker compose and container logs are printed and the action fails.
 
 If the input "is_enterprise" is set to true, we configure composer to use the input "enterprise_github_token" and configure the following git repositories:
 - repositories.oxid-esales/oxideshop-pe: https://github.com/OXID-eSales/oxideshop_pe.git

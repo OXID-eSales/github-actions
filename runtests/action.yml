@@ -88,7 +88,7 @@ runs:
       shell: bash
       run: |
         # runtests: Reset shop
-        docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
+        docker compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           php ${{ inputs.reset_shop_binary }}
 
@@ -96,7 +96,7 @@ runs:
       shell: bash
       run: |
         # runtests: Run runtest
-        docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
+        docker compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           php ${{ inputs.runtests_binary }} \
             ${{ inputs.additional_options }} \

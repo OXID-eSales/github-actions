@@ -52,7 +52,7 @@ runs:
         ${{ inputs.custom_script_container }}
         EOF
         chmod 0755 source/install_shop_custom_script.sh
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           /var/www/install_shop_custom_script.sh
@@ -80,7 +80,7 @@ runs:
         ${{ inputs.custom_script_container }}
         EOF
         chmod 0755 source/install_shop_custom_script.sh
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           /var/www/install_shop_custom_script.sh

@@ -113,7 +113,7 @@ runs:
         # start_shop: Output docker logs if make up failed
         echo -e "\033[0;31m### Starting containers failed\033[0m"
         cat docker-compose.yml
-        docker-compose logs --tail=all
+        docker compose logs --tail=all
         for c in $(docker ps -aq); do
           echo "*** Logs for $c ***"
           docker logs -n 200 $c
@@ -135,7 +135,7 @@ runs:
         curl -sSjkL http://selenium:4444/status
         EOF
         chmod 0755 source/wait_for_selenium.sh
-        docker-compose exec -T \
+        docker compose exec -T \
           ${{ inputs.container_name}} \
           bash -c "timeout 60 /var/www/wait_for_selenium.sh"
         rm source/wait_for_selenium.sh
@@ -154,7 +154,7 @@ runs:
             curl -sSjkL http://selenium:4444/status
             EOF
             chmod 0755 source/wait_for_selenium.sh
-            docker-compose exec -T \\
+            docker compose exec -T \\
               ${{ inputs.container_name}} \\
               bash -c "timeout 60 /var/www/wait_for_selenium.sh"
             rm source/wait_for_selenium.sh

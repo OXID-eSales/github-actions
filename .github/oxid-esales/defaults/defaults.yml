@@ -104,7 +104,7 @@ global:
     # Name of the container running php
     name: &container_name 'php'
 
-    # Additional options passed to docker-compose when running tests in
+    # Additional options passed to docker compose when running tests in
     # the the container
     options: &container_options ''
 
@@ -582,6 +582,9 @@ sonarcloud:
   # There is only one matrix combination
   max_parallel: 1
   docker_login: *docker_login
+
+  # You only need to change the title when running multiple sonarcloud scans in one workflow
+  title: 'sonarcloud'
 
   # Run custom script outside the container'
   custom_script: ''

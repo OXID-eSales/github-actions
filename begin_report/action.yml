@@ -73,10 +73,18 @@ runs:
         EOF
         }
 
+        banner "Setting up environment"
+        if [ -d workdir ]; then
+          rm -rf workdir
+        fi
+        mkdir workdir
+        cd workdir
+
         banner "Debugging workflow ${{ inputs.title }}"
         echo "Reporitory: ${{ inputs.repository }}"
         echo "Job: ${{ inputs.job }}"
         echo "Testplan: ${{ inputs.testplan }}"
+        echo "Working directory: ${PWD}"
         EODS
 
     - name: Upload Artifacts

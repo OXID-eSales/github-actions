@@ -61,7 +61,7 @@ runs:
         # styles: Run composer install
         mkdir -p source/tests/reports
         echo -e "\033[0;35m### Running composer install with ${{ inputs.install_options }}\033[0m"
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
@@ -73,13 +73,13 @@ runs:
       run: |
         # styles: Run phpstan
         echo -e "\033[0;35m###  Run phpstan-report in ${{ inputs.path }} ###\033[0m"
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
           composer phpstan-report
         echo -e "\033[0;35m###  Run phpstan in ${{ inputs.path }} ###\033[0m"
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
@@ -94,13 +94,13 @@ runs:
       run: |
         # styles: Run phpmd
         echo -e "\033[0;35m###  Run phpmd-report in ${{ inputs.path }} ###\033[0m"
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
           composer phpmd-report
         echo -e "\033[0;35m###  Run phpmd in ${{ inputs.path }} ###\033[0m"
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
@@ -114,13 +114,13 @@ runs:
       run: |
         # styles: Run phpcs
         echo -e "\033[0;35m###  Run phpcs-report in ${{ inputs.path }} ###\033[0m"
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
           composer phpcs-report
         echo -e "\033[0;35m###  Run phpcs in ${{ inputs.path }} ###\033[0m"
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
