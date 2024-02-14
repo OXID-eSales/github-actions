@@ -103,7 +103,10 @@ runs:
             banner "composer_merge: Merge files"
             # Note: Instead of using load_testplan, this just creates the resulting composer.json
             cat >'${{ inputs.file }}' <<EOF
-              $(cat '${{ inputs.file }}')
+        EODS
+          # We need this because of the escapes inside composer.json
+          cat '${{ inputs.file }}' >>debug/debug.sh
+          cat >>debug/debug.sh <<EODS
             EOF
             banner "composer_merge: Cleanup"
             rm .composer_merge.tmp.json
