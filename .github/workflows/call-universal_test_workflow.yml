@@ -475,7 +475,6 @@ jobs:
             git -C 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}' fetch origin \
               refs/pull/${{ github.event.number }}/head:pr_${{ github.event.number }}
             git -C 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}' checkout pr_${{ github.event.number }}
-
           else
             MODULE_REF="$(echo "${{ steps.install_module_testplan.outputs.install_module_git_module_ref }}"|sed -e 's|^dev-||')"
             git clone --depth 2 \
@@ -484,6 +483,31 @@ jobs:
               --single-branch 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}'
           fi
           find . -type f >files.txt
+          if [ '${{ inputs.debug }}' == 'true' ]; then
+            cat >>debug/debug.sh <<EODS
+              banner "Checkout module"
+              # Note: we use ssh here, the workflow uses https and the runtime token or enterprise token
+              if [[ '${{ github.event_name }}' == 'pull_request' && \
+                    '${{github.repository}}' != 'OXID-eSales/oxideshop_ce' && \
+                    '${{github.repository}}' != 'OXID-eSales/oxideshop_ee' ]]; then
+                echo -e "\033[0;35mHandling the pull request\033[0m"
+                git clone --depth 2 \
+                  git@github.com:${{ steps.install_module_testplan.outputs.install_module_git_module_url }}.git \
+                  --branch ${{ github.base_ref }} \
+                  --single-branch 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}'
+                git -C 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}' fetch origin \
+                  refs/pull/${{ github.event.number }}/head:pr_${{ github.event.number }}
+                git -C 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}' checkout pr_${{ github.event.number }}
+              else
+                MODULE_REF="$(echo "${{ steps.install_module_testplan.outputs.install_module_git_module_ref }}"|sed -e 's|^dev-||')"
+                git clone --depth 2 \
+                  git@github.com:${{ steps.install_module_testplan.outputs.install_module_git_module_url }}.git \
+                  --branch "${MODULE_REF}" \
+                  --single-branch 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}'
+              fi
+              find . -type f >files.txt
+          EODS
+          fi
 
       - name: 'Modify composer.json'
         if: ${{ steps.install_module_testplan.outputs.install_module_composer_transform != '' }}

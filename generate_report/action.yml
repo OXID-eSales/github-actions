@@ -159,6 +159,19 @@ runs:
           echo "cache_objects=" | tee -a "${GITHUB_OUTPUT}"
         fi
 
+    - name: Generate debug script
+      shell: bash
+      run: |
+        MATRIX=$(find . -type d -iname 'debug-*')
+        for SCRIPT in ${MATRIX}; do
+          cp debug/000-start.sh "${SCRIPT}.sh"
+          FILES=$(find "${SCRIPT}" -type f -iname "*.sh"|sort)
+          for FILE in ${FILES}; do
+            sed -e 's|^[[:space:]]*EOF|EOF|' "${FILE}" >>"${SCRIPT}.sh"
+          done
+          chmod 0755 "${SCRIPT}.sh"
+        done
+
     - name: Upload Artifacts
       if: always()
       uses: actions/upload-artifact@v4

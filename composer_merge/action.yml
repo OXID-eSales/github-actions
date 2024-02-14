@@ -61,6 +61,21 @@ runs:
         EOF
         echo -e "\033[0;35m### JSON to merge\033[0m"
         cat .composer_merge.tmp.json
+        if [ '${{ inputs.debug }}' == 'true' ]; then
+          cat >>debug/debug.sh <<EODS
+            banner "composer_merge: Create files"
+            BACKUP="${{ inputs.backup }}"
+            if [ "${BACKUP}" == 'true' ]; then
+              cp "${{ inputs.file }}" "${{ inputs.file }}.bak"
+            fi
+            cat > .composer_merge.tmp.json <<EOF
+            ${{ inputs.transform }}
+            EOF
+            echo -e "\033[0;35m### JSON to merge\033[0m"
+            cat .composer_merge.tmp.json
+        EODS
+        fi
+
 
     - name: Merge files
       uses: 'joernott/load_testplan@v1'
@@ -82,4 +97,24 @@ runs:
             ${{ inputs.container_options }} \
             ${{ inputs.container_name}} \
             composer update ${{ inputs.update_options }}
+        fi
+        if [ '${{ inputs.debug }}' == 'true' ]; then
+          cat >>debug/debug.sh <<EODS
+            banner "composer_merge: Merge files"
+            # Note: Instead of using load_testplan, this just creates the resulting composer.json
+            cat >'${{ inputs.file }}' <<EOF
+              $(cat '${{ inputs.file }}')
+            EOF
+            banner "composer_merge: Cleanup"
+            rm .composer_merge.tmp.json
+            cat '${{ inputs.file }}'
+
+            if [ '${{ inputs.update }}' == 'true' ]; then
+              echo -e "\\033[0;35m### Running composer update with ${{ inputs.update_options }}\\033[0m"
+              docker-compose ${{ inputs.container_method }} -T \\
+                ${{ inputs.container_options }} \\
+                ${{ inputs.container_name}} \\
+                composer update ${{ inputs.update_options }}
+            fi
+        EODS
         fi
