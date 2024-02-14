@@ -197,6 +197,13 @@ runs:
       run: |
         # prepare_shop: Clone testing environment master
         git clone --depth 1 ${{ inputs.git_sdk_url }} --branch ${{ inputs.git_sdk_ref }} --single-branch .
+        if [ '${{ inputs.debug }}' == 'true' ]; then
+          mkdir debug
+          cat >>debug/debug.sh <<EODS
+            banner "prepare_shop: Clone testing environment master"
+            git clone --depth 1 ${{ inputs.git_sdk_url }} --branch ${{ inputs.git_sdk_ref }} --single-branch .
+        EODS
+        fi
 
     - name: Clone the shop  (${{ inputs.git_shop_ref }})
       # yamllint disable-line rule:line-length
@@ -205,6 +212,13 @@ runs:
       run: |
         # prepare_shop: Clone the shop
         git clone --depth 2 ${{ inputs.git_shop_url }} --branch ${{ inputs.git_shop_ref }} --single-branch source
+        if [ '${{ inputs.debug }}' == 'true' ]; then
+          cat >>debug/debug.sh <<EODS
+            banner "prepare_shop: Clone the shop"
+            git clone --depth 2 ${{ inputs.git_shop_url }} --branch ${{ inputs.git_shop_ref }} --single-branch source
+        EODS
+        fi
+
 
     - name: Clone the shop (PR ${{ inputs.github_event_number }})
       # yamllint disable-line rule:line-length
@@ -216,7 +230,15 @@ runs:
         git clone --depth 2 ${{ inputs.git_shop_url }} --branch ${{ inputs.github_base_ref }} --single-branch source
         git -C source fetch origin refs/pull/${{ inputs.github_event_number }}/head:pr_${{ inputs.github_event_number }}
         git -C source checkout pr_${{ inputs.github_event_number }}
-        
+        if [ '${{ inputs.debug }}' == 'true' ]; then
+          cat >>debug/debug.sh <<EODS
+          banner "prepare_shop: Clone the shop (PR)"
+          git clone --depth 2 ${{ inputs.git_shop_url }} --branch ${{ inputs.github_base_ref }} --single-branch source
+          git -C source fetch origin refs/pull/${{ inputs.github_event_number }}/head:pr_${{ inputs.github_event_number }}
+          git -C source checkout pr_${{ inputs.github_event_number }}
+        EODS
+        fi
+
 
     - name: Prepare container configuration
       shell: bash
@@ -252,6 +274,42 @@ runs:
             -e 's#/var/www/#/var/www/source/#g;'\
             containers/httpd/project.conf
 
+        if [ '${{ inputs.debug }}' == 'true' ]; then
+          cat >>debug/debug.sh <<EODS
+            banner "prepare_shop: Prepare container configuration"
+            mkdir source/dev-packages
+            make setup
+            make addbasicservices
+
+            if [ -n "${{ inputs.add_services }}" ]; then
+              for SERVICE in ${{ inputs.add_services }}; do
+                echo -e "\\033[0;35mAdding service \${SERVICE}\\033[0m"
+                if [ "\${SERVICE}" == "nginx-rp" ]; then
+                  perl -pi\\
+                    -e 's#- 80:80#- 8000:80#g;'\\
+                    -e 's#apache:localhost.local#nginx:localhost.local#g;'\\
+                    docker-compose.yml
+                fi
+                make file=services/\${SERVICE}.yml addservice
+              done
+            fi
+
+            perl -pi\\
+                -e "s#PHP_VERSION=.*#PHP_VERSION='${{ inputs.php }}'#g;"\\
+                -e "s#MYSQL_VERSION=.*#MYSQL_VERSION='${{ inputs.mysql }}'#g;"\\
+                .env
+            perl -pi\\
+                -e 's#display_errors =.*#display_errors = false#g;'\\
+                -e 'print "${{ inputs.custom_ini_xdebug }}\n\n";'\\
+                -e 'print "error_reporting = ${{ inputs.custom_ini_error_reporting }}\n"'\\
+                containers/php/custom.ini
+            perl -pi\\
+                -e 's#/var/www/#/var/www/source/#g;'\\
+                containers/httpd/project.conf
+        EODS
+        fi
+
+
     - name: Modify composer.json to allow the same feature-branch
       shell: bash
       run: |
@@ -259,6 +317,15 @@ runs:
         if [ -f '${{ inputs.composer_file }}' ]; then
           sed -e 's#"oxid-esales/\(.*\)":[[:space:]]*"${{ inputs.composer_dev_ref }}"#"oxid-esales/\1": "${{ inputs.composer_dev_ref }} || dev-${{ inputs.github_ref_name }}"#' \
               -i '${{ inputs.composer_file }}'
+        fi
+        if [ '${{ inputs.debug }}' == 'true' ]; then
+          cat >>debug/debug.sh <<EODS
+            banner "prepare_shop: Modify composer.json to allow the same feature-branch"
+            if [ -f '${{ inputs.composer_file }}' ]; then
+              sed -e 's#"oxid-esales/\\(.*\\)":[[:space:]]*"${{ inputs.composer_dev_ref }}"#"oxid-esales/\\1": "${{ inputs.composer_dev_ref }} || dev-${{ inputs.github_ref_name }}"#' \\
+                  -i '${{ inputs.composer_file }}'
+            fi
+        EODS
         fi
 
     - name: Login to Docker Hub
@@ -274,6 +341,14 @@ runs:
         # prepare_shop: Start containers
         make up
         docker-compose ps --all
+        if [ '${{ inputs.debug }}' == 'true' ]; then
+          cat >>debug/debug.sh <<EODS
+            banner "prepare_shop: Start containers"
+            make up
+            docker-compose ps --all
+        EODS
+        fi
+
 
     - name: Output docker logs if make up failed
       if: failure()
@@ -305,6 +380,21 @@ runs:
           ${{ inputs.container_name}} \
           composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
 
+        if [ '${{ inputs.debug }}' == 'true' ]; then
+          cat >>debug/debug.sh <<EODS
+            banner "prepare_shop: Configure enterprise token"
+            echo -e "\\033[0;35m###  configure enterprise token ###\\033[0m"
+            docker-compose ${{ inputs.container_method }} -T \\
+              ${{ inputs.container_options }} \\
+              ${{ inputs.container_name}} \\
+              composer config github-protocols https
+            docker-compose ${{ inputs.container_method }} -T \\
+              ${{ inputs.container_options }} \\
+              ${{ inputs.container_name}} \\
+              composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
+        EODS
+        fi
+
     - name: 'Modify composer.json'
       if: ${{ inputs.composer_transform != '' }}
       uses: 'OXID-eSales/github-actions/composer_merge@v3'
@@ -318,6 +408,7 @@ runs:
         container_name: ${{ inputs.container_name }}
         container_options: ${{ inputs.container_options }}
         container_method: 'exec'
+        debug: ${{ inputs.debug }}
 
     - name: Install dependencies
       shell: bash
@@ -328,15 +419,27 @@ runs:
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
           composer update --no-interaction
+        if [ '${{ inputs.debug }}' == 'true' ]; then
+          cat >>debug/debug.sh <<EODS
+            banner "prepare_shop: Install dependencies"
+            docker-compose ${{ inputs.container_method }} -T \\
+              ${{ inputs.container_options }} \\
+              ${{ inputs.container_name }} \\
+              composer update --no-interaction
+        EODS
+        fi
 
     - name: Setup config inc file
       shell: bash
       run: |
         # prepare_shop: Setup config inc file
-        docker-compose ${{ inputs.container_method }} -T \
-          ${{ inputs.container_options }} \
-          ${{ inputs.container_name }} \
-          cp source/config.inc.php.dist source/config.inc.php
+        cp source/source/config.inc.php.dist source/source/config.inc.php
+        if [ '${{ inputs.debug }}' == 'true' ]; then
+          cat >>debug/debug.sh <<EODS
+            banner "prepare_shop: Setup config inc file"
+            cp source/source/config.inc.php.dist source/source/config.inc.php
+        EODS
+        fi
 
     - name: Cache current installation
       uses: tespkg/actions-cache@v1

@@ -373,24 +373,15 @@ jobs:
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
           debug: ${{ inputs.debug }}
 
-      - name: Run custom script
-        if: ${{ needs.init.outputs.install_shop_custom_script != ''}}
-        run: |
-          ${{ needs.init.outputs.install_shop_custom_script }}
-
-      - name: Run custom script inside the container
-        if: ${{ needs.init.outputs.install_shop_custom_script_container != ''}}
-        run: |
-          cat >source/install_shop_custom_script.sh <<EOF
-          #!/bin/bash
-          ${{ needs.init.outputs.install_shop_custom_script_container }}
-          EOF
-          chmod 0755 source/install_shop_custom_script.sh
-          docker-compose ${{ needs.init.outputs.install_shop_container_method }} -T \
-            ${{ needs.init.outputs.install_shop_container_options }} \
-            ${{ needs.init.outputs.install_shop_container_name}} \
-            /var/www/install_shop_custom_script.sh
-          rm source/install_shop_custom_script.sh
+      - name: Run custom scripts
+        uses: 'OXID-eSales/github-actions/run_custom_script@v4alpha'
+        with:
+          container_name: ${{ needs.init.outputs.install_shop_container_name }}
+          container_options: ${{ needs.init.outputs.install_shop_container_options }}
+          container_method: ${{ needs.init.outputs.install_shop_container_method }}
+          custom_script: ${{ needs.init.outputs.install_shop_custom_script != ''}}
+          custom_script_container: ${{ needs.init.outputs.install_shop_custom_script_container != ''}}
+          debug: ${{ inputs.debug }}
 
       - name: 'Stop shop'
         uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
@@ -534,24 +525,16 @@ jobs:
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
           debug: ${{ inputs.debug }}
 
-      - name: Run custom script
-        if: ${{ matrix.testplan != 'skip' && steps.install_module_testplan.outputs.install_module_custom_script != ''}}
-        run: |
-          ${{ steps.install_module_testplan.outputs.install_module_custom_script }}
-
-      - name: Run custom script inside the container
-        if: ${{ matrix.testplan != 'skip' && steps.install_module_testplan.outputs.install_module_custom_script_container != ''}}
-        run: |
-          cat >source/install_module_custom_script.sh <<EOF
-          #!/bin/bash
-          ${{ steps.install_module_testplan.outputs.install_module_custom_script_container }}
-          EOF
-          chmod 0755 source/install_module_custom_script.sh
-          docker-compose ${{ steps.install_module_testplan.outputs.install_module_container_method }} -T \
-            ${{ steps.install_module_testplan.outputs.install_module_container_options }} \
-            ${{ steps.install_module_testplan.outputs.install_module_container_name}} \
-            /var/www/install_module_custom_script.sh
-          rm source/install_module_custom_script.sh
+      - name: Run custom scripts
+        if: ${{ matrix.testplan != 'skip' }}
+        uses: 'OXID-eSales/github-actions/run_custom_script@v4alpha'
+        with:
+          container_name: ${{ steps.install_module_testplan.outputs.install_module_container_name }}
+          container_options: ${{ steps.install_module_testplan.outputs.install_module_container_options }}
+          container_method: ${{ steps.install_module_testplan.outputs.install_module_container_method }}
+          custom_script: ${{ steps.install_module_testplan.outputs.install_module_custom_script }}
+          custom_script_container: ${{ steps.install_module_testplan.outputs.install_module_custom_script_container }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Stop shop'
         if: ${{ matrix.testplan != 'skip' }}
@@ -657,24 +640,16 @@ jobs:
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
           debug: ${{ inputs.debug }}
 
-      - name: Run custom script
-        if: ${{ steps.phpunit_testplan.outputs.phpunit_custom_script != ''}}
-        run: |
-          ${{ steps.phpunit_testplan.outputs.phpunit_custom_script }}
-
-      - name: Run custom script inside the container
-        if: ${{ steps.phpunit_testplan.outputs.phpunit_custom_script_container != ''}}
-        run: |
-          cat >source/install_module_custom_script.sh <<EOF
-          #!/bin/bash
-          ${{ steps.phpunit_testplan.outputs.phpunit_custom_script_container }}
-          EOF
-          chmod 0755 source/install_module_custom_script.sh
-          docker-compose ${{ steps.phpunit_testplan.outputs.phpunit_container_method }} -T \
-            ${{ steps.phpunit_testplan.outputs.phpunit_container_options }} \
-            ${{ steps.phpunit_testplan.outputs.phpunit_container_name}} \
-            /var/www/install_module_custom_script.sh
-          rm source/install_module_custom_script.sh
+      - name: Run custom scripts
+        if: ${{ matrix.testplan != 'skip' }}
+        uses: 'OXID-eSales/github-actions/run_custom_script@v4alpha'
+        with:
+          container_name: ${{ steps.phpunit_testplan.outputs.phpunit_container_name }}
+          container_options: ${{ steps.phpunit_testplan.outputs.phpunit_container_options }}
+          container_method: ${{ steps.phpunit_testplan.outputs.phpunit_container_method }}
+          custom_script: ${{ steps.phpunit_testplan.outputs.phpunit_custom_script }}
+          custom_script_container: ${{ steps.phpunit_testplan.outputs.phpunit_custom_script_container }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Run phpunit tests'
         id: phpunit_run
@@ -794,24 +769,16 @@ jobs:
           container_method: 'exec'
           debug: ${{ inputs.debug }}
 
-      - name: Run custom script
-        if: ${{ steps.codeception_testplan.outputs.codeception_custom_script != ''}}
-        run: |
-          ${{ steps.codeception_testplan.outputs.codeception_custom_script }}
-
-      - name: Run custom script inside the container
-        if: ${{ steps.codeception_testplan.outputs.codeception_custom_script_container != ''}}
-        run: |
-          cat >source/install_module_custom_script.sh <<EOF
-          #!/bin/bash
-          ${{ steps.codeception_testplan.outputs.codeception_custom_script_container }}
-          EOF
-          chmod 0755 source/install_module_custom_script.sh
-          docker-compose ${{ steps.codeception_testplan.outputs.codeception_container_method }} -T \
-            ${{ steps.codeception_testplan.outputs.codeception_container_options }} \
-            ${{ steps.codeception_testplan.outputs.codeception_container_name}} \
-            /var/www/install_module_custom_script.sh
-          rm source/install_module_custom_script.sh
+      - name: Run custom scripts
+        if: ${{ matrix.testplan != 'skip' }}
+        uses: 'OXID-eSales/github-actions/run_custom_script@v4alpha'
+        with:
+          container_name: ${{ steps.codeception_testplan.outputs.codeception_container_name }}
+          container_options: ${{ steps.codeception_testplan.outputs.codeception_container_options }}
+          container_method: ${{ steps.codeception_testplan.outputs.codeception_container_method }}
+          custom_script: ${{ steps.codeception_testplan.outputs.codeception_custom_script }}
+          custom_script_container: ${{ steps.codeception_testplan.outputs.codeception_custom_script_container }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Run codeception tests'
         id: codeception_run
@@ -935,24 +902,16 @@ jobs:
       - name: Copy config file
         run: cp source/vendor/oxid-esales/testing-library/test_config.yml.dist source/test_config.yml
 
-      - name: Run custom script
-        if: ${{ steps.runtest_testplan.outputs.runtest_custom_script != ''}}
-        run: |
-          ${{ steps.runtest_testplan.outputs.runtest_custom_script }}
-
-      - name: Run custom script inside the container
-        if: ${{ steps.runtest_testplan.outputs.runtest_custom_script_container != ''}}
-        run: |
-          cat >source/install_module_custom_script.sh <<EOF
-          #!/bin/bash
-          ${{ steps.runtest_testplan.outputs.runtest_custom_script_container }}
-          EOF
-          chmod 0755 source/install_module_custom_script.sh
-          docker-compose ${{ steps.runtest_testplan.outputs.runtest_container_method }} -T \
-            ${{ steps.runtest_testplan.outputs.runtest_container_options }} \
-            ${{ steps.runtest_testplan.outputs.runtest_container_name}} \
-            /var/www/install_module_custom_script.sh
-          rm source/install_module_custom_script.sh
+      - name: Run custom scripts
+        if: ${{ matrix.testplan != 'skip' }}
+        uses: 'OXID-eSales/github-actions/run_custom_script@v4alpha'
+        with:
+          container_name: ${{ steps.runtest_testplan.outputs.runtest_container_name }}
+          container_options: ${{ steps.runtest_testplan.outputs.runtest_container_options }}
+          container_method: ${{ steps.runtest_testplan.outputs.runtest_container_method }}
+          custom_script: ${{ steps.runtest_testplan.outputs.runtest_custom_script }}
+          custom_script_container: ${{ steps.runtest_testplan.outputs.runtest_custom_script_container }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Run tests'
         id: runtest_run

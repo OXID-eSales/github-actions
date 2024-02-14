@@ -51,5 +51,8 @@ Github run artifact for the coverage file.
 **failure_pattern:** *not required*, *default:*  'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found|Cannot open file'  
 Grep pattern which indicate that the test failed.
 
+**debug:** *not required*, *default:* false  
+Set to true to generate a debugging script.
+
 ## Outputs:
 none

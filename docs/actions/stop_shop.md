@@ -2,7 +2,9 @@
 Stops the running docker-compose instance.
 
 ## Inputs:
-none
+**debug:** *not required*, *default:* false  
+Set to true to generate a debugging script.
+
 
 ## Outputs:
 none

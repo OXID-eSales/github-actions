@@ -53,6 +53,32 @@ runs:
 
         EOF
 
+    - name: Start debug script
+      if: ${{ inputs.debug == 'true' }}
+      shell: bash
+      run: |
+        [[ ! -d debug ]] && mkdir debug
+        cat >debug/000-start.sh <<EODS
+        #!/bin/bash
+        set -e
+        set -x
+
+        function banner() {
+          PURPLE=$(echo -e "\033[0;31m")
+          NOCOLOR=$(echo -e "\033[0m")
+          cat <<EOF
+        ${PURPLE}###############################################################################
+        ### $1
+        ###############################################################################${NOCOLOR}
+        EOF
+        }
+
+        banner "Debugging workflow ${{ inputs.title }}"
+        echo "Reporitory: ${{ inputs.repository }}"
+        echo "Job: ${{ inputs.job }}"
+        echo "Testplan: ${{ inputs.testplan }}"
+        EODS
+
     - name: Upload Artifacts
       if: always()
       uses: actions/upload-artifact@v4

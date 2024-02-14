@@ -142,6 +142,9 @@ Populate with ${{ secrets.DOCKER_HUB_USER }}, its content will be hidden by GitH
 Needed for docker login.
 Populate with ${{ secrets.DOCKER_HUB_TOKEN }}, its content will be hidden by GitHub.
 
+**debug:** *not required*, *default:* false  
+Set to true to generate a debugging script.
+
 ## Outputs:
 
 **prepared_shop**  

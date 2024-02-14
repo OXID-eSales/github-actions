@@ -11,3 +11,6 @@ URL for the channel web hook, see https://api.slack.com/apps/A04CAPK58G0/incomin
 
 **title:** *not required*, *default:* default  
 Title used for the slack notification.
+
+**debug:** *not required*, *default:* false  
+Set to true to generate a debugging script.

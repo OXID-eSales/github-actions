@@ -16,3 +16,5 @@ this might result in killing the container the action runs in, thus failing it.
 This runs 'docker prune -f' to remove terminated containers and unused
 images. Set to false if you still need to access them.
 
+**debug:** *not required*, *default:* false  
+Set to true to generate a debugging script.
