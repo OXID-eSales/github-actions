@@ -412,7 +412,7 @@ runs:
 
     - name: Install dependencies
       shell: bash
-      if: ${{ inputs.composer_transform == ''}}
+      if: ${{ inputs.composer_transform == '' }}
       run: |
         # prepare_shop: Install dependencies
         docker compose ${{ inputs.container_method }} -T \
