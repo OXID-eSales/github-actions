@@ -25,9 +25,9 @@ inputs:
     required: false
     default: "false"
   debug:
-    type: boolean
-    description: 'Enable debugging'
-    default: false
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
     required: false
 
 outputs:
@@ -72,6 +72,7 @@ runs:
         shopt -u globstar
         echo "logfile=$(realpath ${LOGFILE})" >> "$GITHUB_OUTPUT"
         exit $exitcode
+        ${{ inputs.debug }}
       shell: bash
       env:
         INPUT_FILE_OR_DIR: ${{ inputs.file_or_dir }}
