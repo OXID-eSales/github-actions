@@ -120,6 +120,7 @@ jobs:
 
       - name: 'Create first testplan archive'
         if: always()
+        id: begin_report
         uses: OXID-eSales/github-actions/begin_report@v4alpha
         with:
           title: ${{ steps.ltp.outputs.finish_slack_title }}
@@ -156,6 +157,7 @@ jobs:
           bucket: ${{ steps.ltp.outputs.init_cache_bucket }}
 
     outputs:
+      debug: ${{ steps.begin_report.outputs.debug }}
       # init variables
       testplan: ${{ steps.consolidate_plans.outputs.testplan }}
       init_cache_bucket: ${{ steps.ltp.outputs.init_cache_bucket }}
@@ -312,7 +314,7 @@ jobs:
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
           cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
-          debug: ${{ inputs.debug }}
+          debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Stop shop'
         uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'

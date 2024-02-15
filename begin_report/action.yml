@@ -34,7 +34,10 @@ inputs:
     description: 'Enable debugging'
     default: false
     required: false
-
+outputs:
+  installed_shop:
+    description: 'Debug scriptlet'
+    value: ${{ steps.debug.outputs.debug }}
 runs:
   using: "composite"
   steps:
@@ -55,6 +58,7 @@ runs:
 
     - name: Start debug script
       if: ${{ inputs.debug == 'true' }}
+      id: debug
       shell: bash
       run: |
         mkdir -p debug
@@ -64,7 +68,7 @@ runs:
         set -x
 
         function banner() {
-          PURPLE=\$(echo -e "\\033[0;31m")
+          PURPLE=\$(echo -e "\\033[0;35m")
           NOCOLOR=\$(echo -e "\\033[0m")
           cat <<EOF
         \${PURPLE}###############################################################################
@@ -80,14 +84,31 @@ runs:
         mkdir workdir
         cd workdir
         # Mocking those
-        export GITHUB_ENV=/dev/stdout
-        export GITHUB_OUTPUT=/dev/stdout
+        export GITHUB_ENV="${PWD}/GITHUB_ENV.txt"
+        export GITHUB_OUTPUT="${PWD}/GITHUB_OUTPUT.txt"
+        touch "${GITHUB_ENV}" "${GITHUB_OUTPUT}"
 
         banner "Debugging workflow ${{ inputs.title }}"
         echo "Reporitory: ${{ inputs.repository }}"
         echo "Job: ${{ inputs.job }}"
         echo "Testplan: ${{ inputs.testplan }}"
         echo "Working directory: ${PWD}"
+        EODS
+
+        # Create debugging scriptlet
+        cat >>"${GITHUB_OUTPUT}" <<EODS
+        debug<<debug_delimeter
+        ###BEGIN_DEBUG
+        if [ -n '${{ inputs.debug }}' ]; then
+          mkdir -p debug
+          FIRSTLINE=$(head "$0")
+          echo "banner '${FIRSTLINE}'" >>debug/debug.sh
+          sed -e 's|exit 1|#exit 1|' \
+              -e '/###BEGIN_DEBUG/,/###END_DEBUG/d' \
+              "$0" >>debug/debug.sh
+        fi
+        ###END_DEBUG
+        debug_delimeter
         EODS
 
     - name: Upload Artifacts
