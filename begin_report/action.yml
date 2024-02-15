@@ -79,6 +79,9 @@ runs:
         fi
         mkdir workdir
         cd workdir
+        # Mocking those
+        export GITHUB_ENV=/dev/stdout
+        export GITHUB_OUTPUT=/dev/stdout
 
         banner "Debugging workflow ${{ inputs.title }}"
         echo "Reporitory: ${{ inputs.repository }}"

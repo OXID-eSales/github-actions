@@ -168,7 +168,10 @@ runs:
           FILES=$(find "${SCRIPT}" -type f -iname "*.sh"|sort)
           for FILE in ${FILES}; do
             echo "# ${FILE}" >>"${SCRIPT}.sh"
-            sed -e 's|^[[:space:]]*EOF|EOF|' "${FILE}" >>"${SCRIPT}.sh"
+            sed -e 's|^[[:space:]]*EOF|EOF|' \
+                -e 's|/home/runner/work/_temp/_runner_file_commands/set_env.*|${GITHUB_ENV}|g' \
+                -e 's|/home/runner/work/_temp/_runner_file_commands/set_output.*|${GITHUB_OUTPUT}|g' \
+                "${FILE}" >>"${SCRIPT}.sh"
           done
           chmod 0755 "${SCRIPT}.sh"
         done
