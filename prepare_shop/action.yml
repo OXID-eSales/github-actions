@@ -274,7 +274,7 @@ runs:
             -e 's#/var/www/#/var/www/source/#g;'\
             containers/httpd/project.conf
 
-        if [ '${{ inputs.debug }}' == 'true' ]; then sed -e 's|^|# |' "$0" >>debug/debug.sh
+        if [ '${{ inputs.debug }}' == 'true' ]; then sed -e 's|^|# |' "$0" >>debug/debug.sh ; fi
         if [ '${{ inputs.debug }}' == 'true' ]; then
           cat >>debug/debug.sh <<EODS
             banner "prepare_shop: Prepare container configuration"
