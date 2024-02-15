@@ -160,6 +160,7 @@ runs:
         fi
 
     - name: Generate debug script
+      if ${{ inputs.debug == 'true' }}
       shell: bash
       run: |
         MATRIX=$(find . -type d -iname 'debug-*')

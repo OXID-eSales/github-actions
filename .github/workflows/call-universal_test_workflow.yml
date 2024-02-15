@@ -143,7 +143,7 @@ jobs:
           phase: install
           priority: '001'
           cached_object: ${{ steps.ltp.outputs.init_cache_name }}
-          debug: ${{ steps.begin_report.outputs.debug }}
+          debug: ${{ inputs.debug }}
 
       - name: Cache testplan
         uses: tespkg/actions-cache@v1
@@ -332,7 +332,7 @@ jobs:
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
           cached_object: '${{ needs.init.outputs.prepare_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
-          debug: ${{ needs.init.outputs.debug }}
+          debug: ${{ inputs.debug }}
 
   install_shop:
     needs: ['init', 'prepare_shop']
@@ -401,7 +401,7 @@ jobs:
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
           cached_object: '${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
-          debug: ${{ needs.init.outputs.debug }}
+          debug: ${{ inputs.debug }}
 
   install_module:
     needs: ['init', 'install_shop']
@@ -581,7 +581,7 @@ jobs:
           testplan: ${{matrix.testplan}}
           status: ${{job.status}}
           cached_object: '${{ steps.install_module_testplan.outputs.install_module_cache_prefix}}_${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
-          debug: ${{ needs.init.outputs.debug }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Write Report'
         if: ${{ always() && matrix.testplan == 'skip' }}
@@ -595,7 +595,7 @@ jobs:
           mysql: ${{matrix.mysql}}
           testplan: ${{matrix.testplan}}
           status: 'skipped'
-          debug: ${{ needs.init.outputs.debug }}
+          debug: ${{ inputs.debug }}
 
   begin_test_phase:
     needs: ['init', 'install_module']
@@ -608,7 +608,7 @@ jobs:
           header: true
           priority: '100'
           phase: test
-          debug: ${{ needs.init.outputs.debug }}
+          debug: ${{ inputs.debug }}
 
   phpunit:
     needs: ['init', 'install_module', 'begin_test_phase']
@@ -713,7 +713,7 @@ jobs:
           mysql: ${{matrix.mysql}}
           testplan: ${{matrix.testplan}}
           status: ${{job.status}}
-          debug: ${{ needs.init.outputs.debug }}
+          debug: ${{ inputs.debug }}
 
   codeception:
     needs: ['init', 'install_module', 'begin_test_phase']
@@ -764,13 +764,7 @@ jobs:
         shell: bash
         run: |
           ${{ steps.codeception_testplan.outputs.codeception_pre_script }}
-          if [ '${{ needs.init.outputs.debug }}' == 'true' ]; then
-            mkdir -p debug
-            cat >>debug/debug.sh <<EODS
-              banner "codeception: Run pre-script"
-              ${{ steps.codeception_testplan.outputs.codeception_pre_script }}
-          EODS
-          fi
+          ${{ needs.init.outputs.debug }}
 
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v4alpha'
@@ -852,7 +846,7 @@ jobs:
           mysql: ${{matrix.mysql}}
           testplan: ${{matrix.testplan}}
           status: ${{job.status}}
-          debug: ${{ needs.init.outputs.debug }}
+          debug: ${{ inputs.debug }}
 
   runtest:
     needs: ['init', 'install_module', 'begin_test_phase']
@@ -935,12 +929,7 @@ jobs:
       - name: Copy config file
         run: |
           cp source/vendor/oxid-esales/testing-library/test_config.yml.dist source/test_config.yml
-          if [ '${{ needs.init.outputs.debug }}' == 'true' ]; then
-            cat >>debug/debug.sh <<EODS
-              banner "runtest: Copy config file"
-              cp source/vendor/oxid-esales/testing-library/test_config.yml.dist source/test_config.yml
-          EODS
-          fi
+          ${{ needs.init.outputs.debug }}
 
 
       - name: Run custom scripts
@@ -992,7 +981,7 @@ jobs:
           mysql: ${{matrix.mysql}}
           testplan: ${{matrix.testplan}}
           status: ${{job.status}}
-          debug: ${{ needs.init.outputs.debug }}
+          debug: ${{ inputs.debug }}
 
   begin_report_phase:
     needs: ['init', 'install_module']
@@ -1005,7 +994,7 @@ jobs:
           header: true
           priority: '200'
           phase: report
-          debug: ${{ needs.init.outputs.debug }}
+          debug: ${{ inputs.debug }}
 
   sonarcloud:
     needs: ['init', 'install_module', 'phpunit', 'codeception', 'begin_report_phase']
@@ -1083,7 +1072,7 @@ jobs:
           mysql: ${{matrix.mysql}}
           testplan: ${{matrix.testplan}}
           status: ${{job.status}}
-          debug: ${{ needs.init.outputs.debug }}
+          debug: ${{ inputs.debug }}
 
   phpcs_tests:
     needs: ['init', 'install_module', 'begin_report_phase']
@@ -1141,7 +1130,7 @@ jobs:
           php: ${{matrix.php}}
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
-          debug: ${{ needs.init.outputs.debug }}
+          debug: ${{ inputs.debug }}
 
   styles:
     needs: ['init', 'install_module', 'begin_report_phase']
@@ -1242,7 +1231,7 @@ jobs:
           php: ${{matrix.php}}
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
-          debug: ${{ needs.init.outputs.debug }}
+          debug: ${{ inputs.debug }}
 
   yamllint:
     needs: ['init', 'begin_report_phase']
@@ -1273,7 +1262,7 @@ jobs:
           mysql: ''
           testplan: ''
           status: ${{job.status}}
-          debug: ${{ needs.init.outputs.debug }}
+          debug: ${{ inputs.debug }}
 
   actionlint:
     needs: ['init', 'begin_report_phase']
@@ -1321,7 +1310,7 @@ jobs:
           mysql: ''
           testplan: ''
           status: ${{job.status}}
-          debug: ${{ needs.init.outputs.debug }}
+          debug: ${{ inputs.debug }}
 
   finish:
     if: ${{ always() && needs.init.outputs.finish_skip != 'true' }}
