@@ -97,12 +97,12 @@ runs:
         EODS
 
         # Create debugging scriptlet
-        cat >>"${GITHUB_OUTPUT}" <<EODS
+        cat >>"${GITHUB_OUTPUT}" <<'EODS'
         debug<<debug_delimeter
         ###BEGIN_DEBUG
         if [ -n '${{ inputs.debug }}' ]; then
           mkdir -p debug
-          FIRSTLINE=$(head "$0")
+          FIRSTLINE=$(head -1 "$0")
           echo "banner '${FIRSTLINE}'" >>debug/debug.sh
           sed -e 's|exit 1|#exit 1|' \
               -e '/###BEGIN_DEBUG/,/###END_DEBUG/d' \
@@ -116,7 +116,7 @@ runs:
       shell: bash
       run: |
         # begin_report: Debug debug
-        echo ${{ steps.debug.outputs.debug }}
+        echo '${{ steps.debug.outputs.debug }}'
 
     - name: Upload Artifacts
       if: always()
