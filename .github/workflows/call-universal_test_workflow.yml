@@ -1351,7 +1351,7 @@ jobs:
         with:
           slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           title: '${{ needs.init.outputs.finish_slack_title }}'
-          debug: ${{ needs.init.outputs.debug }}
+          debug: ${{ inputs.debug }}
 
       - name: 'Clean Cache'
         if: ${{ steps.generate_report.outputs.overall_status == 'success' }}
