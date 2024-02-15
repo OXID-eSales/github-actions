@@ -65,9 +65,9 @@ inputs:
     description: 'Github run artifact for the sonarcloud output'
     default: 'sonarcloud-artifacts'
   debug:
-    type: boolean
-    description: 'Enable debugging'
-    default: false
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
     required: false
 
 runs:
@@ -94,6 +94,7 @@ runs:
         done
         # remove leading comma when adding this
         echo "COVERAGE_FILES=${COVERAGE_FILES:1}" | tee -a $GITHUB_ENV
+        ${{ inputs.debug }}
 
     - name: Upload consolidated coverage artifact
       uses: actions/upload-artifact@v4
@@ -116,6 +117,7 @@ runs:
           TARGET_BRANCH_PARAM=""
         fi
         echo "TARGET_BRANCH_PARAM=$TARGET_PRANCH_PARAM" >> $GITHUB_ENV
+        ${{ inputs.debug }}
 
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@master
@@ -131,3 +133,20 @@ runs:
           -Dsonar.php.coverage.reportPaths=${{ env.COVERAGE_FILES }}
           ${{ inputs.sonarcloud_parameters }}
           ${{ env.TARGET_BRANCH_PARAM }}
+
+    - name: Debug Sonarcloud scan
+      if: ${{ inputs.debug != '' }}
+      shell: bash
+      run: |
+        # sonarcloud: Debug sonarcloud Scan (simulated)
+        cat >debug/debug.sh <<EODS
+          banner sonarcloud: Debug sonarcloud Scan (simulated)
+          # would call sonarsource/sonarcloud-github-action@master
+          # -Dsonar.organization=${{ inputs.sonarcloud_organization }}
+          # -Dsonar.projectKey=${{ inputs.sonarcloud_project_key }}
+          # -Dsonar.projectName=${{ inputs.sonarcloud_project_name }}
+          # -Dsonar.branch.name=${{ inputs.github_ref_name }}
+          # -Dsonar.php.coverage.reportPaths=${{ env.COVERAGE_FILES }}
+          # ${{ inputs.sonarcloud_parameters }}
+          # ${{ env.TARGET_BRANCH_PARAM }}
+        EODS

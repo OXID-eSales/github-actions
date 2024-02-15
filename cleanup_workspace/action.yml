@@ -14,9 +14,9 @@ inputs:
     description: 'Prune docker'
     default: true
   debug:
-    type: boolean
-    description: 'Enable debugging'
-    default: false
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
     required: false
 
 runs:

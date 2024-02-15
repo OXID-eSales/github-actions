@@ -84,9 +84,9 @@ inputs:
     description: 'Grep pattern which indicate that the test failed'
     default: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found|Cannot open file'
   debug:
-    type: boolean
-    description: 'Enable debugging'
-    default: false
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
     required: false
 
 runs:
@@ -102,16 +102,7 @@ runs:
           vendor/bin/codecept build \
           -c ${{ inputs.configuration }} \
           ${{ inputs.build_additional_options }}
-        if [ '${{ inputs.debug }}' == 'true' ]; then
-          cat >>debug/debug.sh <<EODS
-            banner "codeception: Build Codeception"
-            docker compose exec -T \\
-              ${{ inputs.container_name}} \\
-              vendor/bin/codecept build \\
-              -c ${{ inputs.configuration }} \\
-              ${{ inputs.build_additional_options }}
-        EODS
-        fi
+        ${{ inputs.debug }}
 
     - name: Run Codeception tests
       shell: bash
@@ -125,19 +116,7 @@ runs:
             --ext DotReporter \
             ${{ inputs.additional_options }} \
             2>&1 | tee ${{ inputs.logfile }} || true
-        if [ '${{ inputs.debug }}' == 'true' ]; then
-          cat >>debug/debug.sh <<EODS
-            banner "codeception: Run Codeception tests"
-            docker compose ${{ inputs.container_method }} -T \\
-              ${{ inputs. container_options }} \\
-              ${{ inputs.container_name}} \\
-              vendor/bin/codecept run ${{ inputs.suite }} ${{ inputs.test }} \\
-                -c ${{ inputs.configuration }} \\
-                --ext DotReporter \\
-                ${{ inputs.additional_options }} \\
-                2>&1 | tee ${{ inputs.logfile }} || true
-        EODS
-        fi
+        ${{ inputs.debug }}
 
     - name: Upload Codeception Artifacts
       if: always()
@@ -169,15 +148,7 @@ runs:
           echo -e "\033[0;35mPHP error log\033[0m"
           cat data/php/logs/error_log.txt
         fi
-        if [ '${{ inputs.debug }}' == 'true' ]; then
-          cat >>debug/debug.sh <<EODS
-            banner "codeception: Output php error log"
-            if [ -s data/php/logs/error_log.txt ]; then
-              echo -e "\033[0;35mPHP error log\033[0m"
-              cat data/php/logs/error_log.txt
-            fi
-        EODS
-        fi
+        ${{ inputs.debug }}
 
     - name: Check results
       shell: bash
@@ -216,31 +187,4 @@ runs:
         EOF
           exit 1
         fi
-        if [ '${{ inputs.debug }}' == 'true' ]; then
-          cat >>debug/debug.sh <<EODS
-            banner "codeception: Check results"
-            if [ ! -s "${{ inputs.logfile }}" ]; then
-              banner "Log file is empty! Seems like no tests have been run! Would have exited with an error."
-              # exit 1
-            fi
-            cat >failure_pattern.tmp <<EOF
-            ${{ inputs.failure_pattern}}
-            EOF
-            sed -e 's|(.*)\\r|\$1|' -i failure_pattern.tmp
-            while read -r LINE ; do
-              if [ -n "\${LINE}" ]; then
-                if grep -q -E "\${LINE}" "${{ inputs.logfile }}"; then
-                  echo -e "\\033[0;31m phpunit test failed matching pattern \${LINE}. Would have exited with an error."
-                  grep -E "\${LINE}" "${{ inputs.logfile }}"
-                  # exit 1
-                else
-                    echo -e "\\033[0;32m phpunit test passed matching pattern \${LINE}"
-                fi
-              fi
-            done <failure_pattern.tmp
-            if [[ -n "${{ inputs.coverage_path }}" && ! -s "${{ inputs.coverage_path }}" ]]; then
-              banner "${{ inputs.coverage_path }} is empty! Would have exited with an error."
-              # exit 1
-            fi
-        EODS
-        fi
+        ${{ inputs.debug }}

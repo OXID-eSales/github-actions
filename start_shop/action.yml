@@ -51,9 +51,9 @@ inputs:
     description: 'Name of the container to run the wait command in'
     default: 'php'
   debug:
-    type: boolean
-    description: 'Enable debugging'
-    default: false
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
     required: false
 
 runs:
@@ -97,14 +97,7 @@ runs:
         # start_shop: Start containers
         echo -e "\033[0;35m### Starting containers\033[0m"
         make up
-        if [ '${{ inputs.debug }}' == 'true' ]; then
-          mkdir -p debug
-          cat >>debug/debug.sh <<EODS
-            banner "start_shop: Start containers"
-            echo -e "\\033[0;35m### Starting containers\\033[0m"
-            make up
-        EODS
-        fi
+        ${{ inputs.debug }}
 
     - name: Output docker logs if make up failed
       if: failure()
@@ -140,23 +133,4 @@ runs:
           bash -c "timeout 60 /var/www/wait_for_selenium.sh"
         rm source/wait_for_selenium.sh
 
-        if [ '${{ inputs.debug }}' == 'true' ]; then
-          cat >>debug/debug.sh <<EODS
-            banner "start_shop: Wait for selenium"
-            cat >source/wait_for_selenium.sh <<EOF
-            #!/bin/bash
-            set +e
-            until  curl -sSjkL http://selenium:4444/status &>/dev/null; do
-              echo "."
-              sleep 1
-            done
-            set -e
-            curl -sSjkL http://selenium:4444/status
-            EOF
-            chmod 0755 source/wait_for_selenium.sh
-            docker compose exec -T \\
-              ${{ inputs.container_name}} \\
-              bash -c "timeout 60 /var/www/wait_for_selenium.sh"
-            rm source/wait_for_selenium.sh
-        EODS
-        fi
+        ${{ inputs.debug }}

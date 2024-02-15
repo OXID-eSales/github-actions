@@ -58,9 +58,9 @@ inputs:
     description: 'Grep pattern which indicate that the test failed'
     default: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error'
   debug:
-    type: boolean
-    description: 'Enable debugging'
-    default: false
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
     required: false
 
 runs:
@@ -94,6 +94,7 @@ runs:
         else
           echo "skip=true" | tee -a "$GITHUB_OUTPUT"
         fi
+        ${{ inputs.debug }}
 
     - name: Run PHP_CS check
       shell: bash
@@ -104,13 +105,13 @@ runs:
           ${{ inputs.container_name}} \
           php vendor/bin/phpcs --version \
           | tee "${{ inputs.logfile }}" 2>&1 || true
-
         docker compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           php vendor/bin/phpcs \
             ${{ inputs.additional_options }} \
             ${{ steps.diff.outputs.files }} \
           | tee "${{ inputs.logfile }}" 2>&1 || true
+        ${{ inputs.debug }}
 
     - name: Upload Artifact
       if: ${{ always() && steps.diff.outputs.skip == 'false' }}
@@ -132,6 +133,7 @@ runs:
           echo -e "\033[0;35mPHP error log\033[0m"
           cat data/php/logs/error_log.txt
         fi
+        ${{ inputs.debug }}
 
     - name: Check results
       shell: bash
@@ -178,3 +180,4 @@ runs:
         EOF
           exit 1
         fi
+        ${{ inputs.debug }}

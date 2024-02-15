@@ -40,9 +40,9 @@ inputs:
     description: 'Method to execute the commands inside a container, either "run" or "exec"'
     default: 'exec'
   debug:
-    type: boolean
-    description: 'Enable debugging'
-    default: false
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
     required: false
 
 runs:
@@ -61,20 +61,7 @@ runs:
         EOF
         echo -e "\033[0;35m### JSON to merge\033[0m"
         cat .composer_merge.tmp.json
-        if [ '${{ inputs.debug }}' == 'true' ]; then
-          cat >>debug/debug.sh <<EODS
-            banner "composer_merge: Create files"
-            BACKUP="${{ inputs.backup }}"
-            if [ "${BACKUP}" == 'true' ]; then
-              cp "${{ inputs.file }}" "${{ inputs.file }}.bak"
-            fi
-            cat > .composer_merge.tmp.json <<'EOF'
-            ${{ inputs.transform }}
-            EOF
-            echo -e "\033[0;35m### JSON to merge\033[0m"
-            cat .composer_merge.tmp.json
-        EODS
-        fi
+        ${{ inputs.debug }}
 
 
     - name: Merge files
@@ -83,6 +70,18 @@ runs:
         files: '${{ inputs.file }},.composer_merge.tmp.json'
         input_type: 'json'
         json: '${{ inputs.file }}'
+    - name: Debug merge
+      if: ${{ inputs.debug != '' }}
+      shell: bash
+      run: |
+        cat >>debug/debug.sh <<EODS
+        banner "composer_merge: Merge files"
+        # Note: Instead of using load_testplan, this just creates the resulting composer.json
+        cat >'${{ inputs.file }}' <<'EOF'
+        EODS
+        # We need this because of the escapes inside composer.json
+        cat '${{ inputs.file }}' >>debug/debug.sh
+        echo -e "\nEOF" >>debug/debug.sh
 
     - name: Cleanup
       shell: bash
@@ -98,27 +97,4 @@ runs:
             ${{ inputs.container_name}} \
             composer update ${{ inputs.update_options }}
         fi
-        if [ '${{ inputs.debug }}' == 'true' ]; then
-          cat >>debug/debug.sh <<EODS
-            banner "composer_merge: Merge files"
-            # Note: Instead of using load_testplan, this just creates the resulting composer.json
-            cat >'${{ inputs.file }}' <<'EOF'
-        EODS
-          # We need this because of the escapes inside composer.json
-          cat '${{ inputs.file }}' >>debug/debug.sh
-          echo "" >>debug/debug.sh
-          cat >>debug/debug.sh <<EODS
-            EOF
-            banner "composer_merge: Cleanup"
-            rm .composer_merge.tmp.json
-            cat '${{ inputs.file }}'
-
-            if [ '${{ inputs.update }}' == 'true' ]; then
-              echo -e "\\033[0;35m### Running composer update with ${{ inputs.update_options }}\\033[0m"
-              docker compose ${{ inputs.container_method }} -T \\
-                ${{ inputs.container_options }} \\
-                ${{ inputs.container_name}} \\
-                composer update ${{ inputs.update_options }}
-            fi
-        EODS
-        fi
+        ${{ inputs.debug }}

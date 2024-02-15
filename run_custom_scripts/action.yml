@@ -27,9 +27,9 @@ inputs:
     description: 'Script to run inside the container'
     default: ''
   debug:
-    type: boolean
-    description: 'Enable debugging'
-    default: false
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
     required: false
 
 runs:
@@ -41,6 +41,7 @@ runs:
       run: |
         # run_custom_scripts: Run custom script
         ${{ inputs.shop_custom_script }}
+        ${{ inputs.debug }}
 
     - name: Run custom script inside the container
       if: ${{ inputs.custom_script_container != ''}}
@@ -57,34 +58,4 @@ runs:
           ${{ inputs.container_name}} \
           /var/www/install_shop_custom_script.sh
         rm source/install_shop_custom_script.sh
-
-    - name: Generate debugging script
-      if: ${{ inputs.custom_script != '' || inputs.custom_script_container != '' }}
-      shell: bash
-      run: |
-        # run_custom_scripts: Run custom script inside the container
-        [[ ! -d debug ]] && mkdir debug
-        if [ -n '${{ inputs.shop_custom_script }}' ]; then
-          echo 'banner "Run custom script: START"' >>debug/debug.sh
-          cat >>debug/debug.sh <<EODS
-        ${{ inputs.shop_custom_script }}
-        EODS
-          echo 'banner "Run custom script: END"' >>debug/debug.sh
-        fi
-
-        if [ -n '${{ inputs.shop_custom_script_container }}' ]; then
-          echo 'banner "Run custom script inside the ${{ inputs.container_name }} container: START"' >>debug/debug.sh
-          cat >>debug/debug.sh <<EODS
-        cat >source/install_shop_custom_script.sh <<EOF
-        #!/bin/bash
-        ${{ inputs.custom_script_container }}
-        EOF
-        chmod 0755 source/install_shop_custom_script.sh
-        docker compose ${{ inputs.container_method }} -T \
-          ${{ inputs.container_options }} \
-          ${{ inputs.container_name}} \
-          /var/www/install_shop_custom_script.sh
-        rm source/install_shop_custom_script.sh
-        EODS
-          echo 'banner "Run custom script inside the ${{ inputs.container_name }} container: END"' >>debug/debug.sh
-        fi
+        ${{ inputs.debug }}

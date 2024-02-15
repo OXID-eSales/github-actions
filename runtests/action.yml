@@ -75,9 +75,9 @@ inputs:
     description: 'Location of the runtests binary'
     default: 'vendor/bin/runtests'
   debug:
-    type: boolean
-    description: 'Enable debugging'
-    default: false
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
     required: false
 
 runs:
@@ -91,14 +91,7 @@ runs:
         docker compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           php ${{ inputs.reset_shop_binary }}
-        if [ '${{ inputs.debug }}' == 'true' ]; then
-          cat >>debug/debug.sh <<EODS
-            banner "runtests: Reset shop"
-            docker compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \\
-              ${{ inputs.container_name}} \\
-              php ${{ inputs.reset_shop_binary }}
-        EODS
-        fi
+        ${{ inputs.debug }}
 
     - name: Run runtest
       shell: bash
@@ -110,17 +103,7 @@ runs:
             ${{ inputs.additional_options }} \
             "${{ inputs.test }}" \
           | tee "${{ inputs.logfile }}" 2>&1 || true
-        if [ '${{ inputs.debug }}' == 'true' ]; then
-          cat >>debug/debug.sh <<EODS
-            banner "runtests: Run runtest"
-            docker compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \\
-              ${{ inputs.container_name}} \\
-              php ${{ inputs.runtests_binary }} \\
-                ${{ inputs.additional_options }} \\
-                "${{ inputs.test }}" \\
-              | tee "${{ inputs.logfile }}" 2>&1 || true
-        EODS
-        fi
+        ${{ inputs.debug }}
 
     - name: Upload Artifacts
       if: always()
@@ -152,15 +135,7 @@ runs:
           echo -e "\033[0;35mPHP error log\033[0m"
           cat data/php/logs/error_log.txt
         fi
-        if [ '${{ inputs.debug }}' == 'true' ]; then
-          cat >>debug/debug.sh <<EODS
-            banner "runtests: Output php error log"
-            if [ -s data/php/logs/error_log.txt ]; then
-              echo -e "\033[0;35mPHP error log\033[0m"
-              cat data/php/logs/error_log.txt
-            fi
-        EODS
-        fi
+        ${{ inputs.debug }}
 
     - name: Check results
       shell: bash
@@ -199,31 +174,4 @@ runs:
         EOF
           exit 1
         fi
-        if [ '${{ inputs.debug }}' == 'true' ]; then
-          cat >>debug/debug.sh <<EODS
-            banner "runtests: Check results"
-            if [ ! -s "${{ inputs.logfile }}" ]; then
-              banner "Log file is empty! Seems like no tests have been run! Would have exited with an error."
-              # exit 1
-            fi
-            cat >failure_pattern.tmp <<EOF
-            ${{ inputs.failure_pattern}}
-            EOF
-            sed -e 's|(.*)\\r|\$1|' -i failure_pattern.tmp
-            while read -r LINE ; do
-              if [ -n "\${LINE}" ]; then
-                if grep -q -E "\${LINE}" "${{ inputs.logfile }}"; then
-                  echo -e "\\033[0;31m phpunit test failed matching pattern \${LINE}. Would have exited with an error."
-                  grep -E "\${LINE}" "${{ inputs.logfile }}"
-                  # exit 1
-                else
-                    echo -e "\\033[0;32m phpunit test passed matching pattern \${LINE}"
-                fi
-              fi
-            done <failure_pattern.tmp
-            if [[ -n "${{ inputs.coverage_path }}" && ! -s "${{ inputs.coverage_path }}" ]]; then
-              banner "${{ inputs.coverage_path }} is empty! Would have exited with an error."
-              # exit 1
-            fi
-        EODS
-        fi
+        ${{ inputs.debug }}

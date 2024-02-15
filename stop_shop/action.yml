@@ -2,9 +2,9 @@ name: 'stop_shop'
 description: 'Stops a running shop instance'
 inputs:
   debug:
-    type: boolean
-    description: 'Enable debugging'
-    default: false
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
     required: false
 
 runs:
@@ -16,9 +16,4 @@ runs:
       run: |
         # stop_shop: Stop containers
         docker compose down
-        if [ '${{ inputs.debug }}' == 'true' ]; then
-          cat >>debug/debug.sh <<EODS
-            banner "stop_shop: Stop containers"
-            docker compose down
-        EODS
-        fi
+        ${{ inputs.debug }}

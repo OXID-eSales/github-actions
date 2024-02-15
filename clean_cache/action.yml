@@ -22,9 +22,9 @@ inputs:
     required: true
     description: 'Runner for this workflow'
   debug:
-    type: boolean
-    description: 'Enable debugging'
-    default: false
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
     required: false
 
 runs:

@@ -91,9 +91,9 @@ inputs:
     description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
     default: ''
   debug:
-    type: boolean
-    description: 'Enable debugging'
-    default: false
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
     required: false
 
 runs:
@@ -122,23 +122,7 @@ runs:
             ${{ inputs.container_name}} \
             composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
         fi
-        if [ '${{ inputs.debug }}' == 'true' ]; then
-          mkdir -p debug
-          cat >>debug/debug.sh <<EODS
-            banner "install_module: Configure enterprise credentials"
-            if [ -n "${{ inputs.enterprise_github_token }}" ]; then
-              echo -e "\\033[0;35m###  configure github access ###\\033[0m"
-              docker compose ${{ inputs.container_method }} -T \\
-                ${{ inputs.container_options }} \\
-                ${{ inputs.container_name}} \\
-                composer config github-protocols https
-              docker compose ${{ inputs.container_method }} -T \\
-                ${{ inputs.container_options }} \\
-                ${{ inputs.container_name}} \\
-                composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
-            fi
-        EODS
-        fi
+        ${{ inputs.debug }}
 
     - name: Install module
       shell: bash
@@ -153,20 +137,7 @@ runs:
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
           composer require ${{ inputs.package_name }}:* --no-interaction --no-update
-        if [ '${{ inputs.debug }}' == 'true' ]; then
-          cat >>debug/debug.sh <<EODS
-            banner "install_module: Install module"
-            docker compose ${{ inputs.container_method }} -T \\
-              ${{ inputs. container_options }} \\
-              ${{ inputs.container_name}} \\
-              composer config repositories.${{ inputs.package_name }} \\
-              --json '{"type":"path", "url":"./${{inputs.module_path}}", "options": {"symlink": true}}'
-            docker compose ${{ inputs.container_method }} -T \\
-              ${{ inputs. container_options }} \\
-              ${{ inputs.container_name}} \\
-              composer require ${{ inputs.package_name }}:* --no-interaction --no-update
-        EODS
-        fi
+        ${{ inputs.debug }}
 
     - name: 'Modify composer.json'
       uses: 'OXID-eSales/github-actions/composer_merge@v3'
@@ -208,20 +179,7 @@ runs:
           ${{ inputs.container_name}} \
           ${{ env.OE_CONSOLE }} oe:database:reset \
           --db-host=mysql --db-port=3306 --db-name=example --db-user=root --db-password=root --force
-        if [ '${{ inputs.debug }}' == 'true' ]; then
-          cat >>debug/debug.sh <<EODS
-            banner "install_module: Install dependencies and reset database"
-            docker compose ${{ inputs.container_method }} -T \\
-              ${{ inputs. container_options }} \\
-              ${{ inputs.container_name}} \\
-              composer update --no-interaction
-            docker compose ${{ inputs.container_method }} -T \\
-              ${{ inputs. container_options }} \\
-              ${{ inputs.container_name}} \\
-              ${{ env.OE_CONSOLE }} oe:database:reset \\
-              --db-host=mysql --db-port=3306 --db-name=example --db-user=root --db-password=root --force
-        EODS
-        fi
+        ${{ inputs.debug }}
 
     - name: Activate modules
       shell: bash
@@ -235,19 +193,7 @@ runs:
             ${{ inputs.container_name}} \
             ${{ env.OE_CONSOLE }} oe:module:activate "${MODULE}"
         done
-        if [ '${{ inputs.debug }}' == 'true' ]; then
-          cat >>debug/debug.sh <<EODS
-            banner "install_module: Activate modules"
-            MODULES=$(echo -n "${{ inputs.activate }}"| tr '\\n' ' ')
-            for MODULE in ${MODULES}; do
-              echo -e "\\033[0;35m###  activating module ${MODULE} ###\\033[0m"
-              docker compose ${{ inputs.container_method }} -T \\
-                ${{ inputs. container_options }} \\
-                ${{ inputs.container_name}} \\
-                ${{ env.OE_CONSOLE }} oe:module:activate "${MODULE}"
-            done
-        EODS
-        fi
+        ${{ inputs.debug }}
 
     - name: Install module dependencies
       shell: bash
@@ -258,16 +204,7 @@ runs:
           --workdir=/var/www \
           ${{ inputs.container_name}} \
           composer install
-        if [ '${{ inputs.debug }}' == 'true' ]; then
-          cat >>debug/debug.sh <<EODS
-            banner "install_module: Install module dependencies"
-            docker compose ${{ inputs.container_method }} -T \\
-              ${{ inputs. container_options }} \\
-              --workdir=/var/www \\
-              ${{ inputs.container_name}} \\
-              composer install
-        EODS
-        fi
+        ${{ inputs.debug }}
 
     - name: Write files list
       if: always()
@@ -285,15 +222,7 @@ runs:
           echo -e "\033[0;35mPHP error log\033[0m"
           cat data/php/logs/error_log.txt
         fi
-        if [ '${{ inputs.debug }}' == 'true' ]; then
-          cat >>debug/debug.sh <<EODS
-            banner "install_module: Output php error log"
-            if [ -s data/php/logs/error_log.txt ]; then
-              echo -e "\\033[0;35mPHP error log\\033[0m"
-              cat data/php/logs/error_log.txt
-            fi
-        EODS
-        fi
+        ${{ inputs.debug }}
 
     - name: Upload configuration artifacts
       if: always()
