@@ -116,7 +116,9 @@ runs:
       shell: bash
       run: |
         # begin_report: Debug debug
-        echo '${{ steps.debug.outputs.debug }}'
+        cat <<'EODD'
+        ${{ steps.debug.outputs.debug }}
+        EODD
 
     - name: Upload Artifacts
       if: always()
