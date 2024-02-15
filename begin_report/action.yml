@@ -63,31 +63,31 @@ runs:
       run: |
         # begin_report: Start debug script
         mkdir -p debug
-        cat >debug/000-start.sh <<EODS
+        cat >debug/000-start.sh <<'EODS'
         #!/bin/bash
         set -e
         set -x
 
         function banner() {
-          PURPLE=\$(echo -e "\\033[0;35m")
-          NOCOLOR=\$(echo -e "\\033[0m")
+          PURPLE=$(echo -e "\033[0;35m")
+          NOCOLOR=$(echo -e "\033[0m")
           cat <<EOF
-        \${PURPLE}###############################################################################
-        ### \$1
-        ###############################################################################\${NOCOLOR}
+        ${PURPLE}###############################################################################
+        ### $1
+        ###############################################################################${NOCOLOR}
         EOF
         }
 
+        # Mocking those
+        export GITHUB_ENV="${PWD}/GITHUB_ENV.txt"
+        export GITHUB_OUTPUT="${PWD}/GITHUB_OUTPUT.txt"
+        touch "${GITHUB_ENV}" "${GITHUB_OUTPUT}"
         banner "Setting up environment"
         if [ -d workdir ]; then
           rm -rf workdir
         fi
         mkdir workdir
         cd workdir
-        # Mocking those
-        export GITHUB_ENV="${PWD}/GITHUB_ENV.txt"
-        export GITHUB_OUTPUT="${PWD}/GITHUB_OUTPUT.txt"
-        touch "${GITHUB_ENV}" "${GITHUB_OUTPUT}"
 
         banner "Debugging workflow ${{ inputs.title }}"
         echo "Reporitory: ${{ inputs.repository }}"
@@ -96,22 +96,21 @@ runs:
         echo "Working directory: ${PWD}"
         EODS
 
+        if [ '${{ inputs.debug }}' != 'true' ]; then
+          echo "debug=" >>"${GITHUB_OUTPUT}"
+        else
         # Create debugging scriptlet
-        cat >>"${GITHUB_OUTPUT}" <<'EODS'
+          cat >>"${GITHUB_OUTPUT}" <<'EODS'
         debug<<debug_delimeter
         ###BEGIN_DEBUG
-        if [ -n '${{ inputs.debug }}' ]; then
-          mkdir -p debug
-          FIRSTLINE=$(head -1 "$0")
-          echo "banner '${FIRSTLINE}'" >>debug/debug.sh
-          sed -e 's|exit 1|#exit 1|' \
-              -e '/###BEGIN_DEBUG/,/###END_DEBUG/d' \
-              "$0" >>debug/debug.sh
-        fi
+        mkdir -p debug
+        FIRSTLINE=$(head -1 "$0")
+        echo "banner '${FIRSTLINE}'" >>debug/debug.sh
+        sed -e 's|exit 1|#exit 1|' -e '/###BEGIN_DEBUG/,/###END_DEBUG/d' "$0" >>debug/debug.sh
         ###END_DEBUG
         debug_delimeter
         EODS
-
+        fi
     - name: Debug debug
       shell: bash
       run: |
