@@ -134,7 +134,6 @@ inputs:
     required: false
     description: 'Development package reference'
     default: 'dev-b-8.0.x'
-
   enterprise_github_token:
     type: string
     required: false
@@ -182,7 +181,7 @@ inputs:
   debug:
     type: string
     description: 'Appended to debugging scripts'
-    default: false
+    default: ''
     required: false
 
 outputs:
