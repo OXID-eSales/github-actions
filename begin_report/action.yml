@@ -35,7 +35,7 @@ inputs:
     default: false
     required: false
 outputs:
-  installed_shop:
+  debug:
     description: 'Debug scriptlet'
     value: ${{ steps.debug.outputs.debug }}
 runs:
@@ -61,6 +61,7 @@ runs:
       id: debug
       shell: bash
       run: |
+        # begin_report: Start debug script
         mkdir -p debug
         cat >debug/000-start.sh <<EODS
         #!/bin/bash

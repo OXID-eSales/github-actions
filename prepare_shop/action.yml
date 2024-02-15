@@ -326,7 +326,7 @@ runs:
         container_name: ${{ inputs.container_name }}
         container_options: ${{ inputs.container_options }}
         container_method: 'exec'
-        debug: ${{ inputs.debug }}
+        debug: ${{ inputs.debug != '' }}
 
     - name: Install dependencies
       shell: bash
