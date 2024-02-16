@@ -141,12 +141,14 @@ runs:
         # sonarcloud: Debug sonarcloud Scan (simulated)
         cat >debug/debug.sh <<EODS
           banner "sonarcloud: Debug sonarcloud Scan (simulated)"
+          cat <<'EOF'
           # would call sonarsource/sonarcloud-github-action@master
-          # -Dsonar.organization=${{ inputs.sonarcloud_organization }}
-          # -Dsonar.projectKey=${{ inputs.sonarcloud_project_key }}
-          # -Dsonar.projectName=${{ inputs.sonarcloud_project_name }}
-          # -Dsonar.branch.name=${{ inputs.github_ref_name }}
-          # -Dsonar.php.coverage.reportPaths=${{ env.COVERAGE_FILES }}
-          # ${{ inputs.sonarcloud_parameters }}
-          # ${{ env.TARGET_BRANCH_PARAM }}
+          -Dsonar.organization=${{ inputs.sonarcloud_organization }}
+          -Dsonar.projectKey=${{ inputs.sonarcloud_project_key }}
+          -Dsonar.projectName=${{ inputs.sonarcloud_project_name }}
+          -Dsonar.branch.name=${{ inputs.github_ref_name }}
+          -Dsonar.php.coverage.reportPaths=${{ env.COVERAGE_FILES }}
+          ${{ inputs.sonarcloud_parameters }}
+          ${{ env.TARGET_BRANCH_PARAM }}
+          EOF
         EODS
