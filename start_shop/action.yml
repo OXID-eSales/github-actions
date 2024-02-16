@@ -140,4 +140,3 @@ runs:
           ${{ inputs.container_name}} \
           bash -c "timeout 60 /var/www/wait_for_selenium.sh"
         rm source/wait_for_selenium.sh
-

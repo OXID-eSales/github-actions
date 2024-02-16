@@ -587,7 +587,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: Debug cache current installation
-        if: ${{ inputs.debug }}
+        if: ${{ matrix.testplan != 'skip' && inputs.debug }}
         shell: bash
         run: |
           # prepare_shop: Debug cache current installation
