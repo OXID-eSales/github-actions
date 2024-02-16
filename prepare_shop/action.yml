@@ -361,4 +361,5 @@ runs:
       shell: bash
       run: |
         # prepare_shop: Debug cache current installation
-        echo "write_cache '${{ inputs.cache_name }}' ./*" >>debug/debug.sh
+        # we need to add the dot folders here explicitly because bash works differently than the action
+        echo "write_cache '${{ inputs.cache_name }}' ./* .env .env.dist .gitignore .git" >>debug/debug.sh

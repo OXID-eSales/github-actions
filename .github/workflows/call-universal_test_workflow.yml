@@ -763,8 +763,10 @@ jobs:
         id: pre_script
         shell: bash
         run: |
-          ${{ steps.codeception_testplan.outputs.codeception_pre_script }}
+          # codeception: Run pre-script
           ${{ needs.init.outputs.debug }}
+          ${{ steps.codeception_testplan.outputs.codeception_pre_script }}
+          
 
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v4alpha'

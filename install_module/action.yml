@@ -247,4 +247,6 @@ runs:
       shell: bash
       run: |
         # install_module: Debug cache current installation
-        echo "write_cache '${{ inputs.cache_name }}' ./*" >>debug/debug.sh
+        # we need to add the dot folders here explicitly because bash works differently than the action
+        echo "write_cache '${{ inputs.cache_name }}' ./* .env .env.dist .gitignore .git" >>debug/debug.sh
+
