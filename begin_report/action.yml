@@ -113,14 +113,14 @@ runs:
           local CACHE="$1"
           shift 1
           banner "Caching ${CACHE}"
-          tar -cJvf "${CACHE}.tar.xz" $@
+          tar -cJf "${CACHE}.tar.xz" $@
         }
 
         function restore_cache() {
           local CACHE="$1"
           shift 1
           banner "Restoring ${CACHE}"
-          tar -xJvf "${CACHE}.tar.xz"
+          tar -xJf "${CACHE}.tar.xz"
         }
         EODS
         cat >debug/999-end.sh <<'EODS'
