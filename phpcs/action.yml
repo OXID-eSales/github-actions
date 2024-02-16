@@ -71,6 +71,7 @@ runs:
       shell: bash
       run: |
         # phpcs: List changed files
+        ${{ inputs.debug }}
         cd source
         if [ "${{ inputs.diff_only }}" == "true" ]; then
           echo -e "\033[0;35m###  Use git diff for phpcs using filter '${{ inputs.filter }}' ###\033[0m"
@@ -94,13 +95,14 @@ runs:
         else
           echo "skip=true" | tee -a "$GITHUB_OUTPUT"
         fi
-        ${{ inputs.debug }}
+        cd ..
 
     - name: Run PHP_CS check
       shell: bash
       if: ${{ steps.diff.outputs.skip == 'false' }}
       run: |
         # phpcs: Run PHP_CS check
+        ${{ inputs.debug }}
         docker compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           php vendor/bin/phpcs --version \
@@ -111,7 +113,6 @@ runs:
             ${{ inputs.additional_options }} \
             ${{ steps.diff.outputs.files }} \
           | tee "${{ inputs.logfile }}" 2>&1 || true
-        ${{ inputs.debug }}
 
     - name: Upload Artifact
       if: ${{ always() && steps.diff.outputs.skip == 'false' }}
@@ -129,16 +130,17 @@ runs:
       shell: bash
       run: |
         # phpcs: Output php error log
+        ${{ inputs.debug }}
         if [ -s data/php/logs/error_log.txt ]; then
           echo -e "\033[0;35mPHP error log\033[0m"
           cat data/php/logs/error_log.txt
         fi
-        ${{ inputs.debug }}
 
     - name: Check results
       shell: bash
       run: |
         # phpcs: Check results
+        ${{ inputs.debug }}
         PURPLE=$(echo -e "\033[0;31m")
         NOCOLOR=$(echo -e "\033[0m")
         if [ '${{steps.diff.outputs.skip}}' == 'true' ]; then
@@ -180,4 +182,3 @@ runs:
         EOF
           exit 1
         fi
-        ${{ inputs.debug }}

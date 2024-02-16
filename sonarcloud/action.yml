@@ -84,6 +84,7 @@ runs:
       shell: bash
       run: |
         # sonarcloud: Fix Paths In Coverage Reports
+        ${{ inputs.debug }}
         COVERAGE_FILES=""
         for FILE in $(find coverage-reports -iname '*.xml'); do
           echo -e "\033[0;35mFixing paths in ${FILE}\033[0m"
@@ -94,7 +95,6 @@ runs:
         done
         # remove leading comma when adding this
         echo "COVERAGE_FILES=${COVERAGE_FILES:1}" | tee -a $GITHUB_ENV
-        ${{ inputs.debug }}
 
     - name: Upload consolidated coverage artifact
       uses: actions/upload-artifact@v4
@@ -112,12 +112,12 @@ runs:
       shell: bash
       run: |
         # sonarcloud: Set target branch
+        ${{ inputs.debug }}
         TARGET_BRANCH_PARAM="-Dsonar.branch.target=${{ inputs.target_branch }}"
         if [ "${{ github.ref_name}}" == "${{ github.event.repository.default_branch }}" ]; then
           TARGET_BRANCH_PARAM=""
         fi
         echo "TARGET_BRANCH_PARAM=$TARGET_PRANCH_PARAM" >> $GITHUB_ENV
-        ${{ inputs.debug }}
 
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@master
@@ -140,7 +140,7 @@ runs:
       run: |
         # sonarcloud: Debug sonarcloud Scan (simulated)
         cat >debug/debug.sh <<EODS
-          banner sonarcloud: Debug sonarcloud Scan (simulated)
+          banner "sonarcloud: Debug sonarcloud Scan (simulated)"
           # would call sonarsource/sonarcloud-github-action@master
           # -Dsonar.organization=${{ inputs.sonarcloud_organization }}
           # -Dsonar.projectKey=${{ inputs.sonarcloud_project_key }}

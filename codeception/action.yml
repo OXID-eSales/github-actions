@@ -97,17 +97,18 @@ runs:
       shell: bash
       run: |
         # codeception: Build Codeception
+        ${{ inputs.debug }}
         docker compose exec -T \
           ${{ inputs.container_name}} \
           vendor/bin/codecept build \
           -c ${{ inputs.configuration }} \
           ${{ inputs.build_additional_options }}
-        ${{ inputs.debug }}
 
     - name: Run Codeception tests
       shell: bash
       run: |
         # codeception: Run Codeception tests
+        ${{ inputs.debug }}
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
            ${{ inputs.container_name}} \
@@ -116,7 +117,6 @@ runs:
             --ext DotReporter \
             ${{ inputs.additional_options }} \
             2>&1 | tee ${{ inputs.logfile }} || true
-        ${{ inputs.debug }}
 
     - name: Upload Codeception Artifacts
       if: always()
@@ -144,16 +144,17 @@ runs:
       shell: bash
       run: |
         # codeception: Output php error log
+        ${{ inputs.debug }}
         if [ -s data/php/logs/error_log.txt ]; then
           echo -e "\033[0;35mPHP error log\033[0m"
           cat data/php/logs/error_log.txt
         fi
-        ${{ inputs.debug }}
 
     - name: Check results
       shell: bash
       run: |
         # codeception: Check results
+        ${{ inputs.debug }}
         PURPLE=$(echo -e "\033[0;31m")
         NOCOLOR=$(echo -e "\033[0m")
         if [ ! -s "${{ inputs.logfile }}" ]; then
@@ -187,4 +188,3 @@ runs:
         EOF
           exit 1
         fi
-        ${{ inputs.debug }}

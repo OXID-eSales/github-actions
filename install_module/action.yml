@@ -111,6 +111,7 @@ runs:
       shell: bash
       run: |
         # install_module: Configure enterprise credentials
+        ${{ inputs.debug }}
         if [ -n "${{ inputs.enterprise_github_token }}" ]; then
           echo -e "\033[0;35m###  configure github access ###\033[0m"
           docker compose ${{ inputs.container_method }} -T \
@@ -122,12 +123,12 @@ runs:
             ${{ inputs.container_name}} \
             composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
         fi
-        ${{ inputs.debug }}
 
     - name: Install module
       shell: bash
       run: |
         # install_module: Install module
+        ${{ inputs.debug }}
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
@@ -137,7 +138,6 @@ runs:
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
           composer require ${{ inputs.package_name }}:* --no-interaction --no-update
-        ${{ inputs.debug }}
 
     - name: 'Modify composer.json'
       uses: 'OXID-eSales/github-actions/composer_merge@v3'
@@ -170,6 +170,7 @@ runs:
       shell: bash
       run: |
         # install_module: Install dependencies and reset database
+        ${{ inputs.debug }}
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
@@ -179,12 +180,12 @@ runs:
           ${{ inputs.container_name}} \
           ${{ env.OE_CONSOLE }} oe:database:reset \
           --db-host=mysql --db-port=3306 --db-name=example --db-user=root --db-password=root --force
-        ${{ inputs.debug }}
 
     - name: Activate modules
       shell: bash
       run: |
         # install_module: Activate modules
+        ${{ inputs.debug }}
         MODULES=$(echo -n "${{ inputs.activate }}"| tr '\n' ' ')
         for MODULE in ${MODULES}; do
           echo -e "\033[0;35m###  activating module ${MODULE} ###\033[0m"
@@ -193,18 +194,17 @@ runs:
             ${{ inputs.container_name}} \
             ${{ env.OE_CONSOLE }} oe:module:activate "${MODULE}"
         done
-        ${{ inputs.debug }}
 
     - name: Install module dependencies
       shell: bash
       run: |
         # install_module: Install module dependencies
+        ${{ inputs.debug }}
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           --workdir=/var/www \
           ${{ inputs.container_name}} \
           composer install
-        ${{ inputs.debug }}
 
     - name: Write files list
       if: always()
@@ -218,11 +218,11 @@ runs:
       shell: bash
       run: |
         # install_module: Output php error log
+        ${{ inputs.debug }}
         if [ -s data/php/logs/error_log.txt ]; then
           echo -e "\033[0;35mPHP error log\033[0m"
           cat data/php/logs/error_log.txt
         fi
-        ${{ inputs.debug }}
 
     - name: Upload configuration artifacts
       if: always()

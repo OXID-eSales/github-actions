@@ -102,9 +102,9 @@ runs:
       shell: bash
       run: |
         # start_shop: Start containers
+        ${{ inputs.debug }}
         echo -e "\033[0;35m### Starting containers\033[0m"
         make up
-        ${{ inputs.debug }}
 
     - name: Output docker logs if make up failed
       if: failure()
@@ -124,6 +124,7 @@ runs:
       shell: bash
       run: |
         # start_shop: Wait for selenium
+        ${{ inputs.debug }}
         cat >source/wait_for_selenium.sh <<EOF
         #!/bin/bash
         set +e
@@ -140,4 +141,3 @@ runs:
           bash -c "timeout 60 /var/www/wait_for_selenium.sh"
         rm source/wait_for_selenium.sh
 
-        ${{ inputs.debug }}

@@ -77,6 +77,7 @@ runs:
       shell: bash
       run: |
         # phpunit: Run PHPUnit tests
+        ${{ inputs.debug }}
         touch "${{ inputs.logfile }}"
         docker compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
@@ -85,8 +86,6 @@ runs:
             ${{ inputs.additional_options }} \
             "${{ inputs.test }}" \
           | tee "${{ inputs.logfile }}" || true
-
-        ${{ inputs.debug }}
 
     - name: Upload Artifacts
       if: always()
@@ -114,16 +113,17 @@ runs:
       shell: bash
       run: |
         # phpunit: Output php error log
+        ${{ inputs.debug }}
         if [ -s data/php/logs/error_log.txt ]; then
           echo -e "\033[0;35mPHP error log\033[0m"
           cat data/php/logs/error_log.txt
         fi
-        ${{ inputs.debug }}
 
     - name: Check results
       shell: bash
       run: |
         # phpunit: Check results
+        ${{ inputs.debug }}
         PURPLE=$(echo -e "\033[0;31m")
         NOCOLOR=$(echo -e "\033[0m")
         if [ ! -s "${{ inputs.logfile }}" ]; then
@@ -157,4 +157,3 @@ runs:
         EOF
           exit 1
         fi
-        ${{ inputs.debug }}

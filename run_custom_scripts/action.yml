@@ -40,14 +40,15 @@ runs:
       shell: bash
       run: |
         # run_custom_scripts: Run custom script
-        ${{ inputs.shop_custom_script }}
         ${{ inputs.debug }}
+        ${{ inputs.shop_custom_script }}
 
     - name: Run custom script inside the container
       if: ${{ inputs.custom_script_container != ''}}
       shell: bash
       run: |
         # run_custom_scripts: Run custom script inside the container
+        ${{ inputs.debug }}
         cat >source/install_shop_custom_script.sh <<EOF
         #!/bin/bash
         ${{ inputs.custom_script_container }}
@@ -58,4 +59,3 @@ runs:
           ${{ inputs.container_name}} \
           /var/www/install_shop_custom_script.sh
         rm source/install_shop_custom_script.sh
-        ${{ inputs.debug }}

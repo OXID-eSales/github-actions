@@ -117,6 +117,7 @@ runs:
         EODS
         if [ -f 'debug/debug.sh' ]; then
           sed -e 's/^/  /' debug/debug.sh >>"${DEBUG_FILE}"
+          rm debug/debug.sh
         fi
         cat >>"${DEBUG_FILE}" <<EODS
           end_job "$DEBUG_NAME"

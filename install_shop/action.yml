@@ -88,6 +88,7 @@ runs:
       shell: bash
       run: |
         # install_shop: Run Install Shop
+        ${{ inputs.debug }}
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
@@ -100,26 +101,25 @@ runs:
           --shop-url http://localhost.local \
           --shop-directory /var/www/source \
           --compile-directory /var/www/source/tmp
-        ${{ inputs.debug }}
 
     - name: Activate iDebug
       if: ${{ inputs.config_idebug == 'true' }}
       shell: bash
       run: |
         # install_shop: Activate iDebug
-        perl -pi -e 's#iDebug = 0;#iDebug = -1;#g;' source/source/config.inc.php
         ${{ inputs.debug }}
+        perl -pi -e 's#iDebug = 0;#iDebug = -1;#g;' source/source/config.inc.php
 
     - name: Activate theme
       if: ${{ inputs.is_enterprise == 'true' }}
       shell: bash
       run: |
         # install_shop: Activate theme
+        ${{ inputs.debug }}
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
           bin/oe-console oe:theme:activate apex
-        ${{ inputs.debug }}
 
     - name: Write files list
       if: always()
@@ -133,11 +133,11 @@ runs:
       shell: bash
       run: |
         # install_shop: Output php error log
+        ${{ inputs.debug }}
         if [ -s data/php/logs/error_log.txt ]; then
           echo -e "\033[0;35mPHP error log\033[0m"
           cat data/php/logs/error_log.txt
         fi
-        ${{ inputs.debug }}
 
     - name: Upload configuration artifacts
       if: always()

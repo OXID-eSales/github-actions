@@ -52,6 +52,7 @@ runs:
       shell: bash
       run: |
         # composer_merge: Create files
+        ${{ inputs.debug }}
         BACKUP="${{ inputs.backup }}"
         if [ "${BACKUP}" == 'true' ]; then
           cp "${{ inputs.file }}" "${{ inputs.file }}.bak"
@@ -61,8 +62,6 @@ runs:
         EOF
         echo -e "\033[0;35m### JSON to merge\033[0m"
         cat .composer_merge.tmp.json
-        ${{ inputs.debug }}
-
 
     - name: Merge files
       uses: 'joernott/load_testplan@v1'
@@ -87,6 +86,7 @@ runs:
       shell: bash
       run: |
         # composer_merge: Cleanup
+        ${{ inputs.debug }}
         rm .composer_merge.tmp.json
         cat '${{ inputs.file }}'
 
@@ -97,4 +97,3 @@ runs:
             ${{ inputs.container_name}} \
             composer update ${{ inputs.update_options }}
         fi
-        ${{ inputs.debug }}
