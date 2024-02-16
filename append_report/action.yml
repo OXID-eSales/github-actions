@@ -106,7 +106,7 @@ runs:
       run: |
         # append_report: Handle debug script
         DEBUG_DIR="debug-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}"
-        DEBUG_NAME="debug-${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}"
+        DEBUG_NAME="debug_${{inputs.priority}}_${{inputs.phase}}_${{inputs.job}}_${{inputs.title}}"
         DEBUG_FILE="${DEBUG_DIR}/${DEBUG_NAME}.sh"
         mkdir -p "${DEBUG_DIR}"
         cat >"${DEBUG_FILE}" <<EODS
