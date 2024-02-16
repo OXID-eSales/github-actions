@@ -166,14 +166,19 @@ runs:
         MATRIX=$(find . -type d -iname 'debug-*')
         for SCRIPT in ${MATRIX}; do
           cp debug/000-start.sh "${SCRIPT}.sh"
+          cp debug/999-end.sh "${SCRIPT}.end"
           FILES=$(find "${SCRIPT}" -type f -iname "*.sh"|sort)
           for FILE in ${FILES}; do
-            echo "# ${FILE}" >>"${SCRIPT}.sh"
+            JOBNAME=$(basename "${FILE}" '.sh')
             sed -e 's|^[[:space:]]*EOF|EOF|' \
+                -e 's|###END_DEBUG||' \
                 -e 's|/home/runner/work/_temp/_runner_file_commands/set_env.*|${GITHUB_ENV}|g' \
                 -e 's|/home/runner/work/_temp/_runner_file_commands/set_output.*|${GITHUB_OUTPUT}|g' \
                 "${FILE}" >>"${SCRIPT}.sh"
+            echo "${JOBNAME}" >>"${SCRIPT}.end"
           done
+          cat "${SCRIPT}.end" >>"${SCRIPT}.sh"
+          rm "${SCRIPT}.end"
           chmod 0755 "${SCRIPT}.sh"
         done
 

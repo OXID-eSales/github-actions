@@ -500,8 +500,6 @@ runtest:
     name: *container_name
     # container options for coverage
     options: '-e XDEBUG_MODE=coverage'
-    # We use run here, instead of 'exec'
-    method: 'run'
   cache:
     bucket: *cache_bucket
   composer:

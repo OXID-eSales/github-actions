@@ -57,13 +57,15 @@ runs:
         EOF
 
     - name: Start debug script
-      if: ${{ inputs.debug == 'true' }}
       id: debug
       shell: bash
       run: |
         # begin_report: Start debug script
-        mkdir -p debug
-        cat >debug/000-start.sh <<'EODS'
+        if [ '${{ inputs.debug }}' != 'true' ]; then
+          echo "debug=" >>"${GITHUB_OUTPUT}"
+        else
+          mkdir -p debug
+          cat >debug/000-start.sh <<'EODS'
         #!/bin/bash
         set -e
         set -x
@@ -78,27 +80,54 @@ runs:
         EOF
         }
 
-        # Mocking those
-        export GITHUB_ENV="${PWD}/GITHUB_ENV.txt"
-        export GITHUB_OUTPUT="${PWD}/GITHUB_OUTPUT.txt"
-        touch "${GITHUB_ENV}" "${GITHUB_OUTPUT}"
-        banner "Setting up environment"
-        if [ -d workdir ]; then
-          rm -rf workdir
-        fi
-        mkdir workdir
-        cd workdir
+        function init() {
+          banner "Setting up environment"
+          export MAINDIR=$"{PWD}"
+          export GITHUB_ENV="${PWD}/GITHUB_ENV.txt"
+          export GITHUB_OUTPUT="${PWD}/GITHUB_OUTPUT.txt"
+          touch "${GITHUB_ENV}" "${GITHUB_OUTPUT}"
+          export WORKDIR="${PWD}/workdir"
+          export CACHEDIR="${PWD}/cache"
+          mkdir -p "${CACHEDIR}"
+          banner "Debugging workflow ${{ inputs.title }}"
+          echo "Reporitory: ${{ inputs.repository }}"
+          echo "Job: ${{ inputs.job }}"
+          echo "Testplan: ${{ inputs.testplan }}"
+          echo "Working directory: ${PWD}"
+        }
 
-        banner "Debugging workflow ${{ inputs.title }}"
-        echo "Reporitory: ${{ inputs.repository }}"
-        echo "Job: ${{ inputs.job }}"
-        echo "Testplan: ${{ inputs.testplan }}"
-        echo "Working directory: ${PWD}"
+        function start_job() {
+          if [ -d "${WORKDIR}" ]; then
+            rm -rf "${WORKDIR}"
+          fi
+          mkdir "${WORKDIR}"
+          cd "${WORKDIR}"
+        }
+
+        function end_job() {
+          cd "${MAINDIR}"
+          mv "${WORKDIR}" "${WORKDIR}_$1"
+        }
+        
+        function write_cache() {
+          local CACHE="$1"
+          shift 1
+          banner "Caching ${CACHE}"
+          tar -cJvf "${CACHE}.tar.xz" $@
+        }
+
+        function restore_cache() {
+          local CACHE="$1"
+          shift 1
+          banner "Restoring ${CACHE}"
+          tar -xJvf "${CACHE}.tar.xz"
+        }
+        EODS
+        cat >debug/999-end.sh <<'EODS'
+        # This runs the various job functions
+        init
         EODS
 
-        if [ '${{ inputs.debug }}' != 'true' ]; then
-          echo "debug=" >>"${GITHUB_OUTPUT}"
-        else
         # Create debugging scriptlet
           cat >>"${GITHUB_OUTPUT}" <<'EODS'
         debug<<debug_delimeter
@@ -111,6 +140,7 @@ runs:
         debug_delimeter
         EODS
         fi
+
     - name: Debug debug
       shell: bash
       run: |

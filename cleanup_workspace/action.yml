@@ -32,6 +32,7 @@ runs:
         rm -rf ./* || true
         rm -rf ./.??* || true
         ls -la ./
+        ${{ inputs.debug }}
 
     - name: Kill docker containers
       if: ${{ inputs.kill_containers == 'true' }}
@@ -43,6 +44,7 @@ runs:
           echo -e "\033[0;35m### Killing container $c\033[0m"
           docker kill $c
         done
+        ${{ inputs.debug }}
 
     - name: Cleanup Docker
       if: ${{ inputs.prune_docker == 'true' }}
@@ -51,3 +53,4 @@ runs:
         #cleanup_workspace: Cleanup Docker
         echo -e "\033[0;35m### Pruning docker\033[0m"
         docker system prune --force
+        ${{ inputs.debug }}

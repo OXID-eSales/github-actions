@@ -84,6 +84,13 @@ runs:
           echo -e "\033[0;32m### Load ${{ inputs.cached_shop }} from cache: SUCCESS\033[0m"
         fi
 
+    - name: Debug load cached shop
+      if: ${{ inputs.debug != '' }}
+      shell: bash
+      run: |
+        # start_shop: Debug load cached shop
+        echo "restore_cache '${{ inputs.cached_shop }}'" >>debug/debug.sh
+
     - name: Login to Docker Hub
       if: ${{ inputs.docker_login == 'true' }}
       uses: docker/login-action@v3

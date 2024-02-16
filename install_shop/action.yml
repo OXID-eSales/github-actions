@@ -156,3 +156,10 @@ runs:
         accessKey: ${{ inputs.cache_access_key }}
         secretKey: ${{ inputs.cache_secret_key }}
         bucket: ${{ inputs.cache_bucket }}
+
+    - name: Debug cache current installation
+      if: ${{ inputs.debug != '' }}
+      shell: bash
+      run: |
+        # install_shop: Debug cache current installation
+        echo "write_cache '${{ inputs.cache_name }}' ./*" >>debug/debug.sh
