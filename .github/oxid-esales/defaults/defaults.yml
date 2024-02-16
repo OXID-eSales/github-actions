@@ -89,7 +89,7 @@ global:
   # - secrets.CACHE_ENDPOINT
   # - secrets.CACHE_ACCESS_KEY
   # - secrets.CACHE_SECRET_KEY
-  cache:
+  cache: &cache
     bucket: &cache_bucket 'oxideshop-ee'
 
   # Should we log in to docker? If set to "true", you need to set the following
@@ -140,6 +140,28 @@ global:
 
     # Options for composer update
     update-options: '--no-interaction'
+
+  # This grep pattern is applied to the generated phpunit, codeception and runtest log file. If we have
+  # a hit matching the pattern below, the step will fail.
+  failure_pattern: &failure_pattern |
+    fail
+    \\.\\=\\=
+    Warning
+    Notice
+    Deprecated
+    Fatal
+    Error
+    DID NOT FINISH
+    Test file ".+" not found
+    Cannot open file
+    No tests executed
+    Could not read
+    Warnings: [1-9][0-9]*
+    Errors: [1-9][0-9]*
+    Failed: [1-9][0-9]*
+    Deprecations: [1-9][0-9]*
+    Risky: [1-9][0-9]*
+
 
 # The init phase handles loading the testplans and creating report artifacts for the run
 init:
@@ -300,13 +322,8 @@ phpunit:
   docker_login: *docker_login
   # Which cached shop do we want to load.
   load_shop: *install_module_prefix
-  container:
-    name: *container_name
-    # diverging container options for coverage
-    options: ''
-    method: *container_method
-  cache:
-    bucket: *cache_bucket
+  container: *container
+  cache: *cache
 
   # Run custom script outside the container'
   custom_script: ''
@@ -356,26 +373,7 @@ phpunit:
     # matrix combination.
     prefix: coverage-reports-phpunit
 
-  # This grep pattern is applied to the generated phpunit log file. If we have
-  # a hit matching the pattern below, the step will fail.
-  failure_pattern: |
-    fail
-    \\.\\=\\=
-    Warning
-    Notice
-    Deprecated
-    Fatal
-    Error
-    DID NOT FINISH
-    Test file ".+" not found
-    Cannot open file
-    No tests executed
-    Could not read
-    Warnings: [1-9][0-9]*
-    Errors: [1-9][0-9]*
-    Failed: [1-9][0-9]*
-    Deprecations: [1-9][0-9]*
-    Risky: [1-9][0-9]*
+  failure_pattern: *failure_pattern
 
 
 # This step usesd the codeception custom action. Many inputs are similar to the
@@ -399,13 +397,12 @@ codeception:
   wait_for_selenium: true
 
   container:
-    name: *container_name
+    <<: *container
 
     # For codeception, we need different options than the empty default
     options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e XDEBUG_MODE=coverage'
 
-    method: *container_method
-  cache_bucket: *cache_bucket
+  cache: *cache
   composer: *composer
 
   # This script is used to determine container options depending on the module and
@@ -464,24 +461,7 @@ codeception:
     path: 'source/codeception_coverage.xml'
     prefix: coverage-reports-codeception
   # yamllint disable-line rule:line-length
-  failure_pattern: |
-    fail
-    \\.\\=\\=
-    Warning
-    Notice
-    Deprecated
-    Fatal
-    Error
-    DID NOT FINISH
-    Test file ".+" not found
-    Cannot open file
-    No tests executed
-    Could not read
-    Warnings: [1-9][0-9]*
-    Errors: [1-9][0-9]*
-    Failed: [1-9][0-9]*
-    Deprecations: [1-9][0-9]*
-    Risky: [1-9][0-9]*
+  failure_pattern: *failure_pattern
 
 # These deprecated tests use the runtests action. Many options are similar to
 # codeception/phpunit
@@ -496,15 +476,12 @@ runtest:
   max_parallel: *max_parallel
   docker_login: *docker_login
   load_shop: *install_module_prefix
-  container:
-    name: *container_name
-    # container options for coverage
+  container: 
+    <<: *container
     options: '-e XDEBUG_MODE=coverage'
-  cache:
-    bucket: *cache_bucket
+  cache: *cache
   composer:
-    file: 'source/composer.json'
-    backup: true
+    <<: *composer
     transform: |
       {
           "require-dev": {
@@ -514,8 +491,6 @@ runtest:
               "phpunit/phpunit": "^9.1.1"
           }
       }
-    update: true
-    update_options: '--no-interaction'
 
   # Run custom script outside the container'
   custom_script: ''
@@ -544,24 +519,7 @@ runtest:
   coverage:
     path: 'source/deprecated_tests_coverage.xml'
     prefix: coverage-report-runtest
-  failure_pattern: |
-    fail
-    \\.\\=\\=
-    Warning
-    Notice
-    Deprecated
-    Fatal
-    Error
-    DID NOT FINISH
-    Test file ".+" not found
-    Cannot open file
-    No tests executed
-    Could not read
-    Warnings: [1-9][0-9]*
-    Errors: [1-9][0-9]*
-    Failed: [1-9][0-9]*
-    Deprecations: [1-9][0-9]*
-    Risky: [1-9][0-9]*
+  failure_pattern: *failure_pattern
 
   # Where to find the reset-shop binary
   reset_shop_binary: 'vendor/bin/reset-shop'
