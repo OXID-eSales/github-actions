@@ -158,6 +158,7 @@ runs:
           reports/000-header.md
           slack_reports/000-header.md
           debug/000-start.sh
+          debug/999-end.sh
           ${{ inputs.files }}
         if-no-files-found: ignore
         retention-days: 2
