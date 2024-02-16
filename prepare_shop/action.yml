@@ -355,11 +355,3 @@ runs:
         accessKey: ${{ inputs.cache_access_key }}
         secretKey: ${{ inputs.cache_secret_key }}
         bucket: ${{ inputs.cache_bucket }}
-
-    - name: Debug cache current installation
-      if: ${{ inputs.debug != '' }}
-      shell: bash
-      run: |
-        # prepare_shop: Debug cache current installation
-        # we need to add the dot folders here explicitly because bash works differently than the action
-        echo "write_cache '${{ inputs.cache_name }}' ./* .env .env.dist .gitignore .git" >>debug/debug.sh

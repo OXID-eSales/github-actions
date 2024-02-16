@@ -321,6 +321,15 @@ jobs:
         with:
           debug: ${{ needs.init.outputs.debug }}
 
+      - name: Debug cache current installation
+        if: ${{ inputs.debug == 'true' }}
+        shell: bash
+        run: |
+          # prepare_shop: Debug cache current installation
+          # we need to add the dot folders here explicitly because bash works differently than the action
+          CACHE_NAME='${{ needs.init.outputs.prepare_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          echo "write_cache '${CACHE_NAME}' ./* .env .env.dist .gitignore .git" >>debug/debug.sh
+
       - name: 'Write Report'
         if: always()
         uses: OXID-eSales/github-actions/append_report@v4alpha
@@ -389,6 +398,15 @@ jobs:
         uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
         with:
           debug: ${{ needs.init.outputs.debug }}
+
+      - name: Debug cache current installation
+        if: ${{ inputs.debug == 'true' }}
+        shell: bash
+        run: |
+          # prepare_shop: Debug cache current installation
+          # we need to add the dot folders here explicitly because bash works differently than the action
+          CACHE_NAME='${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          echo "write_cache '${CACHE_NAME}' ./* .env .env.dist .gitignore .git" >>debug/debug.sh
 
       - name: 'Write Report'
         if: always()
@@ -567,6 +585,15 @@ jobs:
         uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
         with:
           debug: ${{ needs.init.outputs.debug }}
+
+      - name: Debug cache current installation
+        if: ${{ inputs.debug == 'true' }}
+        shell: bash
+        run: |
+          # prepare_shop: Debug cache current installation
+          # we need to add the dot folders here explicitly because bash works differently than the action
+          CACHE_NAME='${{ steps.install_module_testplan.outputs.install_module_cache_prefix}}_${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
+          echo "write_cache '${CACHE_NAME}' ./* .env .env.dist .gitignore .git" >>debug/debug.sh
 
       - name: 'Write Report'
         if: ${{ always() && matrix.testplan != 'skip' }}
@@ -766,7 +793,6 @@ jobs:
           # codeception: Run pre-script
           ${{ needs.init.outputs.debug }}
           ${{ steps.codeception_testplan.outputs.codeception_pre_script }}
-          
 
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v4alpha'
