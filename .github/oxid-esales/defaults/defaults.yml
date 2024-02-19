@@ -274,6 +274,12 @@ install_module:
     artifact_prefix: 'configs-install_module'
   # Unique module id
   ids: &module_ids ''
+
+  # Title is used in the reports and debugging, if we install multiple modules
+  # debugging relies on sorting by titles, so prefixing it with numbers is
+  # recommended
+  title: *module_ids
+
   # Git repository related settings
   git:
     module:
