@@ -128,12 +128,13 @@ runs:
         cat >source/wait_for_selenium.sh <<EOF
         #!/bin/bash
         set +e
-        until  curl -sSjkL http://selenium:4444/status &>/dev/null; do
+        sleep 2
+        until  curl -sSjkL http://selenium:4444/wd/hub/status &>/dev/null; do
           echo "."
           sleep 1
         done
         set -e
-        curl -sSjkL http://selenium:4444/status
+        curl -sSjkL http://selenium:4444/wd/hub/status
         EOF
         chmod 0755 source/wait_for_selenium.sh
         docker compose exec -T \
