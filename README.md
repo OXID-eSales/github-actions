@@ -2,7 +2,7 @@
 This repository contains re-usable GitHub workflows and actions for the OXID-eSales repositories.
 
 ## Workflows
-- [call-tuniversal_test_workflow](docs/workflows/call-universal_test_workflow.md): Configurable workflow to test shop, modules and other components.
+- [call-universal_test_workflow](docs/workflows/call-universal_test_workflow.md): Configurable workflow to test shop, modules and other components.
 
 ## Actions
 - Auxiliary actions
@@ -20,7 +20,7 @@ This repository contains re-usable GitHub workflows and actions for the OXID-eSa
     - [stop_shop](docs/actions/stop_shop.md) stops a running shop
 - Setup actions
     - [prepare_shop](docs/actions/prepare_shop.md) prepares the shop and creates a cache for it.
-    - [install_shop](docs/actions/install_shop.md) installs a shop with a given pvp/MySQL combination and caches the installed shop.
+    - [install_shop](docs/actions/install_shop.md) installs a shop with a given PHP/MySQL combination and caches the installed shop.
     - [install_module](docs/actions/install_module.md) installs a module or component into the dev-packages folder and uses composer to link it to vendor
 
 - Test actions

@@ -531,7 +531,7 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.install_module_testplan.outputs.install_module_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v3'
+        uses: 'OXID-eSales/github-actions/composer_merge@v4alpha'
         with:
           file: 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}/composer.json'
           backup: true
@@ -811,7 +811,7 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.codeception_testplan.outputs.codeception_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v3'
+        uses: 'OXID-eSales/github-actions/composer_merge@v4alpha'
         with:
           file: '${{ steps.codeception_testplan.outputs.codeception_composer_path }}'
           backup: true
@@ -1217,7 +1217,7 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.styles_testplan.outputs.styles_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v3'
+        uses: 'OXID-eSales/github-actions/composer_merge@v4alpha'
         with:
           file: 'source/dev-packages/${{ steps.styles_testplan.outputs.styles_path }}/composer.json'
           backup: true

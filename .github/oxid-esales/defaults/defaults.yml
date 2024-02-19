@@ -134,6 +134,34 @@ global:
     # Merge this json data with composer.json. If this is empty,
     # no transformation will be applied
     transform: ''
+    
+    # Should we run composer update
+    update: true
+
+    # Options for composer update
+    update-options: '--no-interaction'
+
+  # This grep pattern is applied to the generated phpunit, codeception and runtest log file. If we have
+  # a hit matching the pattern below, the step will fail.
+  failure_pattern: &failure_pattern |
+    fail
+    \\.\\=\\=
+    Warning
+    Notice
+    Deprecated
+    Fatal
+    Error
+    DID NOT FINISH
+    Test file ".+" not found
+    Cannot open file
+    No tests executed
+    Could not read
+    Warnings: [1-9][0-9]*
+    Errors: [1-9][0-9]*
+    Failed: [1-9][0-9]*
+    Deprecations: [1-9][0-9]*
+    Risky: [1-9][0-9]*
+
 
     # Should we run composer update
     update: true
