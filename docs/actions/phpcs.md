@@ -26,8 +26,11 @@ Optional: Additional options to pass to phpcs. Example: "-q --standard=PSR12".
 **logfile:** *not required*, *default:*  phpcs_log.txt  
 Name of the output logfile.
 
-**logfile_artifact:** *not required*, *default:*  phpunit_logs  
-Github run artifact to put the logfile in.
+**output_artifact:** *not required*, *default:*  phpcs-artifacts  
+Github run artifact to put the logfile and php error login.
+
+**output_files:** *not required*, *default:*  data/php/logs/error_log.txt  
+Logs and outputs of this action.
 
 **failure_pattern:** *not required*, *default:*  'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error'  
 Grep pattern which indicate that the test failed.

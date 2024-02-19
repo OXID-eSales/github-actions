@@ -1,18 +1,18 @@
 workflow:
   matrix: &matrix
     # We only test the latest recommended versions here but both template engines
-    php: &matrix_php '["8.0","8.1"]'
+    php: &matrix_php '["8.1","8.2"]'
     mysql: &matrix_mysql '["5.7","8.0"]'
 
 global:
   git: &git
-    shop_ref: &git_shop_ref b-7.0.x
-    enterprise_ref: &git_enterprise_ref 'b-7.0.x'
-    default_ref: &default_ref 'b-7.0.x'
+    shop_ref: &git_shop_ref b-7.1.x
+    enterprise_ref: &git_enterprise_ref 'b-7.1.x'
+    default_ref: &default_ref 'b-7.1.x'
+
 
   composer: &composer
-    dev_ref: &dev_ref dev-b-7.0.x
-
+    dev_ref: &dev_ref dev-b-7.1.x
     # Configure/Require are deprecated
     configure:
       ref: *dev_ref
@@ -23,12 +23,13 @@ prepare_shop:
   matrix: *matrix
   git: *git
   composer:
+    dev_ref: *dev_ref
     transform: |
       {
           "require": {
-              "oxid-esales/twig-component": "dev-b-7.0.x",
-              "oxid-esales/twig-admin-theme": "dev-b-7.0.x",
-              "oxid-esales/apex-theme": "dev-b-7.0.x"
+              "oxid-esales/twig-component": "dev-b-7.1.x",
+              "oxid-esales/twig-admin-theme": "dev-b-7.1.x",
+              "oxid-esales/apex-theme": "dev-b-7.1.x"
           }
       }
 
@@ -49,7 +50,6 @@ phpunit:
 codeception:
   matrix: *matrix
   composer: *composer
-  suite: 'acceptance'
 
 runtest:
   matrix: *matrix
@@ -57,16 +57,17 @@ runtest:
     transform: |
       {
           "require-dev": {
-              "oxid-esales/tests-deprecated-ce": "dev-b-7.0.x",
+              "oxid-esales/tests-deprecated-ce": "dev-b-7.1.x",
               "codeception/module-webdriver": "^3.1",
               "phpunit/phpunit": "^9.1.1"
           }
       }
 
+
 sonarcloud:
   matrix: &matrix_slim
-    php: '["8.0"]'
-    mysql: '["5.7"]'
+    php: '["8.2"]'
+    mysql: '["8.0"]'
   target_branch: *git_shop_ref
 
 phpcs_tests:
@@ -78,4 +79,4 @@ styles:
 
 finish:
   matrix: *matrix
-  slack_title: '{{ .Github.Workflow }} (7.0.x) on {{ .Github.Repository }} by {{ .Github.Actor }}'
+  slack_title: '{{ .Github.Workflow }} (7.1.x) on {{ .Github.Repository }} by {{ .Github.Actor }}'
