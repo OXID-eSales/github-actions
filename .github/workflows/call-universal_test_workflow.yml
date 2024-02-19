@@ -317,6 +317,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Stop shop'
+        if: ${{ always() }}
         uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
         with:
           debug: ${{ needs.init.outputs.debug }}
@@ -395,6 +396,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Stop shop'
+        if: ${{ always() }}
         uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
         with:
           debug: ${{ needs.init.outputs.debug }}
@@ -581,7 +583,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Stop shop'
-        if: ${{ matrix.testplan != 'skip' }}
+        if: ${{ always() && matrix.testplan != 'skip' }}
         uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
         with:
           debug: ${{ needs.init.outputs.debug }}
@@ -724,6 +726,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Stop shop'
+        if: ${{ always() }}
         uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
         with:
           debug: ${{ needs.init.outputs.debug }}
@@ -858,6 +861,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Stop shop'
+        if: ${{ always() }}
         uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
         with:
           debug: ${{ needs.init.outputs.debug }}
@@ -993,6 +997,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Stop shop'
+        if: ${{ always() }}
         uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
         with:
           debug: ${{ needs.init.outputs.debug }}
@@ -1143,6 +1148,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Stop shop'
+        if: ${{ always() }}
         uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
         with:
           debug: ${{ needs.init.outputs.debug }}
@@ -1244,6 +1250,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Stop shop'
+        if: ${{ always() }}
         uses: 'OXID-eSales/github-actions/stop_shop@v4alpha'
         with:
           debug: ${{ needs.init.outputs.debug }}
