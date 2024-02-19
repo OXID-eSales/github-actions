@@ -470,7 +470,7 @@ runtest:
   max_parallel: *max_parallel
   docker_login: *docker_login
   load_shop: *install_module_prefix
-  container: 
+  container:
     <<: *container
     options: '-e XDEBUG_MODE=coverage'
   cache: *cache
