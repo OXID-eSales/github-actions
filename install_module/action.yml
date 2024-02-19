@@ -140,7 +140,7 @@ runs:
           composer require ${{ inputs.package_name }}:* --no-interaction --no-update
 
     - name: 'Modify composer.json'
-      uses: 'OXID-eSales/github-actions/composer_merge@v3'
+      uses: 'OXID-eSales/github-actions/composer_merge@v4alpha'
       with:
         file: 'source/composer.json'
         backup: true
