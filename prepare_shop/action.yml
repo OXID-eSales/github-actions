@@ -335,6 +335,7 @@ runs:
       run: |
         # prepare_shop: Modify composer.json to allow the same feature-branch
         if [ -f '${{ inputs.composer_file }}' ]; then
+          # yamllint disable-line rule:line-length
           sed -e 's#"oxid-esales/\(.*\)":[[:space:]]*"${{ inputs.composer_dev_ref }}"#"oxid-esales/\1": "dev-${{ inputs.github_ref_name }} || ${{ inputs.composer_dev_ref }}"#' \
               -i '${{ inputs.composer_file }}'
         fi
