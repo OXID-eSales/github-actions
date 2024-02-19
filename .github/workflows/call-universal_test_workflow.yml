@@ -505,8 +505,8 @@ jobs:
               --single-branch 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}'
           fi
           find . -type f >files.txt
-          if [ '${{ needs.init.outputs.debug }}' == 'true' ]; then
-            cat >>debug/debug.sh <<EODS
+          if [ '${{ inputs.debug }}' == 'true' ]; then
+            cat >>debug/debug.sh <<'EODS'
               banner "Checkout module"
               # Note: we use ssh here, the workflow uses https and the runtime token or enterprise token
               if [[ '${{ github.event_name }}' == 'pull_request' && \
