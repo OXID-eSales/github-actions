@@ -33,7 +33,7 @@ on:
       debug:
         type: boolean
         description: 'Enable debugging'
-        default: false
+        default: true
         required: false
 
     secrets:
@@ -143,7 +143,7 @@ jobs:
           phase: install
           priority: '001'
           cached_object: ${{ steps.ltp.outputs.init_cache_name }}
-          debug: ${{ inputs.debug }}
+          debug: false
 
       - name: Cache testplan
         uses: tespkg/actions-cache@v1
@@ -1297,7 +1297,7 @@ jobs:
           mysql: ''
           testplan: ''
           status: ${{job.status}}
-          debug: ${{ inputs.debug }}
+          debug: false
 
   actionlint:
     needs: ['init', 'begin_report_phase']
@@ -1345,7 +1345,7 @@ jobs:
           mysql: ''
           testplan: ''
           status: ${{job.status}}
-          debug: ${{ inputs.debug }}
+          debug: false
 
   finish:
     if: ${{ always() && needs.init.outputs.finish_skip != 'true' }}
