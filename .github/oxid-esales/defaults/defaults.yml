@@ -460,7 +460,6 @@ codeception:
     # nothing will be added to the codeception artifact
     path: 'source/codeception_coverage.xml'
     prefix: coverage-reports-codeception
-  # yamllint disable-line rule:line-length
   failure_pattern: *failure_pattern
 
 # These deprecated tests use the runtests action. Many options are similar to

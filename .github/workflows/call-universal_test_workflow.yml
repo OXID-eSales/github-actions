@@ -604,7 +604,7 @@ jobs:
           priority: '030'
           phase: install
           job: install_module
-          title: ${{ steps.install_module_testplan.outputs.title }}
+          title: ${{ steps.install_module_testplan.outputs.install_module_title }}
           php: ${{matrix.php}}
           mysql: ${{matrix.mysql}}
           testplan: ${{matrix.testplan}}
