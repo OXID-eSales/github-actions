@@ -1,0 +1,13 @@
+# This overrides the default shop settings for scheduled workflows testing
+# 7.0.x and 7.1.x because they can only be started from 8.0.x due
+# to github limitations on scheduled events
+
+prepare_shop:
+  git:
+    shop_ref: '{{ .Data.global.git.default_ref }}'
+
+sonarcloud:
+  target_branch: '{{ .Data.global.git.default_ref }}'
+
+finish:
+  slack_title: '{{ .Github.Workflow }} ({{ .Data.global.git.default_ref }}) on {{ .Github.Repository }} by {{ .Github.Actor }}'

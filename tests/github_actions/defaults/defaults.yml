@@ -671,7 +671,7 @@ sonarcloud:
 
   coverage:
     prefix: *coverage_prefix
-  target_branch: b-8.0.x
+  target_branch: *git_shop_ref
 
   # Part of the absolute path to strip from the paths inside the coverage.xml,
   # This ist /var/www/ (note the trailing slash) fort the shop and should be set to
@@ -805,4 +805,4 @@ finish:
   matrix:
     php: *matrix_php
     mysql: *matrix_mysql
-  slack_title: '{{ .Github.Workflow }} on {{ .Github.Repository }} by {{ .Github.Actor }}'
+  slack_title: '{{ .Github.Workflow }} ({{ .Github.RefName }}) on {{ .Github.Repository }} by {{ .Github.Actor }}'
