@@ -44,5 +44,8 @@ Location of the reset-shop binary.
 **runtests_binary:** *not required*, *default:* 'vendor/bin/runtests'
 Location of the runtests binary.
 
+**debug:** *not required*, *default:* false  
+Set to true to generate a debugging script.
+
 ## Outputs:
 none

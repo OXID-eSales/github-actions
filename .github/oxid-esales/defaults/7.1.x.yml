@@ -6,8 +6,6 @@ workflow:
 
 global:
   git: &git
-    shop_ref: &git_shop_ref b-7.1.x
-    enterprise_ref: &git_enterprise_ref 'b-7.1.x'
     default_ref: &default_ref 'b-7.1.x'
 
 
@@ -68,7 +66,6 @@ sonarcloud:
   matrix: &matrix_slim
     php: '["8.2"]'
     mysql: '["8.0"]'
-  target_branch: *git_shop_ref
 
 phpcs_tests:
   matrix: *matrix_slim
@@ -79,4 +76,3 @@ styles:
 
 finish:
   matrix: *matrix
-  slack_title: '{{ .Github.Workflow }} (7.1.x) on {{ .Github.Repository }} by {{ .Github.Actor }}'

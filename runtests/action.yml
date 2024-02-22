@@ -74,6 +74,11 @@ inputs:
     required: false
     description: 'Location of the runtests binary'
     default: 'vendor/bin/runtests'
+  debug:
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
+    required: false
 
 runs:
   using: "composite"
@@ -83,7 +88,8 @@ runs:
       shell: bash
       run: |
         # runtests: Reset shop
-        docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
+        ${{ inputs.debug }}
+        docker compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           php ${{ inputs.reset_shop_binary }}
 
@@ -91,7 +97,8 @@ runs:
       shell: bash
       run: |
         # runtests: Run runtest
-        docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
+        ${{ inputs.debug }}
+        docker compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           php ${{ inputs.runtests_binary }} \
             ${{ inputs.additional_options }} \
@@ -124,6 +131,7 @@ runs:
       shell: bash
       run: |
         # runtests: Output php error log
+        ${{ inputs.debug }}
         if [ -s data/php/logs/error_log.txt ]; then
           echo -e "\033[0;35mPHP error log\033[0m"
           cat data/php/logs/error_log.txt
@@ -133,6 +141,7 @@ runs:
       shell: bash
       run: |
         # runtests: Check results
+        ${{ inputs.debug }}
         PURPLE=$(echo -e "\033[0;31m")
         NOCOLOR=$(echo -e "\033[0m")
         if [ ! -s "${{ inputs.logfile }}" ]; then

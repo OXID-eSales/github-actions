@@ -52,12 +52,17 @@ inputs:
     description: 'Github run artifact to put the logfile and ph0p error log in'
     default: |
       data/php/logs/error_log.txt
-
   failure_pattern:
     type: string
     required: false
     description: 'Grep pattern which indicate that the test failed'
     default: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error'
+  debug:
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
+    required: false
+
 runs:
   using: "composite"
   steps:
@@ -66,6 +71,7 @@ runs:
       shell: bash
       run: |
         # phpcs: List changed files
+        ${{ inputs.debug }}
         cd source
         if [ "${{ inputs.diff_only }}" == "true" ]; then
           echo -e "\033[0;35m###  Use git diff for phpcs using filter '${{ inputs.filter }}' ###\033[0m"
@@ -89,18 +95,19 @@ runs:
         else
           echo "skip=true" | tee -a "$GITHUB_OUTPUT"
         fi
+        cd ..
 
     - name: Run PHP_CS check
       shell: bash
       if: ${{ steps.diff.outputs.skip == 'false' }}
       run: |
         # phpcs: Run PHP_CS check
-        docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
+        ${{ inputs.debug }}
+        docker compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           php vendor/bin/phpcs --version \
           | tee "${{ inputs.logfile }}" 2>&1 || true
-
-        docker-compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
+        docker compose ${{ inputs.container_method }} -T ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           php vendor/bin/phpcs \
             ${{ inputs.additional_options }} \
@@ -123,6 +130,7 @@ runs:
       shell: bash
       run: |
         # phpcs: Output php error log
+        ${{ inputs.debug }}
         if [ -s data/php/logs/error_log.txt ]; then
           echo -e "\033[0;35mPHP error log\033[0m"
           cat data/php/logs/error_log.txt
@@ -132,6 +140,7 @@ runs:
       shell: bash
       run: |
         # phpcs: Check results
+        ${{ inputs.debug }}
         PURPLE=$(echo -e "\033[0;31m")
         NOCOLOR=$(echo -e "\033[0m")
         if [ '${{steps.diff.outputs.skip}}' == 'true' ]; then

@@ -50,6 +50,11 @@ inputs:
     required: false
     description: 'Name of the container to run the wait command in'
     default: 'php'
+  debug:
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
+    required: false
 
 runs:
   using: "composite"
@@ -79,6 +84,13 @@ runs:
           echo -e "\033[0;32m### Load ${{ inputs.cached_shop }} from cache: SUCCESS\033[0m"
         fi
 
+    - name: Debug load cached shop
+      if: ${{ inputs.debug != '' }}
+      shell: bash
+      run: |
+        # start_shop: Debug load cached shop
+        echo "restore_cache '${{ inputs.cached_shop }}'" >>debug/debug.sh
+
     - name: Login to Docker Hub
       if: ${{ inputs.docker_login == 'true' }}
       uses: docker/login-action@v3
@@ -90,6 +102,7 @@ runs:
       shell: bash
       run: |
         # start_shop: Start containers
+        ${{ inputs.debug }}
         echo -e "\033[0;35m### Starting containers\033[0m"
         make up
 
@@ -100,7 +113,7 @@ runs:
         # start_shop: Output docker logs if make up failed
         echo -e "\033[0;31m### Starting containers failed\033[0m"
         cat docker-compose.yml
-        docker-compose logs --tail=all
+        docker compose logs --tail=all
         for c in $(docker ps -aq); do
           echo "*** Logs for $c ***"
           docker logs -n 200 $c
@@ -111,18 +124,20 @@ runs:
       shell: bash
       run: |
         # start_shop: Wait for selenium
+        ${{ inputs.debug }}
         cat >source/wait_for_selenium.sh <<EOF
         #!/bin/bash
         set +e
-        until  curl -sSjkL http://selenium:4444/status &>/dev/null; do
+        sleep 2
+        until  curl -sSjkL http://selenium:4444/wd/hub/status &>/dev/null; do
           echo "."
           sleep 1
         done
         set -e
-        curl -sSjkL http://selenium:4444/status
+        curl -sSjkL http://selenium:4444/wd/hub/status
         EOF
         chmod 0755 source/wait_for_selenium.sh
-        docker-compose exec -T \
+        docker compose exec -T \
           ${{ inputs.container_name}} \
           bash -c "timeout 60 /var/www/wait_for_selenium.sh"
         rm source/wait_for_selenium.sh

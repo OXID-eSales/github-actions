@@ -35,5 +35,8 @@ Logs and outputs of this action.
 **failure_pattern:** *not required*, *default:*  'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error'  
 Grep pattern which indicate that the test failed.
 
+**debug:** *not required*, *default:* false  
+Set to true to generate a debugging script.
+
 ## Outputs:
 none

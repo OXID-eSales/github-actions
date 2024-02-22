@@ -2,7 +2,7 @@
 This repository contains re-usable GitHub workflows and actions for the OXID-eSales repositories.
 
 ## Workflows
-- [call-tuniversal_test_workflow](docs/workflows/call-universal_test_workflow.md): Configurable workflow to test shop, modules and other components.
+- [call-universal_test_workflow](docs/workflows/call-universal_test_workflow.md): Configurable workflow to test shop, modules and other components.
 
 ## Actions
 - Auxiliary actions

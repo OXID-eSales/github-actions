@@ -34,3 +34,6 @@ The Testplan used for this matrix combination.
 
 **status:** *not required*, *default:* -  
 The job status for this matrix instance.
+
+**debug:** *not required*, *default:* false  
+Set to true to generate a debugging script.

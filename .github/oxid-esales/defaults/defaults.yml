@@ -89,7 +89,7 @@ global:
   # - secrets.CACHE_ENDPOINT
   # - secrets.CACHE_ACCESS_KEY
   # - secrets.CACHE_SECRET_KEY
-  cache:
+  cache: &cache
     bucket: &cache_bucket 'oxideshop-ee'
 
   # Should we log in to docker? If set to "true", you need to set the following
@@ -104,7 +104,7 @@ global:
     # Name of the container running php
     name: &container_name 'php'
 
-    # Additional options passed to docker-compose when running tests in
+    # Additional options passed to docker compose when running tests in
     # the the container
     options: &container_options ''
 
@@ -141,6 +141,27 @@ global:
     # Options for composer update
     update-options: '--no-interaction'
 
+  # This grep pattern is applied to the generated phpunit, codeception and runtest log file. If we have
+  # a hit matching the pattern below, the step will fail.
+  failure_pattern: &failure_pattern |
+    fail
+    \\.\\=\\=
+    Warning
+    Notice
+    Deprecated
+    Fatal
+    Error
+    DID NOT FINISH
+    Test file ".+" not found
+    Cannot open file
+    No tests executed
+    Could not read
+    Warnings: [1-9][0-9]*
+    Errors: [1-9][0-9]*
+    Failed: [1-9][0-9]*
+    Deprecations: [1-9][0-9]*
+    Risky: [1-9][0-9]*
+
 # The init phase handles loading the testplans and creating report artifacts for the run
 init:
   cache:
@@ -162,8 +183,7 @@ prepare_shop:
     bucket: *cache_bucket
     prefix: 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
   composer:
-    # This replaces composer require statements to install the component/theme
-    file: 'source/composer.json'
+    <<: *composer
     transform: |
       {
           "require": {
@@ -172,10 +192,6 @@ prepare_shop:
               "oxid-esales/apex-theme": "dev-b-8.0.x"
           }
       }
-
-    update: true
-    update-options: '--no-interaction'
-    dev_ref: *dev_ref
 
   # These modify php "custom.ini"
   custom_ini:
@@ -258,6 +274,12 @@ install_module:
     artifact_prefix: 'configs-install_module'
   # Unique module id
   ids: &module_ids ''
+
+  # Title is used in the reports and debugging, if we install multiple modules
+  # debugging relies on sorting by titles, so prefixing it with numbers is
+  # recommended
+  title: *module_ids
+
   # Git repository related settings
   git:
     module:
@@ -300,13 +322,8 @@ phpunit:
   docker_login: *docker_login
   # Which cached shop do we want to load.
   load_shop: *install_module_prefix
-  container:
-    name: *container_name
-    # diverging container options for coverage
-    options: ''
-    method: *container_method
-  cache:
-    bucket: *cache_bucket
+  container: *container
+  cache: *cache
 
   # Run custom script outside the container'
   custom_script: ''
@@ -356,26 +373,7 @@ phpunit:
     # matrix combination.
     prefix: coverage-reports-phpunit
 
-  # This grep pattern is applied to the generated phpunit log file. If we have
-  # a hit matching the pattern below, the step will fail.
-  failure_pattern: |
-    fail
-    \\.\\=\\=
-    Warning
-    Notice
-    Deprecated
-    Fatal
-    Error
-    DID NOT FINISH
-    Test file ".+" not found
-    Cannot open file
-    No tests executed
-    Could not read
-    Warnings: [1-9][0-9]*
-    Errors: [1-9][0-9]*
-    Failed: [1-9][0-9]*
-    Deprecations: [1-9][0-9]*
-    Risky: [1-9][0-9]*
+  failure_pattern: *failure_pattern
 
 
 # This step usesd the codeception custom action. Many inputs are similar to the
@@ -399,13 +397,12 @@ codeception:
   wait_for_selenium: true
 
   container:
-    name: *container_name
+    <<: *container
 
     # For codeception, we need different options than the empty default
     options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e XDEBUG_MODE=coverage'
 
-    method: *container_method
-  cache_bucket: *cache_bucket
+  cache: *cache
   composer: *composer
 
   # This script is used to determine container options depending on the module and
@@ -463,25 +460,7 @@ codeception:
     # nothing will be added to the codeception artifact
     path: 'source/codeception_coverage.xml'
     prefix: coverage-reports-codeception
-  # yamllint disable-line rule:line-length
-  failure_pattern: |
-    fail
-    \\.\\=\\=
-    Warning
-    Notice
-    Deprecated
-    Fatal
-    Error
-    DID NOT FINISH
-    Test file ".+" not found
-    Cannot open file
-    No tests executed
-    Could not read
-    Warnings: [1-9][0-9]*
-    Errors: [1-9][0-9]*
-    Failed: [1-9][0-9]*
-    Deprecations: [1-9][0-9]*
-    Risky: [1-9][0-9]*
+  failure_pattern: *failure_pattern
 
 # These deprecated tests use the runtests action. Many options are similar to
 # codeception/phpunit
@@ -497,16 +476,11 @@ runtest:
   docker_login: *docker_login
   load_shop: *install_module_prefix
   container:
-    name: *container_name
-    # container options for coverage
+    <<: *container
     options: '-e XDEBUG_MODE=coverage'
-    # We use run here, instead of 'exec'
-    method: 'run'
-  cache:
-    bucket: *cache_bucket
+  cache: *cache
   composer:
-    file: 'source/composer.json'
-    backup: true
+    <<: *composer
     transform: |
       {
           "require-dev": {
@@ -516,8 +490,6 @@ runtest:
               "phpunit/phpunit": "^9.1.1"
           }
       }
-    update: true
-    update_options: '--no-interaction'
 
   # Run custom script outside the container'
   custom_script: ''
@@ -546,24 +518,7 @@ runtest:
   coverage:
     path: 'source/deprecated_tests_coverage.xml'
     prefix: coverage-report-runtest
-  failure_pattern: |
-    fail
-    \\.\\=\\=
-    Warning
-    Notice
-    Deprecated
-    Fatal
-    Error
-    DID NOT FINISH
-    Test file ".+" not found
-    Cannot open file
-    No tests executed
-    Could not read
-    Warnings: [1-9][0-9]*
-    Errors: [1-9][0-9]*
-    Failed: [1-9][0-9]*
-    Deprecations: [1-9][0-9]*
-    Risky: [1-9][0-9]*
+  failure_pattern: *failure_pattern
 
   # Where to find the reset-shop binary
   reset_shop_binary: 'vendor/bin/reset-shop'
@@ -582,6 +537,9 @@ sonarcloud:
   # There is only one matrix combination
   max_parallel: 1
   docker_login: *docker_login
+
+  # You only need to change the title when running multiple sonarcloud scans in one workflow
+  title: 'sonarcloud'
 
   # Run custom script outside the container'
   custom_script: ''
@@ -726,4 +684,4 @@ finish:
   matrix:
     php: *matrix_php
     mysql: *matrix_mysql
-  slack_title: '{{ .Github.Workflow }} on {{ .Github.Repository }} by {{ .Github.Actor }}'
+  slack_title: '{{ .Github.Workflow }} ({{ .Github.RefName }}) on {{ .Github.Repository }} by {{ .Github.Actor }}'

@@ -47,6 +47,11 @@ inputs:
     required: false
     description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
     default: ''
+  debug:
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
+    required: false
 outputs:
   # workflow variables
   testplan:

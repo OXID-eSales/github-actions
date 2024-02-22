@@ -83,6 +83,12 @@ inputs:
     required: false
     description: 'Grep pattern which indicate that the test failed'
     default: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found|Cannot open file'
+  debug:
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
+    required: false
+
 runs:
   using: "composite"
   steps:
@@ -91,7 +97,8 @@ runs:
       shell: bash
       run: |
         # codeception: Build Codeception
-        docker-compose exec -T \
+        ${{ inputs.debug }}
+        docker compose exec -T \
           ${{ inputs.container_name}} \
           vendor/bin/codecept build \
           -c ${{ inputs.configuration }} \
@@ -101,7 +108,8 @@ runs:
       shell: bash
       run: |
         # codeception: Run Codeception tests
-        docker-compose ${{ inputs.container_method }} -T \
+        ${{ inputs.debug }}
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
            ${{ inputs.container_name}} \
            vendor/bin/codecept run ${{ inputs.suite }} ${{ inputs.test }} \
@@ -136,6 +144,7 @@ runs:
       shell: bash
       run: |
         # codeception: Output php error log
+        ${{ inputs.debug }}
         if [ -s data/php/logs/error_log.txt ]; then
           echo -e "\033[0;35mPHP error log\033[0m"
           cat data/php/logs/error_log.txt
@@ -145,6 +154,7 @@ runs:
       shell: bash
       run: |
         # codeception: Check results
+        ${{ inputs.debug }}
         PURPLE=$(echo -e "\033[0;31m")
         NOCOLOR=$(echo -e "\033[0m")
         if [ ! -s "${{ inputs.logfile }}" ]; then
