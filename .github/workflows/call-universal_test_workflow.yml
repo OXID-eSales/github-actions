@@ -1262,7 +1262,7 @@ jobs:
           priority: '230'
           phase: report
           job: styles
-          title: 'default'
+          title: '${{ steps.styles_testplan.outputs.title }}'
           php: ${{matrix.php}}
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
