@@ -104,89 +104,6 @@ inputs:
     required: false
     description: 'Space separated list of extra services to add'
     default: 'selenium-chrome'
-  composer_allow_plugins_repositories:
-    type: string
-    required: false
-    description: 'Space separated list of repository:value pairs to manage allow-plugins'
-    default: ''
-  composer_rm_parameters:
-    type: string
-    required: false
-    description: 'Space separated list of things to be removed'
-    default: ''
-  composer_rm_options:
-    type: string
-    required: false
-    description: 'Options to pass along to composer when requiring the repositories'
-    default: '--no-update'
-  composer_rm_update:
-    type: string
-    required: false
-    description: 'Run composer update after requiring all repositories'
-    default: false
-  composer_rm_update_options:
-    type: string
-    required: false
-    description: 'Options to pass along to composer during install'
-    default: '--no-interaction'
-  composer_configure_install:
-    type: string
-    required: false
-    description: 'Space separated list of repositories to configure'
-    default: ''
-  composer_configure_organisation:
-    type: string
-    required: false
-    description: 'The organisation for the repositories'
-    default: 'oxid-esales'
-  composer_configure_ref:
-    type: string
-    description: 'Git reference used in require'
-    default: ''
-  composer_configure_options:
-    type: string
-    required: false
-    description: 'Options to pass along to composer when requiring the repositories'
-    default: '--with-all-dependencies'
-  composer_configure_update:
-    type: string
-    required: false
-    description: 'Run composer update after requiring all repositories'
-    default: true
-  composer_configure_update_options:
-    type: string
-    required: false
-    description: 'Options to pass along to composer during install'
-    default: '--no-interaction'
-  composer_require_install:
-    type: string
-    required: false
-    description: 'Space separated list of repositories to require'
-    default: ''
-  composer_require_organisation:
-    type: string
-    required: false
-    description: 'The organisation for the repositories'
-    default: 'oxid-esales'
-  composer_require_ref:
-    type: string
-    description: 'Git reference used in require'
-    default: ''
-  composer_require_options:
-    type: string
-    required: false
-    description: 'Options to pass along to composer when requiring the repositories'
-    default: '--with-all-dependencies'
-  composer_require_update:
-    type: string
-    required: false
-    description: 'Run composer update after requiring all repositories'
-    default: true
-  composer_require_update_options:
-    type: string
-    required: false
-    description: 'Options to pass along to composer during install'
-    default: '--no-interaction'
   composer_file:
     type: string
     required: false
@@ -195,7 +112,7 @@ inputs:
   composer_transform:
     type: string
     required: false
-    description: 'JSON code to apply to the composer.json'
+    description: 'JSON code to merge into composer.json'
     default: ''
   composer_backup:
     type: boolean
@@ -262,6 +179,11 @@ inputs:
     required: false
     description: 'secrets.DOCKER_HUB_TOKEN for docker login'
     default: ''
+  debug:
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
+    required: false
 
 outputs:
   prepared_shop:
@@ -275,32 +197,35 @@ runs:
       run: |
         # prepare_shop: Clone testing environment master
         git clone --depth 1 ${{ inputs.git_sdk_url }} --branch ${{ inputs.git_sdk_ref }} --single-branch .
+        ${{ inputs.debug }}
 
     - name: Clone the shop  (${{ inputs.git_shop_ref }})
       # yamllint disable-line rule:line-length
-      if: ${{ inputs.github_event_name != 'pull_request' || ( github.repository != 'OXID-eSales/oxideshop_ce' && github.repository != 'OXID-eSales/oxideshop_ee' ) }}
+      if: ${{ inputs.github_event_name != 'pull_request' || ( github.repository != 'OXID-eSales/oxideshop_ce' && github.repository != 'OXID-eSales/oxideshop_pe' && github.repository != 'OXID-eSales/oxideshop_ee' ) }}
       shell: bash
       run: |
         # prepare_shop: Clone the shop
+        ${{ inputs.debug }}
         git clone --depth 2 ${{ inputs.git_shop_url }} --branch ${{ inputs.git_shop_ref }} --single-branch source
-        mkdir source/dev-packages
 
     - name: Clone the shop (PR ${{ inputs.github_event_number }})
       # yamllint disable-line rule:line-length
-      if: ${{ inputs.github_event_name == 'pull_request' && ( github.repository == 'OXID-eSales/oxideshop_ce' || github.repository == 'OXID-eSales/oxideshop_ee' ) }}
+      if: ${{ inputs.github_event_name == 'pull_request' && ( github.repository == 'OXID-eSales/oxideshop_ce' || github.repository == 'OXID-eSales/oxideshop_pe' || github.repository == 'OXID-eSales/oxideshop_ee' ) }}
       shell: bash
       run: |
         # prepare_shop: Clone the shop (PR)
+        ${{ inputs.debug }}
         echo -e "\033[0;35mHandling the pull request\033[0m"
         git clone --depth 2 ${{ inputs.git_shop_url }} --branch ${{ inputs.github_base_ref }} --single-branch source
         git -C source fetch origin refs/pull/${{ inputs.github_event_number }}/head:pr_${{ inputs.github_event_number }}
         git -C source checkout pr_${{ inputs.github_event_number }}
-        mkdir source/dev-packages
 
     - name: Prepare container configuration
       shell: bash
       run: |
         # prepare_shop: Prepare container configuration
+        ${{ inputs.debug }}
+        mkdir source/dev-packages
         make setup
         make addbasicservices
 
@@ -330,15 +255,17 @@ runs:
             -e 's#/var/www/#/var/www/source/#g;'\
             containers/httpd/project.conf
 
+    # yamllint disable rule:line-length
     - name: Modify composer.json to allow the same feature-branch
       shell: bash
       run: |
         # prepare_shop: Modify composer.json to allow the same feature-branch
+        ${{ inputs.debug }}
         if [ -f '${{ inputs.composer_file }}' ]; then
-          # yamllint disable-line rule:line-length
           sed -e 's#"oxid-esales/\(.*\)":[[:space:]]*"${{ inputs.composer_dev_ref }}"#"oxid-esales/\1": "dev-${{ inputs.github_ref_name }} || ${{ inputs.composer_dev_ref }}"#' \
               -i '${{ inputs.composer_file }}'
         fi
+    # yamllint enable rule:line-length
 
     - name: Login to Docker Hub
       if: ${{ inputs.docker_login == 'true' }}
@@ -351,8 +278,9 @@ runs:
       shell: bash
       run: |
         # prepare_shop: Start containers
+        ${{ inputs.debug }}
         make up
-        docker-compose ps --all
+        docker compose ps --all
 
     - name: Output docker logs if make up failed
       if: failure()
@@ -362,8 +290,8 @@ runs:
         echo -e "\033[0;31m### Starting docker failed\033[0m"
         echo -e "\033[0;35m###  docker-compose.yml ###\033[0m"
         cat docker-compose.yml
-        echo -e "\033[0;35m###  docker-compose logs ###\033[0m"
-        docker-compose logs --tail=all
+        echo -e "\033[0;35m###  docker compose logs ###\033[0m"
+        docker compose logs --tail=all
         for c in $(docker ps -aq); do
           echo -e "\033[0;35m###  Logs for $c ###\033[0m"
           docker logs -n 200 $c
@@ -374,81 +302,19 @@ runs:
       shell: bash
       run: |
         # prepare_shop: Configure enterprise token
-        echo -e "\033[0;35m###  configure enterprise token ###\033[0m"
-        docker-compose ${{ inputs.container_method }} -T \
+        ${{ inputs.debug }}
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           composer config github-protocols https
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
 
-    - name: 'Composer allow plugins ${{ inputs.composer_allow_plugins_repositories }}'
-      if: ${{ inputs.composer_allow_plugins_repositories != '' }}
-      uses: 'OXID-eSales/github-actions/composer_allow_plugins@v3'
-      with:
-        container_name: ${{ inputs.container_name }}
-        container_options: ${{ inputs.container_options }}
-        container_method: 'exec'
-        repositories: ${{ inputs.composer_allow_plugins_repositories }}
-
-    - name: 'Prepare composer RM list'
-      if: ${{ inputs.composer_rm_parameters != '' }}
-      shell: bash
-      run: |
-        # prepare_shop: Prepare composer RM list
-        {
-          echo "COMPOSER_RM_PARAMETERS<<_composer_rm_parameters_delim_"
-          echo "${{inputs.composer_rm_parameters}}"|tr ' ' '\n'
-          echo "_composer_rm_parameters_delim_"
-        } >>"${GITHUB_ENV}"
-
-    - name: 'Composer rm'
-      if: ${{ inputs.composer_rm_parameters != '' }}
-      uses: 'OXID-eSales/github-actions/composer@v3'
-      with:
-        container_name: ${{ inputs.container_name }}
-        container_options: ${{ inputs.container_options }}
-        container_method: 'exec'
-        action: 'rm'
-        parameters: ${{ env.COMPOSER_RM_PARAMETERS }}
-        options: ${{ inputs.composer_rm_options}}
-        update: ${{ inputs.composer_rm_update }}
-        update_options: ${{ inputs.composer_rm_update_options }}
-
-    - name: 'Composer configure and require ${{ inputs.composer_configure_install }}'
-      if: ${{ inputs.composer_configure_install != '' }}
-      uses: 'OXID-eSales/github-actions/composer_configure@v3'
-      with:
-        container_name: ${{ inputs.container_name }}
-        container_options: ${{ inputs.container_options }}
-        container_method: 'exec'
-        organisation: ${{ inputs.composer_configure_organisation }}
-        repositories: ${{ inputs.composer_configure_install }}
-        ref: ${{ inputs.composer_configure_ref }}
-        options: ${{ inputs.composer_configure_options }}
-        update: ${{ inputs.composer_configure_update }}
-        update_options: ${{ inputs.composer_configure_update_options }}
-        enterprise_github_token: ${{ inputs.enterprise_github_token }}
-
-    - name: 'Composer require ${{ inputs.composer_require_install }}'
-      if: ${{ inputs.composer_require_install != '' }}
-      uses: 'OXID-eSales/github-actions/composer_require@v3'
-      with:
-        container_name: ${{ inputs.container_name }}
-        container_options: ${{ inputs.container_options }}
-        container_method: 'exec'
-        organisation: ${{ inputs.composer_require_organisation }}
-        repositories: ${{ inputs.composer_require_install }}
-        ref: ${{ inputs.composer_require_ref }}
-        options: ${{ inputs.composer_require_options }}
-        update: ${{ inputs.composer_require_update }}
-        update_options: ${{ inputs.composer_require_update_options }}
-
     - name: 'Modify composer.json'
       if: ${{ inputs.composer_transform != '' }}
-      uses: 'OXID-eSales/github-actions/composer_merge@v3'
+      uses: 'OXID-eSales/github-actions/composer_merge@v4alpha'
       with:
         file: '${{ inputs.composer_file }}'
         backup: true
@@ -459,13 +325,15 @@ runs:
         container_name: ${{ inputs.container_name }}
         container_options: ${{ inputs.container_options }}
         container_method: 'exec'
+        debug: ${{ inputs.debug }}
 
     - name: Install dependencies
       shell: bash
-      if: ${{ inputs.composer_configure_install == '' && inputs.composer_require_install == '' && inputs.composer_transform == ''}}
+      if: ${{ inputs.composer_transform == '' }}
       run: |
         # prepare_shop: Install dependencies
-        docker-compose ${{ inputs.container_method }} -T \
+        ${{ inputs.debug }}
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
           composer update --no-interaction
@@ -474,10 +342,8 @@ runs:
       shell: bash
       run: |
         # prepare_shop: Setup config inc file
-        docker-compose ${{ inputs.container_method }} -T \
-          ${{ inputs.container_options }} \
-          ${{ inputs.container_name }} \
-          cp source/config.inc.php.dist source/config.inc.php
+        ${{ inputs.debug }}
+        cp source/source/config.inc.php.dist source/source/config.inc.php
 
     - name: Cache current installation
       uses: tespkg/actions-cache@v1

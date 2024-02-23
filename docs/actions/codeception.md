@@ -29,9 +29,6 @@ Optional: Additional options to pass to codeception. Example: "--skip-group flow
 **logfile:** *not required*, *default:*  codeception.txt  
 Name of the output logfile.
 
-**logfile_artifact:** *not required*, *default:*  logs  
-Github run artifact to put the logfile in.
-
 **output_files:** *not required*, *default:*
     - docker-compose.yml
     - source/composer.json
@@ -53,6 +50,9 @@ Github run artifact for the coverage file.
 
 **failure_pattern:** *not required*, *default:*  'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found|Cannot open file'  
 Grep pattern which indicate that the test failed.
+
+**debug:** *not required*, *default:* false  
+Set to true to generate a debugging script.
 
 ## Outputs:
 none

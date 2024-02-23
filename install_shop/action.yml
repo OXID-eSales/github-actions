@@ -16,40 +16,6 @@ inputs:
     required: false
     description: 'Method to execute the commands inside a container, either "run" or "exec"'
     default: 'exec'
-  git_enterprise_ref:
-    type: string
-    required: false
-    description: 'Branch to check out for the enterprise repos'
-    default: ''
-  git_shop_ref:
-    type: string
-    required: false
-    description: 'Branch, tag or hash of the commit to check out'
-    default: ''
-  github_sha:
-    type: string
-    required: true
-    description: 'github.sha is used in generating the cache id'
-  github_run_number:
-    type: string
-    required: false
-    description: 'github.run_number and github.run_attempts are used in generating the cache id (tbd)'
-    default: '0'
-  github_run_attempt:
-    type: string
-    required: false
-    description: 'github.run_number and github.run_attempts are used in generating the cache id (tbd)'
-    default: '0'
-  php:
-    type: string
-    required: false
-    description: 'Version of PHP for this instance'
-    default: '8.2'
-  mysql:
-    type: string
-    required: false
-    description: 'Version of MySQL for this instance'
-    default: '8.0'
   is_enterprise:
     type: boolean
     required: false
@@ -98,6 +64,11 @@ inputs:
     required: false
     description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
     default: ''
+  debug:
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
+    required: false
 outputs:
   installed_shop:
     description: 'Name of the cached shop installation'
@@ -117,7 +88,8 @@ runs:
       shell: bash
       run: |
         # install_shop: Run Install Shop
-        docker-compose ${{ inputs.container_method }} -T \
+        ${{ inputs.debug }}
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
           ${{ env.OE_CONSOLE }} oe:setup:shop \
@@ -135,6 +107,7 @@ runs:
       shell: bash
       run: |
         # install_shop: Activate iDebug
+        ${{ inputs.debug }}
         perl -pi -e 's#iDebug = 0;#iDebug = -1;#g;' source/source/config.inc.php
 
     - name: Activate theme
@@ -142,7 +115,8 @@ runs:
       shell: bash
       run: |
         # install_shop: Activate theme
-        docker-compose ${{ inputs.container_method }} -T \
+        ${{ inputs.debug }}
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
           bin/oe-console oe:theme:activate apex
@@ -159,6 +133,7 @@ runs:
       shell: bash
       run: |
         # install_shop: Output php error log
+        ${{ inputs.debug }}
         if [ -s data/php/logs/error_log.txt ]; then
           echo -e "\033[0;35mPHP error log\033[0m"
           cat data/php/logs/error_log.txt
@@ -166,7 +141,7 @@ runs:
 
     - name: Upload configuration artifacts
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.output_artifact }}
         path: ${{ inputs.output_files }}

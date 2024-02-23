@@ -24,6 +24,11 @@ inputs:
     description: 'Output only error level problems'
     required: false
     default: "false"
+  debug:
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
+    required: false
 
 outputs:
   logfile:
@@ -35,6 +40,8 @@ runs:
   steps:
     - id: yamllint
       run: |
+        # yamllint: yamllint
+        ${{ inputs.debug }}
         # shellcheck disable=SC2086
 
         YL=$(type -p 'yamllint'||true)

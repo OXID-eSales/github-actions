@@ -16,3 +16,6 @@ Tags are required for version of the image
 
 **build_args** *required*, *default:* true
 build_args are required for matrix versions,There are different build_args for php image.
+
+**debug:** *not required*, *default:* false  
+Set to true to generate a debugging script.

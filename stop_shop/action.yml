@@ -1,5 +1,12 @@
 name: 'stop_shop'
 description: 'Stops a running shop instance'
+inputs:
+  debug:
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
+    required: false
+
 runs:
   using: "composite"
   steps:
@@ -8,4 +15,5 @@ runs:
       shell: bash
       run: |
         # stop_shop: Stop containers
-        docker-compose down
+        ${{ inputs.debug }}
+        docker compose down

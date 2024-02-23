@@ -27,3 +27,6 @@ for the results of another job. Don't forget to add that job to "needs" for the 
 A list of short job names (without spaces) separated from the jobs result by a %. These will be printed in two columns below
 the summary. Use either ${{ steps.step_name.outcome }} for the results of other steps within the same job or ${{ needs.job_name.result }}
 for the results of another job. Don't forget to add that job to "needs" for the current one.
+
+**debug:** *not required*, *default:* false  
+Set to true to generate a debugging script.

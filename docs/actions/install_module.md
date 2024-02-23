@@ -63,6 +63,9 @@ Populate with ${{ secrets.CACHE_ACCESS_KEY }}, its content will be hidden by Git
 Needed to access the local cache instead of the GitHub cache.
 Populate with ${{ secrets.CACHE_SECRET_KEY }}, its content will be hidden by GitHub.
 
+**debug:** *not required*, *default:* false  
+Set to true to generate a debugging script.
+
 ## outputs
 **installed_shop_with_module:**  
 Name of the cached shop installation

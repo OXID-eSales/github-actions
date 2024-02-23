@@ -24,7 +24,10 @@ Options to pass along to composer when running composer update.
 Name of the container to run composer in, defaults to 'php'.
 
 **container_options:** *not required*, *default*: ''  
-Additional parameters to pass to docker-compose when running the container.
+Additional parameters to pass to docker compose when running the container.
 
 **container_method:** *not required*, *default*: 'exec'  
 Whether we use exec to run the command in the existing php container or run to spin up a new one.
+
+**debug:** *not required*, *default:* false  
+Set to true to generate a debugging script.

@@ -46,6 +46,11 @@ inputs:
     required: false
     description: 'Github run artifact for the styles output'
     default: 'StylesLog'
+  debug:
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
+    required: false
 
 runs:
   using: "composite"
@@ -54,9 +59,10 @@ runs:
       shell: bash
       run: |
         # styles: Run composer install
+        ${{ inputs.debug }}
         mkdir -p source/tests/reports
         echo -e "\033[0;35m### Running composer install with ${{ inputs.install_options }}\033[0m"
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
@@ -67,14 +73,15 @@ runs:
       shell: bash
       run: |
         # styles: Run phpstan
+        ${{ inputs.debug }}
         echo -e "\033[0;35m###  Run phpstan-report in ${{ inputs.path }} ###\033[0m"
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
           composer phpstan-report
         echo -e "\033[0;35m###  Run phpstan in ${{ inputs.path }} ###\033[0m"
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
@@ -88,51 +95,47 @@ runs:
       shell: bash
       run: |
         # styles: Run phpmd
+        ${{ inputs.debug }}
         echo -e "\033[0;35m###  Run phpmd-report in ${{ inputs.path }} ###\033[0m"
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
           composer phpmd-report
         echo -e "\033[0;35m###  Run phpmd in ${{ inputs.path }} ###\033[0m"
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
           composer phpmd | tee -a source/tests/reports/phpmd-${{ inputs.module_ids }}.report.txt
         mv source/dev-packages/${{ inputs.path }}/phpmd.report.json source/tests/reports/phpmd-${{ inputs.module_ids }}.report.json
 
-
     - name: Run phpcs
       if: always()
       shell: bash
       run: |
         # styles: Run phpcs
+        ${{ inputs.debug }}
         echo -e "\033[0;35m###  Run phpcs-report in ${{ inputs.path }} ###\033[0m"
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
           composer phpcs-report
         echo -e "\033[0;35m###  Run phpcs in ${{ inputs.path }} ###\033[0m"
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
           composer phpcs | tee -a source/tests/reports/phpcs-${{ inputs.module_ids }}.report.txt
         mv source/dev-packages/${{ inputs.path }}/phpcs.report.json source/tests/reports/phpcs-${{ inputs.module_ids }}.report.json
 
-    - name: Stop containers
-      if: always()
-      shell: bash
-      run: |
-        make down
-
     - name: Output php error log
       if: always()
       shell: bash
       run: |
         # styles: Output php error log
+        ${{ inputs.debug }}
         if [ -s data/php/logs/error_log.txt ]; then
           echo -e "\033[0;35mPHP error log\033[0m"
           cat data/php/logs/error_log.txt
@@ -140,7 +143,7 @@ runs:
 
     - name: Upload artifact
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.output_artifact }}
         path: ${{ inputs.output_files }}

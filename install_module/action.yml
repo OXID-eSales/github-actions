@@ -90,6 +90,11 @@ inputs:
     required: false
     description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
     default: ''
+  debug:
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
+    required: false
 
 runs:
   using: "composite"
@@ -106,13 +111,14 @@ runs:
       shell: bash
       run: |
         # install_module: Configure enterprise credentials
+        ${{ inputs.debug }}
         if [ -n "${{ inputs.enterprise_github_token }}" ]; then
           echo -e "\033[0;35m###  configure github access ###\033[0m"
-          docker-compose ${{ inputs.container_method }} -T \
+          docker compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
             ${{ inputs.container_name}} \
             composer config github-protocols https
-          docker-compose ${{ inputs.container_method }} -T \
+          docker compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
             ${{ inputs.container_name}} \
             composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
@@ -122,18 +128,19 @@ runs:
       shell: bash
       run: |
         # install_module: Install module
-        docker-compose ${{ inputs.container_method }} -T \
+        ${{ inputs.debug }}
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
           composer config repositories.${{ inputs.package_name }} \
           --json '{"type":"path", "url":"./${{inputs.module_path}}", "options": {"symlink": true}}'
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
           composer require ${{ inputs.package_name }}:* --no-interaction --no-update
 
     - name: 'Modify composer.json'
-      uses: 'OXID-eSales/github-actions/composer_merge@v3'
+      uses: 'OXID-eSales/github-actions/composer_merge@v4alpha'
       with:
         file: 'source/composer.json'
         backup: true
@@ -156,17 +163,19 @@ runs:
         container_name: ${{ inputs.container_name }}
         container_options: ${{ inputs.container_options }}
         container_method: 'exec'
+        debug: ${{ inputs.debug }}
 
     - name: Install dependencies and reset database
       if: ${{ inputs.update == 'true' }}
       shell: bash
       run: |
         # install_module: Install dependencies and reset database
-        docker-compose ${{ inputs.container_method }} -T \
+        ${{ inputs.debug }}
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
           composer update --no-interaction
-        docker-compose ${{ inputs.container_method }} -T \
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
           ${{ env.OE_CONSOLE }} oe:database:reset \
@@ -176,10 +185,11 @@ runs:
       shell: bash
       run: |
         # install_module: Activate modules
+        ${{ inputs.debug }}
         MODULES=$(echo -n "${{ inputs.activate }}"| tr '\n' ' ')
         for MODULE in ${MODULES}; do
           echo -e "\033[0;35m###  activating module ${MODULE} ###\033[0m"
-          docker-compose ${{ inputs.container_method }} -T \
+          docker compose ${{ inputs.container_method }} -T \
             ${{ inputs. container_options }} \
             ${{ inputs.container_name}} \
             ${{ env.OE_CONSOLE }} oe:module:activate "${MODULE}"
@@ -189,7 +199,8 @@ runs:
       shell: bash
       run: |
         # install_module: Install module dependencies
-        docker-compose ${{ inputs.container_method }} -T \
+        ${{ inputs.debug }}
+        docker compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           --workdir=/var/www \
           ${{ inputs.container_name}} \
@@ -207,6 +218,7 @@ runs:
       shell: bash
       run: |
         # install_module: Output php error log
+        ${{ inputs.debug }}
         if [ -s data/php/logs/error_log.txt ]; then
           echo -e "\033[0;35mPHP error log\033[0m"
           cat data/php/logs/error_log.txt
@@ -214,7 +226,7 @@ runs:
 
     - name: Upload configuration artifacts
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.output_artifact }}
         path: ${{ inputs.output_files }}

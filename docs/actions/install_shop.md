@@ -20,27 +20,6 @@ Additional options to pass into the container.
 **container_method:** *not required*, *default*: 'exec'  
 Whether we use exec to run the command in the existing php container or run to spin up a new one.
 
-**git_enterprise_ref:** *not required*, *no default*  
-Branch to check out for the enterprise repository.
-
-**git_shop_ref:** *not required*, *no default*  
-Branch to check out for the enterprise repos
-
-**github_sha:** *required*, *default:*  ${{ github.sha }}  
-github.sha is used in generating the cache id. This must be provided here.
-
-**github_run_number:** *not required*, *default:*  0  
-github.run_number and github.run_attempts are used in generating the cache id. They should be provided if available.
-
-**github_run_attempt:** *not required*, *default:*  0  
-github.run_number and github.run_attempts are used in generating the cache id. They should be provided if available.
-
-**php:** *not required*, *default:*  '8.2'  
-Version of PHP for this instance.
-
-**mysql:** *not required*, *default:*  '8.0'  
-Version of MySQL for this instance.
-
 **is_enterprise:** *not required*, *default:*  false  
 This action can be used on the community edition (ce) and enterprise edition (ee) of the shop. On top of setting this to true, a few extra variables/secrets must be provided for using the action on ee.
 
@@ -74,6 +53,9 @@ Populate with ${{ secrets.CACHE_ACCESS_KEY }}, its content will be hidden by Git
 **cache_secret_key:** *not required*, *default:* ''  
 Needed to access the local cache instead of the GitHub cache.
 Populate with ${{ secrets.CACHE_SECRET_KEY }}, its content will be hidden by GitHub.
+
+**debug:** *not required*, *default:* false  
+Set to true to generate a debugging script.
 
 ## Outputs:
 

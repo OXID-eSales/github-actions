@@ -1,0 +1,61 @@
+name: 'run_custom_scripts'
+description: 'Runs user defined scripts'
+inputs:
+  container_name:
+    type: string
+    required: false
+    description: 'Name of the container to run the test in'
+    default: 'php'
+  container_options:
+    type: string
+    required: false
+    description: 'Additional options to pass into the container'
+    default: ''
+  container_method:
+    type: string
+    required: false
+    description: 'Method to execute the commands inside a container, either "run" or "exec"'
+    default: 'exec'
+  custom_script:
+    type: string
+    required: false
+    description: 'Script to run outside the container'
+    default: ''
+  custom_script_container:
+    type: string
+    required: false
+    description: 'Script to run inside the container'
+    default: ''
+  debug:
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run custom script
+      if: ${{ inputs.custom_script != ''}}
+      shell: bash
+      run: |
+        # run_custom_scripts: Run custom script
+        ${{ inputs.debug }}
+        ${{ inputs.custom_script }}
+
+    - name: Run custom script inside the container
+      if: ${{ inputs.custom_script_container != ''}}
+      shell: bash
+      run: |
+        # run_custom_scripts: Run custom script inside the container
+        ${{ inputs.debug }}
+        cat >source/custom_script.sh <<EOF
+        #!/bin/bash
+        ${{ inputs.custom_script_container }}
+        EOF
+        chmod 0755 source/custom_script.sh
+        docker compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container_name}} \
+          /var/www/custom_script.sh
+        rm source/custom_script.sh

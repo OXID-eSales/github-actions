@@ -13,6 +13,11 @@ inputs:
     type: boolean
     description: 'Prune docker'
     default: true
+  debug:
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
+    required: false
 
 runs:
   using: "composite"
@@ -27,12 +32,14 @@ runs:
         rm -rf ./* || true
         rm -rf ./.??* || true
         ls -la ./
+        ${{ inputs.debug }}
 
     - name: Kill docker containers
       if: ${{ inputs.kill_containers == 'true' }}
       shell: bash
       run: |
         #cleanup_workspace: Kill docker containers
+        ${{ inputs.debug }}
         docker ps -a
         for c in $(docker ps -q); do
           echo -e "\033[0;35m### Killing container $c\033[0m"
@@ -44,5 +51,6 @@ runs:
       shell: bash
       run: |
         #cleanup_workspace: Cleanup Docker
+        ${{ inputs.debug }}
         echo -e "\033[0;35m### Pruning docker\033[0m"
         docker system prune --force

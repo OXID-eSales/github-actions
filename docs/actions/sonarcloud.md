@@ -55,5 +55,8 @@ Output files of the sonarcloud run to put into the output artifact.
 **output_artifact:** *not required*, *default:*  sonarcloud-artifacts  
 Github run artifact to put the output files in.
 
+**debug:** *not required*, *default:* false  
+Set to true to generate a debugging script.
+
 ## outputs
 None.

@@ -20,7 +20,24 @@ inputs:
     required: false
     description: 'Title of the job'
     default: 'default'
-
+  files:
+    type: string
+    required: false
+    description: 'Additional files to archive'
+    default: |
+      generated_testplan.yaml
+      generated_output.txt
+      generated_env.txt
+      load_testplan.log
+  debug:
+    type: boolean
+    description: 'Enable debugging'
+    default: false
+    required: false
+outputs:
+  debug:
+    description: 'Debug scriptlet'
+    value: ${{ steps.debug.outputs.debug }}
 runs:
   using: "composite"
   steps:
@@ -28,7 +45,7 @@ runs:
       shell: bash
       run: |
         # begin_report: Write Report header
-        mkdir -p reports job_status slack_reports
+        mkdir -p reports slack_reports
         cat >reports/000-header.md <<EOF
         # ${{inputs.title}}
         EOF
@@ -39,13 +56,109 @@ runs:
 
         EOF
 
+    - name: Start debug script
+      id: debug
+      shell: bash
+      run: |
+        # begin_report: Start debug script
+        if [ '${{ inputs.debug }}' != 'true' ]; then
+          echo "debug=" >>"${GITHUB_OUTPUT}"
+        else
+          mkdir -p debug
+          cat >debug/000-start.sh <<'EODS'
+        #!/bin/bash
+        set -e
+        set -x
+
+        function banner() {
+          PURPLE=$(echo -e "\033[0;35m")
+          NOCOLOR=$(echo -e "\033[0m")
+          cat <<EOF
+        ${PURPLE}###############################################################################
+        ### $1
+        ###############################################################################${NOCOLOR}
+        EOF
+        }
+
+        function init() {
+          banner "Setting up environment"
+          export MAINDIR="${PWD}"
+          export GITHUB_ENV="${PWD}/GITHUB_ENV.txt"
+          export GITHUB_OUTPUT="${PWD}/GITHUB_OUTPUT.txt"
+          touch "${GITHUB_ENV}" "${GITHUB_OUTPUT}"
+          export WORKDIR="${PWD}/workdir"
+          export CACHEDIR="${PWD}/cache"
+          mkdir -p "${CACHEDIR}"
+          banner "Debugging workflow ${{ inputs.title }}"
+          echo "Reporitory: ${{ inputs.repository }}"
+          echo "Job: ${{ inputs.job }}"
+          echo "Testplan: ${{ inputs.testplan }}"
+          echo "Working directory: ${PWD}"
+        }
+
+        function start_job() {
+          if [ -d "${WORKDIR}" ]; then
+            rm -rf "${WORKDIR}"
+          fi
+          mkdir "${WORKDIR}"
+          cd "${WORKDIR}"
+        }
+
+        function end_job() {
+          cd "${MAINDIR}"
+          mv "${WORKDIR}" "${WORKDIR}_$1"
+        }
+
+        function write_cache() {
+          local CACHE="$1"
+          shift 1
+          banner "Caching ${CACHE}"
+          tar -cJf "${CACHEDIR}/${CACHE}.tar.xz" $@
+        }
+
+        function restore_cache() {
+          local CACHE="$1"
+          shift 1
+          banner "Restoring ${CACHE}"
+          tar -xJf "${CACHEDIR}/${CACHE}.tar.xz"
+        }
+        EODS
+        cat >debug/999-end.sh <<'EODS'
+        # This runs the various job functions
+        init
+        EODS
+
+        # Create debugging scriptlet
+          cat >>"${GITHUB_OUTPUT}" <<'EODS'
+        debug<<debug_delimeter
+        ###BEGIN_DEBUG
+        mkdir -p debug
+        FIRSTLINE=$(head -1 "$0")
+        echo "banner '${FIRSTLINE}'" >>debug/debug.sh
+        sed -e 's|exit 1|#exit 1|' -e '/###BEGIN_DEBUG/,/###END_DEBUG/d' "$0" >>debug/debug.sh
+        ###END_DEBUG
+        debug_delimeter
+        EODS
+        fi
+
+    - name: Debug debug
+      shell: bash
+      run: |
+        # begin_report: Debug debug
+        cat <<'EODD'
+        ${{ steps.debug.outputs.debug }}
+        EODD
+
     - name: Upload Artifacts
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: testplan
+        name: testplan-000_header
         path: |
-          reports/000-header.md.md
+          reports/000-header.md
           slack_reports/000-header.md
+          debug/000-start.sh
+          debug/999-end.sh
+          ${{ inputs.files }}
         if-no-files-found: ignore
-        retention-days: 7
+        retention-days: 2

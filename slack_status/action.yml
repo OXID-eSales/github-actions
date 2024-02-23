@@ -29,6 +29,11 @@ inputs:
     required: false
     description: 'Name of the job and its outcome or result separated by a %'
     default: ''
+  debug:
+    type: boolean
+    description: 'Enable debugging'
+    default: false
+    required: false
 
 runs:
   using: "composite"

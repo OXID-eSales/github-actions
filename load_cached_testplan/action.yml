@@ -47,6 +47,11 @@ inputs:
     required: false
     description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
     default: ''
+  debug:
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
+    required: false
 outputs:
   # workflow variables
   testplan:
@@ -86,10 +91,11 @@ runs:
       shell: bash
       run: |
         # load_cached_testplan: Get testplan name
-        DEFAULT_TESTPLAN='${{ inputs.plan_folder}}/defaults/defaults.yml,${{ inputs.root_testplan }}'
+        DEFAULT_TESTPLAN=$(echo '${{ inputs.plan_folder}}/defaults/defaults.yml,${{ inputs.root_testplan }}'|sed -e 's|~|${{ inputs.plan_folder }}|g')
+        MATRIX_TESTPLAN=$(echo "${{ inputs.matrix_testplan }}"|sed -e 's|~|${{ inputs.plan_folder }}|g')
         if [ '${{ inputs.matrix_testplan}}' == '-' ]; then
           echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
         else
-          echo "testplan=${DEFAULT_TESTPLAN},${{inputs.matrix_testplan}}" | tee -a "${GITHUB_OUTPUT}"
+          echo "testplan=${DEFAULT_TESTPLAN},${MATRIX_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
         fi
         echo "matrix_suffix=PHP${{inputs.php}}-MYSQL${{inputs.mysql}}" | tee -a "${GITHUB_OUTPUT}"

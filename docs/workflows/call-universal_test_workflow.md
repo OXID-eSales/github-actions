@@ -16,11 +16,16 @@ tests/github_actions/defaults/defaults.yml for a documented set of defaults.
 **runs_on:** *not required*, *default:* ubuntu-latest  
 Runner for this workflow
 
-**default:** *not required*, *default:* 'main'  
+**defaults:** *not required*, *default:* 'main'  
 This determines the branch/tag from which the defaults are checked out.
 
-## Secrets
+**plan_folder:** *not required*, *default:* 'tests/github_actions'  
+Folder containing the test plans.
 
+**default_plan_folder:** *not required*, *default:* 'tests/github_actions/defaults'  
+Folder containing the test plan templates.
+
+## Secrets
 **DOCKER_HUB_USER:**  
 Used for logging in to docker.io
 

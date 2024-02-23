@@ -42,3 +42,6 @@ Set to true if you want to wait for selenium to be ready.
 
 **container_name:** *not required*, *default:*  php  
 Name of the container to run the wait command in.
+
+**debug:** *not required*, *default:* false  
+Set to true to generate a debugging script.

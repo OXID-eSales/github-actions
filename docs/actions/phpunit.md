@@ -23,9 +23,6 @@ Optional: Additional options to pass to phpunit. Example: "--bootstrap bootstrap
 **logfile:** *not required*, *default:*  phpunit_log.txt  
 Name of the output logfile.
 
-**logfile_artifact:** *not required*, *default:*  phpunit_logs  
-Github run artifact to put the logfile in.
-
 **output_files:** *not required*, *default:* source/unit.cov, source/source/log/oxideshop.log and data/php/logs/error_log.txt  
 Output files of the phpunit run to put into the output artifact.
 
@@ -40,6 +37,9 @@ Github run artifact for the coverage file.
 
 **failure_pattern:** *not required*, *default:*  'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error'  
 Grep pattern which indicate that the test failed.
+
+**debug:** *not required*, *default:* false  
+Set to true to generate a debugging script.
 
 ## Outputs:
 none

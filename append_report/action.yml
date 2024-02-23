@@ -50,6 +50,11 @@ inputs:
     required: false
     description: 'Name of the cached_object for this step'
     default: 'skipped'
+  debug:
+    type: boolean
+    description: 'Enable debugging'
+    default: false
+    required: false
 
 runs:
   using: "composite"
@@ -69,12 +74,12 @@ runs:
     - name: 'Write summary'
       if: ${{ inputs.header == 'false' }}
       shell: bash
-      # yamllint disable rule:line-length
       run: |
         # append_report: Write summary
         REPORT_FILE='reports/${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}.md'
         STATUS_FILE='job_status/${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}.txt'
         CACHE_FILE='caches/${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}.txt'
+        PLAN_FILE='generated_testplan-${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}.yaml'
         SKIPPED_ICON='![Skipped](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/26aa.png)'
         SUCCESS_ICON='![Success](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/2705.png)'
         CANCELLED_ICON='![Cancelled](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-large/26ab.png)'
@@ -91,17 +96,45 @@ runs:
         echo "|${{inputs.job}}|${{inputs.title}}|${{inputs.php}}|${{inputs.mysql}}|${TP}|${!JOB_ICON} ${JOB_STATUS}|" >"${REPORT_FILE}"
         echo "${JOB_STATUS}" >"${STATUS_FILE}"
         echo "${{inputs.cached_object}}" >"${CACHE_FILE}"
+        if [ -f 'generated_testplan.yaml' ]; then
+          mv generated_testplan.yaml "${PLAN_FILE}"
+        fi
+
+    - name: Handle debug script
+      if: ${{ inputs.debug == 'true' }}
+      shell: bash
+      run: |
+        # append_report: Handle debug script
+        DEBUG_DIR="debug-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}"
+        DEBUG_NAME="debug_${{inputs.priority}}_${{inputs.phase}}_${{inputs.job}}_${{inputs.title}}"
+        DEBUG_FILE="${DEBUG_DIR}/${DEBUG_NAME}.sh"
+        mkdir -p "${DEBUG_DIR}"
+        cat >"${DEBUG_FILE}" <<EODS
+
+        function ${DEBUG_NAME}() {
+          banner "Starting job ${DEBUG_NAME}"
+          start_job
+        EODS
+        if [ -f 'debug/debug.sh' ]; then
+          sed -e 's/^/  /' debug/debug.sh >>"${DEBUG_FILE}"
+          rm debug/debug.sh
+        fi
+        cat >>"${DEBUG_FILE}" <<EODS
+          end_job "$DEBUG_NAME"
+        }
+        EODS
 
     - name: Upload Artifacts
-      # yamllint enable rule:line-length
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: testplan
+        name: 'testplan-${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}'
         path: |
           job_status/*.txt
           reports/*.md
           slack_reports/*.md
           caches/*.txt
+          generated_testplan-*.yaml
+          debug-*/*.sh
         if-no-files-found: ignore
-        retention-days: 7
+        retention-days: 2
