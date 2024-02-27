@@ -79,8 +79,6 @@ jobs:
         with:
           sparse-checkout: |
             ${{ inputs.plan_folder}}
-            tests/github_actions
-            Tests/github_actions
             composer.json
           path: workflow
 
@@ -108,8 +106,8 @@ jobs:
           set_output: true
           set_env: true
           set_print: true
-          loglevel: trace
-          logfile: load_testplan.log
+          # loglevel: trace
+          # logfile: load_testplan.log
           yaml: generated_testplan.yaml
 
       - name: 'Prepare artifact'
