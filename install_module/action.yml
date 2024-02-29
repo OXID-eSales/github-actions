@@ -124,20 +124,20 @@ runs:
             composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
         fi
 
-    - name: Install module
-      shell: bash
-      run: |
-        # install_module: Install module
-        ${{ inputs.debug }}
-        docker compose ${{ inputs.container_method }} -T \
-          ${{ inputs. container_options }} \
-          ${{ inputs.container_name}} \
-          composer config repositories.${{ inputs.package_name }} \
-          --json '{"type":"path", "url":"./${{inputs.module_path}}", "options": {"symlink": true}}'
-        docker compose ${{ inputs.container_method }} -T \
-          ${{ inputs. container_options }} \
-          ${{ inputs.container_name}} \
-          composer require ${{ inputs.package_name }}:* --no-interaction --no-update
+    # - name: Install module
+    #   shell: bash
+    #   run: |
+    #     # install_module: Install module
+    #     ${{ inputs.debug }}
+    #     docker compose ${{ inputs.container_method }} -T \
+    #       ${{ inputs. container_options }} \
+    #       ${{ inputs.container_name}} \
+    #       composer config repositories.${{ inputs.package_name }} \
+    #       --json '{"type":"path", "url":"./${{inputs.module_path}}", "options": {"symlink": true}}'
+    #     docker compose ${{ inputs.container_method }} -T \
+    #       ${{ inputs. container_options }} \
+    #       ${{ inputs.container_name}} \
+    #       composer require ${{ inputs.package_name }}:${{ inputs.git_module_ref }} --no-interaction --no-update
 
     - name: 'Modify composer.json'
       uses: 'OXID-eSales/github-actions/composer_merge@v4alpha'
@@ -147,7 +147,7 @@ runs:
         transform: |
           {
             "require": {
-              "${{ inputs.package_name }}": "*"
+              "${{ inputs.package_name }}": "${{ inputs.git_module_ref }} "
             },
             "repositories": {
                 "${{ inputs.package_name }}": {
@@ -171,10 +171,10 @@ runs:
       run: |
         # install_module: Install dependencies and reset database
         ${{ inputs.debug }}
-        docker compose ${{ inputs.container_method }} -T \
-          ${{ inputs. container_options }} \
-          ${{ inputs.container_name}} \
-          composer update --no-interaction
+        # docker compose ${{ inputs.container_method }} -T \
+        #   ${{ inputs. container_options }} \
+        #   ${{ inputs.container_name}} \
+        #   composer update --no-interaction
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs. container_options }} \
           ${{ inputs.container_name}} \
