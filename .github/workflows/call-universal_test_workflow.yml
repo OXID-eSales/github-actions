@@ -1390,6 +1390,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Remove temporary testplan artifacts'
+        if: ${{ always() }}
         uses: geekyeggo/delete-artifact@v4
         with:
           name: 'testplan-*'
@@ -1397,6 +1398,7 @@ jobs:
           failOnError: false
 
       - name: 'Remove temporary coverage artifacts'
+        if: ${{ always() }}
         uses: geekyeggo/delete-artifact@v4
         with:
           name: 'coverage-reports-*'
