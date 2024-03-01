@@ -147,7 +147,7 @@ runs:
         transform: |
           {
             "require": {
-              "${{ inputs.package_name }}": "${{ inputs.git_module_ref }} "
+              "${{ inputs.package_name }}": "dev-${{ inputs.git_module_ref }}"
             },
             "repositories": {
                 "${{ inputs.package_name }}": {
