@@ -480,6 +480,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: Checkout module
+        id: checkout_module
         if: ${{ matrix.testplan != 'skip' }}
         run: |
           AUTH="oxidci:${{ secrets.enterprise_github_token || github.token }}"
@@ -495,12 +496,14 @@ jobs:
             git -C 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}' fetch origin \
               refs/pull/${{ github.event.number }}/head:pr_${{ github.event.number }}
             git -C 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}' checkout pr_${{ github.event.number }}
+            echo "module_ref=pr_${{ github.event.number }}" >>"${GITHUB_OUTPUT}"
           else
             MODULE_REF="$(echo "${{ steps.install_module_testplan.outputs.install_module_git_module_ref }}"|sed -e 's|^dev-||')"
             git clone --depth 2 \
               https://${AUTH}@github.com/${{ steps.install_module_testplan.outputs.install_module_git_module_url }}.git \
               --branch "${MODULE_REF}" \
               --single-branch 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}'
+            echo "module_ref=${MODULE_REF}" >>"${GITHUB_OUTPUT}"
           fi
           find . -type f >files.txt
           if [ '${{ inputs.debug }}' == 'true' ]; then
@@ -557,7 +560,7 @@ jobs:
           module_path: 'dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}'
           activate: ${{ steps.install_module_testplan.outputs.install_module_activate }}
           git_module_url: ${{ steps.install_module_testplan.outputs.install_module_git_module_url }}
-          git_module_ref: ${{ steps.install_module_testplan.outputs.install_module_git_module_ref }}
+          git_module_ref: ${{ steps.checkout_module.outputs.module_ref }}
           output_files: ${{ steps.install_module_testplan.outputs.install_module_output_files }}
           # yamllint disable-line rule:line-length
           output_artifact: '${{steps.install_module_testplan.outputs.install_module_output_artifact_prefix}}-${{steps.install_module_testplan.outputs.install_module_ids}}-${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
