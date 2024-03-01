@@ -274,7 +274,7 @@ jobs:
     steps:
       - name: 'Prepare Shop'
         id: prepare_shop
-        uses: 'OXID-eSales/github-actions/prepare_shop@v0'
+        uses: 'OXID-eSales/github-actions/prepare_shop@v4'
         with:
           container_name: ${{ needs.init.outputs.prepare_shop_container_name }}
           container_options: ${{ needs.init.outputs.prepare_shop_container_options }}
@@ -547,7 +547,7 @@ jobs:
       - name: Install module
         if: ${{ matrix.testplan != 'skip' }}
         id: install_module
-        uses: 'OXID-eSales/github-actions/install_module@v0'
+        uses: 'OXID-eSales/github-actions/install_module@v4'
         with:
           container_name: ${{ steps.install_module_testplan.outputs.install_module_container_name }}
           container_options: ${{ steps.install_module_testplan.outputs.install_module_container_options }}
@@ -1076,7 +1076,7 @@ jobs:
           fetch-depth: 0
 
       - name: 'SonarCloud Scan'
-        uses: 'OXID-eSales/github-actions/sonarcloud@v0'
+        uses: 'OXID-eSales/github-actions/sonarcloud@v4'
         with:
           coverage_artifact: 'coverage-reports-*-${{ steps.sonarcloud_testplan_name.outputs.matrix_suffix }}'
           output_artifact: 'coverage-reports'
@@ -1369,7 +1369,7 @@ jobs:
 
       - name: 'Generate report'
         id: generate_report
-        uses: 'OXID-eSales/github-actions/generate_report@v0'
+        uses: 'OXID-eSales/github-actions/generate_report@v4'
         with:
           slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           title: '${{ needs.init.outputs.finish_slack_title }}'
