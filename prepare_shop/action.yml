@@ -262,7 +262,7 @@ runs:
         # prepare_shop: Modify composer.json to allow the same feature-branch
         ${{ inputs.debug }}
         if [ -f '${{ inputs.composer_file }}' ]; then
-          BASE_BRANCH_PATTERN='^b-[0-9]+\.[0-9}+\.x$'
+          BASE_BRANCH_PATTERN='^b-[0-9]+\.[0-9]+\.x$'
           if [[ '${{ inputs.github_ref_name }}' =~ $BASE_BRANCH_PATTERN ]]; then
             echo -e "\033[0;35mNot modifying composer.json because ${{ inputs.github_ref_name }} is a base branch\033[0m"
           else
