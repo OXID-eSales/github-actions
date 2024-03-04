@@ -112,6 +112,7 @@ runs:
           fi
           cat "${FILE}" >>"slack_report-${GROUP}.md"
         done
+        TITLE='${{inputs.title}} ${{ steps.process_slack.outputs.overall_status}}'
         cat >slack.json <<EOF
         {
           "blocks": [
@@ -120,7 +121,7 @@ runs:
               "text": {
                 "type": "plain_text",
                 "emoji": true,
-                "text": "${{inputs.title}} ${{ steps.process_slack.outputs.overall_status}}"
+                "text": "${TITLE:0:150}"
               }
             }
         EOF

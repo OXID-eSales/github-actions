@@ -16,14 +16,6 @@ global:
     shop_ref: &git_shop_ref '{{ .Data.global.git.default_ref }}'
     enterprise_ref: '{{ .Github.RefName }}'
 
-  # only configure/install is different
-  composer: &composer
-    configure: &composer_configure
-      install: ''
-    require: &composer_require
-    transform: ''
-
-
 # See docs/actions/prepare_shop.md for more information.
 prepare_shop:
   composer:
@@ -33,7 +25,7 @@ prepare_shop:
               "github-protocols": ["https"]
           },
           "require": {
-              "oxid-esales/oxideshop-pe": "{{ .Data.global.composer.dev_ref }}",
+              "oxid-esales/oxideshop-pe": "dev-{{ .Data.prepare_shop.git.shop_ref }}",
               "oxid-esales/twig-component": "{{ .Data.global.composer.dev_ref }}",
               "oxid-esales/twig-component-pe": "{{ .Data.global.composer.dev_ref }}",
               "oxid-esales/twig-admin-theme": "{{ .Data.global.composer.dev_ref }}",
@@ -81,7 +73,6 @@ codeception:
   container:
     options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex'
     method: &selenium_container_method 'run'
-  composer: *composer
   configuration: 'vendor/oxid-esales/oxideshop-pe/Tests/codeception.yml'
   additional_options: ''
   output:
@@ -102,8 +93,6 @@ runtest:
     options: '-e ACTIVE_THEME=apex'
     method: 'run'
   composer:
-    configure: *composer_configure
-    require: *composer_require
     file: 'source/composer.json'
     backup: true
     transform: |
