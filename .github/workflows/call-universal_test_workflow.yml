@@ -817,7 +817,7 @@ jobs:
         if: ${{ steps.codeception_testplan.outputs.codeception_composer_transform != '' }}
         uses: 'OXID-eSales/github-actions/composer_merge@v4'
         with:
-          file: '${{ steps.codeception_testplan.outputs.codeception_composer_path }}'
+          file: '${{ steps.codeception_testplan.outputs.codeception_composer_file }}'
           backup: true
           transform: |
             ${{ steps.codeception_testplan.outputs.codeception_composer_transform }}

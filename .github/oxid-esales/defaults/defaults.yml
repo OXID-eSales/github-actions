@@ -324,6 +324,7 @@ phpunit:
   load_shop: *install_module_prefix
   container: *container
   cache: *cache
+  composer: *composer
 
   # Run custom script outside the container'
   custom_script: ''
