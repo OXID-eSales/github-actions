@@ -11,11 +11,6 @@ global:
 
   composer: &composer
     dev_ref: &dev_ref dev-b-7.1.x
-    # Configure/Require are deprecated
-    configure:
-      ref: *dev_ref
-    require:
-      ref: *dev_ref
 
 prepare_shop:
   matrix: *matrix
