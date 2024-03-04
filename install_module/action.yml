@@ -125,7 +125,7 @@ runs:
         fi
 
     - name: 'Modify composer.json'
-      uses: 'OXID-eSales/github-actions/composer_merge@v4alpha'
+      uses: 'OXID-eSales/github-actions/composer_merge@v7alpha'
       with:
         file: 'source/composer.json'
         backup: true

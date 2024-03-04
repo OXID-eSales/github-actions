@@ -119,7 +119,7 @@ jobs:
       - name: 'Create first testplan archive'
         if: always()
         id: begin_report
-        uses: OXID-eSales/github-actions/begin_report@v4
+        uses: OXID-eSales/github-actions/begin_report@v7
         with:
           title: ${{ steps.ltp.outputs.finish_slack_title }}
           repository: '${{ github.server_url }}/${{ github.repository }}'
@@ -135,7 +135,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v7
         with:
           header: true
           phase: install
@@ -274,7 +274,7 @@ jobs:
     steps:
       - name: 'Prepare Shop'
         id: prepare_shop
-        uses: 'OXID-eSales/github-actions/prepare_shop@v4'
+        uses: 'OXID-eSales/github-actions/prepare_shop@v7'
         with:
           container_name: ${{ needs.init.outputs.prepare_shop_container_name }}
           container_options: ${{ needs.init.outputs.prepare_shop_container_options }}
@@ -316,7 +316,7 @@ jobs:
 
       - name: 'Stop shop'
         if: ${{ always() }}
-        uses: 'OXID-eSales/github-actions/stop_shop@v4'
+        uses: 'OXID-eSales/github-actions/stop_shop@v7'
         with:
           debug: ${{ needs.init.outputs.debug }}
 
@@ -331,7 +331,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v7
         with:
           priority: '010'
           phase: install
@@ -353,7 +353,7 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v4'
+        uses: 'OXID-eSales/github-actions/start_shop@v7'
         with:
           cached_shop: '${{ needs.init.outputs.prepare_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.install_shop_cache_bucket }}
@@ -367,7 +367,7 @@ jobs:
 
       - name: 'Install shop'
         id: install_shop
-        uses: 'OXID-eSales/github-actions/install_shop@v4'
+        uses: 'OXID-eSales/github-actions/install_shop@v7'
         with:
           container_name: ${{ needs.init.outputs.install_shop_container_name }}
           container_options: ${{ needs.init.outputs.install_shop_container_options }}
@@ -384,7 +384,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: Run custom scripts
-        uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
+        uses: 'OXID-eSales/github-actions/run_custom_scripts@v7'
         with:
           container_name: ${{ needs.init.outputs.install_shop_container_name }}
           container_options: ${{ needs.init.outputs.install_shop_container_options }}
@@ -395,7 +395,7 @@ jobs:
 
       - name: 'Stop shop'
         if: ${{ always() }}
-        uses: 'OXID-eSales/github-actions/stop_shop@v4'
+        uses: 'OXID-eSales/github-actions/stop_shop@v7'
         with:
           debug: ${{ needs.init.outputs.debug }}
 
@@ -410,7 +410,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v7
         with:
           priority: '020'
           phase: install
@@ -439,7 +439,7 @@ jobs:
       - name: Load cached testplan
         if: ${{ matrix.testplan != 'skip' }}
         id: install_module_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v4
+        uses: OXID-eSales/github-actions/load_cached_testplan@v7
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -466,7 +466,7 @@ jobs:
 
       - name: 'Start shop'
         if: ${{ matrix.testplan != 'skip' }}
-        uses: 'OXID-eSales/github-actions/start_shop@v4'
+        uses: 'OXID-eSales/github-actions/start_shop@v7'
         with:
           # yamllint disable-line rule:line-length
           cached_shop: '${{ steps.install_module_testplan.outputs.install_module_load_shop}}_${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
@@ -534,7 +534,7 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.install_module_testplan.outputs.install_module_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v4'
+        uses: 'OXID-eSales/github-actions/composer_merge@v7'
         with:
           file: 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}/composer.json'
           backup: true
@@ -550,7 +550,7 @@ jobs:
       - name: Install module
         if: ${{ matrix.testplan != 'skip' }}
         id: install_module
-        uses: 'OXID-eSales/github-actions/install_module@v4'
+        uses: 'OXID-eSales/github-actions/install_module@v7'
         with:
           container_name: ${{ steps.install_module_testplan.outputs.install_module_container_name }}
           container_options: ${{ steps.install_module_testplan.outputs.install_module_container_options }}
@@ -574,7 +574,7 @@ jobs:
 
       - name: Run custom scripts
         if: ${{ matrix.testplan != 'skip' }}
-        uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
+        uses: 'OXID-eSales/github-actions/run_custom_scripts@v7'
         with:
           container_name: ${{ steps.install_module_testplan.outputs.install_module_container_name }}
           container_options: ${{ steps.install_module_testplan.outputs.install_module_container_options }}
@@ -585,7 +585,7 @@ jobs:
 
       - name: 'Stop shop'
         if: ${{ always() && matrix.testplan != 'skip' }}
-        uses: 'OXID-eSales/github-actions/stop_shop@v4'
+        uses: 'OXID-eSales/github-actions/stop_shop@v7'
         with:
           debug: ${{ needs.init.outputs.debug }}
 
@@ -600,7 +600,7 @@ jobs:
 
       - name: 'Write Report'
         if: ${{ always() && matrix.testplan != 'skip' }}
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v7
         with:
           priority: '030'
           phase: install
@@ -615,7 +615,7 @@ jobs:
 
       - name: 'Write Report'
         if: ${{ always() && matrix.testplan == 'skip' }}
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v7
         with:
           priority: '030'
           phase: install
@@ -633,7 +633,7 @@ jobs:
     steps:
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v7
         with:
           header: true
           priority: '100'
@@ -659,7 +659,7 @@ jobs:
     steps:
       - name: Load cached testplan
         id: phpunit_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v4
+        uses: OXID-eSales/github-actions/load_cached_testplan@v7
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -684,7 +684,7 @@ jobs:
           token: ${{ secrets.enterprise_github_token }}
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v4'
+        uses: 'OXID-eSales/github-actions/start_shop@v7'
         with:
           cached_shop: '${{ steps.phpunit_testplan.outputs.phpunit_load_shop}}_${{ steps.phpunit_testplan_name.outputs.matrix_suffix }}'
           cache_bucket: ${{ steps.phpunit_testplan.outputs.phpunit_cache_bucket }}
@@ -698,7 +698,7 @@ jobs:
 
       - name: Run custom scripts
         if: ${{ matrix.testplan != 'skip' }}
-        uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
+        uses: 'OXID-eSales/github-actions/run_custom_scripts@v7'
         with:
           container_name: ${{ steps.phpunit_testplan.outputs.phpunit_container_name }}
           container_options: ${{ steps.phpunit_testplan.outputs.phpunit_container_options }}
@@ -709,7 +709,7 @@ jobs:
 
       - name: 'Run phpunit tests'
         id: phpunit_run
-        uses: 'OXID-eSales/github-actions/phpunit@v4'
+        uses: 'OXID-eSales/github-actions/phpunit@v7'
         with:
           container_name: ${{ steps.phpunit_testplan.outputs.phpunit_container_name }}
           container_options: ${{ steps.phpunit_testplan.outputs.phpunit_container_options }}
@@ -728,13 +728,13 @@ jobs:
 
       - name: 'Stop shop'
         if: ${{ always() }}
-        uses: 'OXID-eSales/github-actions/stop_shop@v4'
+        uses: 'OXID-eSales/github-actions/stop_shop@v7'
         with:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v7
         with:
           priority: '110'
           phase: test
@@ -765,7 +765,7 @@ jobs:
     steps:
       - name: Load cached testplan
         id: codeception_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v4
+        uses: OXID-eSales/github-actions/load_cached_testplan@v7
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -799,7 +799,7 @@ jobs:
           ${{ steps.codeception_testplan.outputs.codeception_pre_script }}
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v4'
+        uses: 'OXID-eSales/github-actions/start_shop@v7'
         with:
           cached_shop: '${{ steps.codeception_testplan.outputs.codeception_load_shop}}_${{ steps.codeception_testplan_name.outputs.matrix_suffix }}'
           cache_bucket: ${{ steps.codeception_testplan.outputs.codeception_cache_bucket }}
@@ -815,7 +815,7 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.codeception_testplan.outputs.codeception_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v4'
+        uses: 'OXID-eSales/github-actions/composer_merge@v7'
         with:
           file: '${{ steps.codeception_testplan.outputs.codeception_composer_file }}'
           backup: true
@@ -830,7 +830,7 @@ jobs:
 
       - name: Run custom scripts
         if: ${{ matrix.testplan != 'skip' }}
-        uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
+        uses: 'OXID-eSales/github-actions/run_custom_scripts@v7'
         with:
           container_name: ${{ steps.codeception_testplan.outputs.codeception_container_name }}
           container_options: ${{ steps.codeception_testplan.outputs.codeception_container_options }}
@@ -841,7 +841,7 @@ jobs:
 
       - name: 'Run codeception tests'
         id: codeception_run
-        uses: 'OXID-eSales/github-actions/codeception@v4'
+        uses: 'OXID-eSales/github-actions/codeception@v7'
         with:
           container_name: ${{ steps.codeception_testplan.outputs.codeception_container_name }}
           container_options: '${{ steps.codeception_testplan.outputs.codeception_container_options }} ${{ steps.pre_script.outputs.container_options }}'
@@ -863,13 +863,13 @@ jobs:
 
       - name: 'Stop shop'
         if: ${{ always() }}
-        uses: 'OXID-eSales/github-actions/stop_shop@v4'
+        uses: 'OXID-eSales/github-actions/stop_shop@v7'
         with:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v7
         with:
           priority: '120'
           phase: test
@@ -900,7 +900,7 @@ jobs:
     steps:
       - name: Load cached testplan
         id: runtest_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v4
+        uses: OXID-eSales/github-actions/load_cached_testplan@v7
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -932,7 +932,7 @@ jobs:
           path: swapfile
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v4'
+        uses: 'OXID-eSales/github-actions/start_shop@v7'
         with:
           cached_shop: '${{ steps.runtest_testplan.outputs.runtest_load_shop}}_${{ steps.runtest_testplan_name.outputs.matrix_suffix }}'
           cache_bucket: ${{ steps.runtest_testplan.outputs.runtest_cache_bucket }}
@@ -946,7 +946,7 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.runtest_testplan.outputs.runtest_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v4'
+        uses: 'OXID-eSales/github-actions/composer_merge@v7'
         with:
           file: '${{ steps.runtest_testplan.outputs.runtest_composer_file }}'
           backup: true
@@ -967,7 +967,7 @@ jobs:
 
       - name: Run custom scripts
         if: ${{ matrix.testplan != 'skip' }}
-        uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
+        uses: 'OXID-eSales/github-actions/run_custom_scripts@v7'
         with:
           container_name: ${{ steps.runtest_testplan.outputs.runtest_container_name }}
           container_options: ${{ steps.runtest_testplan.outputs.runtest_container_options }}
@@ -978,7 +978,7 @@ jobs:
 
       - name: 'Run tests'
         id: runtest_run
-        uses: 'OXID-eSales/github-actions/runtests@v4'
+        uses: 'OXID-eSales/github-actions/runtests@v7'
         with:
           container_name: ${{ steps.runtest_testplan.outputs.runtest_container_name }}
           container_options: ${{ steps.runtest_testplan.outputs.runtest_container_options }}
@@ -999,13 +999,13 @@ jobs:
 
       - name: 'Stop shop'
         if: ${{ always() }}
-        uses: 'OXID-eSales/github-actions/stop_shop@v4'
+        uses: 'OXID-eSales/github-actions/stop_shop@v7'
         with:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v7
         with:
           priority: '130'
           phase: test
@@ -1023,7 +1023,7 @@ jobs:
     steps:
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v7
         with:
           header: true
           priority: '200'
@@ -1049,7 +1049,7 @@ jobs:
     steps:
       - name: Load cached testplan
         id: sonarcloud_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v4
+        uses: OXID-eSales/github-actions/load_cached_testplan@v7
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -1079,7 +1079,7 @@ jobs:
           fetch-depth: 0
 
       - name: 'SonarCloud Scan'
-        uses: 'OXID-eSales/github-actions/sonarcloud@v4'
+        uses: 'OXID-eSales/github-actions/sonarcloud@v7'
         with:
           coverage_artifact: 'coverage-reports-*-${{ steps.sonarcloud_testplan_name.outputs.matrix_suffix }}'
           output_artifact: 'coverage-reports'
@@ -1096,7 +1096,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v7
         with:
           priority: '210'
           phase: report
@@ -1120,7 +1120,7 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v4'
+        uses: 'OXID-eSales/github-actions/start_shop@v7'
         with:
           cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.phpcs_tests_cache_bucket }}
@@ -1133,7 +1133,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Run phpcs tests'
-        uses: 'OXID-eSales/github-actions/phpcs@v4'
+        uses: 'OXID-eSales/github-actions/phpcs@v7'
         with:
           container_name: ${{ needs.init.outputs.phpcs_tests_container_name }}
           container_options: ${{ needs.init.outputs.phpcs_tests_container_options }}
@@ -1150,13 +1150,13 @@ jobs:
 
       - name: 'Stop shop'
         if: ${{ always() }}
-        uses: 'OXID-eSales/github-actions/stop_shop@v4'
+        uses: 'OXID-eSales/github-actions/stop_shop@v7'
         with:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v7
         with:
           priority: '220'
           phase: report
@@ -1185,7 +1185,7 @@ jobs:
     steps:
       - name: Load cached testplan
         id: styles_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v4
+        uses: OXID-eSales/github-actions/load_cached_testplan@v7
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -1210,7 +1210,7 @@ jobs:
           token: ${{ secrets.enterprise_github_token }}
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v4'
+        uses: 'OXID-eSales/github-actions/start_shop@v7'
         with:
           cached_shop: '${{ steps.styles_testplan.outputs.styles_load_shop}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ steps.styles_testplan.outputs.styles_cache_bucket }}
@@ -1224,7 +1224,7 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.styles_testplan.outputs.styles_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v4'
+        uses: 'OXID-eSales/github-actions/composer_merge@v7'
         with:
           file: 'source/dev-packages/${{ steps.styles_testplan.outputs.styles_path }}/composer.json'
           backup: true
@@ -1238,7 +1238,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Run styles check'
-        uses: 'OXID-eSales/github-actions/styles@v4'
+        uses: 'OXID-eSales/github-actions/styles@v7'
         with:
           path: ${{ steps.styles_testplan.outputs.styles_path }}
           module_ids: ${{ steps.styles_testplan.outputs.styles_module_ids }}
@@ -1252,13 +1252,13 @@ jobs:
 
       - name: 'Stop shop'
         if: ${{ always() }}
-        uses: 'OXID-eSales/github-actions/stop_shop@v4'
+        uses: 'OXID-eSales/github-actions/stop_shop@v7'
         with:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v7
         with:
           priority: '230'
           phase: report
@@ -1280,7 +1280,7 @@ jobs:
 
       - name: Lint yaml files
         id: yamllint
-        uses: OXID-eSales/github-actions/yamllint@v4
+        uses: OXID-eSales/github-actions/yamllint@v7
         with:
           file_or_dir: ${{ needs.init.outputs.yamllint_file_or_dir }}
           config_data: ${{ needs.init.outputs.yamllint_rules }}
@@ -1288,7 +1288,7 @@ jobs:
 
       - name: 'Write yamllint Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v7
         with:
           priority: '240'
           phase: report
@@ -1336,7 +1336,7 @@ jobs:
 
       - name: 'Write actionlint Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v7
         with:
           priority: '250'
           phase: report
@@ -1372,7 +1372,7 @@ jobs:
 
       - name: 'Generate report'
         id: generate_report
-        uses: 'OXID-eSales/github-actions/generate_report@v4'
+        uses: 'OXID-eSales/github-actions/generate_report@v7'
         with:
           slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           title: '${{ needs.init.outputs.finish_slack_title }}'
@@ -1380,7 +1380,7 @@ jobs:
 
       - name: 'Clean Cache'
         if: ${{ steps.generate_report.outputs.overall_status == 'success' }}
-        uses: 'OXID-eSales/github-actions/clean_cache@v4'
+        uses: 'OXID-eSales/github-actions/clean_cache@v7'
         env:
           GH_TOKEN: ${{ github.token }}
         with:
