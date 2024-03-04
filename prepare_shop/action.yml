@@ -312,10 +312,6 @@ runs:
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
-          composer config github-protocols https
-        docker compose ${{ inputs.container_method }} -T \
-          ${{ inputs.container_options }} \
-          ${{ inputs.container_name}} \
           composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
 
     - name: 'Modify composer.json'

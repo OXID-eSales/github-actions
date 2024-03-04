@@ -134,7 +134,7 @@ global:
     # Merge this json data with composer.json. If this is empty,
     # no transformation will be applied
     transform: ''
-    
+
     # Should we run composer update
     update: true
 
