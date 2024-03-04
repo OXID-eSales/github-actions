@@ -102,8 +102,7 @@ runtest:
   container:
     options: '-e ACTIVE_THEME=apex'
     method: 'run'
-    file: 'source/composer.json'
-    backup: true
+  composer:
     transform: |
       {
           "require-dev": {
@@ -125,8 +124,6 @@ runtest:
               }
           }
       }
-    update: true
-    update_options: '--no-interaction'
   # yamllint disable-line rule:line-length
   additional_options: '--filter "/^((?!(testFrontendVAT)).)*$/" --exclude-group quarantine,varnish,paypal_buyerlogin,paypal_external,paypal_graphql,adminFunctionality,flow_theme'
   coverage:
