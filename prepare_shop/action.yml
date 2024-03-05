@@ -222,6 +222,7 @@ runs:
     - name: Clone the ee shop (PR)
       id: clone_ee_pr
       if: ${{ inputs.github_event_name == 'pull_request' && github.repository == 'OXID-eSales/oxideshop_ee' }}
+      shell: bash
       run: |
         AUTH="oxidci:${{ inputs.enterprise_github_token || github.token }}"
         echo -e "\033[0;35mHandling the pull request for the EE shop\033[0m"
