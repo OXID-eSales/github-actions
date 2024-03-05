@@ -250,33 +250,6 @@ runs:
         EODS
         find . 
 
-    - name: 'Modify composer.json for EE shop PR'
-      if: ${{ inputs.github_event_name == 'pull_request' && github.repository == 'OXID-eSales/oxideshop_ee' }}
-      uses: 'OXID-eSales/github-actions/composer_merge@v4'
-      with:
-        file: '${{ inputs.composer_file }}'
-        backup: true
-        transform: |
-          {
-            "require": {
-              "oxid-esales/oxideshop-ee": "dev-${{ steps.clone_ee_pr.outputs.module_ref }}"
-            },
-            "repositories": {
-                "oxid-esales/oxideshop-ee": {
-                     "type": "path",
-                      "url": "./dev-packages/oxideshop_ee",
-                      "options": {
-                          "symlink": true
-                      }
-                }
-            }
-          }
-        update: false
-        container_name: ${{ inputs.container_name }}
-        container_options: ${{ inputs.container_options }}
-        container_method: 'exec'
-        debug: ${{ inputs.debug }}
-
     - name: Prepare container configuration
       shell: bash
       run: |
@@ -380,8 +353,35 @@ runs:
         backup: true
         transform: |
           ${{ inputs.composer_transform }}
-        update: ${{ inputs.composer_update }}
+        update: false
         update_options: ${{ inputs.composer_update_options }}
+        container_name: ${{ inputs.container_name }}
+        container_options: ${{ inputs.container_options }}
+        container_method: 'exec'
+        debug: ${{ inputs.debug }}
+
+    - name: 'Modify composer.json for EE shop PR'
+      if: ${{ inputs.github_event_name == 'pull_request' && github.repository == 'OXID-eSales/oxideshop_ee' }}
+      uses: 'OXID-eSales/github-actions/composer_merge@v4'
+      with:
+        file: '${{ inputs.composer_file }}'
+        backup: true
+        transform: |
+          {
+            "require": {
+              "oxid-esales/oxideshop-ee": "dev-${{ steps.clone_ee_pr.outputs.module_ref }}"
+            },
+            "repositories": {
+                "oxid-esales/oxideshop-ee": {
+                     "type": "path",
+                      "url": "./dev-packages/oxideshop_ee",
+                      "options": {
+                          "symlink": true
+                      }
+                }
+            }
+          }
+        update: false
         container_name: ${{ inputs.container_name }}
         container_options: ${{ inputs.container_options }}
         container_method: 'exec'
@@ -389,7 +389,7 @@ runs:
 
     - name: Install dependencies
       shell: bash
-      if: ${{ inputs.composer_transform == '' }}
+      if: ${{ inputs.composer_update == 'true' }}
       run: |
         # prepare_shop: Install dependencies
         ${{ inputs.debug }}
