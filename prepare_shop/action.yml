@@ -224,6 +224,7 @@ runs:
       if: ${{ inputs.github_event_name == 'pull_request' && github.repository == 'OXID-eSales/oxideshop_ee' }}
       shell: bash
       run: |
+        # prepare_shop: Clone the ee shop (PR)
         AUTH="oxidci:${{ inputs.enterprise_github_token || github.token }}"
         echo -e "\033[0;35mHandling the pull request for the EE shop\033[0m"
         mkdir -p source/dev-packages
@@ -235,20 +236,18 @@ runs:
           refs/pull/${{ github.event.number }}/head:pr_${{ github.event.number }}
         git -C 'source/dev-packages/oxideshop_ee' checkout pr_${{ github.event.number }}
         echo "module_ref=pr_${{ github.event.number }}" >>"${GITHUB_OUTPUT}"
-        if [ '${{ inputs.debug }}' == 'true' ]; then
-          cat >>debug/debug.sh <<'EODS'
-            banner "Checkout module"
-            # Note: we use ssh here, the workflow uses https and the runtime token or enterprise token
-            echo -e "\033[0;35mHandling the pull request for the EE shop\033[0m"
-            git clone --depth 2 \
-              git@github.com:OXID-eSales/oxideshop_ee.git \
-              --branch ${{ inputs.github_base_ref }} \
-              --single-branch 'source/dev-packages/oxideshop_ee'
-            git -C 'source/dev-packages/oxideshop_ee' fetch origin \
-              refs/pull/${{ github.event.number }}/head:pr_${{ github.event.number }}
-            git -C 'source/dev-packages/oxideshop_ee' checkout pr_${{ github.event.number }}
+        cat >>debug/debug.sh <<'EODS'
+          banner "Checkout module"
+          # Note: we use ssh here, the workflow uses https and the runtime token or enterprise token
+          echo -e "\033[0;35mHandling the pull request for the EE shop\033[0m"
+          git clone --depth 2 \
+            git@github.com:OXID-eSales/oxideshop_ee.git \
+            --branch ${{ inputs.github_base_ref }} \
+            --single-branch 'source/dev-packages/oxideshop_ee'
+          git -C 'source/dev-packages/oxideshop_ee' fetch origin \
+            refs/pull/${{ github.event.number }}/head:pr_${{ github.event.number }}
+          git -C 'source/dev-packages/oxideshop_ee' checkout pr_${{ github.event.number }}
         EODS
-        fi
 
     - name: 'Modify composer.json for EE shop PR'
       if: ${{ inputs.github_event_name == 'pull_request' && github.repository == 'OXID-eSales/oxideshop_ee' }}
