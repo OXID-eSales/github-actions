@@ -248,6 +248,7 @@ runs:
             refs/pull/${{ github.event.number }}/head:pr_${{ github.event.number }}
           git -C 'source/dev-packages/oxideshop_ee' checkout pr_${{ github.event.number }}
         EODS
+        find . 
 
     - name: 'Modify composer.json for EE shop PR'
       if: ${{ inputs.github_event_name == 'pull_request' && github.repository == 'OXID-eSales/oxideshop_ee' }}
@@ -270,8 +271,7 @@ runs:
                 }
             }
           }
-        update: ${{ inputs.composer_update }}
-        update_options: ${{ inputs.composer_update_options }}
+        update: false
         container_name: ${{ inputs.container_name }}
         container_options: ${{ inputs.container_options }}
         container_method: 'exec'
