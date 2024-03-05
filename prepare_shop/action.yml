@@ -257,7 +257,7 @@ runs:
 
     # yamllint disable rule:line-length
     - name: Modify composer.json to allow the same feature-branch
-      if: ${{ inputs.github_event_name != 'pull_request' }
+      if: ${{ inputs.github_event_name != 'pull_request' }}
       shell: bash
       run: |
         # prepare_shop: Modify composer.json to allow the same feature-branch
