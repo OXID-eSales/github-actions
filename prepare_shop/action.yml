@@ -201,7 +201,7 @@ runs:
 
     - name: Clone the shop  (${{ inputs.git_shop_ref }})
       # yamllint disable-line rule:line-length
-      if: ${{ inputs.github_event_name != 'pull_request' || ( github.repository != 'OXID-eSales/oxideshop_ce' && github.repository != 'OXID-eSales/oxideshop_pe' && github.repository != 'OXID-eSales/oxideshop_ee' ) }}
+      if: ${{ inputs.github_event_name != 'pull_request' || ( github.repository != 'OXID-eSales/oxideshop_ce') }}
       shell: bash
       run: |
         # prepare_shop: Clone the shop
@@ -210,7 +210,7 @@ runs:
 
     - name: Clone the shop (PR ${{ inputs.github_event_number }})
       # yamllint disable-line rule:line-length
-      if: ${{ inputs.github_event_name == 'pull_request' && ( github.repository == 'OXID-eSales/oxideshop_ce' || github.repository == 'OXID-eSales/oxideshop_pe' || github.repository == 'OXID-eSales/oxideshop_ee' ) }}
+      if: ${{ inputs.github_event_name == 'pull_request' && github.repository == 'OXID-eSales/oxideshop_ce' }}
       shell: bash
       run: |
         # prepare_shop: Clone the shop (PR)
