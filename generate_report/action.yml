@@ -30,7 +30,7 @@ runs:
       uses: 'OXID-eSales/github-actions/consolidate_artifacts@v4'
       with:
         target: 'testplan'
-        pattern: 'testplan-*'  
+        pattern: 'testplan-*'
 
     - name: 'Process job results for slack'
       id: process_slack
