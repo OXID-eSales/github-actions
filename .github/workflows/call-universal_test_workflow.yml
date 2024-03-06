@@ -638,7 +638,7 @@ jobs:
           header: true
           priority: '100'
           phase: test
-          debug: ${{ inputs.debug }}
+          debug: false
 
   phpunit:
     needs: ['init', 'install_module', 'begin_test_phase']
@@ -1028,7 +1028,7 @@ jobs:
           header: true
           priority: '200'
           phase: report
-          debug: ${{ inputs.debug }}
+          debug: false
 
   sonarcloud:
     needs: ['init', 'install_module', 'phpunit', 'codeception', 'begin_report_phase']
