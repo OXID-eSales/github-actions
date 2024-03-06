@@ -248,7 +248,6 @@ runs:
             refs/pull/${{ github.event.number }}/head:pr_${{ github.event.number }}
           git -C 'source/dev-packages/oxideshop_ee' checkout pr_${{ github.event.number }}
         EODS
-        find . 
 
     - name: Prepare container configuration
       shell: bash
