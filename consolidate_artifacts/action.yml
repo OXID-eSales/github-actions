@@ -25,14 +25,14 @@ runs:
         name: '${{ inputs.target }}'
 
     - name: 'Download consolidated artifact'
-      if: ${{ steps.check_consolidated.outputs.exists }}
+      if: ${{ steps.check_consolidated.outputs.exists == 'true' }}
       uses: actions/download-artifact@v4
       with:
         name: '${{ inputs.target }}'
         path: ${{ inputs.path }}
 
     - name: 'Remove old consolidated artifact'
-      if: ${{ steps.check_consolidated.outputs.exists }}
+      if: ${{ steps.check_consolidated.outputs.exists == 'true' }}
       uses: geekyeggo/delete-artifact@v4
       with:
         name: '${{ inputs.target }}'
