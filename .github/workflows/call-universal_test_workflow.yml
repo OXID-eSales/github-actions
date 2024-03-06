@@ -638,7 +638,7 @@ jobs:
           header: true
           priority: '100'
           phase: test
-          debug: ${{ inputs.debug }}
+          debug: false
 
   phpunit:
     needs: ['init', 'install_module', 'begin_test_phase']
@@ -1028,7 +1028,7 @@ jobs:
           header: true
           priority: '200'
           phase: report
-          debug: ${{ inputs.debug }}
+          debug: false
 
   sonarcloud:
     needs: ['init', 'install_module', 'phpunit', 'codeception', 'begin_report_phase']
@@ -1391,18 +1391,3 @@ jobs:
           cache_objects: |
             ${{ steps.generate_report.outputs.cache_objects }}
           debug: ${{ needs.init.outputs.debug }}
-
-      - name: 'Remove temporary testplan artifacts'
-        if: ${{ always() }}
-        uses: geekyeggo/delete-artifact@v4
-        with:
-          name: 'testplan-*'
-          useGlob: true
-          failOnError: false
-
-      - name: 'Remove temporary coverage artifacts'
-        if: ${{ always() }}
-        uses: geekyeggo/delete-artifact@v4
-        with:
-          name: 'coverage-reports-*'
-          failOnError: false

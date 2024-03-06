@@ -26,11 +26,11 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: 'Download job results'
-      uses: actions/download-artifact@v4
+    - name: 'Consolidate testplan artifacts'
+      uses: 'OXID-eSales/github-actions/consolidate_artifacts@v4'
       with:
+        target: 'testplan'
         pattern: 'testplan-*'
-        merge-multiple: true
 
     - name: 'Process job results for slack'
       id: process_slack
@@ -183,14 +183,6 @@ runs:
           chmod 0755 "${SCRIPT}.sh"
         done
 
-    - name: Upload Artifacts
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: testplan
-        path: '**'
-        retention-days: 7
-
     - name: Send custom JSON data to Slack workflow
       if: ${{ inputs.slack_webhook != '' }}
       uses: slackapi/slack-github-action@v1
@@ -199,3 +191,9 @@ runs:
       env:
         SLACK_WEBHOOK_URL: ${{ inputs.slack_webhook }}
         SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
+    - name: 'Update testplan artifacts'
+      uses: 'OXID-eSales/github-actions/consolidate_artifacts@v4'
+      with:
+        target: 'testplan'
+        pattern: 'testplan-*'
