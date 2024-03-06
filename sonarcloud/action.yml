@@ -77,7 +77,7 @@ runs:
       uses: 'OXID-eSales/github-actions/consolidate_artifacts@v0'
       with:
         target: '${{ inputs.output_artifact }}'
-        pattern: '${{ inputs.coverage_report }}'
+        pattern: '${{ inputs.coverage_artifact }}'
         path: coverage-reports
 
     - name: Fix Paths In Coverage Reports
@@ -100,7 +100,7 @@ runs:
       uses: 'OXID-eSales/github-actions/consolidate_artifacts@v0'
       with:
         target: '${{ inputs.output_artifact }}'
-        pattern: '${{ inputs.coverage_report }}'
+        pattern: '${{ inputs.coverage_artifact }}'
         path: coverage-reports
 
     - name: Set target branch
