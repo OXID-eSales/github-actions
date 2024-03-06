@@ -14,6 +14,7 @@ This repository contains re-usable GitHub workflows and actions for the OXID-eSa
     - [clean_cache](docs/actions/clean_cache.md) is used at the end of a successful workflow to cleanup the cached objects
     - [cleanup_workspace](docs/actions/cleanup_workspace.md) empties the workdir, optionally kills all docker containers and prunes docker.
     - [composer_merge](docs/actions/composer_merge.md) merges a json string with composer.json.
+    - [consolidate_artifacts](docs/actions/consolidate_artifacts.md) consolidates multiple artifacts into one,
     - [generate_report](docs/actions/generate_report.md) generates a report on the summary page and handles slack notifications
     - [slack_status](docs/actions/slack_status.md) sends a status message to a slack webhook.
     - [start_shop](docs/actions/start_shop.md) fetches a shop from cache and starts it.

@@ -73,11 +73,11 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Download coverage artifacts
-      uses: actions/download-artifact@v4
+    - name: 'Consolidate coverage artifacts'
+      uses: 'OXID-eSales/github-actions/consolidate_artifacts@v0'
       with:
-        pattern: '${{ inputs.coverage_artifact }}'
-        merge-multiple: true
+        target: '${{ inputs.output_artifact }}'
+        pattern: '${{ inputs.coverage_report }}'
         path: coverage-reports
 
     - name: Fix Paths In Coverage Reports
@@ -96,10 +96,11 @@ runs:
         # remove leading comma when adding this
         echo "COVERAGE_FILES=${COVERAGE_FILES:1}" | tee -a $GITHUB_ENV
 
-    - name: Upload consolidated coverage artifact
-      uses: actions/upload-artifact@v4
+    - name: Update consolidated coverage artifact
+      uses: 'OXID-eSales/github-actions/consolidate_artifacts@v0'
       with:
-        name: ${{ inputs.output_artifact }}
+        target: '${{ inputs.output_artifact }}'
+        pattern: '${{ inputs.coverage_report }}'
         path: coverage-reports
 
     - name: Set target branch
