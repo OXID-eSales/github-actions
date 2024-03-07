@@ -284,25 +284,6 @@ runs:
             -e 's#/var/www/#/var/www/source/#g;'\
             containers/httpd/project.conf
 
-    # yamllint disable rule:line-length
-    - name: Modify composer.json to allow the same feature-branch
-      if: ${{ inputs.github_event_name != 'pull_request' }}
-      shell: bash
-      run: |
-        # prepare_shop: Modify composer.json to allow the same feature-branch
-        ${{ inputs.debug }}
-        if [ -f '${{ inputs.composer_file }}' ]; then
-          BASE_BRANCH_PATTERN='^b-[0-9]+\.[0-9]+\.x$'
-          if [[ '${{ inputs.github_ref_name }}' =~ $BASE_BRANCH_PATTERN ]]; then
-            echo -e "\033[0;35mNot modifying composer.json because ${{ inputs.github_ref_name }} is a base branch\033[0m"
-          else
-            echo -e "\033[0;35mAllow dev-${{ inputs.github_ref_name }} for oxid-esales requires\033[0m"
-            sed -e 's#"oxid-esales/\(.*\)":[[:space:]]*"${{ inputs.composer_dev_ref }}"#"oxid-esales/\1": "dev-${{ inputs.github_ref_name }} || ${{ inputs.composer_dev_ref }}"#' \
-                -i '${{ inputs.composer_file }}'
-          fi
-        fi
-    # yamllint enable rule:line-length
-
     - name: Login to Docker Hub
       if: ${{ inputs.docker_login == 'true' }}
       uses: docker/login-action@v3
@@ -385,6 +366,25 @@ runs:
         container_options: ${{ inputs.container_options }}
         container_method: 'exec'
         debug: ${{ inputs.debug }}
+
+    # yamllint disable rule:line-length
+    - name: Modify composer.json to allow the same feature-branch
+      if: ${{ inputs.github_event_name != 'pull_request' }}
+      shell: bash
+      run: |
+        # prepare_shop: Modify composer.json to allow the same feature-branch
+        ${{ inputs.debug }}
+        if [ -f '${{ inputs.composer_file }}' ]; then
+          BASE_BRANCH_PATTERN='^b-[0-9]+\.[0-9]+\.x$'
+          if [[ '${{ inputs.github_ref_name }}' =~ $BASE_BRANCH_PATTERN ]]; then
+            echo -e "\033[0;35mNot modifying composer.json because ${{ inputs.github_ref_name }} is a base branch\033[0m"
+          else
+            echo -e "\033[0;35mAllow dev-${{ inputs.github_ref_name }} for oxid-esales requires\033[0m"
+            sed -e 's#"oxid-esales/\(.*\)":[[:space:]]*"${{ inputs.composer_dev_ref }}"#"oxid-esales/\1": "dev-${{ inputs.github_ref_name }} || ${{ inputs.composer_dev_ref }}"#' \
+                -i '${{ inputs.composer_file }}'
+          fi
+        fi
+    # yamllint enable rule:line-length
 
     - name: Install dependencies
       shell: bash
