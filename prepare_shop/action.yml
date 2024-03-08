@@ -196,9 +196,9 @@ runs:
       shell: bash
       run: |
         # prepare_shop: Clone testing environment master
-        git fetch --all ${{ inputs.git_sdk_url }}
+        git init
+        git fetch ${{ inputs.git_sdk_url }}
         git checkout --detach ${{ inputs.git_sdk_ref }}
-        git pull
         #git clone --depth 1 ${{ inputs.git_sdk_url }} --branch ${{ inputs.git_sdk_ref }} --single-branch .
         ${{ inputs.debug }}
 
