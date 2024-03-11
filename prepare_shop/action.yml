@@ -345,7 +345,7 @@ runs:
 
     - name: 'Modify composer.json'
       if: ${{ inputs.composer_transform != '' }}
-      uses: 'OXID-eSales/github-actions/composer_merge@v4alpha'
+      uses: 'OXID-eSales/github-actions/composer_merge@v4'
       with:
         file: '${{ inputs.composer_file }}'
         backup: true
@@ -360,7 +360,7 @@ runs:
 
     - name: 'Add module_repositories to composer.json'
       if: ${{ inputs.module_repositories != '' }}
-      uses: 'OXID-eSales/github-actions/composer_merge@v4alpha'
+      uses: 'OXID-eSales/github-actions/composer_merge@v4'
       with:
         file: '${{ inputs.composer_file }}'
         backup: true
