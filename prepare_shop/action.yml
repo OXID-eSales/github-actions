@@ -196,8 +196,10 @@ runs:
       run: |
         # prepare_shop: Clone testing environment master
         git init
-        git fetch ${{ inputs.git_sdk_url }}
-        git checkout --force refs/${{ inputs.git_sdk_ref }}
+        git remote add origin ${{ inputs.git_sdk_url }}
+        git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --filter=blob:none --depth=1 origin +refs/heads/${{ inputs.git_sdk_ref }}*:refs/remotes/origin/${{ inputs.git_sdk_ref }}* +refs/tags/${{ inputs.git_sdk_ref }}*:refs/tags/${{ inputs.git_sdk_ref }}*
+        BRANCH=$(git branch --list --remote origin/${{ inputs.git_sdk_ref }};git tag --list ${{ inputs.git_sdk_ref }})
+         git checkout --progress --force $(echo $BRANCH|head -1)
         ${{ inputs.debug }}
 
     - name: Clone the shop  (${{ inputs.git_shop_ref }})
