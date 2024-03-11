@@ -84,11 +84,6 @@ inputs:
     required: false
     description: 'Version of MySQL for this instance'
     default: '8.0'
-  is_enterprise:
-    type: boolean
-    required: false
-    description: 'Whether we prepare a community or enterprise edition'
-    default: false
   custom_ini_error_reporting:
     type: string
     required: false
@@ -134,11 +129,15 @@ inputs:
     required: false
     description: 'Development package reference'
     default: 'dev-b-8.0.x'
-
   enterprise_github_token:
     type: string
     required: false
     description: 'OAuth token to access enterprise repos'
+    default: ''
+  module_repositories:
+    type: string
+    required: false
+    description: 'JSON code to merge into the "repositories" section of composer.json'
     default: ''
   cache_name:
     type: string
@@ -202,7 +201,6 @@ runs:
         ${{ inputs.debug }}
 
     - name: Clone the shop  (${{ inputs.git_shop_ref }})
-      # yamllint disable-line rule:line-length
       if: ${{ inputs.github_event_name != 'pull_request' || ( github.repository != 'OXID-eSales/oxideshop_ce') }}
       shell: bash
       run: |
@@ -272,7 +270,6 @@ runs:
             make file=services/${SERVICE}.yml addservice
           done
         fi
-
         perl -pi\
             -e "s#PHP_VERSION=.*#PHP_VERSION='${{ inputs.php }}'#g;"\
             -e "s#MYSQL_VERSION=.*#MYSQL_VERSION='${{ inputs.mysql }}'#g;"\
@@ -327,6 +324,23 @@ runs:
           ${{ inputs.container_name}} \
           composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
 
+    - name: Prepare module_repositories.json
+      id: module_repositories
+      if: ${{ inputs.module_repositories != '' }}
+      shell: bash
+      run: |
+        # prepare_shop: Prepare module_repositories.json
+        ${{ inputs.debug }}
+        cat >>"${GITHUB_OUTPUT}" <<'EOF'
+        composer_transform<<composer_transform_end_delimeter
+        {
+          "repositories": {
+            ${{ inputs.module_repositories }}
+          }
+        }
+        composer_transform_end_delimeter
+        EOF
+
     - name: 'Modify composer.json'
       if: ${{ inputs.composer_transform != '' }}
       uses: 'OXID-eSales/github-actions/composer_merge@v4alpha'
@@ -335,6 +349,21 @@ runs:
         backup: true
         transform: |
           ${{ inputs.composer_transform }}
+        update: false
+        update_options: ${{ inputs.composer_update_options }}
+        container_name: ${{ inputs.container_name }}
+        container_options: ${{ inputs.container_options }}
+        container_method: 'exec'
+        debug: ${{ inputs.debug }}
+
+    - name: 'Add module_repositories to composer.json'
+      if: ${{ inputs.module_repositories != '' }}
+      uses: 'OXID-eSales/github-actions/composer_merge@v4alpha'
+      with:
+        file: '${{ inputs.composer_file }}'
+        backup: true
+        transform: |
+          ${{ steps.module_repositories.outputs.composer_transform }}
         update: false
         update_options: ${{ inputs.composer_update_options }}
         container_name: ${{ inputs.container_name }}
@@ -386,6 +415,7 @@ runs:
                 -i '${{ inputs.composer_file }}'
           fi
         fi
+        touch module_repositories.json
     # yamllint enable rule:line-length
 
     - name: Install dependencies

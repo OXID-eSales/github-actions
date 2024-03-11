@@ -181,10 +181,10 @@ jobs:
       prepare_shop_git_sdk_url: ${{ steps.ltp.outputs.prepare_shop_git_sdk_url }}
       prepare_shop_git_shop_ref: ${{ steps.ltp.outputs.prepare_shop_git_shop_ref }}
       prepare_shop_git_shop_url: ${{ steps.ltp.outputs.prepare_shop_git_shop_url }}
-      prepare_shop_is_enterprise: ${{ steps.ltp.outputs.prepare_shop_is_enterprise }}
       prepare_shop_matrix_mysql: ${{ steps.ltp.outputs.prepare_shop_matrix_mysql }}
       prepare_shop_matrix_php: ${{ steps.ltp.outputs.prepare_shop_matrix_php }}
       prepare_shop_max_parallel: ${{ steps.ltp.outputs.prepare_shop_max_parallel }}
+      prepare_shop_module_repositories: ${{ steps.ltp.outputs.prepare_shop_module_repositories }}
       # install_shop variables
       install_shop_cache_bucket: ${{ steps.ltp.outputs.install_shop_cache_bucket }}
       install_shop_cache_prefix: ${{ steps.ltp.outputs.install_shop_cache_prefix }}
@@ -274,7 +274,7 @@ jobs:
     steps:
       - name: 'Prepare Shop'
         id: prepare_shop
-        uses: 'OXID-eSales/github-actions/prepare_shop@v4'
+        uses: 'OXID-eSales/github-actions/prepare_shop@v0'
         with:
           container_name: ${{ needs.init.outputs.prepare_shop_container_name }}
           container_options: ${{ needs.init.outputs.prepare_shop_container_options }}
@@ -296,7 +296,6 @@ jobs:
           github_ref_name: ${{ github.ref_name }}
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
-          is_enterprise: ${{ needs.init.outputs.prepare_shop_is_enterprise }}
           custom_ini_error_reporting: ${{ needs.init.outputs.prepare_shop_custom_ini_error_reporting }}
           custom_ini_xdebug: ${{ needs.init.outputs.prepare_shop_custom_ini_xdebug }}
           add_services: ${{ needs.init.outputs.prepare_shop_add_services }}
@@ -306,6 +305,7 @@ jobs:
           composer_update: ${{ needs.init.outputs.prepare_shop_composer_update}}
           composer_update_options: ${{ needs.init.outputs.prepare_shop_composer_update_options}}
           composer_dev_ref: ${{ needs.init.outputs.prepare_shop_composer_dev_ref}}
+          module_repositories: ${{ needs.init.outputs.prepare_shop_module_repositories}}
           enterprise_github_token: ${{ secrets.enterprise_github_token || github.token }}
           cache_name: '${{ needs.init.outputs.prepare_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.prepare_shop_cache_bucket }}
