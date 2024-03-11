@@ -199,7 +199,6 @@ runs:
         git init
         git fetch ${{ inputs.git_sdk_url }}
         git checkout --detach ${{ inputs.git_sdk_ref }}
-        #git clone --depth 1 ${{ inputs.git_sdk_url }} --branch ${{ inputs.git_sdk_ref }} --single-branch .
         ${{ inputs.debug }}
 
     - name: Clone the shop  (${{ inputs.git_shop_ref }})
