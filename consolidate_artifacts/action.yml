@@ -33,7 +33,7 @@ runs:
 
     - name: 'Remove old consolidated artifact'
       if: ${{ steps.check_consolidated.outputs.exists == 'true' }}
-      uses: geekyeggo/delete-artifact@v4
+      uses: joernott/delete-artifact@debug_deleting
       with:
         name: '${{ inputs.target }}'
 
@@ -53,7 +53,7 @@ runs:
         retention-days: 7
 
     - name: 'Remove artifacts'
-      uses: geekyeggo/delete-artifact@v4
+      uses: joernott/delete-artifact@debug_deleting
       with:
         name: '${{ inputs.pattern }}'
         failOnError: false
