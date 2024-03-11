@@ -74,7 +74,7 @@ runs:
   using: "composite"
   steps:
     - name: 'Consolidate coverage artifacts'
-      uses: 'OXID-eSales/github-actions/consolidate_artifacts@v4'
+      uses: 'OXID-eSales/github-actions/consolidate_artifacts@v0'
       with:
         target: '${{ inputs.output_artifact }}'
         pattern: '${{ inputs.coverage_artifact }}'
