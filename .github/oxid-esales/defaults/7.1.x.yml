@@ -19,6 +19,11 @@ prepare_shop:
     dev_ref: *dev_ref
     transform: |
       {
+          "preferred-install": {
+            "oxid-esales/*": "source",
+            "oxid-professional-services/*": "source",
+            "ddoe/*": "source"
+          },
           "require": {
               "oxid-esales/twig-component": "dev-b-7.1.x",
               "oxid-esales/twig-admin-theme": "dev-b-7.1.x",

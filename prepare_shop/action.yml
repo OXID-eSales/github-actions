@@ -134,11 +134,6 @@ inputs:
     required: false
     description: 'OAuth token to access enterprise repos'
     default: ''
-  module_repositories:
-    type: string
-    required: false
-    description: 'JSON code to merge into the "repositories" section of composer.json'
-    default: ''
   cache_name:
     type: string
     required: true
@@ -326,23 +321,6 @@ runs:
           ${{ inputs.container_name}} \
           composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
 
-    - name: Prepare module_repositories.json
-      id: module_repositories
-      if: ${{ inputs.module_repositories != '' }}
-      shell: bash
-      run: |
-        # prepare_shop: Prepare module_repositories.json
-        ${{ inputs.debug }}
-        cat >>"${GITHUB_OUTPUT}" <<'EOF'
-        composer_transform<<composer_transform_end_delimeter
-        {
-          "repositories": {
-            ${{ inputs.module_repositories }}
-          }
-        }
-        composer_transform_end_delimeter
-        EOF
-
     - name: 'Modify composer.json'
       if: ${{ inputs.composer_transform != '' }}
       uses: 'OXID-eSales/github-actions/composer_merge@v4'
@@ -351,21 +329,6 @@ runs:
         backup: true
         transform: |
           ${{ inputs.composer_transform }}
-        update: false
-        update_options: ${{ inputs.composer_update_options }}
-        container_name: ${{ inputs.container_name }}
-        container_options: ${{ inputs.container_options }}
-        container_method: 'exec'
-        debug: ${{ inputs.debug }}
-
-    - name: 'Add module_repositories to composer.json'
-      if: ${{ inputs.module_repositories != '' }}
-      uses: 'OXID-eSales/github-actions/composer_merge@v4'
-      with:
-        file: '${{ inputs.composer_file }}'
-        backup: true
-        transform: |
-          ${{ steps.module_repositories.outputs.composer_transform }}
         update: false
         update_options: ${{ inputs.composer_update_options }}
         container_name: ${{ inputs.container_name }}

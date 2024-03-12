@@ -200,12 +200,6 @@ prepare_shop:
           }
       }
 
-  # This contains a JSON hash of module repositories in the format
-  # "organisation/package-name":{ "type": "git", "url": "https://github.com/organisation/package-name"},
-  # This will be inserted directly into the "repositories" section of composer.json, together
-  # with composer.transform.
-  module_repositories: ''
-
   # These modify php "custom.ini"
   custom_ini:
     # Error reporting settings
