@@ -66,6 +66,11 @@ jobs:
   init:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
+      - name: Get token permissions
+        shell: bash
+        run: |
+          curl -sS -f -I -H "Authorization: token ${{ github.token }}" https://api.github.com | grep -i x-oauth-scopes || true
+
       - name: 'Checkout testplan defaults'
         uses: actions/checkout@v4
         with:
@@ -1367,9 +1372,6 @@ jobs:
     env:
       SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"
     steps:
-      - name: 'Wait a minute'
-        run: sleep 60
-
       - name: 'Generate report'
         id: generate_report
         uses: 'OXID-eSales/github-actions/generate_report@v0'
