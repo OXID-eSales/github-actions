@@ -38,6 +38,10 @@ runs:
         merge-multiple: true
         path: ${{ inputs.path }}
 
+    - name: 'Delete old consolidated artifact'
+      uses: joernott/rm-artifact@v1
+      with:
+        name: '${{ inputs.target }}'
 
     - name: Upload consolidated artifact
       uses: actions/upload-artifact@v4
@@ -48,7 +52,8 @@ runs:
         overwrite: true
 
     - name: 'Remove artifacts'
-      uses: joernott/delete-artifact@debug_deleting
+      uses: joernott/rm-artifact@v1
       with:
         name: '${{ inputs.pattern }}'
+        useGlob: true
         failOnError: false
