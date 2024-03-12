@@ -18,6 +18,11 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Get token permissions
+      shell: bash
+      run: |
+        curl -sS -f -I -H "Authorization: token ${GITHUB_TOKEN}" https://api.github.com | grep -i x-oauth-scopes
+
     - name: Check if previous consolidated artifact exists
       id: check_consolidated
       uses: LIT-Protocol/artifact-exists-action@v0
@@ -30,12 +35,6 @@ runs:
       with:
         name: '${{ inputs.target }}'
         path: ${{ inputs.path }}
-
-    - name: 'Remove old consolidated artifact'
-      if: ${{ steps.check_consolidated.outputs.exists == 'true' }}
-      uses: joernott/delete-artifact@debug_deleting
-      with:
-        name: '${{ inputs.target }}'
 
     - name: 'Download artifacts'
       uses: actions/download-artifact@v4
@@ -51,6 +50,7 @@ runs:
         name: '${{ inputs.target }}'
         path: ${{ inputs.path }}
         retention-days: 7
+        overwrite: true
 
     - name: 'Remove artifacts'
       uses: joernott/delete-artifact@debug_deleting
