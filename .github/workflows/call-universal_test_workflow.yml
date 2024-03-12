@@ -69,7 +69,7 @@ jobs:
       - name: Get token permissions
         shell: bash
         run: |
-          curl -sS -f -I -H "Authorization: token ${{ github.token }}" https://api.github.com | grep -i x-oauth-scopes || true
+          curl -sS -f -I -H "Authorization: token ${{ github.token }}" https://api.github.com || true
 
       - name: 'Checkout testplan defaults'
         uses: actions/checkout@v4
