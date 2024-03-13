@@ -408,7 +408,7 @@ codeception:
     <<: *container
 
     # For codeception, we need different options than the empty default
-    options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e XDEBUG_MODE=coverage'
+    options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome'
 
   cache: *cache
   composer: *composer
@@ -442,7 +442,7 @@ codeception:
   test: ''
 
   # Additional options to pass to codeception
-  additional_options: '--coverage-xml=/var/www/codeception_coverage.xml -x flow_theme'
+  additional_options: ''
 
   # Additional options to pass to codecept build
   build_additional_options: ''
@@ -466,7 +466,7 @@ codeception:
   coverage:
     # Must math the value of --coverage-xml in 'additional_options'. If empty,
     # nothing will be added to the codeception artifact
-    path: 'source/codeception_coverage.xml'
+    path: ''
     prefix: coverage-reports-codeception
   failure_pattern: *failure_pattern
 
