@@ -205,8 +205,8 @@ runs:
         ${{ inputs.debug }}
         URL="${{ inputs.git_shop_url }}"
         if [ -n "${{ inputs.enterprise_github_token }}" ]; then
-          AUTH="oxidci:${{ inputs.enterprise_github_token }}@"
-          URL=$(echo "${URL}"|sed -e "s|https://|https://${AUTH}||")
+          REPO=$(echo '${{ inputs.git_shop_url }}'|sed -e 's|.*github.com/||')
+          URL="https://oxidci:${{ inputs.enterprise_github_token }}@github.com/${REPO}"
         fi
         git clone --depth 2 ${URL} --branch ${{ inputs.git_shop_ref }} --single-branch source
 
@@ -219,8 +219,8 @@ runs:
         echo -e "\033[0;35mHandling the pull request\033[0m"
         URL="${{ inputs.git_shop_url }}"
         if [ -n "${{ inputs.github_enterprise_token }}" ]; then
-          AUTH="oxidci:${{ inputs.enterprise_github_token }}"
-          URL=$(echo "${URL}"|sed -e "s|https://|https://${AUTH}@")
+          REPO=$(echo '${{ inputs.git_shop_url }}'|sed -e 's|.*github.com/||')
+          URL="https://oxidci:${{ inputs.enterprise_github_token }}@github.com/${REPO}"
         fi
         git clone --depth 2 ${URL} --branch ${{ inputs.github_base_ref }} --single-branch source
         git -C source fetch origin refs/pull/${{ inputs.github_event_number }}/head:pr_${{ inputs.github_event_number }}
