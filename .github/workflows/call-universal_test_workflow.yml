@@ -275,6 +275,8 @@ jobs:
       fail-fast: false
       max-parallel: ${{ fromJSON(needs.init.outputs.prepare_shop_max_parallel) }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
+    env:
+      enterprise_github_token: '${{ secrets.enterprise_github_token || github.token }}'
     steps:
       - name: 'Prepare Shop'
         id: prepare_shop
@@ -309,7 +311,7 @@ jobs:
           composer_update: ${{ needs.init.outputs.prepare_shop_composer_update}}
           composer_update_options: ${{ needs.init.outputs.prepare_shop_composer_update_options}}
           composer_dev_ref: ${{ needs.init.outputs.prepare_shop_composer_dev_ref}}
-          enterprise_github_token: ${{ secrets.enterprise_github_token || github.token }}
+          enterprise_github_token: ${{ env.enterprise_github_token }}
           cache_name: '${{ needs.init.outputs.prepare_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.prepare_shop_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
@@ -567,7 +569,7 @@ jobs:
           output_files: ${{ steps.install_module_testplan.outputs.install_module_output_files }}
           # yamllint disable-line rule:line-length
           output_artifact: '${{steps.install_module_testplan.outputs.install_module_output_artifact_prefix}}-${{steps.install_module_testplan.outputs.install_module_ids}}-${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
-          enterprise_github_token: ${{ secrets.enterprise_github_token }}
+          enterprise_github_token: ${{ secrets.enterprise_github_token || github.token}}
           cache_name: '${{ steps.install_module_testplan.outputs.install_module_cache_prefix}}_${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
           cache_bucket: ${{ steps.install_module_testplan.outputs.install_module_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
