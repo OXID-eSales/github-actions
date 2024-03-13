@@ -206,7 +206,7 @@ runs:
         URL="${{ inputs.git_shop_url }}"
         if [ -n "${{ inputs.enterprise_github_token }}" ]; then
           AUTH="oxidci:${{ inputs.enterprise_github_token }}"
-          URL=$(echo "${URL}"|sed -e "s|https://|https://${AUTH}@")
+          URL=$(echo "${URL}"|sed -e "s|https://|https://${AUTH}@||")
         fi
         git clone --depth 2 ${URL} --branch ${{ inputs.git_shop_ref }} --single-branch source
 
