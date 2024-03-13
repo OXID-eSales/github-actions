@@ -204,7 +204,7 @@ runs:
         # prepare_shop: Clone the shop
         ${{ inputs.debug }}
         URL="${{ inputs.git_shop_url }}"
-        if [ -n "${{ inputs.github_enterprise_token }}" ]; then
+        if [ -n "${{ inputs.enterprise_github_token }}" ]; then
           AUTH="oxidci:${{ inputs.enterprise_github_token }}"
           URL=$(echo "${URL}"|sed -e "s|https://|https://${AUTH}@")
         fi
