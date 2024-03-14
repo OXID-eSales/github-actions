@@ -119,7 +119,7 @@ runs:
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
-          vendor/bin/oe-console oe:theme:activate apex
+          ${{ env.OE_CONSOLE }} oe:theme:activate apex
 
     - name: Write files list
       if: always()
