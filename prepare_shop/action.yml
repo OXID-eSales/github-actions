@@ -412,7 +412,7 @@ runs:
         cp source/source/config.inc.php.dist source/source/config.inc.php
 
     - name: Cache current installation
-      uses: tespkg/actions-cache@v1
+      uses: tespkg/actions-cache/save@v1
       with:
         path: |
           ./*

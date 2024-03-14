@@ -147,7 +147,7 @@ runs:
         path: ${{ inputs.output_files }}
 
     - name: Cache current installation
-      uses: tespkg/actions-cache@v1
+      uses: tespkg/actions-cache/save@v1
       with:
         path: |
           ./*

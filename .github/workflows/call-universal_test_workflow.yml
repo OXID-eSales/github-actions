@@ -357,7 +357,7 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v4'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: '${{ needs.init.outputs.prepare_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.install_shop_cache_bucket }}
@@ -443,7 +443,7 @@ jobs:
       - name: Load cached testplan
         if: ${{ matrix.testplan != 'skip' }}
         id: install_module_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v4
+        uses: OXID-eSales/github-actions/load_cached_testplan@v0
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -470,7 +470,7 @@ jobs:
 
       - name: 'Start shop'
         if: ${{ matrix.testplan != 'skip' }}
-        uses: 'OXID-eSales/github-actions/start_shop@v4'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           # yamllint disable-line rule:line-length
           cached_shop: '${{ steps.install_module_testplan.outputs.install_module_load_shop}}_${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
@@ -554,7 +554,7 @@ jobs:
       - name: Install module
         if: ${{ matrix.testplan != 'skip' }}
         id: install_module
-        uses: 'OXID-eSales/github-actions/install_module@v4'
+        uses: 'OXID-eSales/github-actions/install_module@v0'
         with:
           container_name: ${{ steps.install_module_testplan.outputs.install_module_container_name }}
           container_options: ${{ steps.install_module_testplan.outputs.install_module_container_options }}
@@ -663,7 +663,7 @@ jobs:
     steps:
       - name: Load cached testplan
         id: phpunit_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v4
+        uses: OXID-eSales/github-actions/load_cached_testplan@v0
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -688,7 +688,7 @@ jobs:
           token: ${{ secrets.enterprise_github_token }}
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v4'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: '${{ steps.phpunit_testplan.outputs.phpunit_load_shop}}_${{ steps.phpunit_testplan_name.outputs.matrix_suffix }}'
           cache_bucket: ${{ steps.phpunit_testplan.outputs.phpunit_cache_bucket }}
@@ -769,7 +769,7 @@ jobs:
     steps:
       - name: Load cached testplan
         id: codeception_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v4
+        uses: OXID-eSales/github-actions/load_cached_testplan@v0
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -803,7 +803,7 @@ jobs:
           ${{ steps.codeception_testplan.outputs.codeception_pre_script }}
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v4'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: '${{ steps.codeception_testplan.outputs.codeception_load_shop}}_${{ steps.codeception_testplan_name.outputs.matrix_suffix }}'
           cache_bucket: ${{ steps.codeception_testplan.outputs.codeception_cache_bucket }}
@@ -904,7 +904,7 @@ jobs:
     steps:
       - name: Load cached testplan
         id: runtest_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v4
+        uses: OXID-eSales/github-actions/load_cached_testplan@v0
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -936,7 +936,7 @@ jobs:
           path: swapfile
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v4'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: '${{ steps.runtest_testplan.outputs.runtest_load_shop}}_${{ steps.runtest_testplan_name.outputs.matrix_suffix }}'
           cache_bucket: ${{ steps.runtest_testplan.outputs.runtest_cache_bucket }}
@@ -1053,7 +1053,7 @@ jobs:
     steps:
       - name: Load cached testplan
         id: sonarcloud_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v4
+        uses: OXID-eSales/github-actions/load_cached_testplan@v0
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -1124,7 +1124,7 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v4'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.phpcs_tests_cache_bucket }}
@@ -1189,7 +1189,7 @@ jobs:
     steps:
       - name: Load cached testplan
         id: styles_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v4
+        uses: OXID-eSales/github-actions/load_cached_testplan@v0
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -1214,7 +1214,7 @@ jobs:
           token: ${{ secrets.enterprise_github_token }}
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v4'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: '${{ steps.styles_testplan.outputs.styles_load_shop}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ steps.styles_testplan.outputs.styles_cache_bucket }}
@@ -1239,6 +1239,17 @@ jobs:
           container_name: ${{ steps.styles_testplan.outputs.styles_container_name }}
           container_options: ${{ steps.styles_testplan.outputs.styles_container_options }}
           container_method: 'exec'
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: Run custom scripts
+        if: ${{ matrix.testplan != 'skip' }}
+        uses: 'OXID-eSales/github-actions/run_custom_scripts@v0'
+        with:
+          container_name: ${{ steps.styles_testplan.outputs.styles_container_name }}
+          container_options: ${{ steps.styles_testplan.outputs.styles_container_options }}
+          container_method: ${{ steps.styles_testplan.outputs.styles_container_method }}
+          custom_script: ${{ steps.styles_testplan.outputs.styles_custom_script }}
+          custom_script_container: ${{ steps.styles_testplan.outputs.styles_custom_script_container }}
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Run styles check'

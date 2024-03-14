@@ -61,7 +61,7 @@ runs:
   steps:
     - name: Load cached shop from cache
       id: load_installed_shop
-      uses: tespkg/actions-cache@v1
+      uses: tespkg/actions-cache/restore@v1
       with:
         path: |
           ./*
