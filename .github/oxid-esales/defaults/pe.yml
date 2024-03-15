@@ -24,6 +24,11 @@ prepare_shop:
           "config": {
               "github-protocols": ["https"]
           },
+          "preferred-install": {
+            "oxid-esales/*": "source",
+            "oxid-professional-services/*": "source",
+            "ddoe/*": "source"
+          },
           "require": {
               "oxid-esales/oxideshop-pe": "dev-{{ .Data.prepare_shop.git.shop_ref }}",
               "oxid-esales/twig-component": "{{ .Data.global.composer.dev_ref }}",

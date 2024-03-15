@@ -115,7 +115,7 @@ runs:
           ${{ inputs.output_files }}
           ${{ inputs.coverage_path }}
         if-no-files-found: ignore
-        retention-days: 7
+        retention-days: 4
 
     - name: Upload Coverage Report
       if: ${{  always() && inputs.coverage_path != '' }}
@@ -124,7 +124,7 @@ runs:
         name: ${{ inputs.coverage_artifact }}
         path: ${{ inputs.coverage_path }}
         if-no-files-found: ignore
-        retention-days: 7
+        retention-days: 4
 
     - name: Output php error log
       if: always()

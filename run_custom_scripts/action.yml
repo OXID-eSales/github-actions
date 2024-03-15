@@ -49,7 +49,7 @@ runs:
       run: |
         # run_custom_scripts: Run custom script inside the container
         ${{ inputs.debug }}
-        cat >source/custom_script.sh <<EOF
+        cat >source/custom_script.sh <<'EOF'
         #!/bin/bash
         ${{ inputs.custom_script_container }}
         EOF

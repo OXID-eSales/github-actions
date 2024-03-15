@@ -61,7 +61,7 @@ runs:
   steps:
     - name: Load cached shop from cache
       id: load_installed_shop
-      uses: tespkg/actions-cache@v1
+      uses: tespkg/actions-cache/restore@v1
       with:
         path: |
           ./*
@@ -89,7 +89,7 @@ runs:
       shell: bash
       run: |
         # start_shop: Debug load cached shop
-        echo "restore_cache '${{ inputs.cached_shop }}'" >>debug/debug.sh
+        echo "restore_cache '${{ inputs.cached_shop }}'" >debug/debug.sh
 
     - name: Login to Docker Hub
       if: ${{ inputs.docker_login == 'true' }}

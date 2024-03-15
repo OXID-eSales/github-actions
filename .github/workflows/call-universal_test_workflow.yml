@@ -66,6 +66,11 @@ jobs:
   init:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
+      - name: Get token permissions
+        shell: bash
+        run: |
+          curl -sS -f -I -H "Authorization: token ${{ github.token }}" https://api.github.com || true
+
       - name: 'Checkout testplan defaults'
         uses: actions/checkout@v4
         with:
@@ -181,7 +186,6 @@ jobs:
       prepare_shop_git_sdk_url: ${{ steps.ltp.outputs.prepare_shop_git_sdk_url }}
       prepare_shop_git_shop_ref: ${{ steps.ltp.outputs.prepare_shop_git_shop_ref }}
       prepare_shop_git_shop_url: ${{ steps.ltp.outputs.prepare_shop_git_shop_url }}
-      prepare_shop_is_enterprise: ${{ steps.ltp.outputs.prepare_shop_is_enterprise }}
       prepare_shop_matrix_mysql: ${{ steps.ltp.outputs.prepare_shop_matrix_mysql }}
       prepare_shop_matrix_php: ${{ steps.ltp.outputs.prepare_shop_matrix_php }}
       prepare_shop_max_parallel: ${{ steps.ltp.outputs.prepare_shop_max_parallel }}
@@ -271,6 +275,7 @@ jobs:
       fail-fast: false
       max-parallel: ${{ fromJSON(needs.init.outputs.prepare_shop_max_parallel) }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
+
     steps:
       - name: 'Prepare Shop'
         id: prepare_shop
@@ -296,7 +301,6 @@ jobs:
           github_ref_name: ${{ github.ref_name }}
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
-          is_enterprise: ${{ needs.init.outputs.prepare_shop_is_enterprise }}
           custom_ini_error_reporting: ${{ needs.init.outputs.prepare_shop_custom_ini_error_reporting }}
           custom_ini_xdebug: ${{ needs.init.outputs.prepare_shop_custom_ini_xdebug }}
           add_services: ${{ needs.init.outputs.prepare_shop_add_services }}
@@ -306,7 +310,7 @@ jobs:
           composer_update: ${{ needs.init.outputs.prepare_shop_composer_update}}
           composer_update_options: ${{ needs.init.outputs.prepare_shop_composer_update_options}}
           composer_dev_ref: ${{ needs.init.outputs.prepare_shop_composer_dev_ref}}
-          enterprise_github_token: ${{ secrets.enterprise_github_token || github.token }}
+          enterprise_github_token: ${{ secrets.enterprise_github_token }}
           cache_name: '${{ needs.init.outputs.prepare_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.prepare_shop_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
@@ -564,7 +568,7 @@ jobs:
           output_files: ${{ steps.install_module_testplan.outputs.install_module_output_files }}
           # yamllint disable-line rule:line-length
           output_artifact: '${{steps.install_module_testplan.outputs.install_module_output_artifact_prefix}}-${{steps.install_module_testplan.outputs.install_module_ids}}-${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
-          enterprise_github_token: ${{ secrets.enterprise_github_token }}
+          enterprise_github_token: ${{ secrets.enterprise_github_token || github.token}}
           cache_name: '${{ steps.install_module_testplan.outputs.install_module_cache_prefix}}_${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
           cache_bucket: ${{ steps.install_module_testplan.outputs.install_module_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
@@ -1237,6 +1241,17 @@ jobs:
           container_method: 'exec'
           debug: ${{ needs.init.outputs.debug }}
 
+      - name: Run custom scripts
+        if: ${{ matrix.testplan != 'skip' }}
+        uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
+        with:
+          container_name: ${{ steps.styles_testplan.outputs.styles_container_name }}
+          container_options: ${{ steps.styles_testplan.outputs.styles_container_options }}
+          container_method: ${{ steps.styles_testplan.outputs.styles_container_method }}
+          custom_script: ${{ steps.styles_testplan.outputs.styles_custom_script }}
+          custom_script_container: ${{ steps.styles_testplan.outputs.styles_custom_script_container }}
+          debug: ${{ needs.init.outputs.debug }}
+
       - name: 'Run styles check'
         uses: 'OXID-eSales/github-actions/styles@v4'
         with:
@@ -1367,9 +1382,6 @@ jobs:
     env:
       SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"
     steps:
-      - name: 'Wait a minute'
-        run: sleep 60
-
       - name: 'Generate report'
         id: generate_report
         uses: 'OXID-eSales/github-actions/generate_report@v4'
@@ -1379,7 +1391,7 @@ jobs:
           debug: ${{ inputs.debug }}
 
       - name: 'Clean Cache'
-        if: ${{ steps.generate_report.outputs.overall_status == 'success' }}
+        # if: ${{ steps.generate_report.outputs.overall_status == 'success' }}
         uses: 'OXID-eSales/github-actions/clean_cache@v4'
         env:
           GH_TOKEN: ${{ github.token }}

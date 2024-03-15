@@ -31,12 +31,6 @@ runs:
         name: '${{ inputs.target }}'
         path: ${{ inputs.path }}
 
-    - name: 'Remove old consolidated artifact'
-      if: ${{ steps.check_consolidated.outputs.exists == 'true' }}
-      uses: joernott/delete-artifact@debug_deleting
-      with:
-        name: '${{ inputs.target }}'
-
     - name: 'Download artifacts'
       uses: actions/download-artifact@v4
       with:
@@ -44,16 +38,23 @@ runs:
         merge-multiple: true
         path: ${{ inputs.path }}
 
+    - name: 'Delete old consolidated artifact'
+      if: ${{ steps.check_consolidated.outputs.exists == 'true' }}
+      uses: joernott/rm-artifact@v1
+      with:
+        name: '${{ inputs.target }}'
 
     - name: Upload consolidated artifact
       uses: actions/upload-artifact@v4
       with:
         name: '${{ inputs.target }}'
         path: ${{ inputs.path }}
-        retention-days: 7
+        retention-days: 4
+        overwrite: true
 
     - name: 'Remove artifacts'
-      uses: joernott/delete-artifact@debug_deleting
+      uses: joernott/rm-artifact@v1
       with:
         name: '${{ inputs.pattern }}'
+        useGlob: true
         failOnError: false

@@ -137,4 +137,4 @@ runs:
           generated_testplan-*.yaml
           debug-*/*.sh
         if-no-files-found: ignore
-        retention-days: 2
+        retention-days: 1
