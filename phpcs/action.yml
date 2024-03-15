@@ -123,7 +123,7 @@ runs:
           ${{ inputs.logfile }}
           ${{ inputs.output_files }}
         if-no-files-found: error
-        retention-days: 7
+        retention-days: 4
 
     - name: Output php error log
       if: always()

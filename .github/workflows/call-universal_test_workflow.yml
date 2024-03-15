@@ -1391,7 +1391,7 @@ jobs:
           debug: ${{ inputs.debug }}
 
       - name: 'Clean Cache'
-        if: ${{ steps.generate_report.outputs.overall_status == 'success' }}
+        # if: ${{ steps.generate_report.outputs.overall_status == 'success' }}
         uses: 'OXID-eSales/github-actions/clean_cache@v4'
         env:
           GH_TOKEN: ${{ github.token }}
