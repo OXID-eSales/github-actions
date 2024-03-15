@@ -97,7 +97,7 @@ runs:
         echo "COVERAGE_FILES=${COVERAGE_FILES:1}" | tee -a $GITHUB_ENV
 
     - name: Update consolidated coverage artifact
-      uses: 'OXID-eSales/github-actions/consolidate_artifacts@v0'
+      uses: 'OXID-eSales/github-actions/consolidate_artifacts@v4'
       with:
         target: '${{ inputs.output_artifact }}'
         pattern: '${{ inputs.coverage_artifact }}'
