@@ -49,10 +49,12 @@ runs:
       run: |
         # run_custom_scripts: Run custom script inside the container
         ${{ inputs.debug }}
-        echo "#!/bin/bash" >source/custom_script.sh
-        cat >>source/custom_script.sh <<'EOF'
+        cat >source/custom_script.sh <<'EOF'
+        #!/bin/bash
         ${{ inputs.custom_script_container }}
         EOF
+        # This is necessary due to the 'EOF' now
+        sed -e 's|^  ||' -i source/custom_script.sh
         chmod 0755 source/custom_script.sh
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
