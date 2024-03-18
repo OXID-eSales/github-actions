@@ -83,6 +83,7 @@ runs:
         function init() {
           banner "Setting up environment"
           export MAINDIR="${PWD}"
+          export XZ_DEFAULTS="-T 0"
           export GITHUB_ENV="${PWD}/GITHUB_ENV.txt"
           export GITHUB_OUTPUT="${PWD}/GITHUB_OUTPUT.txt"
           touch "${GITHUB_ENV}" "${GITHUB_OUTPUT}"

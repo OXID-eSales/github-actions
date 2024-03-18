@@ -49,8 +49,8 @@ runs:
       run: |
         # run_custom_scripts: Run custom script inside the container
         ${{ inputs.debug }}
-        cat >source/custom_script.sh <<'EOF'
-        #!/bin/bash
+        echo "#!/bin/bash" >source/custom_script.sh
+        cat >>source/custom_script.sh <<'EOF'
         ${{ inputs.custom_script_container }}
         EOF
         chmod 0755 source/custom_script.sh
