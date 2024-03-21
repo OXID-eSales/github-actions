@@ -125,19 +125,23 @@ runs:
       run: |
         # start_shop: Wait for selenium
         ${{ inputs.debug }}
-        cat >source/wait_for_selenium.sh <<EOF
+        cat >source/wait_for_selenium.sh <<'EOF'
         #!/bin/bash
         set +e
         sleep 2
-        until  curl -sSjkL http://selenium:4444/wd/hub/status &>/dev/null; do
+        I=60
+        until  [ $I -le 0 ]; do
+          curl -sSjkL http://selenium:4444/wd/hub/status |grep '"ready": true' && break
           echo "."
           sleep 1
+          ((I--))
         done
         set -e
         curl -sSjkL http://selenium:4444/wd/hub/status
         EOF
+        sed -e 's|^ *||' -i source/wait_for_selenium.sh
         chmod 0755 source/wait_for_selenium.sh
         docker compose exec -T \
           ${{ inputs.container_name}} \
-          bash -c "timeout 60 /var/www/wait_for_selenium.sh"
+          /var/www/wait_for_selenium.sh
         rm source/wait_for_selenium.sh

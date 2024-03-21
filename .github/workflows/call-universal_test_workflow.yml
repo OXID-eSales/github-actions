@@ -380,11 +380,6 @@ jobs:
           config_idebug: ${{ needs.init.outputs.install_shop_config_idebug }}
           output_files: ${{ needs.init.outputs.install_shop_output_files }}
           output_artifact: 'configs-install_shop-${{ matrix.php }}-${{ matrix.mysql }}'
-          cache_name: '${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
-          cache_bucket: ${{ needs.init.outputs.install_shop_cache_bucket }}
-          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
-          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
-          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
           debug: ${{ needs.init.outputs.debug }}
 
       - name: Run custom scripts
@@ -411,6 +406,17 @@ jobs:
           # we need to add the dot folders here explicitly because bash works differently than the action
           CACHE_NAME='${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           echo "write_cache '${CACHE_NAME}' ./* .env .env.dist .gitignore .git" >>debug/debug.sh
+
+      - name: Cache current installation
+        uses: tespkg/actions-cache/save@v1
+        with:
+          path: |
+            ./*
+          key: '${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
+          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
+          bucket: ${{ needs.init.outputs.install_shop_cache_bucket }}
 
       - name: 'Write Report'
         if: always()

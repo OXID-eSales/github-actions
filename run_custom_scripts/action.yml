@@ -53,6 +53,8 @@ runs:
         #!/bin/bash
         ${{ inputs.custom_script_container }}
         EOF
+        # This is necessary due to the 'EOF' now
+        sed -e 's|^  ||' -i source/custom_script.sh
         chmod 0755 source/custom_script.sh
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \

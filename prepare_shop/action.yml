@@ -190,10 +190,14 @@ runs:
       shell: bash
       run: |
         # prepare_shop: Clone testing environment master
+        REF='${{ inputs.git_sdk_ref }}'
         git init
         git remote add origin ${{ inputs.git_sdk_url }}
-        git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --filter=blob:none --depth=1 origin +refs/heads/${{ inputs.git_sdk_ref }}*:refs/remotes/origin/${{ inputs.git_sdk_ref }}* +refs/tags/${{ inputs.git_sdk_ref }}*:refs/tags/${{ inputs.git_sdk_ref }}*
-        BRANCH=$(git branch --list --remote origin/${{ inputs.git_sdk_ref }};git tag --list ${{ inputs.git_sdk_ref }})
+        git -c protocol.version=2 fetch \
+          --no-tags --prune --no-recurse-submodules \
+          --filter=blob:none --depth=1 \
+          origin +refs/heads/${{ inputs.git_sdk_ref }}*:refs/remotes/origin/${REF}* +refs/tags/${REF}*:refs/tags/${REF}*
+        BRANCH=$(git branch --list --remote origin/${REF};git tag --list ${REF})
         git checkout --progress --force $(echo $BRANCH|head -1)
         ${{ inputs.debug }}
 
