@@ -311,11 +311,6 @@ jobs:
           composer_update_options: ${{ needs.init.outputs.prepare_shop_composer_update_options}}
           composer_dev_ref: ${{ needs.init.outputs.prepare_shop_composer_dev_ref}}
           enterprise_github_token: ${{ secrets.enterprise_github_token }}
-          cache_name: '${{ needs.init.outputs.prepare_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
-          cache_bucket: ${{ needs.init.outputs.prepare_shop_cache_bucket }}
-          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
-          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
-          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Stop shop'
@@ -323,6 +318,17 @@ jobs:
         uses: 'OXID-eSales/github-actions/stop_shop@v4'
         with:
           debug: ${{ needs.init.outputs.debug }}
+
+      - name: Cache current installation
+        uses: tespkg/actions-cache/save@v1
+        with:
+          path: |
+            ./*
+          key: '${{ needs.init.outputs.prepare_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
+          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
+          bucket: ${{ needs.init.outputs.prepare_shop_cache_bucket }}
 
       - name: Debug cache current installation
         if: ${{ inputs.debug }}
@@ -383,6 +389,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: Run custom scripts
+        if: ${{ needs.init.outputs.install_shop_custom_script != '' && needs.init.outputs.install_shop_custom_script_container != '' }}
         uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
         with:
           container_name: ${{ needs.init.outputs.install_shop_container_name }}
@@ -575,15 +582,11 @@ jobs:
           # yamllint disable-line rule:line-length
           output_artifact: '${{steps.install_module_testplan.outputs.install_module_output_artifact_prefix}}-${{steps.install_module_testplan.outputs.install_module_ids}}-${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
           enterprise_github_token: ${{ secrets.enterprise_github_token || github.token}}
-          cache_name: '${{ steps.install_module_testplan.outputs.install_module_cache_prefix}}_${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
-          cache_bucket: ${{ steps.install_module_testplan.outputs.install_module_cache_bucket }}
-          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
-          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
-          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
           debug: ${{ needs.init.outputs.debug }}
 
       - name: Run custom scripts
-        if: ${{ matrix.testplan != 'skip' }}
+        # yamllint disable-line rule:line-length
+        if: ${{ matrix.testplan != 'skip' && steps.install_module_testplan.outputs.install_module_custom_script != '' && steps.install_module_testplan.outputs.install_module_custom_script_container != '' }}
         uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
         with:
           container_name: ${{ steps.install_module_testplan.outputs.install_module_container_name }}
@@ -598,6 +601,17 @@ jobs:
         uses: 'OXID-eSales/github-actions/stop_shop@v4'
         with:
           debug: ${{ needs.init.outputs.debug }}
+
+      - name: Cache current installation
+        uses: tespkg/actions-cache/save@v1
+        with:
+          path: |
+            ./*
+          key: '${{ steps.install_module_testplan.outputs.install_module_cache_prefix}}_${{steps.install_module_testplan_name.outputs.matrix_suffix}}'
+          endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
+          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
+          bucket: ${{ steps.install_module_testplan.outputs.install_module_cache_bucket }}
 
       - name: Debug cache current installation
         if: ${{ matrix.testplan != 'skip' && inputs.debug }}
@@ -707,7 +721,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: Run custom scripts
-        if: ${{ matrix.testplan != 'skip' }}
+        if: ${{ steps.phpunit_testplan.outputs.phpunit_custom_script != '' && steps.phpunit_testplan.outputs.phpunit_custom_script_container != '' }}
         uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
         with:
           container_name: ${{ steps.phpunit_testplan.outputs.phpunit_container_name }}
@@ -839,7 +853,8 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: Run custom scripts
-        if: ${{ matrix.testplan != 'skip' }}
+        # yamllint disable-line rule:line-length
+        if: ${{ steps.codeception_testplan.outputs.codeception_custom_script != '' && steps.codeception_testplan.outputs.codeception_custom_script_container != '' }}
         uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
         with:
           container_name: ${{ steps.codeception_testplan.outputs.codeception_container_name }}
@@ -976,7 +991,7 @@ jobs:
 
 
       - name: Run custom scripts
-        if: ${{ matrix.testplan != 'skip' }}
+        if: ${{ steps.runtest_testplan.outputs.runtest_custom_script != '' && steps.runtest_testplan.outputs.runtest_custom_script_container != '' }}
         uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
         with:
           container_name: ${{ steps.runtest_testplan.outputs.runtest_container_name }}
@@ -1248,7 +1263,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: Run custom scripts
-        if: ${{ matrix.testplan != 'skip' }}
+        if: ${{ steps.styles_testplan.outputs.styles_custom_script != '' && steps.styles_testplan.outputs.styles_custom_script_container != '' }}
         uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
         with:
           container_name: ${{ steps.styles_testplan.outputs.styles_container_name }}

@@ -66,30 +66,6 @@ inputs:
     required: false
     description: 'OAuth token to access enterprise repos'
     default: ''
-  cache_name:
-    type: string
-    required: true
-    description: 'Name of the shop to cache'
-  cache_bucket:
-    type: string
-    required: false
-    description: 'Name of the local s3 cache bucket'
-    default: 'oxideshop-ee'
-  cache_endpoint:
-    type: string
-    required: false
-    description: 'secrets.CACHE_ENDPOINT for actions-cache'
-    default: ''
-  cache_access_key:
-    type: string
-    required: false
-    description: 'secrets.CACHE_ACCESS_KEY for actions-cache'
-    default: ''
-  cache_secret_key:
-    type: string
-    required: false
-    description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
-    default: ''
   debug:
     type: string
     description: 'Appended to debugging scripts'
@@ -215,14 +191,3 @@ runs:
       with:
         name: ${{ inputs.output_artifact }}
         path: ${{ inputs.output_files }}
-
-    - name: Cache current installation
-      uses: tespkg/actions-cache/save@v1
-      with:
-        path: |
-          ./*
-        key: ${{ inputs.cache_name }}
-        endpoint: ${{ inputs.cache_endpoint }}
-        accessKey: ${{ inputs.cache_access_key }}
-        secretKey: ${{ inputs.cache_secret_key }}
-        bucket: ${{ inputs.cache_bucket }}
