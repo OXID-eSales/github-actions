@@ -102,7 +102,7 @@ runs:
           ${{ inputs.container_name}} \
           php ${{ inputs.runtests_binary }} \
             ${{ inputs.additional_options }} \
-            "${{ inputs.test }}" \
+            ${{ inputs.test }} \
           | tee "${{ inputs.logfile }}" 2>&1 || true
 
     - name: Upload Artifacts

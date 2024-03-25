@@ -3,7 +3,7 @@ codeception:
   container:
     options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex'
   configuration: '/var/www/vendor/{{ .Data.install_module.package_name }}/tests/codeception.yml'
-  suite: 'acceptance'
+  suite: 'Acceptance'
   additional_options: '-g {{ .Data.install_module.ids }}'
   logfile:
     prefix: 'codeception'
@@ -22,4 +22,4 @@ codeception:
       job_status*.txt
   coverage:
     path: ''
-    prefix: coverage-reports-codeception_acceptance_{{ .Data.install_module.ids }}
+    prefix: coverage-reports-codeception_Acceptance_{{ .Data.install_module.ids }}
