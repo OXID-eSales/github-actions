@@ -60,7 +60,8 @@ runs:
       run: |
         # styles: Run composer install
         ${{ inputs.debug }}
-        mkdir -p source/tests/reports
+        mkdir -p source/tests/reports source/dev-packages/${{ inputs.path }}/tests
+        ln -s source/tests/reports source/dev-packages/${{ inputs.path }}/tests/reports
         echo -e "\033[0;35m### Running composer install with ${{ inputs.install_options }}\033[0m"
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
