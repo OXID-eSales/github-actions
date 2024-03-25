@@ -90,7 +90,9 @@ runs:
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
           composer phpstan | tee -a source/tests/reports/phpstan-${{ inputs.module_ids }}.report.txt
-        mv source/dev-packages/${{ inputs.path }}/phpstan.report.json source/tests/reports/phpstan-${{ inputs.module_ids }}.report.json
+        if [ -f source/dev-packages/${{ inputs.path }}/phpstan.report.json ]; then
+          mv source/dev-packages/${{ inputs.path }}/phpstan.report.json source/tests/reports/phpstan-${{ inputs.module_ids }}.report.json
+        fi
 
     - name: Run phpmd
       id: phpmd
@@ -112,7 +114,9 @@ runs:
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
           composer phpmd | tee -a source/tests/reports/phpmd-${{ inputs.module_ids }}.report.txt
-        mv source/dev-packages/${{ inputs.path }}/phpmd.report.json source/tests/reports/phpmd-${{ inputs.module_ids }}.report.json
+        if [ -f source/dev-packages/${{ inputs.path }}/phpmd.report.json ]; then
+          mv source/dev-packages/${{ inputs.path }}/phpmd.report.json source/tests/reports/phpmd-${{ inputs.module_ids }}.report.json
+        fi
 
     - name: Run phpcs
       if: always()
@@ -132,7 +136,9 @@ runs:
           --workdir '/var/www/dev-packages/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
           composer phpcs | tee -a source/tests/reports/phpcs-${{ inputs.module_ids }}.report.txt
-        mv source/dev-packages/${{ inputs.path }}/phpcs.report.json source/tests/reports/phpcs-${{ inputs.module_ids }}.report.json
+        if [ -f source/dev-packages/${{ inputs.path }}/phpcs.report.json ]; then
+          mv source/dev-packages/${{ inputs.path }}/phpcs.report.json source/tests/reports/phpcs-${{ inputs.module_ids }}.report.json
+        fi
 
     - name: Output php error log
       if: always()
