@@ -33,8 +33,8 @@ runs:
     - name: 'Consolidate testplan artifacts'
       uses: 'OXID-eSales/github-actions/consolidate_artifacts@v4'
       with:
-        target: '${{inputs.prefix}}-testplan'
-        pattern: '${{inputs.prefix}}-testplan-*'
+        target: 'testplan-${{inputs.prefix}}'
+        pattern: 'testplan-${{inputs.prefix}}-*'
 
     - name: 'Process job results for slack'
       id: process_slack
@@ -199,5 +199,5 @@ runs:
     - name: 'Update testplan artifacts'
       uses: 'OXID-eSales/github-actions/consolidate_artifacts@v4'
       with:
-        target: '${{inputs.prefix}}-testplan'
-        pattern: '${{inputs.prefix}}-testplan-*'
+        target: 'testplan-${{inputs.prefix}}'
+        pattern: 'testplan-${{inputs.prefix}}-*'

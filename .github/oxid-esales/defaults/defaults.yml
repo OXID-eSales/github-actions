@@ -529,7 +529,7 @@ runtest:
     prefix: 'deprecated_tests_artifacts'
   coverage:
     path: 'source/deprecated_tests_coverage.xml'
-    prefix: coverage-report-runtest
+    prefix: coverage-reports-runtest
   failure_pattern: *failure_pattern
 
   # Where to find the reset-shop binary

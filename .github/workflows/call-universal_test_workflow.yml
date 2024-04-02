@@ -393,7 +393,7 @@ jobs:
           is_enterprise: ${{ needs.init.outputs.install_shop_is_enterprise }}
           config_idebug: ${{ needs.init.outputs.install_shop_config_idebug }}
           output_files: ${{ needs.init.outputs.install_shop_output_files }}
-          output_artifact: 'configs-install_shop-${{ matrix.php }}-${{ matrix.mysql }}'
+          output_artifact: 'configs-install_shop-${{needs.init.outputs.global_title}}-PHP${{ matrix.php }}-MYSQL${{ matrix.mysql }}'
           debug: ${{ needs.init.outputs.debug }}
 
       - name: Run custom scripts
@@ -1050,6 +1050,7 @@ jobs:
         if: always()
         uses: OXID-eSales/github-actions/append_report@v0
         with:
+          prefix: '${{ needs.init.outputs.global_title }}'
           priority: '130'
           phase: test
           job: runtest
@@ -1189,7 +1190,7 @@ jobs:
           filter: ${{ needs.init.outputs.phpcs_tests_filter}}
           additional_options: ${{ needs.init.outputs.phpcs_tests_additional_options }}
           logfile: phpcs-PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_codesniff_log.txt
-          output_artifact: ${{ needs.init.outputs.phpcs_tests_output_prefix }}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}
+          output_artifact: ${{ needs.init.outputs.phpcs_tests_output_prefix }}-${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}
           output_files: ${{ needs.init.outputs.phpcs_tests_output_files }}
           failure_pattern: ${{ needs.init.outputs.phpcs_tests_failure_pattern }}
           debug: ${{ needs.init.outputs.debug }}
