@@ -35,7 +35,7 @@ on:
         description: 'Enable debugging'
         default: true
         required: false
-      custom_testplan:
+      custom_testplan_yaml:
         type: string
         description: 'Content of ~/oxid-esales/_custom.yml'
         default: ''
@@ -66,9 +66,6 @@ on:
       SLACK_WEBHOOK_URL:
         required: false
         # description: Webhook for posting to SLACK
-      GH_EE_LICENSE:
-        required: false
-        # description: License key for nginx
 
 jobs:
   init:
@@ -93,7 +90,6 @@ jobs:
       - name: 'Consolidate plans'
         id: consolidate_plans
         run: |
-          find . -type f
           mkdir -p '${{ inputs.plan_folder }}/defaults'
           if [ -d workflow/${{ inputs.plan_folder }} ]; then
             mv workflow/${{ inputs.plan_folder }}/* '${{ inputs.plan_folder }}/'
@@ -103,9 +99,11 @@ jobs:
             mv workflow/composer.json '${{ inputs.plan_folder }}/'
           fi
           mv defaults/${{ inputs.default_plan_folder}}/* '${{ inputs.plan_folder }}/defaults/'
-          cat >'${{ inputs.plan_folder }}/_custom.yml' <'EOF'
-          ${{ inputs.custom_testplan }}
+          cat >'${{ inputs.plan_folder }}/_custom.yml' <<'EOF'
+          # Generated from workflow input custom_testplan_yaml
+          ${{ inputs.custom_testplan_yaml }}
           EOF
+          sed -e 's|^  ||' -i '${{ inputs.plan_folder }}/_custom.yml'
           TESTPLAN=$(echo "${{ inputs.testplan }}"|sed -e 's|~|${{ inputs.plan_folder }}|g')
           echo "testplan=${{ inputs.plan_folder }}/defaults/defaults.yml,${TESTPLAN}" >>"${GITHUB_OUTPUT}"
 
