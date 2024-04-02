@@ -11,6 +11,10 @@ inputs:
     required: false
     description: 'Version of MySQL for this instance'
     default: '8.0'
+  prefix:
+    type: string
+    required: true
+    description: 'Prefix for the testplan artifact name'
   root_testplan:
     type: string
     required: true
@@ -98,4 +102,4 @@ runs:
         else
           echo "testplan=${DEFAULT_TESTPLAN},${MATRIX_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
         fi
-        echo "matrix_suffix=PHP${{inputs.php}}-MYSQL${{inputs.mysql}}" | tee -a "${GITHUB_OUTPUT}"
+        echo "matrix_suffix=${{inputs.prefix}}-PHP${{inputs.php}}-MYSQL${{inputs.mysql}}" | tee -a "${GITHUB_OUTPUT}"

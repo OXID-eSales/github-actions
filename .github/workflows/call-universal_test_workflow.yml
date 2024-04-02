@@ -35,6 +35,11 @@ on:
         description: 'Enable debugging'
         default: true
         required: false
+      custom_testplan_yaml:
+        type: string
+        description: 'Content of ~/oxid-esales/_custom.yml'
+        default: ''
+        required: false
 
     secrets:
       DOCKER_HUB_USER:
@@ -66,11 +71,6 @@ jobs:
   init:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
-      - name: Get token permissions
-        shell: bash
-        run: |
-          curl -sS -f -I -H "Authorization: token ${{ github.token }}" https://api.github.com || true
-
       - name: 'Checkout testplan defaults'
         uses: actions/checkout@v4
         with:
@@ -90,7 +90,6 @@ jobs:
       - name: 'Consolidate plans'
         id: consolidate_plans
         run: |
-          find . -type f
           mkdir -p '${{ inputs.plan_folder }}/defaults'
           if [ -d workflow/${{ inputs.plan_folder }} ]; then
             mv workflow/${{ inputs.plan_folder }}/* '${{ inputs.plan_folder }}/'
@@ -100,6 +99,11 @@ jobs:
             mv workflow/composer.json '${{ inputs.plan_folder }}/'
           fi
           mv defaults/${{ inputs.default_plan_folder}}/* '${{ inputs.plan_folder }}/defaults/'
+          cat >'${{ inputs.plan_folder }}/_custom.yml' <<'EOF'
+          # Generated from workflow input custom_testplan_yaml
+          ${{ inputs.custom_testplan_yaml }}
+          EOF
+          sed -e 's|^  ||' -i '${{ inputs.plan_folder }}/_custom.yml'
           TESTPLAN=$(echo "${{ inputs.testplan }}"|sed -e 's|~|${{ inputs.plan_folder }}|g')
           echo "testplan=${{ inputs.plan_folder }}/defaults/defaults.yml,${TESTPLAN}" >>"${GITHUB_OUTPUT}"
 
@@ -127,6 +131,7 @@ jobs:
         uses: OXID-eSales/github-actions/begin_report@v4
         with:
           title: ${{ steps.ltp.outputs.finish_slack_title }}
+          prefix: '${{ steps.ltp.outputs.global_title }}'
           repository: '${{ github.server_url }}/${{ github.repository }}'
           job: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
           testplan: '${{ inputs.testplan }}'
@@ -142,6 +147,7 @@ jobs:
         if: always()
         uses: OXID-eSales/github-actions/append_report@v4
         with:
+          prefix: '${{ steps.ltp.outputs.global_title }}'
           header: true
           phase: install
           priority: '001'
@@ -149,7 +155,7 @@ jobs:
           debug: false
 
       - name: Cache testplan
-        uses: tespkg/actions-cache@v1
+        uses: tespkg/actions-cache/save@v1
         with:
           path: |
             ${{ inputs.plan_folder }}/*
@@ -161,6 +167,7 @@ jobs:
 
     outputs:
       debug: ${{ steps.begin_report.outputs.debug }}
+      global_title: ${{ steps.ltp.outputs.global_title }}
       # init variables
       testplan: ${{ steps.consolidate_plans.outputs.testplan }}
       init_cache_bucket: ${{ steps.ltp.outputs.init_cache_bucket }}
@@ -324,7 +331,7 @@ jobs:
         with:
           path: |
             ./*
-          key: '${{ needs.init.outputs.prepare_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          key: '${{ needs.init.outputs.prepare_shop_cache_prefix}}_${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           endpoint: ${{ secrets.CACHE_ENDPOINT }}
           accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
           secretKey: ${{ secrets.CACHE_SECRET_KEY }}
@@ -336,20 +343,21 @@ jobs:
         run: |
           # prepare_shop: Debug cache current installation
           # we need to add the dot folders here explicitly because bash works differently than the action
-          CACHE_NAME='${{ needs.init.outputs.prepare_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          CACHE_NAME='${{ needs.init.outputs.prepare_shop_cache_prefix}}_${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           echo "write_cache '${CACHE_NAME}' ./* .env .env.dist .gitignore .git" >>debug/debug.sh
 
       - name: 'Write Report'
         if: always()
         uses: OXID-eSales/github-actions/append_report@v4
         with:
+          prefix: '${{ needs.init.outputs.global_title }}'
           priority: '010'
           phase: install
           job: prepare_shop
           php: ${{matrix.php}}
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
-          cached_object: '${{ needs.init.outputs.prepare_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cached_object: '${{ needs.init.outputs.prepare_shop_cache_prefix}}_${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           debug: ${{ inputs.debug }}
 
   install_shop:
@@ -365,7 +373,7 @@ jobs:
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v4'
         with:
-          cached_shop: '${{ needs.init.outputs.prepare_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cached_shop: '${{ needs.init.outputs.prepare_shop_cache_prefix}}_${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.install_shop_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
@@ -385,7 +393,7 @@ jobs:
           is_enterprise: ${{ needs.init.outputs.install_shop_is_enterprise }}
           config_idebug: ${{ needs.init.outputs.install_shop_config_idebug }}
           output_files: ${{ needs.init.outputs.install_shop_output_files }}
-          output_artifact: 'configs-install_shop-${{ matrix.php }}-${{ matrix.mysql }}'
+          output_artifact: 'configs-install_shop-${{needs.init.outputs.global_title}}-PHP${{ matrix.php }}-MYSQL${{ matrix.mysql }}'
           debug: ${{ needs.init.outputs.debug }}
 
       - name: Run custom scripts
@@ -411,7 +419,7 @@ jobs:
         run: |
           # prepare_shop: Debug cache current installation
           # we need to add the dot folders here explicitly because bash works differently than the action
-          CACHE_NAME='${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          CACHE_NAME='${{ needs.init.outputs.install_shop_cache_prefix}}_${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           echo "write_cache '${CACHE_NAME}' ./* .env .env.dist .gitignore .git" >>debug/debug.sh
 
       - name: Cache current installation
@@ -419,7 +427,7 @@ jobs:
         with:
           path: |
             ./*
-          key: '${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          key: '${{ needs.init.outputs.install_shop_cache_prefix}}_${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           endpoint: ${{ secrets.CACHE_ENDPOINT }}
           accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
           secretKey: ${{ secrets.CACHE_SECRET_KEY }}
@@ -429,13 +437,14 @@ jobs:
         if: always()
         uses: OXID-eSales/github-actions/append_report@v4
         with:
+          prefix: '${{ needs.init.outputs.global_title }}'
           priority: '020'
           phase: install
           job: install_shop
           php: ${{matrix.php}}
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
-          cached_object: '${{ needs.init.outputs.install_shop_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cached_object: '${{ needs.init.outputs.install_shop_cache_prefix}}_${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           debug: ${{ inputs.debug }}
 
   install_module:
@@ -460,6 +469,7 @@ jobs:
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
+          prefix: ${{needs.init.outputs.global_title}}
           root_testplan: ${{ needs.init.outputs.testplan }}
           matrix_testplan: ${{ matrix.testplan }}
           plan_folder: ${{ inputs.plan_folder }}
@@ -626,6 +636,7 @@ jobs:
         if: ${{ always() && matrix.testplan != 'skip' }}
         uses: OXID-eSales/github-actions/append_report@v4
         with:
+          prefix: '${{ needs.init.outputs.global_title }}'
           priority: '030'
           phase: install
           job: install_module
@@ -641,6 +652,7 @@ jobs:
         if: ${{ always() && matrix.testplan == 'skip' }}
         uses: OXID-eSales/github-actions/append_report@v4
         with:
+          prefix: '${{ needs.init.outputs.global_title }}'
           priority: '030'
           phase: install
           job: install_module
@@ -659,6 +671,7 @@ jobs:
         if: always()
         uses: OXID-eSales/github-actions/append_report@v4
         with:
+          prefix: '${{ needs.init.outputs.global_title }}'
           header: true
           priority: '100'
           phase: test
@@ -687,6 +700,7 @@ jobs:
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
+          prefix: '${{ needs.init.outputs.global_title }}'
           root_testplan: ${{ needs.init.outputs.testplan }}
           matrix_testplan: ${{ matrix.testplan }}
           plan_folder: ${{ inputs.plan_folder }}
@@ -760,6 +774,7 @@ jobs:
         if: always()
         uses: OXID-eSales/github-actions/append_report@v4
         with:
+          prefix: '${{ needs.init.outputs.global_title }}'
           priority: '110'
           phase: test
           job: phpunit
@@ -793,6 +808,7 @@ jobs:
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
+          prefix: '${{ needs.init.outputs.global_title }}'
           root_testplan: ${{ needs.init.outputs.testplan }}
           matrix_testplan: ${{ matrix.testplan }}
           plan_folder: ${{ inputs.plan_folder }}
@@ -896,6 +912,7 @@ jobs:
         if: always()
         uses: OXID-eSales/github-actions/append_report@v4
         with:
+          prefix: '${{ needs.init.outputs.global_title }}'
           priority: '120'
           phase: test
           job: codeception
@@ -929,6 +946,7 @@ jobs:
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
+          prefix: '${{ needs.init.outputs.global_title }}'
           root_testplan: ${{ needs.init.outputs.testplan }}
           matrix_testplan: ${{ matrix.testplan }}
           plan_folder: ${{ inputs.plan_folder }}
@@ -1032,6 +1050,7 @@ jobs:
         if: always()
         uses: OXID-eSales/github-actions/append_report@v4
         with:
+          prefix: '${{ needs.init.outputs.global_title }}'
           priority: '130'
           phase: test
           job: runtest
@@ -1050,6 +1069,7 @@ jobs:
         if: always()
         uses: OXID-eSales/github-actions/append_report@v4
         with:
+          prefix: '${{ needs.init.outputs.global_title }}'
           header: true
           priority: '200'
           phase: report
@@ -1078,6 +1098,7 @@ jobs:
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
+          prefix: '${{ needs.init.outputs.global_title }}'
           root_testplan: ${{ needs.init.outputs.testplan }}
           matrix_testplan: ${{ matrix.testplan }}
           plan_folder: ${{ inputs.plan_folder }}
@@ -1107,7 +1128,7 @@ jobs:
         uses: 'OXID-eSales/github-actions/sonarcloud@v4'
         with:
           coverage_artifact: 'coverage-reports-*-${{ steps.sonarcloud_testplan_name.outputs.matrix_suffix }}'
-          output_artifact: 'coverage-reports'
+          output_artifact: 'coverage-reports-${{ needs.init.outputs.global_title }}'
           target_branch: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_target_branch }}
           strip_path: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_strip_path }}
           github_ref_name: ${{ github.ref_name }}
@@ -1123,6 +1144,7 @@ jobs:
         if: always()
         uses: OXID-eSales/github-actions/append_report@v4
         with:
+          prefix: '${{ needs.init.outputs.global_title }}'
           priority: '210'
           phase: report
           job: sonarcloud
@@ -1147,7 +1169,7 @@ jobs:
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v4'
         with:
-          cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           cache_bucket: ${{ needs.init.outputs.phpcs_tests_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
@@ -1168,7 +1190,7 @@ jobs:
           filter: ${{ needs.init.outputs.phpcs_tests_filter}}
           additional_options: ${{ needs.init.outputs.phpcs_tests_additional_options }}
           logfile: phpcs-PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_codesniff_log.txt
-          output_artifact: ${{ needs.init.outputs.phpcs_tests_output_prefix }}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}
+          output_artifact: ${{ needs.init.outputs.phpcs_tests_output_prefix }}-${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}
           output_files: ${{ needs.init.outputs.phpcs_tests_output_files }}
           failure_pattern: ${{ needs.init.outputs.phpcs_tests_failure_pattern }}
           debug: ${{ needs.init.outputs.debug }}
@@ -1183,6 +1205,7 @@ jobs:
         if: always()
         uses: OXID-eSales/github-actions/append_report@v4
         with:
+          prefix: '${{ needs.init.outputs.global_title }}'
           priority: '220'
           phase: report
           job: phpcs
@@ -1214,6 +1237,7 @@ jobs:
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
+          prefix: '${{ needs.init.outputs.global_title }}'
           root_testplan: ${{ needs.init.outputs.testplan }}
           matrix_testplan: ${{ matrix.testplan }}
           plan_folder: ${{ inputs.plan_folder }}
@@ -1237,7 +1261,7 @@ jobs:
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v4'
         with:
-          cached_shop: '${{ steps.styles_testplan.outputs.styles_load_shop}}_PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cached_shop: '${{ steps.styles_testplan.outputs.runtest_load_shop}}_${{ steps.styles_testplan_name.outputs.matrix_suffix }}'
           cache_bucket: ${{ steps.styles_testplan.outputs.styles_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
@@ -1283,7 +1307,7 @@ jobs:
           container_options: ${{ steps.styles_testplan.outputs.styles_container_options }}
           container_method: ${{ steps.styles_testplan.outputs.styles_container_method }}
           output_files: ${{ steps.styles_testplan.outputs.styles_output_files }}
-          output_artifact: ${{ steps.styles_testplan.outputs.styles_output_prefix}}_PHP${{ matrix.php }}
+          output_artifact: ${{ steps.styles_testplan.outputs.styles_output_prefix}}_${{ steps.styles_testplan_name.outputs.matrix_suffix }}
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Stop shop'
@@ -1296,6 +1320,7 @@ jobs:
         if: always()
         uses: OXID-eSales/github-actions/append_report@v4
         with:
+          prefix: '${{ needs.init.outputs.global_title }}'
           priority: '230'
           phase: report
           job: styles
@@ -1326,6 +1351,7 @@ jobs:
         if: always()
         uses: OXID-eSales/github-actions/append_report@v4
         with:
+          prefix: '${{ needs.init.outputs.global_title }}'
           priority: '240'
           phase: report
           title: ''
@@ -1374,6 +1400,7 @@ jobs:
         if: always()
         uses: OXID-eSales/github-actions/append_report@v4
         with:
+          prefix: '${{ needs.init.outputs.global_title }}'
           priority: '250'
           phase: report
           job: 'actionlint'
@@ -1407,6 +1434,7 @@ jobs:
         id: generate_report
         uses: 'OXID-eSales/github-actions/generate_report@v4'
         with:
+          prefix: '${{ needs.init.outputs.global_title }}'
           slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           title: '${{ needs.init.outputs.finish_slack_title }}'
           debug: ${{ inputs.debug }}
