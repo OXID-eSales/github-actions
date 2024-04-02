@@ -1,6 +1,10 @@
 name: 'append_report'
 description: 'Adds report and status snippets to the testplan artifact'
 inputs:
+  prefix:
+    type: string
+    required: true
+    description: 'Prefix for the testplan artifact name'
   header:
     type: boolean
     required: false
@@ -128,7 +132,7 @@ runs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: 'testplan-${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}'
+        name: '${{inputs.prefix}}-testplan-${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}'
         path: |
           job_status/*.txt
           reports/*.md

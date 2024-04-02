@@ -1,6 +1,10 @@
 name: 'generate_report'
 description: 'Appends data to the job_status'
 inputs:
+  prefix:
+    type: string
+    required: true
+    description: 'Prefix for the testplan artifact name'
   slack_webhook:
     type: string
     required: true
@@ -29,8 +33,8 @@ runs:
     - name: 'Consolidate testplan artifacts'
       uses: 'OXID-eSales/github-actions/consolidate_artifacts@v4'
       with:
-        target: 'testplan'
-        pattern: 'testplan-*'
+        target: '${{inputs.prefix}}-testplan'
+        pattern: '${{inputs.prefix}}-testplan-*'
 
     - name: 'Process job results for slack'
       id: process_slack
@@ -195,5 +199,5 @@ runs:
     - name: 'Update testplan artifacts'
       uses: 'OXID-eSales/github-actions/consolidate_artifacts@v4'
       with:
-        target: 'testplan'
-        pattern: 'testplan-*'
+        target: '${{inputs.prefix}}-testplan'
+        pattern: '${{inputs.prefix}}-testplan-*'
