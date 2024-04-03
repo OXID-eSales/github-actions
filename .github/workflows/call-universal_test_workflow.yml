@@ -1260,7 +1260,7 @@ jobs:
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v4'
         with:
-          cached_shop: '${{ steps.styles_testplan.outputs.runtest_load_shop}}_${{ steps.styles_testplan_name.outputs.matrix_suffix }}'
+          cached_shop: '${{ steps.styles_testplan.outputs.styles_load_shop}}_${{ steps.styles_testplan_name.outputs.matrix_suffix }}'
           cache_bucket: ${{ steps.styles_testplan.outputs.styles_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
