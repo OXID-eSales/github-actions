@@ -63,7 +63,9 @@ runs:
         WD=$(pwd)
         mkdir -p source/tests/reports "source/dev-packages/${{ inputs.path }}/tests"
         cd "source/dev-packages/${{ inputs.path }}/tests"
-        ln -s ../../../tests/reports
+        if [ ! -d reports ]; then
+          ln -s ../../../tests/reports
+        fi
         cd "${WD}"
         echo -e "\033[0;35m### Running composer install with ${{ inputs.install_options }}\033[0m"
         docker compose ${{ inputs.container_method }} -T \
