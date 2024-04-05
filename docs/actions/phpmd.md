@@ -8,7 +8,7 @@ Title used in the file names for the phpmd reports. Set to module ids for a modu
 **source_path:** *not required*, *default:* source  
 A folder to run the phpmd in.
 
-**reports_path:** *not required*, *default:* reports  
+**report_path:** *not required*, *default:* reports  
 Name of the folder to store the generated reports and PHP error log in.
 
 **config:** *not required*, *default:* tests/PhpMd/standard.xml  

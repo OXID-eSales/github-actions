@@ -11,7 +11,7 @@ inputs:
     required: false
     default: 'source'
     description: 'Folder to run phpmd in'
-  reports_path:
+  report_path:
     type: string
     required: false
     default: 'reports'

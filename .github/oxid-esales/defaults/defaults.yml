@@ -627,10 +627,7 @@ phpmd:
   title: 'oxideshop_ce'
 
   load_shop: *install_module_prefix
-  container:
-    <<: *container
-    # We only run the php container and don't bother with the rest
-    method: 'run'
+  container: *container
   cache:
     bucket: *cache_bucket
   composer:
@@ -651,13 +648,16 @@ phpmd:
   source_folder: 'source'
 
   # This is the folder we store the reports in (relative to /var/www in the container)
-  reports_path: 'reports'
+  report_path: 'reports'
 
   # Path to the phpmd configuration file
   config: 'tests/PhpMd/standard.xml'
 
   # If set to true, the report will run an additional composer phpmd to output into the github actions log
   verbose: false
+
+  output:
+    prefix: 'styles-phpmd'
 
 styles:
   matrix:

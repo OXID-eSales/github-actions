@@ -1122,44 +1122,18 @@ jobs:
           yaml: generated_testplan.yaml
           token: ${{ secrets.enterprise_github_token }}
 
-      - name: Load cached shop from cache
-        id: load_installed_shop
-        uses: tespkg/actions-cache/restore@v1
+      - name: 'Start shop'
+        uses: 'OXID-eSales/github-actions/start_shop@v4'
         with:
-          path: |
-            ./*
-          key: '${{ steps.phpmd_testplan.outputs.phpmd_load_shop}}_${{ steps.phpmd_testplan_name.outputs.matrix_suffix }}'
-          restore-keys: '${{ steps.phpmd_testplan.outputs.phpmd_load_shop}}_${{ steps.phpmd_testplan_name.outputs.matrix_suffix }}'
-          endpoint: ${{ secrets.CACHE_ENDPOINT }}
-          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
-          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
-          bucket: ${{ steps.phpmd_testplan.outputs.phpmd_cache_bucket }}
-
-      - name: Confirm restore
-        shell: bash
-        run: |
-          # start_shop: Confirm restore
-          SHOP='${{ steps.phpmd_testplan.outputs.phpmd_load_shop}}_${{ steps.phpmd_testplan_name.outputs.matrix_suffix }}'
-          if [ "${{ steps.load_installed_shop.outputs.cache-hit }}" != "true" ]; then
-            echo -e "\033[0;31m### Load ${SHOP} from cache: FAIL\033[0m"
-            exit 1
-          else
-            echo -e "\033[0;32m### Load ${SHOP} from cache: SUCCESS\033[0m"
-          fi
-
-      - name: Debug load cached shop
-        if: ${{ inputs.debug != '' }}
-        shell: bash
-        run: |
-          # start_shop: Debug load cached shop
-          echo "restore_cache '${{ steps.phpmd_testplan.outputs.phpmd_load_shop}}_${{ steps.phpmd_testplan_name.outputs.matrix_suffix }}'" >debug/debug.sh
-
-      - name: Login to Docker Hub
-        if: ${{ steps.phpmd_testplan.outputs.global_docker_login == true }}
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_HUB_USER }}
-          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+          cached_shop: '${{ steps.phpmd_testplan.outputs.phpmd_load_shop}}_${{ steps.phpmd_testplan_name.outputs.matrix_suffix }}'
+          cache_bucket: ${{ steps.phpmd_testplan.outputs.phpmd_cache_bucket }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          docker_login: ${{ steps.phpmd_testplan.outputs.phpmd_docker_login }}
+          docker_user: ${{ secrets.DOCKER_HUB_USER }}
+          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+          debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Modify composer.json'
         if: ${{ steps.phpmd_testplan.outputs.phpmd_composer_transform != '' }}
@@ -1191,7 +1165,7 @@ jobs:
         uses: 'OXID-eSales/github-actions/phpmd@v0'
         with:
           source_path: ${{ steps.phpmd_testplan.outputs.phpmd_source_path }}
-          reports_path: ${{ steps.phpmd_testplan.outputs.phpmd_reports_path }}
+          report_path: ${{ steps.phpmd_testplan.outputs.phpmd_report_path }}
           config: ${{ steps.phpmd_testplan.outputs.phpmd_config }}
           title: ${{ steps.phpmd_testplan.outputs.phpmd_title }}
           verbose: ${{ steps.phpmd_testplan.outputs.phpmd_verbose }}
