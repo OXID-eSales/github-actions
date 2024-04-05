@@ -1139,11 +1139,12 @@ jobs:
         shell: bash
         run: |
           # start_shop: Confirm restore
+          SHOP='${{ steps.phpmd_testplan.outputs.phpmd_load_shop}}_${{ steps.phpmd_testplan_name.outputs.matrix_suffix }}'
           if [ "${{ steps.load_installed_shop.outputs.cache-hit }}" != "true" ]; then
-            echo -e "\033[0;31m### Load ${{ steps.phpmd_testplan.outputs.phpmd_load_shop}}_${{ steps.phpmd_testplan_name.outputs.matrix_suffix }} from cache: FAIL\033[0m"
+            echo -e "\033[0;31m### Load ${SHOP} from cache: FAIL\033[0m"
             exit 1
           else
-            echo -e "\033[0;32m### Load ${{ steps.phpmd_testplan.outputs.phpmd_load_shop}}_${{ steps.phpmd_testplan_name.outputs.matrix_suffix }} from cache: SUCCESS\033[0m"
+            echo -e "\033[0;32m### Load ${SHOP} from cache: SUCCESS\033[0m"
           fi
 
       - name: Debug load cached shop
@@ -1219,7 +1220,7 @@ jobs:
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
           debug: ${{ inputs.debug }}
- 
+
   sonarcloud:
     needs: ['init', 'install_module', 'phpunit', 'codeception', 'begin_report_phase']
     # yamllint disable-line rule:line-length
