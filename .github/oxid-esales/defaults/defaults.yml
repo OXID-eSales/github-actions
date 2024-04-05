@@ -654,7 +654,7 @@ phpmd:
   config: 'tests/PhpMd/standard.xml'
 
   # If set to true, the report will run an additional composer phpmd to output into the github actions log
-  verbose: false
+  verbose: true
 
   output:
     prefix: 'styles-phpmd'
