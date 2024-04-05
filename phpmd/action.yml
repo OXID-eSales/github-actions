@@ -67,8 +67,8 @@ runs:
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
-          /var/www/vendor/bin/phpmd ${{ inputs.source_path }} json \
-          ${{ inputs.config }} \
+          /var/www/vendor/bin/phpmd /var/www/${{ inputs.source_path }} json \
+          /var/www/${{ inputs.config }} \
           --ignore-errors-on-exit --ignore-violations-on-exit \
           --reportfile '/var/www/${{inputs.report_path }}/phpmd-${{ inputs.title }}.json' || true
 
@@ -77,7 +77,8 @@ runs:
           docker compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
             ${{ inputs.container_name }} \
-            /var/www/vendor/bin/phpmd ${{ inputs.source_path }} ansi \
+            /var/www/vendor/bin/phpmd /var/www/${{ inputs.source_path }} ansi \
+            /var/www/${{ inputs.config }} \
             --ignore-errors-on-exit --ignore-violations-on-exit \
           tee -a source/${{inputs.report_path}}/phpmd-${{ inputs.title }}.txt || true
         fi

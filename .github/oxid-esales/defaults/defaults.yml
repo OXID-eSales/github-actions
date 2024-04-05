@@ -387,7 +387,6 @@ phpunit:
 
   failure_pattern: *failure_pattern
 
-
 # This step usesd the codeception custom action. Many inputs are similar to the
 # ones in the unit tests.
 # See docs/actions/start_shop.md and docs/actions/codeception.md for more information.
@@ -646,10 +645,6 @@ phpmd:
       }
     update: true
     update_options: '--no-interaction'
-
-  # Path to the  code folder, that is empty for the shop and "vendor/<org>/name"
-  # for modules. This path is relative to /var/www in the container
-  workdir: ''
 
   # Name of the source folder, relative to the path above. That is source for the shop
   # and src for modules.
