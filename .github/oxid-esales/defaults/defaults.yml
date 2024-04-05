@@ -634,13 +634,13 @@ phpmd:
   cache:
     bucket: *cache_bucket
   composer:
-    file: 'composer.json'
+    file: 'source/composer.json'
     backup: true
     # Make sure, phpmd is installed properly
     transform: |
       {
         "require": {
-          "phpmd/phpmd": "^2.11",
+          "phpmd/phpmd": "^2.11"
         }
       }
     update: true
