@@ -1,0 +1,96 @@
+name: 'phpmd'
+description: 'Run phpmd'
+inputs:
+  title:
+    type: string
+    required: false
+    default: 'shop'
+    description: 'Name of the report without the suffix'
+  source_path:
+    type: string
+    required: false
+    default: 'source'
+    description: 'Folder to run phpmd in'
+  reports_path:
+    type: string
+    required: false
+    default: 'reports'
+    description: 'Folder to save the report to'
+  config:
+    type: string
+    required: false
+    default: 'tests/PhpMd/standard.xml'
+    description: 'Folder to save the report to'
+  verbose:
+    type: boolean
+    required: false
+    default: false
+    description: 'Show the PHPMD report in the job console too'
+  container_name:
+    type: string
+    required: false
+    description: 'Name of the container to run the test in'
+    default: 'php'
+  container_options:
+    type: string
+    required: false
+    description: 'Additional options to pass into the container'
+    default: ''
+  container_method:
+    type: string
+    required: false
+    description: 'Method to execute the commands inside a container, either "run" or "exec"'
+    default: 'exec'
+  output_artifact:
+    type: string
+    required: false
+    description: 'Github run artifact for the styles output'
+    default: 'phpmd'
+  debug:
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run PHP Mess Detector
+      continue-on-error: true
+      shell: bash
+      run: |
+        # styles: Run PHP Mess Detector
+        ${{ inputs.debug }}
+        mkdir -p "source/${{inputs.report_path}}"
+
+        echo -e "\033[0;35m###  Run phpmd-report in ${{ inputs.source_path }} ###\033[0m"
+        docker compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container_name }} \
+          /var/www/vendor/bin/phpmd ${{ inputs.source_path }} json \
+          ${{ inputs.config }} \
+          --ignore-errors-on-exit --ignore-violations-on-exit \
+          --reportfile '/var/www/${{inputs.report_path }}/phpmd-${{ inputs.title }}.json' || true
+
+        if [ '${{inputs.verbose}}' == 'true' ]; then
+          echo -e "\033[0;35m###  Run phpmd in ${{ inputs.source_path }} ###\033[0m"
+          docker compose ${{ inputs.container_method }} -T \
+            ${{ inputs.container_options }} \
+            ${{ inputs.container_name }} \
+            /var/www/vendor/bin/phpmd ${{ inputs.source_path }} ansi \
+            --ignore-errors-on-exit --ignore-violations-on-exit \
+          tee -a source/${{inputs.report_path}}/phpmd-${{ inputs.title }}.txt || true
+        fi
+
+        if [ -s data/php/logs/error_log.txt ]; then
+          echo -e "\033[0;35mPHP error log\033[0m"
+          cat data/php/logs/error_log.txt | tee -a ${{inputs.report_path}}/php_error_log-${{ inputs.title }}.txt
+        fi
+
+    - name: Upload artifact
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.output_artifact }}
+        path: |
+          source/${{ inputs.report_path }}*

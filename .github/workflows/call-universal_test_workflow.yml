@@ -255,6 +255,11 @@ jobs:
       phpcs_tests_matrix_php: ${{ steps.ltp.outputs.phpcs_tests_matrix_php }}
       phpcs_tests_max_parallel: ${{ steps.ltp.outputs.phpcs_tests_max_parallel }}
       phpcs_tests_skip: ${{ steps.ltp.outputs.phpcs_tests_skip }}
+      # phpmd variables
+      phpmd_matrix_mysql: ${{ steps.ltp.outputs.sonarcloud_matrix_mysql }}
+      phpmd_matrix_php: ${{ steps.ltp.outputs.sonarcloud_matrix_php }}
+      phpmd_matrix_testplan: ${{ steps.ltp.outputs.sonarcloud_matrix_testplan }}
+      phpmd_max_parallel: ${{ steps.ltp.outputs.sonarcloud_max_parallel }}
       # styles variables
       styles_matrix_mysql: ${{ steps.ltp.outputs.styles_matrix_mysql }}
       styles_matrix_php: ${{ steps.ltp.outputs.styles_matrix_php }}
@@ -1074,6 +1079,147 @@ jobs:
           phase: report
           debug: false
 
+  phpmd:
+    needs: ['init', 'install_module', 'begin_report_phase']
+    if: ${{ needs.init.outputs.phpmd_matrix_testplan != 'skip' }}
+    strategy:
+      matrix:
+        php: ${{ fromJSON(needs.init.outputs.phpmd_matrix_php) }}
+        mysql: ${{ fromJSON(needs.init.outputs.phpmd_matrix_mysql) }}
+        testplan: ${{ fromJSON(needs.init.outputs.phpmd_matrix_testplan) }}
+      fail-fast: false
+      max-parallel: ${{ fromJSON(needs.init.outputs.phpmd_max_parallel) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    env:
+      MATRIX_PHP: ${{ matrix.php }}
+      MATRIX_MYSQL: ${{ matrix.mysql }}
+      MATRIX_TESTPLAN: ${{ matrix.testplan }}
+    steps:
+      - name: Load cached testplan
+        id: phpmd_testplan_name
+        uses: OXID-eSales/github-actions/load_cached_testplan@v4
+        with:
+          php: ${{ matrix.php }}
+          mysql: ${{ matrix.mysql }}
+          prefix: '${{ needs.init.outputs.global_title }}'
+          root_testplan: ${{ needs.init.outputs.testplan }}
+          matrix_testplan: ${{ matrix.testplan }}
+          plan_folder: ${{ inputs.plan_folder }}
+          cache_name: ${{ needs.init.outputs.init_cache_name }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          cache_bucket: ${{ needs.init.outputs.init_cache_bucket }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Load Testplan'
+        id: phpmd_testplan
+        uses: 'joernott/load_testplan@v1'
+        with:
+          files: '${{steps.phpmd_testplan_name.outputs.testplan}}'
+          set_output: true
+          set_print: true
+          yaml: generated_testplan.yaml
+          token: ${{ secrets.enterprise_github_token }}
+
+      - name: Load cached shop from cache
+        id: load_installed_shop
+        uses: tespkg/actions-cache/restore@v1
+        with:
+          path: |
+            ./*
+          key: '${{ steps.phpmd_testplan.outputs.phpmd_load_shop}}_${{ steps.phpmd_testplan_name.outputs.matrix_suffix }}'
+          restore-keys: '${{ steps.phpmd_testplan.outputs.phpmd_load_shop}}_${{ steps.phpmd_testplan_name.outputs.matrix_suffix }}'
+          endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
+          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
+          bucket: ${{ steps.phpmd_testplan.outputs.phpmd_cache_bucket }}
+
+      - name: Confirm restore
+        shell: bash
+        run: |
+          # start_shop: Confirm restore
+          if [ "${{ steps.load_installed_shop.outputs.cache-hit }}" != "true" ]; then
+            echo -e "\033[0;31m### Load ${{ steps.phpmd_testplan.outputs.phpmd_load_shop}}_${{ steps.phpmd_testplan_name.outputs.matrix_suffix }} from cache: FAIL\033[0m"
+            exit 1
+          else
+            echo -e "\033[0;32m### Load ${{ steps.phpmd_testplan.outputs.phpmd_load_shop}}_${{ steps.phpmd_testplan_name.outputs.matrix_suffix }} from cache: SUCCESS\033[0m"
+          fi
+
+      - name: Debug load cached shop
+        if: ${{ inputs.debug != '' }}
+        shell: bash
+        run: |
+          # start_shop: Debug load cached shop
+          echo "restore_cache '${{ steps.phpmd_testplan.outputs.phpmd_load_shop}}_${{ steps.phpmd_testplan_name.outputs.matrix_suffix }}'" >debug/debug.sh
+
+      - name: Login to Docker Hub
+        if: ${{ inputs.docker_login == 'true' }}
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.docker_user }}
+          password: ${{ secrets.docker_token }}
+
+      - name: 'Modify composer.json'
+        if: ${{ steps.phpmd_testplan.outputs.phpmd_composer_transform != '' }}
+        uses: 'OXID-eSales/github-actions/composer_merge@v4'
+        with:
+          file: '${{ steps.phpmd_testplan.outputs.composer_file }}'
+          backup: true
+          transform: |
+            ${{ steps.phpmd_testplan.outputs.phpmd_composer_transform }}
+          update: ${{ steps.phpmd_testplan.outputs.phpmd_composer_update }}
+          update_options: ${{ steps.phpmd_testplan.outputs.phpmd_composer_update_options }}
+          container_name: ${{ steps.phpmd_testplan.outputs.phpmd_container_name }}
+          container_options: ${{ steps.phpmd_testplan.outputs.phpmd_container_options }}
+          container_method: ${{ steps.phpmd_testplan.outputs.phpmd_container_method }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: Run custom scripts
+        if: ${{ steps.phpmd_testplan.outputs.phpmd_custom_script != '' && steps.phpmd_testplan.outputs.phpmd_custom_script_container != '' }}
+        uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
+        with:
+          container_name: ${{ steps.phpmd_testplan.outputs.phpmd_container_name }}
+          container_options: ${{ steps.phpmd_testplan.outputs.phpmd_container_options }}
+          container_method: ${{ steps.phpmd_testplan.outputs.phpmd_container_method }}
+          custom_script: ${{ steps.phpmd_testplan.outputs.phpmd_custom_script }}
+          custom_script_container: ${{ steps.phpmd_testplan.outputs.phpmd_custom_script_container }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Run phpmd check'
+        uses: 'OXID-eSales/github-actions/phpmd@v0'
+        with:
+          source_path: ${{ steps.phpmd_testplan.outputs.phpmd_source_path }}
+          reports_path: ${{ steps.phpmd_testplan.outputs.phpmd_reports_path }}
+          config: ${{ steps.phpmd_testplan.outputs.phpmd_config }}
+          title: ${{ steps.phpmd_testplan.outputs.phpmd_title }}
+          verbose: ${{ steps.phpmd_testplan.outputs.phpmd_verbose }}
+          container_name: ${{ steps.phpmd_testplan.outputs.phpmd_container_name }}
+          container_options: ${{ steps.phpmd_testplan.outputs.phpmd_container_options }}
+          container_method: ${{ steps.phpmd_testplan.outputs.phpmd_container_method }}
+          output_artifact: ${{ steps.phpmd_testplan.outputs.phpmd_output_prefix}}_${{ steps.phpmd_testplan_name.outputs.matrix_suffix }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Stop shop'
+        if: ${{ always() }}
+        uses: 'OXID-eSales/github-actions/stop_shop@v4'
+        with:
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Write Report'
+        if: always()
+        uses: OXID-eSales/github-actions/append_report@v4
+        with:
+          prefix: '${{ needs.init.outputs.global_title }}'
+          priority: '230'
+          phase: report
+          job: phpmd
+          title: '${{ steps.phpmd_testplan.outputs.phpmd_title }}'
+          php: ${{matrix.php}}
+          mysql: ${{matrix.mysql}}
+          status: ${{job.status}}
+          debug: ${{ inputs.debug }}
+ 
   sonarcloud:
     needs: ['init', 'install_module', 'phpunit', 'codeception', 'begin_report_phase']
     # yamllint disable-line rule:line-length
