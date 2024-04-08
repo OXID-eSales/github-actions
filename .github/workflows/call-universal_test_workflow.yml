@@ -886,7 +886,7 @@ jobs:
 
       - name: 'Run codeception tests'
         id: codeception_run
-        uses: 'OXID-eSales/github-actions/codeception@v4'
+        uses: 'OXID-eSales/github-actions/codeception@v0'
         with:
           container_name: ${{ steps.codeception_testplan.outputs.codeception_container_name }}
           container_options: '${{ steps.codeception_testplan.outputs.codeception_container_options }} ${{ steps.pre_script.outputs.container_options }}'
