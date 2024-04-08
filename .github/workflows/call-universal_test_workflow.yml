@@ -1178,6 +1178,7 @@ jobs:
           container_options: ${{ steps.phpmd_testplan.outputs.phpmd_container_options }}
           container_method: ${{ steps.phpmd_testplan.outputs.phpmd_container_method }}
           output_artifact: ${{ steps.phpmd_testplan.outputs.phpmd_output_prefix}}_${{ steps.phpmd_testplan_name.outputs.matrix_suffix }}
+          failure_pattern: ${{ steps.phpmd_testplan.outputs.phpmd_failure_pattern }}
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Stop shop'

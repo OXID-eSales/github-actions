@@ -51,7 +51,14 @@ inputs:
     description: 'Appended to debugging scripts'
     default: ''
     required: false
-
+  failure_pattern:
+    type: string
+    required: false
+    description: 'Grep pattern which indicate that the test failed'
+    default: |
+      "warnings": [
+      "violations": [
+      "errors": [
 runs:
   using: "composite"
   steps:
@@ -95,3 +102,35 @@ runs:
         name: ${{ inputs.output_artifact }}
         path: |
           source/${{ inputs.report_path }}*
+
+    - name: Check results
+      shell: bash
+      run: |
+        # phpmd: Check results
+        ${{ inputs.debug }}
+        FILE='source/${{inputs.report_path }}/phpmd-${{ inputs.title }}.json'
+        PURPLE=$(echo -e "\033[0;31m")
+        NOCOLOR=$(echo -e "\033[0m")
+        if [ ! -s "${FILE}" ]; then
+          cat <<EOF
+        ${PURPLE}###############################################################################
+        ### JSON Report is empty! Seems like no tests have been run!
+        ###############################################################################${NOCOLOR}
+        EOF
+          exit 1
+        fi
+        cat >failure_pattern.tmp <<EOF
+        ${{ inputs.failure_pattern}}
+        EOF
+        sed -e 's|(.*)\r|$1|' -i failure_pattern.tmp
+        while read -r LINE ; do
+          if [ -n "${LINE}" ]; then
+            if grep -q -E "${LINE}" "${FILE}"; then
+              echo -e "\033[0;31m phpmd failed matching pattern ${LINE}"
+              grep -E "${LINE}" "${FILE}"
+              exit 1
+            else
+                echo -e "\033[0;32m runtest passed matching pattern ${LINE}"
+            fi
+          fi
+        done <failure_pattern.tmp

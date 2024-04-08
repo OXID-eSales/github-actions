@@ -79,7 +79,7 @@ runs:
           -c/var/www/${{inputs.neon_file}} analyse /var/www/${{ inputs.source_path }} \
           ${BASELINE_OPTIONS} \
           --error-format=json \
-        >/source/${{inputs.report_path }}/phpstan-${{ inputs.title }}.json || true
+        | cat >/source/${{inputs.report_path }}/phpstan-${{ inputs.title }}.json || true
 
         if [ '${{inputs.verbose}}' == 'true' ]; then
           echo -e "\033[0;35m###  Run phpstan in ${{ inputs.source_path }} ###\033[0m"
@@ -87,7 +87,8 @@ runs:
             ${{ inputs.container_options }} \
             ${{ inputs.container_name }} \
             /var/www/vendor/bin/phpstan \
-            -c/var/www/${{inputs.neon_file}} analyse /var/www/${{ inputs.source_path }} \
+            -c/var/www/${{inputs.neon_file}} analyse /var/www/${{ inputs.source_path }} 
+            --no-progress \
           | tee -a source/${{inputs.report_path}}/phpstan-${{ inputs.title }}.txt || true
         fi
 

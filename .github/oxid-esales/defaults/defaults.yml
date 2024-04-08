@@ -659,6 +659,11 @@ phpmd:
   output:
     prefix: 'styles-phpmd'
 
+  failure_pattern: &failure_pattern |
+    "warnings": [
+    "violations": [
+    "errors": [
+
 phpstan:
   matrix:
     php: *matrix_php_slim
