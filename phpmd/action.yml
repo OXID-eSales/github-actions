@@ -59,11 +59,11 @@ runs:
       continue-on-error: true
       shell: bash
       run: |
-        # styles: Run PHP Mess Detector
+        # phpmd: Run PHP Mess Detector
         ${{ inputs.debug }}
         mkdir -p "source/${{inputs.report_path}}"
 
-        echo -e "\033[0;35m###  Run phpmd-report in ${{ inputs.source_path }} ###\033[0m"
+        echo -e "\033[0;35m###  Generate phpmd-report in ${{ inputs.source_path }} ###\033[0m"
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
