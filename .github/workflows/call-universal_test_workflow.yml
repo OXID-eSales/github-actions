@@ -1290,6 +1290,7 @@ jobs:
           neon_file: ${{ steps.phpstan_testplan.outputs.phpstan_neon_file }}
           title: ${{ steps.phpstan_testplan.outputs.phpstan_title }}
           verbose: ${{ steps.phpstan_testplan.outputs.phpstan_verbose }}
+          generate_baseline: ${{ steps.phpstan_testplan.outputs.generate_baseline }}
           container_name: ${{ steps.phpstan_testplan.outputs.phpstan_container_name }}
           container_options: ${{ steps.phpstan_testplan.outputs.phpstan_container_options }}
           container_method: ${{ steps.phpstan_testplan.outputs.phpstan_container_method }}

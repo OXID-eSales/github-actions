@@ -698,8 +698,11 @@ phpstan:
   # Path to the phpmd configuration file
   neon_file: 'tests/PhpStan/phpstan.neon'
 
-  # If set to true, the report will run an additional composer phpmd to output into the github actions log
+  # If set to true, the report will run phpstan a 2nd time to output into the github actions log
   verbose: true
+
+  # If set to true, the report will run phpstan to generate a new baseline file
+  generate_baseline: true
 
   output:
     prefix: 'styles-phpstan'

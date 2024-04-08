@@ -10,7 +10,7 @@ inputs:
     type: string
     required: false
     default: 'source'
-    description: 'Folder to run phpmd in'
+    description: 'Folder to run phpstan in'
   report_path:
     type: string
     required: false
@@ -25,7 +25,12 @@ inputs:
     type: boolean
     required: false
     default: false
-    description: 'Show the PHPMD report in the job console too'
+    description: 'Show the report in the job console too'
+  generate_baseline:
+    type: boolean
+    required: false
+    default: false
+    description: 'Generate a baseline file'
   container_name:
     type: string
     required: false
@@ -68,7 +73,7 @@ runs:
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
           /var/www/vendor/bin/phpstan \
-          -c/var/www/{{inputs.neon_file}} analyse /var/www/${{ inputs.source_path }} \
+          -c /var/www/{{inputs.neon_file}} analyse /var/www/${{ inputs.source_path }} \
           --error-format=json > /var/www/${{inputs.report_path }}/phpstan-${{ inputs.title }}.json \
         || true
 
@@ -78,7 +83,7 @@ runs:
             ${{ inputs.container_options }} \
             ${{ inputs.container_name }} \
             /var/www/vendor/bin/phpstan \
-            -c/var/www/{{inputs.neon_file}} analyse /var/www/${{ inputs.source_path }} \
+            -c /var/www/{{inputs.neon_file}} analyse /var/www/${{ inputs.source_path }} \
           | tee -a source/${{inputs.report_path}}/phpstan-${{ inputs.title }}.txt || true
         fi
 
