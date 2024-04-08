@@ -445,7 +445,7 @@ codeception:
   test: ''
 
   # Additional options to pass to codeception
-  additional_options: ''
+  additional_options: '--ext DotReporter'
 
   # Additional options to pass to codecept build
   build_additional_options: ''

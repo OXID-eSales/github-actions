@@ -40,7 +40,7 @@ inputs:
     type: string
     required: false
     description: 'Optional: Additional options to pass to codeception'
-    default: ''
+    default: '--ext DotReporter'
   build_additional_options:
     type: string
     required: false
@@ -114,7 +114,6 @@ runs:
            ${{ inputs.container_name}} \
            vendor/bin/codecept run ${{ inputs.suite }} ${{ inputs.test }} \
             -c ${{ inputs.configuration }} \
-            --ext DotReporter \
             ${{ inputs.additional_options }} \
             2>&1 | tee ${{ inputs.logfile }} || true
 
