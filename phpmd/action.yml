@@ -144,7 +144,6 @@ runs:
           if [ -n "${LINE}" ]; then
             if grep -q -E "${LINE}" "${FILE}"; then
               echo -e "\033[0;31m phpmd failed matching pattern ${LINE}"
-              grep -E "${LINE}" "${FILE}"
               exit 1
             else
                 echo -e "\033[0;32m phpmd passed matching pattern ${LINE}"
