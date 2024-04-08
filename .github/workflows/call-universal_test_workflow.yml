@@ -1217,7 +1217,7 @@ jobs:
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
     steps:
       - name: Load cached testplan
-        id: phpmd_testplan_name
+        id: phpstan_testplan_name
         uses: OXID-eSales/github-actions/load_cached_testplan@v4
         with:
           php: ${{ matrix.php }}
