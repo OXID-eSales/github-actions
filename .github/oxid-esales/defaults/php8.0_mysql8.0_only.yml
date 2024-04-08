@@ -35,6 +35,10 @@ phpmd:
   matrix: *matrix
   max_parallel: 1
 
+phpstan:
+  matrix: *matrix
+  max_parallel: 1
+
 styles:
   matrix: *matrix
   max_parallel: 1

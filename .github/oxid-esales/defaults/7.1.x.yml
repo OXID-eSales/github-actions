@@ -70,6 +70,12 @@ sonarcloud:
 phpcs_tests:
   matrix: *matrix_slim
 
+phpmd:
+  matrix: *matrix_slim
+
+phpstan:
+  matrix: *matrix_slim
+
 styles:
   matrix: *matrix_slim
   composer: *composer

@@ -1,7 +1,10 @@
 name: push-validate_workflows
 # Validates workflow files on push
 # yamllint disable-line rule:truthy
-on: push
+on:
+  push:
+    branches-ignore:
+      - v0
 
 jobs:
   init:
