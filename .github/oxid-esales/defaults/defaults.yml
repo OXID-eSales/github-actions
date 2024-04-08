@@ -660,9 +660,9 @@ phpmd:
     prefix: 'styles-phpmd'
 
   failure_pattern: &failure_pattern |
-    "warnings": [
-    "violations": [
-    "errors": [
+    "warnings":
+    "violations":
+    "errors":
 
 phpstan:
   matrix:

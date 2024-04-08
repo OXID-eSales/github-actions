@@ -56,9 +56,9 @@ inputs:
     required: false
     description: 'Grep pattern which indicate that the test failed'
     default: |
-      "warnings": [
-      "violations": [
-      "errors": [
+      "warnings":
+      "violations":
+      "errors":
 runs:
   using: "composite"
   steps:

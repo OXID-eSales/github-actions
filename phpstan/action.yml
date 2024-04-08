@@ -67,19 +67,27 @@ runs:
         # phpstan: Run PHPStan
         ${{ inputs.debug }}
         mkdir -p "source/${{inputs.report_path}}"
-        BASELINE_OPTIONS=''
-        if [ '${{ inputs.generate_baseline }}' == 'true' ]; then
-          BASELINE_OPTIONS='--generate-baseline /var/www/${{inputs.report_path }}/phpstan-${{ inputs.title }}-baseline.neon'
-        fi
         echo -e "\033[0;35m###  Generate phpstan-report in ${{ inputs.source_path }} ###\033[0m"
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
           /var/www/vendor/bin/phpstan \
           -c/var/www/${{inputs.neon_file}} analyse /var/www/${{ inputs.source_path }} \
-          ${BASELINE_OPTIONS} \
+          --no-progress \
           --error-format=json \
-        | cat >/source/${{inputs.report_path }}/phpstan-${{ inputs.title }}.json || true
+        | cat >source/${{inputs.report_path }}/phpstan-${{ inputs.title }}.json || true
+
+        if [ '${{ inputs.generate_baseline }}' == 'true' ]; then
+          echo -e "\033[0;35m###  Generate phpstan baseline for ${{ inputs.source_path }} ###\033[0m"
+          docker compose ${{ inputs.container_method }} -T \
+            ${{ inputs.container_options }} \
+            ${{ inputs.container_name }} \
+            /var/www/vendor/bin/phpstan \
+            -c/var/www/${{inputs.neon_file}} analyse /var/www/${{ inputs.source_path }} \
+            --generate-baseline /var/www/${{inputs.report_path }}/phpstan-${{ inputs.title }}-baseline.neon \
+            --no-progress --quiet
+          || true
+        fi
 
         if [ '${{inputs.verbose}}' == 'true' ]; then
           echo -e "\033[0;35m###  Run phpstan in ${{ inputs.source_path }} ###\033[0m"
