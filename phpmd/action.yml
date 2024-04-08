@@ -83,6 +83,7 @@ runs:
           /var/www/vendor/bin/phpmd /var/www/${{ inputs.source_path }} json \
           /var/www/${{ inputs.config }} \
           --ignore-errors-on-exit --ignore-violations-on-exit \
+          --baseline-file '/var/www/${{inputs.report_path }}/phpmd.baseline.xml' \
           --reportfile '/var/www/${{inputs.report_path }}/phpmd-${{ inputs.title }}.json' || true
 
         if [ '${{ inputs.generate_baseline }}' == 'true' ]; then
@@ -93,7 +94,7 @@ runs:
             /var/www/vendor/bin/phpmd /var/www/${{ inputs.source_path }} json \
             /var/www/${{ inputs.config }} \
             --ignore-errors-on-exit --ignore-violations-on-exit \
-            --generate-baseline --baseline-file '/var/www/${{inputs.report_path }}/phpmd-baseline.xml' || true
+            --generate-baseline --baseline-file '/var/www/${{inputs.report_path }}/phpmd.baseline.xml' || true
         fi
 
         if [ '${{inputs.verbose}}' == 'true' ]; then
@@ -104,6 +105,7 @@ runs:
             /var/www/vendor/bin/phpmd /var/www/${{ inputs.source_path }} ansi \
             /var/www/${{ inputs.config }} \
             --ignore-errors-on-exit --ignore-violations-on-exit \
+            --baseline-file '/var/www/${{inputs.report_path }}/phpmd.baseline.xml' \
           | tee -a source/${{inputs.report_path}}/phpmd-${{ inputs.title }}.txt || true
         fi
 
