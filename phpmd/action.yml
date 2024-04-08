@@ -80,7 +80,7 @@ runs:
             /var/www/vendor/bin/phpmd /var/www/${{ inputs.source_path }} ansi \
             /var/www/${{ inputs.config }} \
             --ignore-errors-on-exit --ignore-violations-on-exit \
-          tee -a source/${{inputs.report_path}}/phpmd-${{ inputs.title }}.txt || true
+          | tee -a source/${{inputs.report_path}}/phpmd-${{ inputs.title }}.txt || true
         fi
 
         if [ -s data/php/logs/error_log.txt ]; then
