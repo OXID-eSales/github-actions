@@ -659,6 +659,51 @@ phpmd:
   output:
     prefix: 'styles-phpmd'
 
+phpstan:
+  matrix:
+    php: *matrix_php_slim
+    mysql: *matrix_mysql_slim
+    # This is only used in the module workflow, so the default is to skip this
+    testplan: 'skip'
+  max_parallel: 8
+
+  # This is the name of the report and code artifact, you need to override it if you want
+  # to generate reports for multiple modules in one workflow
+  title: 'oxideshop_ce'
+
+  load_shop: *install_module_prefix
+  container: *container
+  cache:
+    bucket: *cache_bucket
+  composer:
+    file: 'source/composer.json'
+    backup: true
+    # Make sure, phpmd is installed properly
+    transform: |
+      {
+        "require": {
+          "phpstan/phpstan": "^1.9.14"
+        }
+      }
+    update: true
+    update_options: '--no-interaction'
+
+  # Name of the source folder, relative to the path above. That is source for the shop
+  # and src for modules.
+  source_folder: 'source'
+
+  # This is the folder we store the reports in (relative to /var/www in the container)
+  report_path: 'reports'
+
+  # Path to the phpmd configuration file
+  neon_file: 'tests/PhpStan/phpstan.neon'
+
+  # If set to true, the report will run an additional composer phpmd to output into the github actions log
+  verbose: true
+
+  output:
+    prefix: 'styles-phpstan'
+
 styles:
   matrix:
     php: *matrix_php_slim

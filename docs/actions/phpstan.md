@@ -1,5 +1,5 @@
-# phpmd
-Runs phpmd reports and creates an artifact for this
+# phpstan
+Runs phpstan reports and creates an artifact for this
 
 ## Inputs:
 **title:** *not required*, *default:* shop_ce  
@@ -11,8 +11,8 @@ A folder to run the phpmd in.
 **report_path:** *not required*, *default:* reports  
 Name of the folder to store the generated reports and PHP error log in.
 
-**config:** *not required*, *default:* tests/PhpMd/standard.xml  
-Name of the configuration file for phpmd.
+**neon_file:** *not required*, *default:* tests/PhpStan/phpstan.neon  
+Name of the .neon file for phpstan.
 
 **verbose:** *not required*, *default:* false  
 If set to true, not only phpmd-report but an additional phpmd run with text output

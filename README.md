@@ -30,5 +30,7 @@ This repository contains re-usable GitHub workflows and actions for the OXID-eSa
     - [runtests](docs/actions/phpunit.md) executes runtests script in a running container.
 - Analysis actions
     - [phpcs](docs/actions/phpcs.md) runs phpcs over the given installation
+    - [phpmd](docs/actions/phpmd.md) runs phpmd over the given installation
+    - [phpstan](docs/actions/phpstan.md) runs phpcs over the given installation
     - [sonarcloud](docs/actions/sonarcloud.md) runs sonarcloud over the given installation
-    - [styles](docs/actions/styles.md) runs phpcs, phpstan and phpmd reports
+    - DEPRTECATED [styles](docs/actions/styles.md) runs phpcs, phpstan and phpmd reports
