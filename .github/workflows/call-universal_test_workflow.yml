@@ -1297,6 +1297,7 @@ jobs:
           container_options: ${{ steps.phpstan_testplan.outputs.phpstan_container_options }}
           container_method: ${{ steps.phpstan_testplan.outputs.phpstan_container_method }}
           output_artifact: ${{ steps.phpstan_testplan.outputs.phpstan_output_prefix}}_${{ steps.phpstan_testplan_name.outputs.matrix_suffix }}
+          failure_pattern: ${{ steps.phpmd_testplan.outputs.phpstan_failure_pattern }}
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Stop shop'

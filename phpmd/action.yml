@@ -51,11 +51,6 @@ inputs:
     required: false
     description: 'Github run artifact for the styles output'
     default: 'phpmd'
-  debug:
-    type: string
-    description: 'Appended to debugging scripts'
-    default: ''
-    required: false
   failure_pattern:
     type: string
     required: false
@@ -64,6 +59,12 @@ inputs:
       "warnings":
       "violations":
       "errors":
+  debug:
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
+    required: false
+
 runs:
   using: "composite"
   steps:
@@ -146,7 +147,7 @@ runs:
               grep -E "${LINE}" "${FILE}"
               exit 1
             else
-                echo -e "\033[0;32m runtest passed matching pattern ${LINE}"
+                echo -e "\033[0;32m phpmd passed matching pattern ${LINE}"
             fi
           fi
         done <failure_pattern.tmp

@@ -715,6 +715,10 @@ phpstan:
   output:
     prefix: 'styles-phpstan'
 
+  failure_pattern: &failure_pattern |
+    "errors":[1-9][0-9]*
+    "file_errors":[1-9][0-9]*
+
 styles:
   matrix:
     php: *matrix_php_slim
