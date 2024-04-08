@@ -1174,6 +1174,7 @@ jobs:
           config: ${{ steps.phpmd_testplan.outputs.phpmd_config }}
           title: ${{ steps.phpmd_testplan.outputs.phpmd_title }}
           verbose: ${{ steps.phpmd_testplan.outputs.phpmd_verbose }}
+          generate_baseline: ${{ steps.phpmd_testplan.outputs.phpmd_generate_baseline }}
           container_name: ${{ steps.phpmd_testplan.outputs.phpmd_container_name }}
           container_options: ${{ steps.phpmd_testplan.outputs.phpmd_container_options }}
           container_method: ${{ steps.phpmd_testplan.outputs.phpmd_container_method }}

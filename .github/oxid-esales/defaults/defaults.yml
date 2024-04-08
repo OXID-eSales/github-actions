@@ -656,6 +656,9 @@ phpmd:
   # If set to true, the report will run an additional composer phpmd to output into the github actions log
   verbose: true
 
+  # If set to true, the report will run phpstan to generate a new baseline file
+  generate_baseline: true
+
   output:
     prefix: 'styles-phpmd'
 

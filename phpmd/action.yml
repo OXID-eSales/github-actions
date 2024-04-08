@@ -26,6 +26,11 @@ inputs:
     required: false
     default: false
     description: 'Show the PHPMD report in the job console too'
+  generate_baseline:
+    type: boolean
+    required: false
+    default: false
+    description: 'Generate a baseline file'
   container_name:
     type: string
     required: false
@@ -78,6 +83,17 @@ runs:
           /var/www/${{ inputs.config }} \
           --ignore-errors-on-exit --ignore-violations-on-exit \
           --reportfile '/var/www/${{inputs.report_path }}/phpmd-${{ inputs.title }}.json' || true
+
+        if [ '${{ inputs.generate_baseline }}' == 'true' ]; then
+          echo -e "\033[0;35m###  Generate phpmd baseline for ${{ inputs.source_path }} ###\033[0m"
+          docker compose ${{ inputs.container_method }} -T \
+            ${{ inputs.container_options }} \
+            ${{ inputs.container_name }} \
+            /var/www/vendor/bin/phpmd /var/www/${{ inputs.source_path }} json \
+            /var/www/${{ inputs.config }} \
+            --ignore-errors-on-exit --ignore-violations-on-exit \
+            --generate-baseline --baseline-file '/var/www/${{inputs.report_path }}/phpmd-baseline.xml' || true
+        fi
 
         if [ '${{inputs.verbose}}' == 'true' ]; then
           echo -e "\033[0;35m###  Run phpmd in ${{ inputs.source_path }} ###\033[0m"
