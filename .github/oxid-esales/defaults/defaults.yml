@@ -653,6 +653,12 @@ phpmd:
   # Path to the phpmd configuration file
   config: 'tests/PhpMd/standard.xml'
 
+  # Path to a phpmd baseline file
+  baseline_file: 'tests/PhpMd/phpmd.baseline.xml'
+
+  # Additional options to pass to phpmd
+  additional_options: ''
+
   # If set to true, the report will run an additional composer phpmd to output into the github actions log
   verbose: true
 

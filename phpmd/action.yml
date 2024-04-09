@@ -21,6 +21,16 @@ inputs:
     required: false
     default: 'tests/PhpMd/standard.xml'
     description: 'Folder to save the report to'
+  baseline_file:
+    type: string
+    required: false
+    default: 'tests/PhpMd/phpmd.baseline.xml'
+    description: 'Path to a baseline file'
+  additional_options:
+    type: string
+    required: false
+    default: ''
+    description: 'Additional options to pass to phpmd'
   verbose:
     type: boolean
     required: false
@@ -69,22 +79,29 @@ runs:
   using: "composite"
   steps:
     - name: Run PHP Mess Detector
+      id: phpmd
       continue-on-error: true
       shell: bash
       run: |
         # phpmd: Run PHP Mess Detector
         ${{ inputs.debug }}
         mkdir -p "source/${{inputs.report_path}}"
+        BASELINE_OPTIONS=""
+        if [ -n '${{inputs.baseline_file}}' ]; then
+          BASELINE_OPTIONS="--baseline-file '/var/www/${{inputs.baseline_file}}'"
+        fi
 
         echo -e "\033[0;35m###  Generate phpmd-report in ${{ inputs.source_path }} ###\033[0m"
+        set +e
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
           /var/www/vendor/bin/phpmd /var/www/${{ inputs.source_path }} json \
           /var/www/${{ inputs.config }} \
-          --ignore-errors-on-exit --ignore-violations-on-exit \
-          --baseline-file '/var/www/${{inputs.report_path }}/phpmd.baseline.xml' \
-          --reportfile '/var/www/${{inputs.report_path }}/phpmd-${{ inputs.title }}.json' || true
+          ${BASELINE_OPTIONS} ${{ inputs.additional_options }} \
+          --reportfile '/var/www/${{ inputs.report_path }}/phpmd-${{ inputs.title }}.json'
+        echo "result=$?" >"${GITHUB_OUTPUT}"
+        set -e
 
         if [ '${{ inputs.generate_baseline }}' == 'true' ]; then
           echo -e "\033[0;35m###  Generate phpmd baseline for ${{ inputs.source_path }} ###\033[0m"
@@ -93,8 +110,8 @@ runs:
             ${{ inputs.container_name }} \
             /var/www/vendor/bin/phpmd /var/www/${{ inputs.source_path }} json \
             /var/www/${{ inputs.config }} \
-            --ignore-errors-on-exit --ignore-violations-on-exit \
-            --generate-baseline --baseline-file '/var/www/${{inputs.report_path }}/phpmd.baseline.xml' || true
+            ${{ inputs.additional_options }} \
+            --generate-baseline --baseline-file '/var/www/${{ inputs.report_path }}/phpmd.baseline.xml' || true
         fi
 
         if [ '${{inputs.verbose}}' == 'true' ]; then
@@ -104,8 +121,7 @@ runs:
             ${{ inputs.container_name }} \
             /var/www/vendor/bin/phpmd /var/www/${{ inputs.source_path }} ansi \
             /var/www/${{ inputs.config }} \
-            --ignore-errors-on-exit --ignore-violations-on-exit \
-            --baseline-file '/var/www/${{inputs.report_path }}/phpmd.baseline.xml' \
+            ${BASELINE_OPTIONS} ${{ inputs.additional_options }} \
           | tee -a source/${{inputs.report_path}}/phpmd-${{ inputs.title }}.txt || true
         fi
 
@@ -130,13 +146,25 @@ runs:
         FILE='source/${{inputs.report_path }}/phpmd-${{ inputs.title }}.json'
         PURPLE=$(echo -e "\033[0;31m")
         NOCOLOR=$(echo -e "\033[0m")
-        if [ ! -s "${FILE}" ]; then
-          cat <<EOF
-        ${PURPLE}###############################################################################
-        ### JSON Report is empty! Seems like no tests have been run!
-        ###############################################################################${NOCOLOR}
-        EOF
-          exit 1
+        RESULT=0
+        if [ ${{ steps.phpmd.outputs.result }} -eq 0 ]; then
+          echo -e "\033[0;32m phpmd exited with error code 0"
+          if [ ! -s "${FILE}" ]; then
+            echo -e "\033[0;32m   ${FILE} is empty."
+          else
+            echo -e "\033[0;31m ${FILE} is not empty, please check!"
+            RESULT=1
+          fi
+        else
+          echo -e "\033[0;31m phpmd exited with error code ${{ steps.phpmd.outputs.result }}"
+          RESULT=1
+          if [ ! -s "${FILE}" ]; then
+            echo -e "\033[0;31m ${FILE} is empty!"
+          fi
+        fi
+        if [ -s data/php/logs/error_log.txt ]; then
+          echo -e "\033[0;31m php error log is not empty!"
+          RESULT=1
         fi
         cat >failure_pattern.tmp <<EOF
         ${{ inputs.failure_pattern}}
@@ -146,9 +174,10 @@ runs:
           if [ -n "${LINE}" ]; then
             if grep -q -E "${LINE}" "${FILE}"; then
               echo -e "\033[0;31m phpmd failed matching pattern ${LINE}"
-              exit 1
+              RESULT=1
             else
-                echo -e "\033[0;32m phpmd passed matching pattern ${LINE}"
+              echo -e "\033[0;32m phpmd passed matching pattern ${LINE}"
             fi
           fi
         done <failure_pattern.tmp
+        exit ${RESULT}

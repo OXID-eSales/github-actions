@@ -14,6 +14,12 @@ Name of the folder to store the generated reports and PHP error log in.
 **config:** *not required*, *default:* tests/PhpMd/standard.xml  
 Name of the configuration file for phpmd.
 
+**baseline_file:** *not required*, *default:* tests/PhpMd/phpmd.baseline.xml  
+Path to a phpmd baseline file.
+
+**additional_options:** *not required*, *default:* ''  
+Additional options to pass to phpmd.
+
 **verbose:** *not required*, *default:* false  
 If set to true, not only phpmd-report but an additional phpmd run with text output
 will be executed. This output is visible in the github logs and will be saved in the archive.

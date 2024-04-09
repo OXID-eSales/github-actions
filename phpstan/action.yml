@@ -51,9 +51,13 @@ inputs:
     required: false
     description: 'Github run artifact for the styles output'
     default: 'phpmd'
-  failure_pattern: |
-    "errors":[1-9][0-9]*
-    "file_errors":[1-9][0-9]*
+  failure_pattern:
+    type: string
+    required: false
+    description: 'Github run artifact for the styles output'
+    default: |
+      "errors":[1-9][0-9]*
+      "file_errors":[1-9][0-9]*
   debug:
     type: string
     description: 'Appended to debugging scripts'

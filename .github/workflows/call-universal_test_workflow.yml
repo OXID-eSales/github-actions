@@ -1172,6 +1172,8 @@ jobs:
           source_path: ${{ steps.phpmd_testplan.outputs.phpmd_source_path }}
           report_path: ${{ steps.phpmd_testplan.outputs.phpmd_report_path }}
           config: ${{ steps.phpmd_testplan.outputs.phpmd_config }}
+          baseline_file: ${{ steps.phpmd_testplan.outputs.phpmd_baseline_file }}
+          additional_options: ${{ steps.phpmd_testplan.outputs.phpmd_additional_options }}
           title: ${{ steps.phpmd_testplan.outputs.phpmd_title }}
           verbose: ${{ steps.phpmd_testplan.outputs.phpmd_verbose }}
           generate_baseline: ${{ steps.phpmd_testplan.outputs.phpmd_generate_baseline }}
