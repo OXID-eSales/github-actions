@@ -709,8 +709,11 @@ phpstan:
   # This is the folder we store the reports in (relative to /var/www in the container)
   report_path: 'reports'
 
-  # Path to the phpmd configuration file
+  # Path to the phpstan configuration file
   neon_file: 'tests/PhpStan/phpstan.neon'
+
+  # Additional options to pass to phpmd
+  additional_options: '--no-progress'
 
   # If set to true, the report will run phpstan a 2nd time to output into the github actions log
   verbose: true

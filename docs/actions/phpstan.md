@@ -14,6 +14,9 @@ Name of the folder to store the generated reports and PHP error log in.
 **neon_file:** *not required*, *default:* tests/PhpStan/phpstan.neon  
 Name of the .neon file for phpstan.
 
+**additional_options:** *not required*, *default:* ''  
+Additional options to pass to phpmd.
+
 **verbose:** *not required*, *default:* false  
 If set to true, not only phpmd-report but an additional phpmd run with text output
 will be executed. This output is visible in the github logs and will be saved in the archive.

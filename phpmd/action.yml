@@ -88,7 +88,7 @@ runs:
         mkdir -p "source/${{inputs.report_path}}"
         BASELINE_OPTIONS=""
         if [ -n '${{inputs.baseline_file}}' ]; then
-          BASELINE_OPTIONS="--baseline-file '/var/www/${{inputs.baseline_file}}'"
+          BASELINE_OPTIONS="--baseline-file '${{inputs.baseline_file}}'"
         fi
 
         echo -e "\033[0;35m###  Generate phpmd-report in ${{ inputs.source_path }} ###\033[0m"
@@ -116,6 +116,7 @@ runs:
 
         if [ '${{inputs.verbose}}' == 'true' ]; then
           echo -e "\033[0;35m###  Run phpmd in ${{ inputs.source_path }} ###\033[0m"
+          set +e
           docker compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
             ${{ inputs.container_name }} \
@@ -123,6 +124,7 @@ runs:
             /var/www/${{ inputs.config }} \
             ${BASELINE_OPTIONS} ${{ inputs.additional_options }} \
           | tee -a source/${{inputs.report_path}}/phpmd-${{ inputs.title }}.txt || true
+          set -e
         fi
 
         if [ -s data/php/logs/error_log.txt ]; then
@@ -144,8 +146,6 @@ runs:
         # phpmd: Check results
         ${{ inputs.debug }}
         FILE='source/${{inputs.report_path }}/phpmd-${{ inputs.title }}.json'
-        PURPLE=$(echo -e "\033[0;31m")
-        NOCOLOR=$(echo -e "\033[0m")
         RESULT=0
         if [ ${{ steps.phpmd.outputs.result }} -eq 0 ]; then
           echo -e "\033[0;32m phpmd exited with error code 0"

@@ -1292,6 +1292,7 @@ jobs:
           source_path: ${{ steps.phpstan_testplan.outputs.phpstan_source_path }}
           report_path: ${{ steps.phpstan_testplan.outputs.phpstan_report_path }}
           neon_file: ${{ steps.phpstan_testplan.outputs.phpstan_neon_file }}
+          additional_options: ${{ steps.phpstan_testplan.outputs.phpstan_additional_options }}
           title: ${{ steps.phpstan_testplan.outputs.phpstan_title }}
           verbose: ${{ steps.phpstan_testplan.outputs.phpstan_verbose }}
           generate_baseline: ${{ steps.phpstan_testplan.outputs.phpstan_generate_baseline }}
