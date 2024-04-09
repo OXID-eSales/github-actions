@@ -88,7 +88,7 @@ runs:
         mkdir -p "source/${{inputs.report_path}}"
         BASELINE_OPTIONS=""
         if [ -n '${{inputs.baseline_file}}' ]; then
-          BASELINE_OPTIONS="--baseline-file '${{inputs.baseline_file}}'"
+          BASELINE_OPTIONS="--baseline-file"
         fi
 
         echo -e "\033[0;35m###  Generate phpmd-report in ${{ inputs.source_path }} ###\033[0m"
