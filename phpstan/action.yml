@@ -98,7 +98,7 @@ runs:
             ${{ inputs.container_options }} \
             ${{ inputs.container_name }} \
             /var/www/vendor/bin/phpstan \
-            -c/var/www/${{inputs.neon_file}} analyse /var/www/${{ inputs.source_path }} 
+            -c/var/www/${{inputs.neon_file}} analyse /var/www/${{ inputs.source_path }} \
             --no-progress \
           | tee -a source/${{inputs.report_path}}/phpstan-${{ inputs.title }}.txt || true
         fi
