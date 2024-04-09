@@ -96,10 +96,10 @@ runs:
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
-          /var/www/vendor/bin/phpmd /var/www/${{ inputs.source_path }} json \
-          /var/www/${{ inputs.config }} \
+          vendor/bin/phpmd ${{ inputs.source_path }} json \
+          ${{ inputs.config }} \
           ${BASELINE_OPTIONS} ${{ inputs.additional_options }} \
-          --reportfile '/var/www/${{ inputs.report_path }}/phpmd-${{ inputs.title }}.json'
+          --reportfile '${{ inputs.report_path }}/phpmd-${{ inputs.title }}.json'
         echo "result=$?" >"${GITHUB_OUTPUT}"
         set -e
 
@@ -108,10 +108,10 @@ runs:
           docker compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
             ${{ inputs.container_name }} \
-            /var/www/vendor/bin/phpmd /var/www/${{ inputs.source_path }} json \
-            /var/www/${{ inputs.config }} \
+            vendor/bin/phpmd ${{ inputs.source_path }} json \
+            ${{ inputs.config }} \
             ${{ inputs.additional_options }} \
-            --generate-baseline --baseline-file '/var/www/${{ inputs.report_path }}/phpmd.baseline.xml' || true
+            --generate-baseline --baseline-file '${{ inputs.report_path }}/phpmd.baseline.xml' || true
         fi
 
         if [ '${{inputs.verbose}}' == 'true' ]; then
@@ -120,8 +120,8 @@ runs:
           docker compose ${{ inputs.container_method }} -T \
             ${{ inputs.container_options }} \
             ${{ inputs.container_name }} \
-            /var/www/vendor/bin/phpmd /var/www/${{ inputs.source_path }} ansi \
-            /var/www/${{ inputs.config }} \
+            vendor/bin/phpmd ${{ inputs.source_path }} ansi \
+            ${{ inputs.config }} \
             ${BASELINE_OPTIONS} ${{ inputs.additional_options }} \
           | tee -a source/${{inputs.report_path}}/phpmd-${{ inputs.title }}.txt || true
           set -e
