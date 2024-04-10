@@ -636,8 +636,8 @@ phpmd:
     # Make sure, phpmd is installed properly
     transform: |
       {
-        "require": {
-          "phpmd/phpmd": "^2.11"
+        "require-dev": {
+          "phpmd/phpmd": "@stable"
         }
       }
     update: true
@@ -695,7 +695,7 @@ phpstan:
     # Make sure, phpmd is installed properly
     transform: |
       {
-        "require": {
+        "require-dev": {
           "phpstan/phpstan": "^1.9.14"
         }
       }
