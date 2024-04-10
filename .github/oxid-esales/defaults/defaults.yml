@@ -645,7 +645,7 @@ phpmd:
 
   # Name of the source folder, relative to the path above. That is source for the shop
   # and src for modules.
-  source_path: 'source'
+  source_path: 'source/'
 
   # This is the folder we store the reports in (relative to /var/www in the container)
   report_path: 'reports'
