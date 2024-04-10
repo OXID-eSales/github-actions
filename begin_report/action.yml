@@ -154,11 +154,23 @@ runs:
         ${{ steps.debug.outputs.debug }}
         EODD
 
+    - name: 'Generate safe title'
+      id: safe_title
+      if: always()
+      shell: bash
+      run: |
+        # append_report: Generate safe title
+        TITLE=$( \
+          echo 'testplan-${{inputs.prefix}}-000_header' \
+          | sed -e 's|/||g' \
+        )
+        echo "title=${TITLE}" >>"${GITHUB_OUTPUT}"
+
     - name: Upload Artifacts
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: 'testplan-${{ inputs.prefix }}-000_header'
+        name: '${{ steps.safe_title.outputs.title }}'
         path: |
           reports/000-header.md
           slack_reports/000-header.md

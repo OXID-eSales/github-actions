@@ -31,3 +31,6 @@ Whether we use exec to run the command in the existing php container or run to s
 
 **debug:** *not required*, *default:* false  
 Set to true to generate a debugging script.
+
+**github_token:** *not required*, *default:* ''  
+Token to set for github authentication.
