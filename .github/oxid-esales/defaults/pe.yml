@@ -30,7 +30,7 @@ prepare_shop:
             "ddoe/*": "source"
           },
           "require": {
-              "oxid-esales/oxideshop-pe": "dev-{{ .Data.prepare_shop.git.shop_ref }}",
+              "oxid-esales/oxideshop-pe": "{{ .Data.global.composer.dev_ref }}",
               "oxid-esales/twig-component": "{{ .Data.global.composer.dev_ref }}",
               "oxid-esales/twig-component-pe": "{{ .Data.global.composer.dev_ref }}",
               "oxid-esales/twig-admin-theme": "{{ .Data.global.composer.dev_ref }}",
