@@ -44,10 +44,26 @@ inputs:
     description: 'Appended to debugging scripts'
     default: ''
     required: false
+  github_token:
+    type: string
+    description: 'Github token for composer'
+    default: ''
+    required: false
 
 runs:
   using: "composite"
   steps:
+    - name: Configure enterprise token
+      if: ${{ inputs.github_token != '' }}
+      shell: bash
+      run: |
+        # prepare_shop: Configure enterprise token
+        ${{ inputs.debug }}
+        docker compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container_name}} \
+          composer config -g github-oauth.github.com "${{ inputs.github_token }}"
+
     - name: Create files
       shell: bash
       run: |

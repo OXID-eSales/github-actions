@@ -570,7 +570,7 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.install_module_testplan.outputs.install_module_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v4'
+        uses: 'OXID-eSales/github-actions/composer_merge@v0'
         with:
           file: 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}/composer.json'
           backup: true
@@ -582,6 +582,7 @@ jobs:
           container_options: ${{ steps.install_module_testplan.outputs.install_module_container_options }}
           container_method: 'exec'
           debug: ${{ needs.init.outputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
       - name: Install module
         if: ${{ matrix.testplan != 'skip' }}
@@ -864,7 +865,7 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.codeception_testplan.outputs.codeception_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v4'
+        uses: 'OXID-eSales/github-actions/composer_merge@v0'
         with:
           file: '${{ steps.codeception_testplan.outputs.codeception_composer_file }}'
           backup: true
@@ -876,6 +877,7 @@ jobs:
           container_options: ${{ steps.codeception_testplan.outputs.codeception_container_options }}
           container_method: 'exec'
           debug: ${{ needs.init.outputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
       - name: Run custom scripts
         # yamllint disable-line rule:line-length
@@ -998,7 +1000,7 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.runtest_testplan.outputs.runtest_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v4'
+        uses: 'OXID-eSales/github-actions/composer_merge@v0'
         with:
           file: '${{ steps.runtest_testplan.outputs.runtest_composer_file }}'
           backup: true
@@ -1010,6 +1012,7 @@ jobs:
           container_options: ${{ steps.runtest_testplan.outputs.runtest_container_options }}
           container_method: 'exec'
           debug: ${{ needs.init.outputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
       - name: Copy config file
         run: |
@@ -1142,7 +1145,7 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.phpmd_testplan.outputs.phpmd_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v4'
+        uses: 'OXID-eSales/github-actions/composer_merge@v0'
         with:
           file: '${{ steps.phpmd_testplan.outputs.phpmd_composer_file }}'
           backup: true
@@ -1154,6 +1157,7 @@ jobs:
           container_options: ${{ steps.phpmd_testplan.outputs.phpmd_container_options }}
           container_method: ${{ steps.phpmd_testplan.outputs.phpmd_container_method }}
           debug: ${{ needs.init.outputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
       - name: Run custom scripts
         if: ${{ steps.phpmd_testplan.outputs.phpmd_custom_script != '' && steps.phpmd_testplan.outputs.phpmd_custom_script_container != '' }}
@@ -1262,7 +1266,7 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.phpstan_testplan.outputs.phpstan_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v4'
+        uses: 'OXID-eSales/github-actions/composer_merge@v0'
         with:
           file: '${{ steps.phpstan_testplan.outputs.phpstan_composer_file }}'
           backup: true
@@ -1274,6 +1278,7 @@ jobs:
           container_options: ${{ steps.phpstan_testplan.outputs.phpstan_container_options }}
           container_method: ${{ steps.phpstan_testplan.outputs.phpstan_container_method }}
           debug: ${{ needs.init.outputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
       - name: Run custom scripts
         if: ${{ steps.phpstan_testplan.outputs.phpstan_custom_script != '' && steps.phpstan_testplan.outputs.phpstan_custom_script_container != '' }}
@@ -1521,7 +1526,7 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.styles_testplan.outputs.styles_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v4'
+        uses: 'OXID-eSales/github-actions/composer_merge@v0'
         with:
           file: 'source/dev-packages/${{ steps.styles_testplan.outputs.styles_path }}/composer.json'
           backup: true
@@ -1533,6 +1538,7 @@ jobs:
           container_options: ${{ steps.styles_testplan.outputs.styles_container_options }}
           container_method: 'exec'
           debug: ${{ needs.init.outputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
       - name: Run custom scripts
         if: ${{ steps.styles_testplan.outputs.styles_custom_script != '' && steps.styles_testplan.outputs.styles_custom_script_container != '' }}
