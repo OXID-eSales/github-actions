@@ -118,11 +118,14 @@ jobs:
           # logfile: load_testplan.log
           yaml: generated_testplan.yaml
 
-      - name: 'Prepare artifact'
+      - name: 'Prepare artifact and generate safe title'
+        id: post_ltp
         if: always()
         run: |
           cp "${GITHUB_OUTPUT}" generated_output.txt
           cp "${GITHUB_ENV}" generated_env.txt
+          echo 'title=${{steps.ltp.outputs.global_title}}'|sed -e 's#"|,|:|\<|\>|\||\*|\?|\/|\\|\r|\n#g' >>"${{GITHUB_OUTPUT}}"
+  
 
       - name: 'Create first testplan archive'
         if: always()
@@ -130,7 +133,7 @@ jobs:
         uses: OXID-eSales/github-actions/begin_report@v4
         with:
           title: ${{ steps.ltp.outputs.finish_slack_title }}
-          prefix: '${{ steps.ltp.outputs.global_title }}'
+          prefix: '${{ steps.post_ltp.outputs.title }}'
           repository: '${{ github.server_url }}/${{ github.repository }}'
           job: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
           testplan: '${{ inputs.testplan }}'
@@ -146,7 +149,7 @@ jobs:
         if: always()
         uses: OXID-eSales/github-actions/append_report@v4
         with:
-          prefix: '${{ steps.ltp.outputs.global_title }}'
+          prefix: '${{ steps.post_ltp.outputs.title }}'
           header: true
           phase: install
           priority: '001'
@@ -166,7 +169,7 @@ jobs:
 
     outputs:
       debug: ${{ steps.begin_report.outputs.debug }}
-      global_title: ${{ steps.ltp.outputs.global_title }}
+      global_title: ${{ steps.post_ltp.outputs.title }}
       # init variables
       testplan: ${{ steps.consolidate_plans.outputs.testplan }}
       init_cache_bucket: ${{ steps.ltp.outputs.init_cache_bucket }}

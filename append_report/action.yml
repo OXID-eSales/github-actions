@@ -128,23 +128,11 @@ runs:
         }
         EODS
 
-    - name: 'Generate safe title'
-      id: safe_title
-      if: always()
-      shell: bash
-      run: |
-        # append_report: Generate safe title
-        TITLE=$( \
-          echo 'testplan-${{inputs.prefix}}-${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}' \
-          | sed -e 's|/||g' \
-        )
-        echo "title=${TITLE}" >>"${GITHUB_OUTPUT}"
-
     - name: Upload Artifacts
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: '${{ steps.safe_title.outputs.title }}'
+        name: 'testplan-${{inputs.prefix}}-${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}'
         path: |
           job_status/*.txt
           reports/*.md
