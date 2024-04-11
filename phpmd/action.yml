@@ -86,10 +86,6 @@ runs:
         # phpmd: Run PHP Mess Detector
         ${{ inputs.debug }}
         mkdir -p "source/${{inputs.report_path}}"
-        BASELINE_OPTIONS=""
-        if [ -n '${{inputs.baseline_file}}' ]; then
-          BASELINE_OPTIONS="--baseline-file"
-        fi
 
         echo -e "\033[0;35m###  Generate phpmd-report in ${{ inputs.source_path }} ###\033[0m"
         set +e
@@ -97,7 +93,7 @@ runs:
           ${{ inputs.container_options }} \
           ${{ inputs.container_name }} \
           vendor/bin/phpmd /var/www/${{ inputs.source_path }} json /var/www/${{ inputs.config }} \
-          ${BASELINE_OPTIONS} ${{ inputs.additional_options }} \
+          ${{ inputs.additional_options }} \
           --reportfile '/var/www/${{ inputs.report_path }}/phpmd-${{ inputs.title }}.json'
         echo "result=$?" >"${GITHUB_OUTPUT}"
         set -e
@@ -119,7 +115,7 @@ runs:
             ${{ inputs.container_options }} \
             ${{ inputs.container_name }} \
             vendor/bin/phpmd /var/www/${{ inputs.source_path }} ansi /var/www/${{ inputs.config }} \
-            ${BASELINE_OPTIONS} ${{ inputs.additional_options }} \
+            ${{ inputs.additional_options }} \
           | tee -a source/${{inputs.report_path}}/phpmd-${{ inputs.title }}.txt || true
           set -e
         fi
