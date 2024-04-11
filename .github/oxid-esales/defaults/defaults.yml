@@ -695,7 +695,7 @@ phpstan:
     # Make sure, phpmd is installed properly
     transform: |
       {
-        preferred-install": {
+        "preferred-install": {
           "phpstan/phpstan": "dist"
         },
         "require": {
