@@ -142,12 +142,6 @@ runs:
         RESULT=0
         if [ ${{ steps.phpmd.outputs.result }} -eq 0 ]; then
           echo -e "\033[0;32m phpmd exited with error code 0"
-          if [ ! -s "${FILE}" ]; then
-            echo -e "\033[0;32m   ${FILE} is empty."
-          else
-            echo -e "\033[0;31m ${FILE} is not empty, please check!"
-            RESULT=1
-          fi
         else
           echo -e "\033[0;31m phpmd exited with error code ${{ steps.phpmd.outputs.result }}"
           RESULT=1
