@@ -1,0 +1,687 @@
+name: universal_workflow_light
+# This workflow loads a base testplan, creates cached shop instances and runs
+# phpunit, codeception and runtest based tests as well as code scans
+# and sonarcloud reports
+#
+# yamllint disable-line rule:truthy
+on:
+  workflow_call:
+    inputs:
+      testplan:
+        type: string
+        description: 'Testplan to run'
+        required: true
+      runs_on:
+        type: string
+        description: 'JSON string/array describing the runner'
+        required: true
+      defaults:
+        type: string
+        description: 'Which ref do we want to use for the plan defaults'
+        required: false
+        default: 'v3'
+      plan_folder:
+        type: string
+        description: 'Folder containing the test plans'
+        required: false
+        default: 'tests/github_actions'
+      default_plan_folder:
+        type: string
+        description: 'Folder containing the test plan templates'
+        required: false
+        default: '.github/oxid-esales/defaults'
+      debug:
+        type: boolean
+        description: 'Enable debugging'
+        default: true
+        required: false
+      custom_testplan_yaml:
+        type: string
+        description: 'Content of ~/oxid-esales/_custom.yml'
+        default: ''
+        required: false
+
+    secrets:
+      DOCKER_HUB_USER:
+        # description: 'user for the docker login'
+        required: false
+      DOCKER_HUB_TOKEN:
+        # description: 'Token for the docker login'
+        required: false
+      CACHE_ENDPOINT:
+        # description: 'Endpoint for tespkg/actions-cache@v1'
+        required: false    # only for ee
+      CACHE_ACCESS_KEY:
+        # description: 'Access key for tespkg/actions-cache@v1'
+        required: false    # only for ee
+      CACHE_SECRET_KEY:
+        # description: 'Secret key for tespkg/actions-cache@v1'
+        required: false    # only for ee
+      enterprise_github_token:
+        # description: 'OAuth token to access enterprise repos'
+        required: false
+      SONAR_TOKEN:
+        # description: Token for sonarcloud access
+        required: false
+      SLACK_WEBHOOK_URL:
+        required: false
+        # description: Webhook for posting to SLACK
+
+jobs:
+  init:
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    steps:
+      - name: 'Checkout testplan defaults'
+        uses: actions/checkout@v4
+        with:
+          repository: 'OXID-eSales/github-actions'
+          ref: '${{ inputs.defaults }}'
+          path: 'defaults'
+          sparse-checkout: '${{ inputs.default_plan_folder }}'
+
+      - name: 'Checkout testplans'
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            ${{ inputs.plan_folder}}
+            composer.json
+          path: workflow
+
+      - name: 'Consolidate plans'
+        id: consolidate_plans
+        run: |
+          mkdir -p '${{ inputs.plan_folder }}/defaults'
+          if [ -d workflow/${{ inputs.plan_folder }} ]; then
+            mv workflow/${{ inputs.plan_folder }}/* '${{ inputs.plan_folder }}/'
+            /bin/rm -r 'workflow/${{ inputs.plan_folder }}'
+          fi
+          if [ -f workflow/composer.json ]; then
+            mv workflow/composer.json '${{ inputs.plan_folder }}/'
+          fi
+          mv defaults/${{ inputs.default_plan_folder}}/* '${{ inputs.plan_folder }}/defaults/'
+          cat >'${{ inputs.plan_folder }}/_custom.yml' <<'EOF'
+          # Generated from workflow input custom_testplan_yaml
+          ${{ inputs.custom_testplan_yaml }}
+          EOF
+          TESTPLAN=$(echo "${{ inputs.testplan }}"|sed -e 's|~|${{ inputs.plan_folder }}|g')
+          echo "testplan=${{ inputs.plan_folder }}/defaults/defaults.yml,${TESTPLAN}" >>"${GITHUB_OUTPUT}"
+
+      - name: 'Load Testplan'
+        id: ltp
+        uses: 'joernott/load_testplan@v1'
+        with:
+          files: '${{ steps.consolidate_plans.outputs.testplan }}'
+          set_output: true
+          set_env: true
+          set_print: true
+          # loglevel: trace
+          # logfile: load_testplan.log
+          yaml: generated_testplan.yaml
+
+      - name: 'Prepare artifact and generate safe title'
+        id: post_ltp
+        if: always()
+        run: |
+          cp "${GITHUB_OUTPUT}" generated_output.txt
+          cp "${GITHUB_ENV}" generated_env.txt
+          echo 'title=${{steps.ltp.outputs.global_title}}'|sed -E 's#"|,|:|<|>|\||\*|\?|\/|\\#_#g' | tee -a "${GITHUB_OUTPUT}"
+
+      - name: 'Create first testplan archive'
+        if: always()
+        id: begin_report
+        uses: OXID-eSales/github-actions/begin_report@v4
+        with:
+          title: ${{ steps.ltp.outputs.finish_slack_title }}
+          prefix: '${{ steps.post_ltp.outputs.title }}'
+          repository: '${{ github.server_url }}/${{ github.repository }}'
+          job: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          testplan: '${{ inputs.testplan }}'
+          files: |
+            ${{ inputs.plan_folder}}/*
+            generated_testplan.yaml
+            generated_output.txt
+            generated_env.txt
+            load_testplan.log
+          debug: ${{ inputs.debug }}
+
+      - name: 'Write Report'
+        if: always()
+        uses: OXID-eSales/github-actions/append_report@v4
+        with:
+          prefix: '${{ steps.post_ltp.outputs.title }}'
+          header: true
+          phase: install
+          priority: '001'
+          cached_object: ${{ steps.ltp.outputs.init_cache_name }}
+          debug: false
+
+      - name: Cache testplan
+        uses: tespkg/actions-cache/save@v1
+        with:
+          path: |
+            ${{ inputs.plan_folder }}/*
+          key: '${{ steps.ltp.outputs.init_cache_name }}'
+          endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
+          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
+          bucket: ${{ steps.ltp.outputs.init_cache_bucket }}
+
+    outputs:
+      debug: ${{ steps.begin_report.outputs.debug }}
+      global_title: ${{ steps.post_ltp.outputs.title }}
+      # init variables
+      testplan: ${{ steps.consolidate_plans.outputs.testplan }}
+      init_cache_bucket: ${{ steps.ltp.outputs.init_cache_bucket }}
+      init_cache_name: ${{ steps.ltp.outputs.init_cache_name }}
+      # install_shop_with_modules variables
+      install_shop_with_modules_add_services: ${{ steps.ltp.outputs.install_shop_with_modules_add_services }}
+      install_shop_with_modules_cache_bucket: ${{ steps.ltp.outputs.install_shop_with_modules_cache_bucket }}
+      install_shop_with_modules_cache_prefix: ${{ steps.ltp.outputs.install_shop_with_modules_cache_prefix }}
+      install_shop_with_modules_cache_prepared_shop : ${{ steps.ltp.outputs.install_shop_with_modules_cache_prepared_shop }}
+      install_shop_with_modules_cache_prepared_shop_prefix: ${{ steps.ltp.outputs.install_shop_with_modules_cache_prepared_shop_prefix }}
+      install_shop_with_modules_composer_file: ${{ steps.ltp.outputs.install_shop_with_modules_composer_file }}
+      install_shop_with_modules_composer_transform: ${{ steps.ltp.outputs.install_shop_with_modules_composer_transform }}
+      install_shop_with_modules_composer_backup: ${{ steps.ltp.outputs.install_shop_with_modules_composer_backup }}
+      install_shop_with_modules_composer_update: ${{ steps.ltp.outputs.install_shop_with_modules_composer_update }}
+      install_shop_with_modules_composer_update_options: ${{ steps.ltp.outputs.install_shop_with_modules_composer_update_options}}
+      install_shop_with_modules_composer_dev_ref: ${{ steps.ltp.outputs.install_shop_with_modules_composer_dev_ref }}
+      install_shop_with_modules_container_method: ${{ steps.ltp.outputs.install_shop_with_modules_container_method }}
+      install_shop_with_modules_container_name: ${{ steps.ltp.outputs.install_shop_with_modules_container_name }}
+      install_shop_with_modules_container_options: ${{ steps.ltp.outputs.install_shop_with_modules_container_options }}
+      install_shop_with_modules_custom_ini_error_reporting: ${{ steps.ltp.outputs.install_shop_with_modules_custom_ini_error_reporting }}
+      install_shop_with_modules_custom_ini_xdebug: ${{ steps.ltp.outputs.install_shop_with_modules_custom_ini_xdebug }}
+      install_shop_with_modules_docker_login: ${{ steps.ltp.outputs.install_shop_with_modules_docker_login }}
+      install_shop_with_modules_git_enterprise_ref: ${{ steps.ltp.outputs.install_shop_with_modules_git_enterprise_ref }}
+      install_shop_with_modules_git_sdk_ref: ${{ steps.ltp.outputs.install_shop_with_modules_git_sdk_ref }}
+      install_shop_with_modules_git_sdk_url: ${{ steps.ltp.outputs.install_shop_with_modules_git_sdk_url }}
+      install_shop_with_modules_git_shop_ref: ${{ steps.ltp.outputs.install_shop_with_modules_git_shop_ref }}
+      install_shop_with_modules_git_shop_url: ${{ steps.ltp.outputs.install_shop_with_modules_git_shop_url }}
+      install_shop_with_modules_matrix_mysql: ${{ steps.ltp.outputs.install_shop_with_modules_matrix_mysql }}
+      install_shop_with_modules_matrix_php: ${{ steps.ltp.outputs.install_shop_with_modules_matrix_php }}
+      install_shop_with_modules_max_parallel: ${{ steps.ltp.outputs.install_shop_with_modules_max_parallel }}
+      install_shop_with_modules_config_idebug: ${{ steps.ltp.outputs.install_shop_with_modules_config_idebug }}
+      install_shop_with_modules_is_enterprise: ${{ steps.ltp.outputs.install_shop_with_modules_is_enterprise }}
+      install_shop_with_modules_custom_script: ${{ steps.ltp.outputs.install_shop_with_modules_custom_script }}
+      install_shop_with_modules_custom_script_container: ${{ steps.ltp.outputs.install_shop_with_modules_custom_script_container }}
+      install_shop_with_modules_output_artifact_prefix: ${{ steps.ltp.outputs.install_shop_with_modules_output_artifact_prefix }}
+      install_shop_with_modules_output_files: ${{ steps.ltp.outputs.install_shop_with_modules_output_files }}
+      # runscript variables
+      runscript_matrix_mysql: ${{ steps.ltp.outputs.runscript_matrix_mysql }}
+      runscript_matrix_php: ${{ steps.ltp.outputs.runscript_matrix_php }}
+      runscript_matrix_testplan: ${{ steps.ltp.outputs.runscript_matrix_testplan }}
+      runscript_max_parallel: ${{ steps.ltp.outputs.runscript_max_parallel }}
+      # yamllint variables
+      yamllint_skip: ${{ steps.ltp.outputs.yamllint_skip }}
+      yamllint_file_or_dir: ${{ steps.ltp.outputs.yamllint_file_or_dir }}
+      yamllint_rules: ${{ steps.ltp.outputs.yamllint_rules }}
+      # actionlint variables
+      actionlint_skip: ${{ steps.ltp.outputs.actionlint_skip }}
+      # finish variables
+      finish_matrix_mysql: ${{ steps.ltp.outputs.finish_matrix_mysql }}
+      finish_matrix_php: ${{ steps.ltp.outputs.finish_matrix_php }}
+      finish_skip: ${{ steps.ltp.outputs.finish_skip }}
+      finish_slack_title: ${{ steps.ltp.outputs.finish_slack_title }}
+
+  install_shop_with_modules:
+    needs: init
+    strategy:
+      matrix:
+        php: ${{ fromJSON(needs.init.outputs.install_shop_with_modules_matrix_php) }}
+        mysql: ${{ fromJSON(needs.init.outputs.install_shop_with_modules_matrix_mysql) }}
+      fail-fast: false
+      max-parallel: ${{ fromJSON(needs.init.outputs.install_shop_with_modules_max_parallel) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+
+    steps:
+      - name: 'Prepare Shop'
+        id: prepare_shop
+        uses: 'OXID-eSales/github-actions/prepare_shop@v4'
+        with:
+          container_name: ${{ needs.init.outputs.install_shop_with_modules_container_name }}
+          container_options: ${{ needs.init.outputs.install_shop_with_modules_container_options }}
+          container_method: ${{ needs.init.outputs.install_shop_with_modules_container_method }}
+          docker_login: ${{ needs.init.outputs.install_shop_with_modules_docker_login }}
+          docker_user: ${{ secrets.DOCKER_HUB_USER }}
+          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+          git_sdk_url: ${{ needs.init.outputs.install_shop_with_modules_git_sdk_url }}
+          git_sdk_ref: ${{ needs.init.outputs.install_shop_with_modules_git_sdk_ref }}
+          git_shop_url: ${{ needs.init.outputs.install_shop_with_modules_git_shop_url }}
+          git_shop_ref: ${{ needs.init.outputs.install_shop_with_modules_git_shop_ref }}
+          git_enterprise_ref: ${{ needs.init.outputs.install_shop_with_modules_git_enterprise_ref }}
+          github_event_name: ${{ github.event_name }}
+          github_event_number: ${{ github.event.number }}
+          github_base_ref: ${{ github.base_ref }}
+          github_sha: ${{ github.sha }}
+          github_run_number: ${{ github.run_number }}
+          github_run_attempt: ${{ github.run_attempt }}
+          github_ref_name: ${{ github.ref_name }}
+          php: ${{ matrix.php }}
+          mysql: ${{ matrix.mysql }}
+          custom_ini_error_reporting: ${{ needs.init.outputs.install_shop_with_modules_custom_ini_error_reporting }}
+          custom_ini_xdebug: ${{ needs.init.outputs.install_shop_with_modules_custom_ini_xdebug }}
+          add_services: ${{ needs.init.outputs.install_shop_with_modules_add_services }}
+          composer_file: ${{ needs.init.outputs.install_shop_with_modules_composer_file }}
+          composer_transform: ${{ needs.init.outputs.install_shop_with_modules_composer_transform}}
+          composer_backup: ${{ needs.init.outputs.install_shop_with_modules_composer_backup}}
+          composer_update: ${{ needs.init.outputs.install_shop_with_modules_composer_update}}
+          composer_update_options: ${{ needs.init.outputs.install_shop_with_modules_composer_update_options}}
+          composer_dev_ref: ${{ needs.init.outputs.install_shop_with_modules_composer_dev_ref}}
+          enterprise_github_token: ${{ secrets.enterprise_github_token || github.token }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Stop shop for preparedShop cache'
+        if: needs.init.outputs.install_shop_with_modules_cache_prepared_shop
+        uses: 'OXID-eSales/github-actions/stop_shop@v4'
+        with:
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: Cache preparedShop
+        if: needs.init.outputs.install_shop_with_modules_cache_prepared_shop
+        uses: tespkg/actions-cache/save@v1
+        with:
+          path: |
+            ./*
+          # yamllint disable-line rule:line-length
+          key: '${{ needs.init.outputs.install_shop_with_modules_cache_prepared_shop_prefix }}_${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
+          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
+          bucket: ${{ needs.init.outputs.install_shop_with_modules_cache_bucket }}
+
+      - name: Debug cache preparedShop
+        if: ${{ inputs.debug && needs.init.outputs.install_shop_with_modules_cache_prepared_shop == true }}
+        shell: bash
+        run: |
+          # install_shop_with_modules: Debug cache current installation
+          # we need to add the dot folders here explicitly because bash works differently than the action
+          CACHE_NAME='${{ needs.init.outputs.install_shop_with_modules_cache_prepared_shop_prefix}}_${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          echo "write_cache '${CACHE_NAME}' ./* .env .env.dist .gitignore .git" >>debug/debug.sh
+
+      - name: 'Start shop after caching preparedShop'
+        if: needs.init.outputs.install_shop_with_modules_cache_prepared_shop
+        shell: bash
+        run: |
+          # install_shop_with_modules: Start containers
+          ${{ needs.init.outputs.debug }}
+          echo -e "\033[0;35m### Starting containers\033[0m"
+          make up
+
+      - name: 'Install shop'
+        id: install_shop
+        uses: 'OXID-eSales/github-actions/install_shop@v4'
+        with:
+          container_name: ${{ needs.init.outputs.install_shop_with_modules_container_name }}
+          container_options: ${{ needs.init.outputs.install_shop_with_modules_container_options }}
+          container_method: ${{ needs.init.outputs.install_shop_with_modules_container_method }}
+          is_enterprise: ${{ needs.init.outputs.install_shop_with_modules_is_enterprise }}
+          config_idebug: ${{ needs.init.outputs.install_shop_with_modules_config_idebug }}
+          output_files: ${{ needs.init.outputs.install_shop_with_modules_output_files }}
+          output_artifact: '${{ needs.init.outputs.install_shop_with_modules_output_artifact_prefix }}-${{needs.init.outputs.global_title}}-PHP${{ matrix.php }}-MYSQL${{ matrix.mysql }}'
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: Run custom scripts
+        if: ${{ needs.init.outputs.install_shop_with_modules_custom_script != '' && needs.init.outputs.install_shop_with_modules_custom_script_container != '' }}
+        uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
+        with:
+          container_name: ${{ needs.init.outputs.install_shop_with_modules_container_name }}
+          container_options: ${{ needs.init.outputs.install_shop_with_modules_container_options }}
+          container_method: ${{ needs.init.outputs.install_shop_with_modules_container_method }}
+          custom_script: ${{ needs.init.outputs.install_shop_with_modules_custom_script }}
+          custom_script_container: ${{ needs.init.outputs.install_shop_with_modules_custom_script_container }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Stop shop'
+        if: ${{ always() }}
+        uses: 'OXID-eSales/github-actions/stop_shop@v4'
+        with:
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: Debug cache current installation
+        if: ${{ inputs.debug }}
+        shell: bash
+        run: |
+          # install_shop_with_modules: Debug cache current installation
+          # we need to add the dot folders here explicitly because bash works differently than the action
+          CACHE_NAME='${{ needs.init.outputs.install_shop_with_modules_cache_prefix}}_${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          echo "write_cache '${CACHE_NAME}' ./* .env .env.dist .gitignore .git" >>debug/debug.sh
+
+      - name: Cache current installation
+        uses: tespkg/actions-cache/save@v1
+        with:
+          path: |
+            ./*
+          key: '${{ needs.init.outputs.install_shop_with_modules_cache_prefix}}_${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
+          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
+          bucket: ${{ needs.init.outputs.install_shop_with_modules_cache_bucket }}
+
+      - name: 'Write Report'
+        if: always()
+        uses: OXID-eSales/github-actions/append_report@v4
+        with:
+          prefix: '${{ needs.init.outputs.global_title }}'
+          priority: '020'
+          phase: install
+          job: install_shop_with_modules
+          php: ${{matrix.php}}
+          mysql: ${{matrix.mysql}}
+          status: ${{job.status}}
+          cached_object: |
+            ${{ needs.init.outputs.install_shop_with_modules_cache_prepared_shop_prefix}}_${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}
+            ${{ needs.init.outputs.install_shop_with_modules_cache_prefix}}_${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}
+          debug: ${{ inputs.debug }}
+
+  runscript:
+    needs: ['init', 'install_shop_with_modules']
+    if: ${{ needs.init.outputs.runscript_matrix_testplan != 'skip' }}
+    strategy:
+      matrix:
+        php: ${{ fromJSON(needs.init.outputs.runscript_matrix_php) }}
+        mysql: ${{ fromJSON(needs.init.outputs.runscript_matrix_mysql) }}
+        testplan: ${{ fromJSON(needs.init.outputs.runscript_matrix_testplan) }}
+      fail-fast: false
+      max-parallel: ${{ fromJSON(needs.init.outputs.runscript_max_parallel) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    env:
+      MATRIX_PHP: ${{ matrix.php }}
+      MATRIX_MYSQL: ${{ matrix.mysql }}
+      MATRIX_TESTPLAN: ${{ matrix.testplan }}
+    steps:
+      - name: Load cached testplan
+        id: runscript_testplan_name
+        uses: OXID-eSales/github-actions/load_cached_testplan@v4
+        with:
+          php: ${{ matrix.php }}
+          mysql: ${{ matrix.mysql }}
+          prefix: '${{ needs.init.outputs.global_title }}'
+          root_testplan: ${{ needs.init.outputs.testplan }}
+          matrix_testplan: ${{ matrix.testplan }}
+          plan_folder: ${{ inputs.plan_folder }}
+          cache_name: ${{ needs.init.outputs.init_cache_name }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          cache_bucket: ${{ needs.init.outputs.init_cache_bucket }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Load Testplan'
+        id: runscript_testplan
+        uses: 'joernott/load_testplan@v1'
+        with:
+          files: '${{steps.runscript_testplan_name.outputs.testplan}}'
+          set_output: true
+          set_print: true
+          yaml: generated_testplan.yaml
+          token: ${{ secrets.enterprise_github_token }}
+
+      - name: 'Start shop'
+        uses: 'OXID-eSales/github-actions/start_shop@v4'
+        with:
+          cached_shop: '${{ steps.runscript_testplan.outputs.runscript_load_shop}}_${{ steps.runscript_testplan_name.outputs.matrix_suffix }}'
+          cache_bucket: ${{ steps.runscript_testplan.outputs.runscript_cache_bucket }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          docker_login: ${{ steps.runscript_testplan.outputs.runscript_docker_login }}
+          docker_user: ${{ secrets.DOCKER_HUB_USER }}
+          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Modify composer.json'
+        if: ${{ steps.runscript_testplan.outputs.runscript_composer_transform != '' }}
+        uses: 'OXID-eSales/github-actions/composer_merge@v0'
+        with:
+          file: 'source/${{ steps.runscript_testplan.outputs.runscript_path }}/composer.json'
+          backup: true
+          transform: |
+            ${{ steps.runscript_testplan.outputs.runscript_composer_transform }}
+          update: ${{ steps.runscript_testplan.outputs.runscript_composer_update }}
+          update_options: ${{ steps.runscript_testplan.outputs.runscript_composer_update_options }}
+          container_name: ${{ steps.runscript_testplan.outputs.runscript_container_name }}
+          container_options: ${{ steps.runscript_testplan.outputs.runscript_container_options }}
+          container_method: 'exec'
+          debug: ${{ needs.init.outputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
+
+      - name: Run custom scripts
+        if: ${{ steps.runscript_testplan.outputs.runscript_custom_script != '' && steps.runscript_testplan.outputs.runscript_custom_script_container != '' }}
+        uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
+        with:
+          container_name: ${{ steps.runscript_testplan.outputs.runscript_container_name }}
+          container_options: ${{ steps.runscript_testplan.outputs.runscript_container_options }}
+          container_method: ${{ steps.runscript_testplan.outputs.runscript_container_method }}
+          custom_script: ${{ steps.runscript_testplan.outputs.runscript_custom_script }}
+          custom_script_container: ${{ steps.runscript_testplan.outputs.runscript_custom_script_container }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Run runscript check'
+        uses: 'OXID-eSales/github-actions/run_composer_script@v0'
+        with:
+          script: ${{ steps.runscript_testplan.outputs.runscript_script }}
+          path: ${{ steps.runscript_testplan.outputs.runscript_path }}
+          run_composer_install: ${{ steps.runscript_testplan.outputs.runscript_run_composer_install }}
+          install_options: ${{ steps.runscript_testplan.outputs.runscript_install_options }}
+          container_name: ${{ steps.runscript_testplan.outputs.runscript_container_name }}
+          container_options: ${{ steps.runscript_testplan.outputs.runscript_container_options }}
+          container_method: ${{ steps.runscript_testplan.outputs.runscript_container_method }}
+          output_files: ${{ steps.runscript_testplan.outputs.runscript_output_files }}
+          output_artifact: ${{ steps.runscript_testplan.outputs.runscript_output_prefix}}_${{ steps.runscript_testplan_name.outputs.matrix_suffix }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Stop shop'
+        if: ${{ always() }}
+        uses: 'OXID-eSales/github-actions/stop_shop@v4'
+        with:
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Write Report'
+        if: always()
+        uses: OXID-eSales/github-actions/append_report@v4
+        with:
+          prefix: '${{ needs.init.outputs.global_title }}'
+          priority: '250'
+          phase: report
+          job: runscript
+          title: '${{ steps.runscript_testplan.outputs.runscript_title }}'
+          php: ${{matrix.php}}
+          mysql: ${{matrix.mysql}}
+          status: ${{job.status}}
+          debug: ${{ inputs.debug }}
+
+  sonarcloud:
+    needs: ['init', 'install_shop_with_modules', 'runscript']
+    # yamllint disable-line rule:line-length
+    if: ${{ always() && needs.init.outputs.sonarcloud_matrix_testplan != '' && needs.init.outputs.sonarcloud_matrix_testplan != 'none' && needs.init.outputs.sonarcloud_matrix_testplan != 'skip' }}
+    strategy:
+      matrix:
+        php: ${{ fromJSON(needs.init.outputs.sonarcloud_matrix_php) }}
+        mysql: ${{ fromJSON(needs.init.outputs.sonarcloud_matrix_mysql) }}
+        testplan: ${{ fromJSON(needs.init.outputs.sonarcloud_matrix_testplan) }}
+      fail-fast: false
+      max-parallel: ${{ fromJSON(needs.init.outputs.sonarcloud_max_parallel) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    env:
+      MATRIX_PHP: ${{ matrix.php }}
+      MATRIX_MYSQL: ${{ matrix.mysql }}
+      MATRIX_TESTPLAN: ${{ matrix.testplan }}
+    steps:
+      - name: Load cached testplan
+        id: sonarcloud_testplan_name
+        uses: OXID-eSales/github-actions/load_cached_testplan@v4
+        with:
+          php: ${{ matrix.php }}
+          mysql: ${{ matrix.mysql }}
+          prefix: '${{ needs.init.outputs.global_title }}'
+          root_testplan: ${{ needs.init.outputs.testplan }}
+          matrix_testplan: ${{ matrix.testplan }}
+          plan_folder: ${{ inputs.plan_folder }}
+          cache_name: ${{ needs.init.outputs.init_cache_name }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          cache_bucket: ${{ needs.init.outputs.init_cache_bucket }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Load Testplan'
+        id: sonarcloud_testplan
+        uses: 'joernott/load_testplan@v1'
+        with:
+          files: '${{steps.sonarcloud_testplan_name.outputs.testplan}}'
+          set_output: true
+          set_print: true
+          yaml: generated_testplan.yaml
+          token: ${{ secrets.enterprise_github_token }}
+
+      - name: Checkout shop
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 'SonarCloud Scan'
+        uses: 'OXID-eSales/github-actions/sonarcloud@v4'
+        with:
+          coverage_artifact: 'coverage-reports-*-${{ steps.sonarcloud_testplan_name.outputs.matrix_suffix }}'
+          output_artifact: 'coverage-reports-${{ needs.init.outputs.global_title }}'
+          target_branch: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_target_branch }}
+          strip_path: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_strip_path }}
+          github_ref_name: ${{ github.ref_name }}
+          sonarcloud_organization: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_organization }}
+          sonarcloud_project_key: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_project_key }}
+          sonarcloud_project_name: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_project_name }}
+          sonarcloud_parameters: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_parameters }}
+          sonar_token: ${{ secrets.SONAR_TOKEN }}
+          github_token: ${{ github.token }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Write Report'
+        if: always()
+        uses: OXID-eSales/github-actions/append_report@v4
+        with:
+          prefix: '${{ needs.init.outputs.global_title }}'
+          priority: '240'
+          phase: report
+          job: sonarcloud
+          title: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_title }}
+          php: ${{matrix.php}}
+          mysql: ${{matrix.mysql}}
+          testplan: ${{matrix.testplan}}
+          status: ${{job.status}}
+          debug: ${{ inputs.debug }}
+
+  yamllint:
+    needs: ['init', 'install_shop_with_modules']
+    if: ${{ always() && needs.init.outputs.yamllint_skip != 'true' }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Lint yaml files
+        id: yamllint
+        uses: OXID-eSales/github-actions/yamllint@v4
+        with:
+          file_or_dir: ${{ needs.init.outputs.yamllint_file_or_dir }}
+          config_data: ${{ needs.init.outputs.yamllint_rules }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Write yamllint Report'
+        if: always()
+        uses: OXID-eSales/github-actions/append_report@v4
+        with:
+          prefix: '${{ needs.init.outputs.global_title }}'
+          priority: '240'
+          phase: report
+          title: ''
+          job: 'yamllint'
+          php: ''
+          mysql: ''
+          testplan: ''
+          status: ${{job.status}}
+          debug: false
+
+  actionlint:
+    needs: ['init', 'install_shop_with_modules']
+    if: ${{ always() && needs.init.outputs.actionlint_skip != 'true' }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    steps:
+      - name: Install npm on private runner
+        if: ${{ inputs.runs_on != '"ubuntu-latest"'}}
+        run: |
+          NPM=$(type -p 'npm'||true)
+          if [ -z "${NPM}" ]; then
+            echo -e "\033[0;35m###  Installing npm ###\033[0m"
+            sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update
+            sudo apt-get -qq install npm
+          fi
+
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Run actionlint
+        id: actionlint
+        uses: raven-actions/actionlint@v1
+
+      - name: actionlint Summary
+        if: always()
+        run: |
+          echo "Used actionlint version ${{ steps.actionlint.outputs.version-semver }}"
+          echo "Used actionlint release ${{ steps.actionlint.outputs.version-tag }}"
+          echo "actionlint ended with ${{ steps.actionlint.outputs.exit-code }} exit code"
+          echo "actionlint ended because '${{ steps.actionlint.outputs.exit-message }}'"
+          echo "actionlint found ${{ steps.actionlint.outputs.total-errors }} errors"
+          echo "actionlint checked ${{ steps.actionlint.outputs.total-files }} files"
+          echo "actionlint cache used: ${{ steps.actionlint.outputs.cache-hit }}"
+
+      - name: 'Write actionlint Report'
+        if: always()
+        uses: OXID-eSales/github-actions/append_report@v4
+        with:
+          prefix: '${{ needs.init.outputs.global_title }}'
+          priority: '250'
+          phase: report
+          job: 'actionlint'
+          title: ''
+          php: ''
+          mysql: ''
+          testplan: ''
+          status: ${{job.status}}
+          debug: false
+
+  finish:
+    if: ${{ always() && needs.init.outputs.finish_skip != 'true' }}
+    needs:
+      - init
+      - install_shop_with_modules
+      - runscript
+      - sonarcloud
+      - yamllint
+      - actionlint
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    env:
+      SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"
+    steps:
+      - name: 'Generate report'
+        id: generate_report
+        uses: 'OXID-eSales/github-actions/generate_report@v4'
+        with:
+          prefix: '${{ needs.init.outputs.global_title }}'
+          slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          title: '${{ needs.init.outputs.finish_slack_title }}'
+          debug: ${{ inputs.debug }}
+
+      - name: 'Clean Cache'
+        # if: ${{ steps.generate_report.outputs.overall_status == 'success' }}
+        uses: 'OXID-eSales/github-actions/clean_cache@v4'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          runs_on: ${{ inputs.runs_on }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          cache_objects: |
+            ${{ steps.generate_report.outputs.cache_objects }}
+          debug: ${{ needs.init.outputs.debug }}
