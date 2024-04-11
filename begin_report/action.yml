@@ -170,7 +170,7 @@ runs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: '${{ steps.safe_title.outputs.title }}'
+        name: 'testplan-${{inputs.prefix}}-000_header'
         path: |
           reports/000-header.md
           slack_reports/000-header.md
