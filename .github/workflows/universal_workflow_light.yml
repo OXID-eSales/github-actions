@@ -104,7 +104,7 @@ jobs:
           ${{ inputs.custom_testplan_yaml }}
           EOF
           TESTPLAN=$(echo "${{ inputs.testplan }}"|sed -e 's|~|${{ inputs.plan_folder }}|g')
-          echo "testplan=${{ inputs.plan_folder }}/defaults/defaults.yml,${TESTPLAN}" >>"${GITHUB_OUTPUT}"
+          echo "testplan=${{ inputs.plan_folder }}/defaults/defaults_light.yml,${TESTPLAN}" >>"${GITHUB_OUTPUT}"
 
       - name: 'Load Testplan'
         id: ltp
@@ -177,7 +177,7 @@ jobs:
       install_shop_with_modules_add_services: ${{ steps.ltp.outputs.install_shop_with_modules_add_services }}
       install_shop_with_modules_cache_bucket: ${{ steps.ltp.outputs.install_shop_with_modules_cache_bucket }}
       install_shop_with_modules_cache_prefix: ${{ steps.ltp.outputs.install_shop_with_modules_cache_prefix }}
-      install_shop_with_modules_cache_prepared_shop : ${{ steps.ltp.outputs.install_shop_with_modules_cache_prepared_shop }}
+      install_shop_with_modules_cache_prepared_shop: ${{ steps.ltp.outputs.install_shop_with_modules_cache_prepared_shop }}
       install_shop_with_modules_cache_prepared_shop_prefix: ${{ steps.ltp.outputs.install_shop_with_modules_cache_prepared_shop_prefix }}
       install_shop_with_modules_composer_file: ${{ steps.ltp.outputs.install_shop_with_modules_composer_file }}
       install_shop_with_modules_composer_transform: ${{ steps.ltp.outputs.install_shop_with_modules_composer_transform }}
@@ -210,6 +210,11 @@ jobs:
       runscript_matrix_php: ${{ steps.ltp.outputs.runscript_matrix_php }}
       runscript_matrix_testplan: ${{ steps.ltp.outputs.runscript_matrix_testplan }}
       runscript_max_parallel: ${{ steps.ltp.outputs.runscript_max_parallel }}
+      # sonarcloud variables
+      sonarcloud_matrix_mysql: ${{ steps.ltp.outputs.sonarcloud_matrix_mysql }}
+      sonarcloud_matrix_php: ${{ steps.ltp.outputs.sonarcloud_matrix_php }}
+      sonarcloud_matrix_testplan: ${{ steps.ltp.outputs.sonarcloud_matrix_testplan }}
+      sonarcloud_max_parallel: ${{ steps.ltp.outputs.sonarcloud_max_parallel }}
       # yamllint variables
       yamllint_skip: ${{ steps.ltp.outputs.yamllint_skip }}
       yamllint_file_or_dir: ${{ steps.ltp.outputs.yamllint_file_or_dir }}
@@ -294,6 +299,7 @@ jobs:
         run: |
           # install_shop_with_modules: Debug cache current installation
           # we need to add the dot folders here explicitly because bash works differently than the action
+          # yamllint disable-line rule:line-length
           CACHE_NAME='${{ needs.init.outputs.install_shop_with_modules_cache_prepared_shop_prefix}}_${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           echo "write_cache '${CACHE_NAME}' ./* .env .env.dist .gitignore .git" >>debug/debug.sh
 
@@ -316,10 +322,12 @@ jobs:
           is_enterprise: ${{ needs.init.outputs.install_shop_with_modules_is_enterprise }}
           config_idebug: ${{ needs.init.outputs.install_shop_with_modules_config_idebug }}
           output_files: ${{ needs.init.outputs.install_shop_with_modules_output_files }}
+          # yamllint disable-line rule:line-length
           output_artifact: '${{ needs.init.outputs.install_shop_with_modules_output_artifact_prefix }}-${{needs.init.outputs.global_title}}-PHP${{ matrix.php }}-MYSQL${{ matrix.mysql }}'
           debug: ${{ needs.init.outputs.debug }}
 
       - name: Run custom scripts
+        # yamllint disable-line rule:line-length
         if: ${{ needs.init.outputs.install_shop_with_modules_custom_script != '' && needs.init.outputs.install_shop_with_modules_custom_script_container != '' }}
         uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
         with:
@@ -342,6 +350,7 @@ jobs:
         run: |
           # install_shop_with_modules: Debug cache current installation
           # we need to add the dot folders here explicitly because bash works differently than the action
+          # yamllint disable-line rule:line-length
           CACHE_NAME='${{ needs.init.outputs.install_shop_with_modules_cache_prefix}}_${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           echo "write_cache '${CACHE_NAME}' ./* .env .env.dist .gitignore .git" >>debug/debug.sh
 
@@ -367,9 +376,11 @@ jobs:
           php: ${{matrix.php}}
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
+          # yamllint disable rule:line-length
           cached_object: |
             ${{ needs.init.outputs.install_shop_with_modules_cache_prepared_shop_prefix}}_${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}
             ${{ needs.init.outputs.install_shop_with_modules_cache_prefix}}_${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}
+          # yamllint enable rule:line-length
           debug: ${{ inputs.debug }}
 
   runscript:

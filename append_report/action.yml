@@ -134,8 +134,9 @@ runs:
       shell: bash
       run: |
         # append_report: Generate safe title
+        MATRIX='PHP${{inputs.php}}_MYSQL${{inputs.mysql}}'
         TITLE=$( \
-          echo 'testplan-${{inputs.prefix}}-${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}' \
+          echo "testplan-${{inputs.prefix}}-${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}-${MATRIX}" \
           | sed -e 's|/||g' \
         )
         echo "title=${TITLE}" >>"${GITHUB_OUTPUT}"
