@@ -41,6 +41,12 @@ install_module:
       ref: *default_ref
   composer: *composer
 
+install_shop_with_modules:
+  matrix: *matrix
+
+runscript:
+  matrix: *matrix
+
 phpunit:
   matrix: *matrix
 

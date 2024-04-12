@@ -11,6 +11,14 @@ install_module:
   matrix: *matrix
   max_parallel: 1
 
+install_shop_with_modules:
+  matrix: *matrix
+  max_parallel: 1
+
+runscript:
+  matrix: *matrix
+  max_parallel: 1
+
 phpunit:
   matrix: *matrix
   max_parallel: 1
