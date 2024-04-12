@@ -275,6 +275,9 @@ runscript:
   # The path pointing to the module relative to source/dev-packages needs to be the same as in install_module
   path: ''
 
+  # Should we run composer install in the workdir?
+  run_composer_install: true
+
   # These options are passed along to composer install
   install_options: ''
 

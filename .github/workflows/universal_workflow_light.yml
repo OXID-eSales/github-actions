@@ -294,7 +294,7 @@ jobs:
           bucket: ${{ needs.init.outputs.install_shop_with_modules_cache_bucket }}
 
       - name: Debug cache preparedShop
-        if: ${{ inputs.debug && needs.init.outputs.install_shop_with_modules_cache_prepared_shop == true }}
+        if: ${{ inputs.debug == true && needs.init.outputs.install_shop_with_modules_cache_prepared_shop == true }}
         shell: bash
         run: |
           # install_shop_with_modules: Debug cache current installation
