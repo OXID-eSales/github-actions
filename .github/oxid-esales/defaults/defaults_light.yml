@@ -1,0 +1,378 @@
+# Purpose
+# =======
+# This file defines the default settings for the test workflow. It contains all
+# variables. The variables can then be overridden in more specific yaml files
+# to run different test scenarios.
+#
+# Variables used in multiple steps will be defined in the "workflow" and "global"
+# sections and we use anchors to reference them in the specific sections. We use
+# yamllint to validate the files, make sure to add linter exceptions, when you
+# break the rules.
+#
+# We can use Golang templates in these test plans, see https://github.com/joernott/load_testplan/blob/main/README.md
+# on how to reference environment variables and the github context.
+#
+# Sections
+# ========
+# The yaml hierarchy will be flattened to simple key=value settings. The
+# various levels of the yaml file here will become prefixes to the variable
+# names. For each step of the testplan, we use use a section to have the
+# variables for that step contain the same prefix.
+#
+# The "workflow" section contains global definitions of matrix variables and
+# settings used in the "strategy" parts of a job. They have anchors and every
+# specific job has its own variables which reference these anchors if no
+# job specific exceptions are needed.
+#
+# The "global" section is much the same. The variables here are defaults with
+# anchors which will be used inside the steps of the various other sections.
+#
+
+# Global settings for a jobs strategy setting
+workflow:
+
+  # The variables "php" and "mysql" in the "matrix" subsection are used to run
+  # a matrix of all combinations of these values for testing.
+  matrix: &matrix
+    # This string contains a json array of php versions to test against.
+    php: &matrix_php '["8.1","8.2"]'
+
+    # This json array are the mysql versions to test
+    mysql: &matrix_mysql '["5.7","8.0"]'
+
+  # This matrix definition is used, when we only want one analysis done
+  # It covers the recommended combination of PHP and MySQL
+  matrix_slim: &matrix_slim
+    php: &matrix_php_slim '["8.2"]'
+    mysql: &matrix_mysql_slim '["8.0"]'
+
+  # How many matrix tests should run in parallel. When running on our private runners, we need to
+  # reduce this to get consistent test results
+  max_parallel: &max_parallel 4
+
+# Global settings used in the actual steps in the jobs
+global:
+  # The title of the workflow is used to distinguish multiple runs of the workflow triggered
+  # from one single trigger, e.g. a scheduled run
+  title: '{{ .Github.EventName }}-{{ .Github.RefName }}'
+
+  # This action can be used on the community edition (ce) and enterprise
+  # edition (ee) of the shop. On top of setting this to true, a few extra
+  # variables/secrets must be provided for using the action on ee.
+  # If is enterprise is set to true, you need to provide the following
+  # - secrets.enterprise_github_token
+  # - testplan entry global.git_enterprise_ref
+  is_enterprise: &is_enterprise false
+  # This template variable must be set to "ce" if is_enterprise is false or "ee"
+  # if is_enterprise is true. It will be used for determining object names
+  # {{ $shop_type := "ce" }}$shop_type: {{ printf "%q" $shop_type }}
+
+  # Repository related settings
+  git: &git
+    # URL for the docker-eshop sdk repository to clone
+    sdk_url: &git_sdk_url 'https://github.com/OXID-eSales/docker-eshop-sdk.git'
+
+    # Branch to check out for the SDK
+    sdk_ref: &git_sdk_ref 'master'
+
+    # URL for the oxidshop_ce repository
+    shop_url: &git_shop_url 'https://github.com/OXID-eSales/oxideshop_ce.git'
+
+    # Branch, tag or hash of the commit to check out
+    shop_ref: &git_shop_ref '{{ .Github.RefName }}'
+
+    # URL for the oxidshop_pe repository
+    enterprise_url: 'https://github.com/OXID-eSales/oxideshop_ee.git'
+
+    # Branch to check out for the enterprise repos
+    enterprise_ref: &git_enterprise_ref 'b-8.0.x'
+
+    # Branch to check out for modules/plugins etc
+    default_ref: &default_ref 'b-8.0.x'
+
+  # When running on a self hosted runner with access to a local s3 cache:
+  # Set the following secrets:
+  # - secrets.CACHE_ENDPOINT
+  # - secrets.CACHE_ACCESS_KEY
+  # - secrets.CACHE_SECRET_KEY
+  cache: &cache
+    bucket: &cache_bucket 'oxideshop-ee'
+
+  # Should we log in to docker? If set to "true", you need to set the following
+  # secrets:
+  # - secrets.DOCKER_HUB_USER
+  # - secrets.DOCKER_HUB_TOKEN
+  docker_login: &docker_login true
+
+  # Settings related to the container we run tests in
+  container: &container
+
+    # Name of the container running php
+    name: &container_name 'php'
+
+    # Additional options passed to docker compose when running tests in
+    # the the container
+    options: &container_options ''
+
+    # Method to execute the commands inside a container.
+    # "run" spins up an entirely new container while "exec" runs inside the
+    # already running container.
+    method: &container_method 'exec'
+
+  # These defaults are used when running the composer_configure and
+  # composer_require actions
+  composer: &composer
+    # This is just a definition we can apply in later configs
+    # It will be overwritten by the 7.0.x and 7.1.x templates
+    # and can be used by referencing .Data.global.composer.dev_ref
+    dev_ref: &dev_ref dev-b-8.0.x
+
+    # Use these settings below to merge a json configuration with an existing
+    # composer.json
+
+    # Path to the composer.json folder on the runner (source/composer.json,
+    # not /var/www/composer.json)
+    file: 'source/composer.json'
+
+    # Should a backup of the original composer.json be created?
+    backup: true
+
+    # Merge this json data with composer.json. If this is empty,
+    # no transformation will be applied
+    transform: ''
+
+    # Should we run composer update
+    update: true
+
+    # Options for composer update
+    update-options: '--no-interaction'
+
+  # This grep pattern is applied to the generated phpunit, codeception and runtest log file. If we have
+  # a hit matching the pattern below, the step will fail.
+  failure_pattern: &failure_pattern |
+    fail
+    \\.\\=\\=
+    Warning
+    Notice
+    Deprecated
+    Fatal
+    Error
+    DID NOT FINISH
+    Test file ".+" not found
+    Cannot open file
+    No tests executed
+    Could not read
+    Warnings: [1-9][0-9]*
+    Errors: [1-9][0-9]*
+    Failed: [1-9][0-9]*
+    Deprecations: [1-9][0-9]*
+    Risky: [1-9][0-9]*
+
+# The init phase handles loading the testplans and creating report artifacts for the run
+init:
+  cache:
+    bucket: *cache_bucket
+    name: '{{ .Github.EventName }}-{{ .Github.RefName }}-testplan-{{ .Env.GITHUB_REPOSITORY_ID }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
+
+# This step installs the sdk, shop and module(s)
+install_shop_with_modules:
+  matrix: *matrix
+  max_parallel: *max_parallel
+  docker_login: *docker_login
+  container: *container
+  git: *git
+  cache:
+    bucket: *cache_bucket
+    prefix: 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
+  composer:
+    <<: *composer
+    transform: |
+      {
+          "preferred-install": {
+            "oxid-esales/*": "source",
+            "oxid-professional-services/*": "source",
+            "ddoe/*": "source"
+          },
+          "require": {
+              "oxid-esales/twig-component": "dev-b-8.0.x",
+              "oxid-esales/twig-admin-theme": "dev-b-8.0.x",
+              "oxid-esales/apex-theme": "dev-b-8.0.x"
+          }
+      }
+
+  # These modify php "custom.ini"
+  custom_ini:
+    # Error reporting settings
+    error_reporting: 'E_ALL & ~E_DEPRECATED & ~E_NOTICE & ~E_WARNING'
+
+    # xdebug settings for php custom.ini
+    xdebug: 'xdebug.max_nesting_level=1000'
+
+  # Space separated list of extra services to add
+  add_services: 'selenium-chrome'
+
+  is_enterprise: *is_enterprise
+  cache:
+    bucket: *cache_bucket
+
+    # Name of the complete cached shop installation
+    prefix: &install_shop_prefix 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
+
+    # Should we cache the prepared shop for a shop setup test?
+    prepared_shop: true
+
+    # Name of the prepared shop cached shop installation
+    prepared_shop_prefix: &prepare_shop_prefix 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
+
+  # Modifying source/source/config.inc.php
+  config:
+    # Set iDebug in source/source/config.inc.php
+    idebug: false
+  # Run custom script outside the container
+  custom_script: ''
+
+  # Run custom script inside the container like 'bin/oe-console oe:setup:demodata'
+  custom_script_container: ''
+
+  # Exporting an artifact with Configuration files for the shop setup
+  output:
+    files: |
+      docker-compose.yml
+      source/composer.json*
+      source/composer.lock
+      source/source/config.inc.php
+      data/php/logs/error_log.txt
+      files.txt
+    # The configuration file name is dynamic, the matrix variables will be appended
+    artifact_prefix: 'configs_install_shop_with_modules'
+
+runscript:
+  matrix:
+    php: *matrix_php_slim
+    mysql: *matrix_mysql_slim
+    # This is only used in the module workflow, so the default is to skip this
+    script: 'skip'
+  max_parallel: 1
+  # When looping over multiple modules, title must be set for every element
+  title: 'runscript'
+  # You need to specify the script name
+  script: ''
+  docker_login: *docker_login
+  load_shop: *install_shop_prefix
+  container: *container
+  cache:
+    bucket: *cache_bucket
+  composer:
+    file: 'source/dev-packages/test-module/composer.json'
+    backup: true
+    transform: ''
+    update: true
+    update_options: '--no-interaction'
+
+  # Run custom script outside the container'
+  custom_script: ''
+
+  # Run custom script inside the container like 'bin/oe-console oe:b2b:installdemodata --shop-id=1'
+  custom_script_container: ''
+
+  # The path pointing to the module relative to source/dev-packages needs to be the same as in install_module
+  path: ''
+
+  # These options are passed along to composer install
+  install_options: ''
+
+  # Each iteration of the styles workflow will move their report to a distinct name in the central report folder
+  output:
+    files: |
+      source/tests/output/*
+      data/php/logs/error_log.txt
+    prefix: 'runtest_artifacts'
+
+# Running the sonarcloud scanner on the gathered coverage reports
+sonarcloud:
+  # We only run sonarcloud for one of the matrix combinations of PHP/MySQL
+  matrix:
+    php: '["8.1"]'
+    mysql: '["5.7"]'
+    testplan: '["-"]'
+
+  # There is only one matrix combination
+  max_parallel: 1
+  docker_login: *docker_login
+
+  # You only need to change the title when running multiple sonarcloud scans in one workflow
+  title: 'sonarcloud'
+
+  # Run custom script outside the container'
+  custom_script: ''
+
+  # Run custom script inside the container like 'bin/oe-console oe:b2b:installdemodata --shop-id=1'
+  custom_script_container: ''
+
+  coverage:
+    prefix: coverage-report
+  target_branch: b-8.0.x
+
+  # Part of the absolute path to strip from the paths inside the coverage.xml,
+  # This ist /var/www/ (note the trailing slash) fort the shop and should be set to
+  # /var/www/dev-packages/<module_ids>/ for modules
+  strip_path: '/var/www/'
+
+  # Sonarcloud settings, get them from https://sonarcloud.io/organizations/oxid-esales/projects
+  organization: 'oxid-esales'
+  project_key: 'OXID-eSales_oxideshop_ce'
+  project_name: 'oxideshop_ce'
+  # Parameters passed to the scanner
+  parameters: |
+    -Dsonar.language=php
+    -Dsonar.scm.provider=git
+    -Dsonar.sources=source
+    -Dsonar.tests=tests
+
+  # DEPRECATED: (we use a separate config for this now) for the internal run, leave the project key empty if you don't have a need
+  # for this second run with different settings
+  internal_project_key: 'OXID-eSales_oxideshop_ce_internal'
+  internal_project_name: 'oxideshop_ce_internal'
+  internal_parameters: |
+    -Dsonar.language=php
+    -Dsonar.scm.provider=git
+    -Dsonar.sources=source/Internal
+    -Dsonar.tests=tests
+
+# yamllint validates the github actions/testplan yaml files
+yamllint:
+  # Skip this part of the test run
+  skip: false
+
+  # Rules for the linter
+  rules: |
+    extends: default
+    ignore: .git/*
+    rules:
+      document-start: disable
+      line-length:
+        max: 160
+        level: warning
+      new-line-at-end-of-file:
+        level: warning
+      trailing-spaces:
+        level: warning
+      truthy: disable
+
+  # Space separated list of files or directories
+  file_or_dir: '.github'
+
+# actionlint validates the github actions workflows (not actions)
+actionlint:
+  # Skip this part of the test run
+  skip: false
+
+# This is the final cleanup at the end
+finish:
+  # Skip this part of the test run
+  skip: false
+  # Using the global settings here
+  matrix:
+    php: *matrix_php
+    mysql: *matrix_mysql
+  slack_title: '{{ .Github.Workflow }} ({{ .Github.RefName }}) on {{ .Github.Repository }} by {{ .Github.Actor }}'
