@@ -91,6 +91,5 @@ runs:
       with:
         name: ${{ inputs.output_artifact }}
         path: |
-          source/${{ inputs.path }}/.output/*
+          source/${{ inputs.path }}/tests/output/*
           data/php/logs/error_log.txt
-

@@ -483,7 +483,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.runscript_testplan.outputs.runscript_output_prefix}}_${{ steps.runscript_testplan_name.outputs.matrix_suffix }}
-          path: source/${{ steps.runscript_testplan.outputs.runscript_path }}/.coverage/*
+          path: source/${{ steps.runscript_testplan.outputs.runscript_path }}/tests/reports/*.xml
 
       - name: 'Stop shop'
         if: ${{ always() }}
