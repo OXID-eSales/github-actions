@@ -39,11 +39,6 @@ inputs:
     required: false
     description: 'Github run artifact for the output'
     default: 'run_composer_script'
-  coverage_artifact:
-    type: string
-    required: false
-    description: 'Github run artifact for the coverage reports'
-    default: 'coverage-reports-run_composer_script'
   debug:
     type: string
     description: 'Appended to debugging scripts'
@@ -71,7 +66,7 @@ runs:
       run: |
         # run_composer_script: Run script ${{ inputs.script }}
         ${{ inputs.debug }}
-        mkdir -p source/tests/output source/tests/coverage
+        mkdir -p source/${{ inputs.path }}/.output source/${{ inputs.path }}/.coverage
         echo -e "\033[0;35m###  Run composer ${{ inputs.script }} in ${{ inputs.path }} ###\033[0m"
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
@@ -95,11 +90,7 @@ runs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.output_artifact }}
-        path: source/tests/output/*
+        path: |
+          source/${{ inputs.path }}/.output/*
+          data/php/logs/error_log.txt
 
-    - name: Upload artifact
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ inputs.output_artifact }}
-        path: source/tests/coverage/*

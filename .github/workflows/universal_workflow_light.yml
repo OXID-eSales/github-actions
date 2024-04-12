@@ -476,9 +476,14 @@ jobs:
           container_name: ${{ steps.runscript_testplan.outputs.runscript_container_name }}
           container_options: ${{ steps.runscript_testplan.outputs.runscript_container_options }}
           container_method: ${{ steps.runscript_testplan.outputs.runscript_container_method }}
-          output_artifact: ${{ steps.runscript_testplan.outputs.runscript_output_prefix}}_${{ steps.runscript_testplan_name.outputs.matrix_suffix }}
-          coverage_artifact: ${{ steps.runscript_testplan.outputs.runscript_coverage_prefix}}_${{ steps.runscript_testplan_name.outputs.matrix_suffix }}
           debug: ${{ needs.init.outputs.debug }}
+
+      - name: Upload coverage report
+        if: ${{ always() && steps.runscript_testplan.outputs.runscript_coverage_prefix != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.runscript_testplan.outputs.runscript_output_prefix}}_${{ steps.runscript_testplan_name.outputs.matrix_suffix }}
+          path: source/${{ steps.runscript_testplan.outputs.runscript_path }}/.coverage/*
 
       - name: 'Stop shop'
         if: ${{ always() }}
