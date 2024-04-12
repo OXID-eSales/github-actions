@@ -290,8 +290,8 @@ jobs:
         with:
           debug: ${{ needs.init.outputs.debug }}
 
-      - name: Cache preparedShop
-        if: ${{ needs.init.outputs.install_shop_with_modules_cache_prepared_shop == 'true' }}
+      - name: Cache preparedShop on s3
+        if: ${{ needs.init.outputs.install_shop_with_modules_cache_prepared_shop == 'true' && needs.init.outputs.use_private_cache == 'true' }}
         uses: tespkg/actions-cache/save@v1
         with:
           path: |
@@ -302,6 +302,15 @@ jobs:
           accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
           secretKey: ${{ secrets.CACHE_SECRET_KEY }}
           bucket: ${{ needs.init.outputs.install_shop_with_modules_cache_bucket }}
+
+      - name: Cache preparedShop on github
+        if: ${{ needs.init.outputs.install_shop_with_modules_cache_prepared_shop == 'true' && needs.init.outputs.use_private_cache != 'true'}}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ./*
+          # yamllint disable-line rule:line-length
+          key: '${{ needs.init.outputs.install_shop_with_modules_cache_prepared_shop_prefix }}_${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
 
       - name: Debug cache preparedShop
         if: ${{ inputs.debug == true && needs.init.outputs.install_shop_with_modules_cache_prepared_shop == true }}
@@ -364,7 +373,8 @@ jobs:
           CACHE_NAME="${{ needs.init.outputs.install_shop_with_modules_cache_prefix}}_${{needs.init.outputs.global_title}}-${MATRIX}"
           echo "write_cache '${CACHE_NAME}' ./* .env .env.dist .gitignore .git" >>debug/debug.sh
 
-      - name: Cache current installation
+      - name: Cache current installation on s3
+        if: ${{ needs.init.outputs.use_private_cache == 'true' }}
         uses: tespkg/actions-cache/save@v1
         with:
           path: |
@@ -374,6 +384,14 @@ jobs:
           accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
           secretKey: ${{ secrets.CACHE_SECRET_KEY }}
           bucket: ${{ needs.init.outputs.install_shop_with_modules_cache_bucket }}
+
+      - name: Cache current installation on github
+        if: ${{ needs.init.outputs.use_private_cache != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ./*
+          key: '${{ needs.init.outputs.install_shop_with_modules_cache_prefix}}_${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
 
       - name: 'Write Report'
         if: always()
