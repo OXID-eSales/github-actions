@@ -512,8 +512,8 @@ jobs:
         uses: OXID-eSales/github-actions/append_report@v4
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
-          priority: '250'
-          phase: report
+          priority: '100'
+          phase: test
           job: runscript
           title: '${{ steps.runscript_testplan.outputs.runscript_title }}'
           php: ${{matrix.php}}
