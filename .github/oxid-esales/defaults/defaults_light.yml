@@ -181,6 +181,8 @@ install_shop_with_modules:
   docker_login: *docker_login
   container: *container
   git: *git
+  is_enterprise: *is_enterprise
+
   cache:
     bucket: *cache_bucket
     prefix: 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
@@ -210,10 +212,6 @@ install_shop_with_modules:
 
   # Space separated list of extra services to add
   add_services: 'selenium-chrome'
-
-  is_enterprise: *is_enterprise
-  cache:
-    bucket: *cache_bucket
 
     # Name of the complete cached shop installation
     prefix: &install_shop_prefix 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'

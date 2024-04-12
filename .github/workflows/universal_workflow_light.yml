@@ -299,8 +299,8 @@ jobs:
         run: |
           # install_shop_with_modules: Debug cache current installation
           # we need to add the dot folders here explicitly because bash works differently than the action
-          # yamllint disable-line rule:line-length
-          CACHE_NAME='${{ needs.init.outputs.install_shop_with_modules_cache_prepared_shop_prefix}}_${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          MATRIX='PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          CACHE_NAME="${{ needs.init.outputs.install_shop_with_modules_cache_prepared_shop_prefix}}_${{needs.init.outputs.global_title}}-${MATRIX}"
           echo "write_cache '${CACHE_NAME}' ./* .env .env.dist .gitignore .git" >>debug/debug.sh
 
       - name: 'Start shop after caching preparedShop'
@@ -350,8 +350,8 @@ jobs:
         run: |
           # install_shop_with_modules: Debug cache current installation
           # we need to add the dot folders here explicitly because bash works differently than the action
-          # yamllint disable-line rule:line-length
-          CACHE_NAME='${{ needs.init.outputs.install_shop_with_modules_cache_prefix}}_${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          MATRIX='PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          CACHE_NAME="${{ needs.init.outputs.install_shop_with_modules_cache_prefix}}_${{needs.init.outputs.global_title}}-${MATRIX}"
           echo "write_cache '${CACHE_NAME}' ./* .env .env.dist .gitignore .git" >>debug/debug.sh
 
       - name: Cache current installation
