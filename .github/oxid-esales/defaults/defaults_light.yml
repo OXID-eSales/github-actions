@@ -185,7 +185,15 @@ install_shop_with_modules:
 
   cache:
     bucket: *cache_bucket
-    prefix: 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
+    # Name of the complete cached shop installation
+    prefix: &install_shop_prefix 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
+
+    # Should we cache the prepared shop for a shop setup test?
+    prepared_shop: true
+
+    # Name of the prepared shop cached shop installation
+    prepared_shop_prefix: &prepare_shop_prefix 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
+
   composer:
     <<: *composer
     transform: |
@@ -212,15 +220,6 @@ install_shop_with_modules:
 
   # Space separated list of extra services to add
   add_services: 'selenium-chrome'
-
-    # Name of the complete cached shop installation
-    prefix: &install_shop_prefix 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
-
-    # Should we cache the prepared shop for a shop setup test?
-    prepared_shop: true
-
-    # Name of the prepared shop cached shop installation
-    prepared_shop_prefix: &prepare_shop_prefix 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
 
   # Modifying source/source/config.inc.php
   config:
