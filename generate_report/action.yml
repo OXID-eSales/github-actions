@@ -14,6 +14,11 @@ inputs:
     required: false
     description: 'Title of the job'
     default: 'default'
+  compact:
+    type: boolean
+    required: false
+    description: 'Generate compact slack message'
+    default: false
   debug:
     type: boolean
     description: 'Enable debugging'

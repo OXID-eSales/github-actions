@@ -426,27 +426,6 @@ jobs:
           yaml: generated_testplan.yaml
           token: ${{ secrets.enterprise_github_token }}
 
-      - name: Convert variables
-        id: runscript_testplan_xp
-        shell: bash
-        run: |
-          NAME=$(echo '${{ matrix.script }}'| sed -e 's|-|_|g')
-          echo "runtest_script=$NAME" >>"${GITHUB_OUTPUT}"
-          for KEY in title docker_login load_shop \
-            container_name container_options container_method \
-            cache_bucket \
-            composer_file composer_backup composer_transform composer_update composer_update_options \
-            custom_script custom_script_container \
-            path install_options \
-            output_files output_prefix ; do
-            VAR="runtest_${NAME}_${KEY}"
-            cat >>"${GITHUB_OUTPUT}" <<EOF
-          runtest_${KEY}<<runtest_${KEY}_delimeter
-          ${!VAR}
-          runtest_${KEY}_delimeter
-          EOF
-          done
-
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v4'
         with:
@@ -515,7 +494,7 @@ jobs:
           priority: '100'
           phase: test
           job: runscript
-          title: '${{ steps.runscript_testplan.outputs.runscript_title }}'
+          title: '${{ matrix.script }}'
           php: ${{matrix.php}}
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
