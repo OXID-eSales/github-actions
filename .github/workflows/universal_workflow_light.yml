@@ -479,6 +479,7 @@ jobs:
           # yamllint disable-line rule:line-length
           output_artifact: ${{ steps.runscript_testplan.outputs.runscript_output_prefix}}_${{matrix.script}}-${{ steps.runscript_testplan_name.outputs.matrix_suffix }}
           debug: ${{ needs.init.outputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
       - name: Upload coverage report
         if: ${{ always() && steps.runscript_testplan.outputs.runscript_coverage_prefix != '' }}

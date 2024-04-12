@@ -44,6 +44,11 @@ inputs:
     description: 'Appended to debugging scripts'
     default: ''
     required: false
+  github_token:
+    type: string
+    description: 'Github token for composer'
+    default: ''
+    required: false
 
 runs:
   using: "composite"
@@ -54,6 +59,10 @@ runs:
       run: |
         # run_composer_script: Run composer install
         ${{ inputs.debug }}
+        docker compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container_name}} \
+          composer config -g github-oauth.github.com "${{ inputs.github_token }}"
         echo -e "\033[0;35m### Running composer install with ${{ inputs.install_options }}\033[0m"
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
