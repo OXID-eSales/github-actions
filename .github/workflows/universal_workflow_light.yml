@@ -155,7 +155,8 @@ jobs:
           cached_object: ${{ steps.ltp.outputs.init_cache_name }}
           debug: false
 
-      - name: Cache testplan
+      - name: Cache testplan on S3
+        if: ${{ inputs.runs_on != '"ubuntu-latest"'}}
         uses: tespkg/actions-cache/save@v1
         with:
           path: |
@@ -165,6 +166,14 @@ jobs:
           accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
           secretKey: ${{ secrets.CACHE_SECRET_KEY }}
           bucket: ${{ steps.ltp.outputs.init_cache_bucket }}
+
+      - name: Cache testplan on Github
+        if: ${{ inputs.runs_on == '"ubuntu-latest"'}}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ${{ inputs.plan_folder }}/*
+          key: '${{ steps.ltp.outputs.init_cache_name }}'
 
     outputs:
       debug: ${{ steps.begin_report.outputs.debug }}
