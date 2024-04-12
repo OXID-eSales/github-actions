@@ -249,7 +249,7 @@ runscript:
     mysql: *matrix_mysql_slim
     # This is only used in the module workflow, so the default is to skip this
     script: 'skip'
-  max_parallel: 1
+  max_parallel: 64
   # When looping over multiple modules, title must be set for every element
   title: 'runscript'
   # You need to specify the script name

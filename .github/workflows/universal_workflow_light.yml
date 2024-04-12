@@ -416,7 +416,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Load Testplan'
-        id: runscript_load_testplan
+        id: runscript_testplan
         uses: 'joernott/load_testplan@v1'
         with:
           files: '${{steps.runscript_testplan_name.outputs.testplan}}'
@@ -427,7 +427,7 @@ jobs:
           token: ${{ secrets.enterprise_github_token }}
 
       - name: Convert variables
-        id: runscript_testplan
+        id: runscript_testplan_xp
         shell: bash
         run: |
           NAME=$(echo '${{ matrix.script }}'| sed -e 's|-|_|g')
