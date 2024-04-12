@@ -34,17 +34,16 @@ inputs:
     required: false
     description: 'Method to execute the commands inside a container, either "run" or "exec"'
     default: 'exec'
-  output_files:
-    type: string
-    required: false
-    description: 'phpunit output and test settings'
-    default: |
-      source/tests/output/*
   output_artifact:
     type: string
     required: false
     description: 'Github run artifact for the output'
     default: 'run_composer_script'
+  coverage_artifact:
+    type: string
+    required: false
+    description: 'Github run artifact for the coverage reports'
+    default: 'coverage-reports-run_composer_script'
   debug:
     type: string
     description: 'Appended to debugging scripts'
@@ -68,11 +67,11 @@ runs:
           composer install ${{ inputs.install_options }}
 
     - name: Run composer script
-      id: phpstan
       shell: bash
       run: |
         # run_composer_script: Run script ${{ inputs.script }}
         ${{ inputs.debug }}
+        mkdir -p source/tests/output source/tests/coverage
         echo -e "\033[0;35m###  Run composer ${{ inputs.script }} in ${{ inputs.path }} ###\033[0m"
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
@@ -96,4 +95,11 @@ runs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.output_artifact }}
-        path: ${{ inputs.output_files }}
+        path: source/tests/output/*
+
+    - name: Upload artifact
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.output_artifact }}
+        path: source/tests/coverage/*

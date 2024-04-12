@@ -241,7 +241,7 @@ install_shop_with_modules:
       data/php/logs/error_log.txt
       files.txt
     # The configuration file name is dynamic, the matrix variables will be appended
-    artifact_prefix: 'configs_install_shop_with_modules'
+    artifact_prefix: 'shop-setup'
 
 runscript:
   matrix:
@@ -280,10 +280,10 @@ runscript:
 
   # Each iteration of the styles workflow will move their report to a distinct name in the central report folder
   output:
-    files: |
-      source/tests/output/*
-      data/php/logs/error_log.txt
-    prefix: 'runtest_artifacts'
+    prefix: 'outputs'
+
+  coverage:
+    prefix: 'coverage-reports-runscript'
 
 # Running the sonarcloud scanner on the gathered coverage reports
 sonarcloud:

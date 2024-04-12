@@ -404,7 +404,7 @@ jobs:
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
-          prefix: '${{ needs.init.outputs.global_title }}'
+          prefix: '${{ needs.init.outputs.global_title }}-${{ matrix.script }}'
           root_testplan: ${{ needs.init.outputs.testplan }}
           matrix_testplan: ''
           plan_folder: ${{ inputs.plan_folder }}
@@ -476,8 +476,8 @@ jobs:
           container_name: ${{ steps.runscript_testplan.outputs.runscript_container_name }}
           container_options: ${{ steps.runscript_testplan.outputs.runscript_container_options }}
           container_method: ${{ steps.runscript_testplan.outputs.runscript_container_method }}
-          output_files: ${{ steps.runscript_testplan.outputs.runscript_output_files }}
           output_artifact: ${{ steps.runscript_testplan.outputs.runscript_output_prefix}}_${{ steps.runscript_testplan_name.outputs.matrix_suffix }}
+          coverage_artifact: ${{ steps.runscript_testplan.outputs.runscript_coverage_prefix}}_${{ steps.runscript_testplan_name.outputs.matrix_suffix }}
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Stop shop'
