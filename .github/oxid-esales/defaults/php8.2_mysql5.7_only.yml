@@ -17,19 +17,15 @@ install_shop_with_modules:
 
 runscript:
   matrix: *matrix
-  max_parallel: 1
 
 phpunit:
   matrix: *matrix
-  max_parallel: 1
 
 codeception:
   matrix: *matrix
-  max_parallel: 1
 
 runtest:
   matrix: *matrix
-  max_parallel: 1
 
 sonarcloud:
   matrix: *matrix
