@@ -475,7 +475,7 @@ jobs:
             exit 1
           fi
           IFS=':' read -r -a S <<< "${MATRIX_SCRIPT}"
-          PREFIX=$(echo "${S[0]}"|sed -e 's|-|_|g')
+          PREFIX="${S[0]}//-/_"
           SCRIPT="${S[1]}"
           echo "runscript_script=${SCRIPT}"|tee -a "${GITHUB_OUTPUT}"
           for KEY in title docker_login load_shop \

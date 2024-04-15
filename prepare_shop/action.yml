@@ -30,7 +30,7 @@ inputs:
     type: string
     required: false
     description: 'URL for downloading rtrhe base compilation url'
-    default: ''  
+    default: ''
   git_shop_url:
     type: string
     required: false
