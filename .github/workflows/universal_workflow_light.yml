@@ -475,7 +475,7 @@ jobs:
             exit 1
           fi
           IFS=':' read -r -a SCRIPT <<< "${X}"
-          echo "runscript_script=${SCRIPT[1]}"|tee -a "${GITHUB_OUTPUT}"
+          echo "runscript_script=$(echo '${{ matrix.script }}'| sed -e 's|.*:-||')"|tee -a "${GITHUB_OUTPUT}"
           for KEY in title docker_login load_shop \
             container_name container_options container_method \
             cache_bucket \
