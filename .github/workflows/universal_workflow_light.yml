@@ -335,7 +335,8 @@ jobs:
 
       - name: Run custom scripts
         # yamllint disable-line rule:line-length
-        if: ${{ steps.isltp.outputs.install_shop_with_modules_custom_script != '' || steps.isltp.outputs.install_shop_with_modules_custom_script_container != '' }}        uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
+        if: ${{ steps.isltp.outputs.install_shop_with_modules_custom_script != '' || steps.isltp.outputs.install_shop_with_modules_custom_script_container != '' }}
+        uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
         with:
           container_name: ${{ steps.isltp.outputs.install_shop_with_modules_container_name }}
           container_options: ${{ steps.isltp.outputs.install_shop_with_modules_container_options }}
