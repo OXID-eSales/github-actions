@@ -483,13 +483,14 @@ jobs:
             path install_options \
             output_files output_prefix ; do
             VAR="runscript_${SCRIPT[0]}_${KEY}"
-            if [[ "${E}" == *"${VAR}"* ]]; then
-              cat >>"${GITHUB_OUTPUT}" <<EOF
+            if [[ "${E}" != *"${VAR}"* ]]; then
+              VAR="runscript_${KEY}"
+            fi
+            cat >>"${GITHUB_OUTPUT}" <<EOF
           runscript_${KEY}<<runscript_${KEY}_delimeter
           ${!VAR}
           runscript_${KEY}_delimeter
           EOF
-            fi
           done
 
       - name: 'Start shop'
