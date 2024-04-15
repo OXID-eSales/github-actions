@@ -186,6 +186,7 @@ jobs:
       # install_shop_with_modules variables
       install_shop_with_modules_matrix_mysql: ${{ steps.ltp.outputs.install_shop_with_modules_matrix_mysql }}
       install_shop_with_modules_matrix_php: ${{ steps.ltp.outputs.install_shop_with_modules_matrix_php }}
+      install_shop_with_modules_max_parallel: ${{ steps.ltp.outputs.install_shop_with_modules_max_parallel }}
       # runscript variables
       runscript_matrix_mysql: ${{ steps.ltp.outputs.runscript_matrix_mysql }}
       runscript_matrix_php: ${{ steps.ltp.outputs.runscript_matrix_php }}
