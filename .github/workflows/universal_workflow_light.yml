@@ -466,13 +466,13 @@ jobs:
         id: runscript_testplan
         shell: bash
         run: |
+          E=$(env|grep -e "^runscript_")
           X=$(echo '${{ matrix.script }}'| sed -e 's|-|_|g')
           if [[ ${X} != *":"* ]]; then
             echo -e "\033[0;31m ${X} does not contain a ':'. You need to specify scripts as '<prefix>:<script_name>'"
             exit 1
           fi
           IFS=':' read -r -a SCRIPT <<< "${X}"
-          echo "runtest_script=${SCRIPT[1]}" >>"${GITHUB_OUTPUT}"
           for KEY in title docker_login load_shop \
             container_name container_options container_method \
             cache_bucket \
@@ -480,12 +480,14 @@ jobs:
             custom_script custom_script_container \
             path install_options \
             output_files output_prefix ; do
-            VAR="runtest_${SCRIPT[0]}_${KEY}"
-            cat >>"${GITHUB_OUTPUT}" <<EOF
-          runtest_${KEY}<<runtest_${KEY}_delimeter
+            VAR="runscript_${SCRIPT[0]}_${KEY}"
+            if [[ "${E}" == *"${VAR}"* ]]; then
+              cat >>"${GITHUB_OUTPUT}" <<EOF
+          runscript_${KEY}<<runtest_${KEY}_delimeter
           ${!VAR}
-          runtest_${KEY}_delimeter
+          runscript_${KEY}_delimeter
           EOF
+            fi
           done
 
       - name: 'Start shop'
