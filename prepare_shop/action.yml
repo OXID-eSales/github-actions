@@ -188,7 +188,7 @@ runs:
       run: |
         # prepare_shop: Fetch the compilation composer.json
         ${{ inputs.debug }}
-        curl -sSjkLo composer.json '${{ inputs.compilation_url != '' }}'
+        curl -sSjkLo composer.json '${{ inputs.compilation_url }}'
 
     - name: Clone the shop  (${{ inputs.git_shop_ref }})
       if: ${{ inputs.compilation_url == '' && (inputs.github_event_name != 'pull_request' || ( github.repository != 'OXID-eSales/oxideshop_ce')) }}
