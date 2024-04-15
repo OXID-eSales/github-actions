@@ -466,6 +466,7 @@ jobs:
         id: runscript_testplan
         shell: bash
         run: |
+          set +x
           E=$(env|grep -e "^runscript_")
           X=$(echo '${{ matrix.script }}'| sed -e 's|-|_|g')
           if [[ ${X} != *":"* ]]; then
