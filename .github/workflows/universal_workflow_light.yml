@@ -189,6 +189,7 @@ jobs:
       install_shop_with_modules_cache_prefix: ${{ steps.ltp.outputs.install_shop_with_modules_cache_prefix }}
       install_shop_with_modules_cache_prepared_shop: ${{ steps.ltp.outputs.install_shop_with_modules_cache_prepared_shop }}
       install_shop_with_modules_cache_prepared_shop_prefix: ${{ steps.ltp.outputs.install_shop_with_modules_cache_prepared_shop_prefix }}
+      install_shop_with_modules_composer_root_url: ${{ steps.ltp.outputs.install_shop_with_modules_composer_root_url }}
       install_shop_with_modules_composer_file: ${{ steps.ltp.outputs.install_shop_with_modules_composer_file }}
       install_shop_with_modules_composer_transform: ${{ steps.ltp.outputs.install_shop_with_modules_composer_transform }}
       install_shop_with_modules_composer_backup: ${{ steps.ltp.outputs.install_shop_with_modules_composer_backup }}
