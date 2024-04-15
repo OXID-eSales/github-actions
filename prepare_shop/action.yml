@@ -403,4 +403,6 @@ runs:
       run: |
         # prepare_shop: Setup config inc file
         ${{ inputs.debug }}
-        cp source/source/config.inc.php.dist source/source/config.inc.php
+        if [ -f source/source/config.inc.php.dist ]; then
+          cp source/source/config.inc.php.dist source/source/config.inc.php
+        fi
