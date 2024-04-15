@@ -53,29 +53,12 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Run composer install
-      if: ${{ inputs.run_composer_install == 'true' }}
-      shell: bash
-      run: |
-        # run_composer_script: Run composer install
-        ${{ inputs.debug }}
-        docker compose ${{ inputs.container_method }} -T \
-          ${{ inputs.container_options }} \
-          ${{ inputs.container_name}} \
-          composer config -g github-oauth.github.com "${{ inputs.github_token }}"
-        echo -e "\033[0;35m### Running composer install with ${{ inputs.install_options }}\033[0m"
-        docker compose ${{ inputs.container_method }} -T \
-          ${{ inputs.container_options }} \
-          --workdir '/var/www/${{ inputs.path }}' \
-          ${{ inputs.container_name }} \
-          composer install ${{ inputs.install_options }}
-
     - name: Run composer script
       shell: bash
       run: |
         # run_composer_script: Run script ${{ inputs.script }}
         ${{ inputs.debug }}
-        mkdir -p source/${{ inputs.path }}/.output source/${{ inputs.path }}/.coverage
+        mkdir -p source/${{ inputs.path }}/Output source/${{ inputs.path }}/Reports
         echo -e "\033[0;35m###  Run composer ${{ inputs.script }} in ${{ inputs.path }} ###\033[0m"
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \

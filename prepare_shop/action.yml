@@ -26,6 +26,11 @@ inputs:
     required: false
     description: 'Branch, tag or hash of the commit to check out'
     default: 'master'
+  compilation_url:
+    type: string
+    required: false
+    description: 'URL for downloading rtrhe base compilation url'
+    default: ''  
   git_shop_url:
     type: string
     required: false
@@ -177,8 +182,16 @@ runs:
         git checkout --progress --force $(echo $BRANCH|head -1)
         ${{ inputs.debug }}
 
+    - name: Fetch the compilation composer.json
+      if: ${{ inputs.compilation_url != '' }}
+      shell: bash
+      run: |
+        # prepare_shop: Fetch the compilation composer.json
+        ${{ inputs.debug }}
+        curl -sSjkLo composer.json '${{ inputs.compilation_url != '' }}'
+
     - name: Clone the shop  (${{ inputs.git_shop_ref }})
-      if: ${{ inputs.github_event_name != 'pull_request' || ( github.repository != 'OXID-eSales/oxideshop_ce') }}
+      if: ${{ inputs.compilation_url == '' && (inputs.github_event_name != 'pull_request' || ( github.repository != 'OXID-eSales/oxideshop_ce')) }}
       shell: bash
       run: |
         # prepare_shop: Clone the shop
@@ -191,7 +204,7 @@ runs:
         git clone --depth 2 ${URL} --branch ${{ inputs.git_shop_ref }} --single-branch source
 
     - name: Clone the shop (PR ${{ inputs.github_event_number }})
-      if: ${{ inputs.github_event_name == 'pull_request' && github.repository == 'OXID-eSales/oxideshop_ce' }}
+      if: ${{ inputs.compilation_url == '' && (inputs.github_event_name == 'pull_request' && github.repository == 'OXID-eSales/oxideshop_ce') }}
       shell: bash
       run: |
         # prepare_shop: Clone the shop (PR)

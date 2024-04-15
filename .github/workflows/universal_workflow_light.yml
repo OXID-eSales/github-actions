@@ -250,7 +250,7 @@ jobs:
     steps:
       - name: 'Prepare Shop'
         id: prepare_shop
-        uses: 'OXID-eSales/github-actions/prepare_shop@v4'
+        uses: 'OXID-eSales/github-actions/prepare_shop@v0'
         with:
           container_name: ${{ needs.init.outputs.install_shop_with_modules_container_name }}
           container_options: ${{ needs.init.outputs.install_shop_with_modules_container_options }}
@@ -260,15 +260,7 @@ jobs:
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
           git_sdk_url: ${{ needs.init.outputs.install_shop_with_modules_git_sdk_url }}
           git_sdk_ref: ${{ needs.init.outputs.install_shop_with_modules_git_sdk_ref }}
-          git_shop_url: ${{ needs.init.outputs.install_shop_with_modules_git_shop_url }}
-          git_shop_ref: ${{ needs.init.outputs.install_shop_with_modules_git_shop_ref }}
-          git_enterprise_ref: ${{ needs.init.outputs.install_shop_with_modules_git_enterprise_ref }}
-          github_event_name: ${{ github.event_name }}
-          github_event_number: ${{ github.event.number }}
-          github_base_ref: ${{ github.base_ref }}
-          github_sha: ${{ github.sha }}
-          github_run_number: ${{ github.run_number }}
-          github_run_attempt: ${{ github.run_attempt }}
+          compilation_url: ${{ needs.init.outputs.install_shop_with_modules_composer_root_url }}
           github_ref_name: ${{ github.ref_name }}
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -357,6 +349,21 @@ jobs:
           custom_script_container: ${{ needs.init.outputs.install_shop_with_modules_custom_script_container }}
           debug: ${{ needs.init.outputs.debug }}
 
+      - name: Run composer for each module
+        shell: bash
+        run: |
+          ${{ needs.init.outputs.debug }}
+          PREFIXES=$(echo '${{needs.init.outputs.runscript_matrix_script}}'|tr ',' '\n'|tr -d '[]"'|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
+          for PREFIX in ${PREFIXES}; do
+            VAR="runtest_${PREFIX}_path"
+            COMPOSER_PATH="${!VAR}"
+            docker compose ${{ needs.init.outputs.install_shop_with_modules_container_method }} -T \
+            ${{ needs.init.outputs.install_shop_with_modules_container_options }} \
+              --workdir "/var/www/${COMPOSER_PATH}" \
+              ${{ needs.init.outputs.install_shop_with_modules_container_name }} \
+              composer update ${{ needs.init.outputs.install_shop_with_modules_composer_update_options}}
+          done
+
       - name: 'Stop shop'
         if: ${{ always() }}
         uses: 'OXID-eSales/github-actions/stop_shop@v4'
@@ -444,7 +451,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Load Testplan'
-        id: runscript_testplan
+        id: runscript_load_testplan
         uses: 'joernott/load_testplan@v1'
         with:
           files: '${{steps.runscript_testplan_name.outputs.testplan}}'
@@ -453,6 +460,32 @@ jobs:
           set_env: true
           yaml: generated_testplan.yaml
           token: ${{ secrets.enterprise_github_token }}
+
+      - name: Convert variables
+        id: runscript_testplan
+        shell: bash
+        run: |
+          X=$(echo '${{ matrix.script }}'| sed -e 's|-|_|g')
+          if [[ ${X} != *":"* ]]; then
+            echo -e "\033[0;31m ${X} does not contain a ':'. You need to specify scripts as '<prefix>:<script_name>'"
+            exit 1
+          fi
+          IFS=':' read -r -a SCRIPT <<< "${X}"
+          echo "runtest_script=${SCRIPT[1]}" >>"${GITHUB_OUTPUT}"
+          for KEY in title docker_login load_shop \
+            container_name container_options container_method \
+            cache_bucket \
+            composer_file composer_backup composer_transform composer_update composer_update_options \
+            custom_script custom_script_container \
+            path install_options \
+            output_files output_prefix ; do
+            VAR="runtest_${SCRIPT[0]}_${KEY}"
+            cat >>"${GITHUB_OUTPUT}" <<EOF
+          runtest_${KEY}<<runtest_${KEY}_delimeter
+          ${!VAR}
+          runtest_${KEY}_delimeter
+          EOF
+          done
 
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v4'

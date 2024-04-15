@@ -313,9 +313,6 @@ jobs:
           github_event_name: ${{ github.event_name }}
           github_event_number: ${{ github.event.number }}
           github_base_ref: ${{ github.base_ref }}
-          github_sha: ${{ github.sha }}
-          github_run_number: ${{ github.run_number }}
-          github_run_attempt: ${{ github.run_attempt }}
           github_ref_name: ${{ github.ref_name }}
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
