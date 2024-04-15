@@ -469,13 +469,15 @@ jobs:
           ${{ needs.init.outputs.debug }}
           set +x
           E=$(env|grep -e "^runscript_")
-          X=$(echo '${{ matrix.script }}'| sed -e 's|-|_|g')
-          if [[ ${X} != *":"* ]]; then
+          MATRIX_SCRIPT='${{ matrix.script }}'
+          if [[ ${MATRIX_SCRIPT} != *":"* ]]; then
             echo -e "\033[0;31m ${X} does not contain a ':'. You need to specify scripts as '<prefix>:<script_name>'"
             exit 1
           fi
-          IFS=':' read -r -a SCRIPT <<< "${X}"
-          echo "runscript_script=$(echo '${{ matrix.script }}'| sed -e 's|.*:-||')"|tee -a "${GITHUB_OUTPUT}"
+          IFS=':' read -r -a S <<< "${MATRIX_SCRIPT}"
+          PREFIX=$(echo "${S[0]}"|sed -e 's|-|_|g')
+          SCRIPT="${S[1]}"
+          echo "runscript_script=${SCRIPT}"|tee -a "${GITHUB_OUTPUT}"
           for KEY in title docker_login load_shop \
             container_name container_options container_method \
             cache_bucket \
@@ -483,7 +485,7 @@ jobs:
             custom_script custom_script_container \
             path install_options \
             output_files output_prefix ; do
-            VAR="runscript_${SCRIPT[0]}_${KEY}"
+            VAR="runscript_${PREFIX}_${KEY}"
             if [[ "${E}" != *"${VAR}"* ]]; then
               VAR="runscript_${KEY}"
             fi
@@ -493,7 +495,7 @@ jobs:
           runscript_${KEY}_delimeter
           EOF
           done
-          SUFFIX="${{matrix.script}}-${{ steps.runscript_testplan_name.outputs.matrix_suffix }}"
+          SUFFIX="${PREFIX}_${SCRIPT}-${{ steps.runscript_testplan_name.outputs.matrix_suffix }}"
           echo "runscript_suffix=${SUFFIX}"|sed -E 's#"|,|:|<|>|\||\*|\?|\/|\\#_#g' | tee -a "${GITHUB_OUTPUT}"
 
       - name: 'Start shop'
