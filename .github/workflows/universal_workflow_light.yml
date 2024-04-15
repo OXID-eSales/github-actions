@@ -352,9 +352,9 @@ jobs:
           ${{ needs.init.outputs.debug }}
           PREFIXES=$(echo '${{steps.isltp.outputs.runscript_matrix_script}}'|tr ',' '\n'|tr -d '[]"'|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
           for PREFIX in ${PREFIXES}; do
-            VAR="runtest_${PREFIX}_path"
+            VAR="runscript_${PREFIX}_path"
             COMPOSER_PATH="${!VAR}"
-            echo -e "\033[0;35mRuning composer install for ${PREFIX} in ${COMPOSER_PATH} using 'runtest_${PREFIX}_path'\033[0m"
+            echo -e "\033[0;35mRuning composer install for ${PREFIX} in ${COMPOSER_PATH} using 'runscript_${PREFIX}_path'\033[0m"
             docker compose ${{ steps.isltp.outputs.install_shop_with_modules_container_method }} -T \
             ${{ steps.isltp.outputs.install_shop_with_modules_container_options }} \
               --workdir "/var/www/${COMPOSER_PATH}" \
