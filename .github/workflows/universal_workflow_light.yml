@@ -466,6 +466,7 @@ jobs:
         id: runscript_testplan
         shell: bash
         run: |
+          ${{ needs.init.outputs.debug }}
           set +x
           E=$(env|grep -e "^runscript_")
           X=$(echo '${{ matrix.script }}'| sed -e 's|-|_|g')
@@ -484,7 +485,7 @@ jobs:
             VAR="runscript_${SCRIPT[0]}_${KEY}"
             if [[ "${E}" == *"${VAR}"* ]]; then
               cat >>"${GITHUB_OUTPUT}" <<EOF
-          runscript_${KEY}<<runtest_${KEY}_delimeter
+          runscript_${KEY}<<runscript_${KEY}_delimeter
           ${!VAR}
           runscript_${KEY}_delimeter
           EOF
