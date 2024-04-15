@@ -58,7 +58,7 @@ runs:
       run: |
         # run_composer_script: Run script ${{ inputs.script }}
         ${{ inputs.debug }}
-        mkdir -p source/${{ inputs.path }}/Output source/${{ inputs.path }}/Reports
+        mkdir -p source/${{ inputs.path }}/tests/Output source/${{ inputs.path }}/tests/Reports
         echo -e "\033[0;35m###  Run composer ${{ inputs.script }} in ${{ inputs.path }} ###\033[0m"
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
@@ -83,5 +83,5 @@ runs:
       with:
         name: ${{ inputs.output_artifact }}
         path: |
-          source/${{ inputs.path }}/tests/output/*
+          source/${{ inputs.path }}/tests/Output/*
           data/php/logs/error_log.txt

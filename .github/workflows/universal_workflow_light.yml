@@ -475,6 +475,7 @@ jobs:
             exit 1
           fi
           IFS=':' read -r -a SCRIPT <<< "${X}"
+          echo "runscript_script=${SCRIPT[1]}"|tee -a "${GITHUB_OUTPUT}"
           for KEY in title docker_login load_shop \
             container_name container_options container_method \
             cache_bucket \
@@ -492,6 +493,8 @@ jobs:
           runscript_${KEY}_delimeter
           EOF
           done
+          SUFFIX="${{matrix.script}}-${{ steps.runscript_testplan_name.outputs.matrix_suffix }}"
+          echo "runscript_suffix=${SUFFIX}"|sed -E 's#"|,|:|<|>|\||\*|\?|\/|\\#_#g' | tee -a "${GITHUB_OUTPUT}"
 
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v4'
@@ -536,15 +539,14 @@ jobs:
       - name: 'Run runscript check'
         uses: 'OXID-eSales/github-actions/run_composer_script@v0'
         with:
-          script: ${{ matrix.script }}
+          script: ${{ steps.runscript_testplan.outputs.runscript_script }}
           path: ${{ steps.runscript_testplan.outputs.runscript_path }}
           run_composer_install: ${{ steps.runscript_testplan.outputs.runscript_run_composer_install }}
           install_options: ${{ steps.runscript_testplan.outputs.runscript_install_options }}
           container_name: ${{ steps.runscript_testplan.outputs.runscript_container_name }}
           container_options: ${{ steps.runscript_testplan.outputs.runscript_container_options }}
           container_method: ${{ steps.runscript_testplan.outputs.runscript_container_method }}
-          # yamllint disable-line rule:line-length
-          output_artifact: ${{ steps.runscript_testplan.outputs.runscript_output_prefix}}-${{matrix.script}}-${{ steps.runscript_testplan_name.outputs.matrix_suffix }}
+          output_artifact: ${{ steps.runscript_testplan.outputs.runscript_output_prefix}}-${{steps.runscript_testplan.outputs.runscript_suffic }}
           debug: ${{ needs.init.outputs.debug }}
           github_token: ${{ secrets.enterprise_github_token || github.token }}
 
@@ -552,9 +554,8 @@ jobs:
         if: ${{ always() && steps.runscript_testplan.outputs.runscript_coverage_prefix != '' }}
         uses: actions/upload-artifact@v4
         with:
-          # yamllint disable-line rule:line-length
-          name: ${{ steps.runscript_testplan.outputs.runscript_coverage_prefix}}-${{matrix.script}}-${{ steps.runscript_testplan_name.outputs.matrix_suffix }}
-          path: source/${{ steps.runscript_testplan.outputs.runscript_path }}/tests/reports/*.xml
+          name: ${{ steps.runscript_testplan.outputs.runscript_coverage_prefix}}-${{steps.runscript_testplan.outputs.runscript_suffic }}
+          path: source/${{ steps.runscript_testplan.outputs.runscript_path }}/tests/Reports/*.xml
 
       - name: 'Stop shop'
         if: ${{ always() }}
