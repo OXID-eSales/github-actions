@@ -18,6 +18,9 @@ install_shop_with_modules:
 runscript:
   matrix: *matrix
 
+runslim:
+  matrix: *matrix
+
 phpunit:
   matrix: *matrix
 
