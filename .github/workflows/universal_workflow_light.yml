@@ -193,8 +193,8 @@ jobs:
       runscript_matrix_script: ${{ steps.ltp.outputs.runscript_matrix_script }}
       runscript_max_parallel: ${{ steps.ltp.outputs.runscript_max_parallel }}
       # runslim variables
-      runslim_matrix_mysql: ${{ steps.ltp.outputs.runsclim_matrix_mysql }}
-      runslim_matrix_php: ${{ steps.ltp.outputs.runsclim_matrix_php }}
+      runslim_matrix_mysql: ${{ steps.ltp.outputs.runslim_matrix_mysql }}
+      runslim_matrix_php: ${{ steps.ltp.outputs.runslim_matrix_php }}
       runslim_matrix_script: ${{ steps.ltp.outputs.runslim_matrix_script }}
       runslim_max_parallel: ${{ steps.ltp.outputs.runslim_max_parallel }}
 
