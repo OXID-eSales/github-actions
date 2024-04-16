@@ -472,7 +472,7 @@ jobs:
             exit 1
           fi
           IFS=':' read -r -a S <<< "${MATRIX_SCRIPT}"
-          PREFIX="${S[0]}//-/_"
+          PREFIX="${S[0]//-/_}"
           SCRIPT="${S[1]}"
           echo "runscript_script=${SCRIPT}"|tee -a "${GITHUB_OUTPUT}"
           for KEY in title docker_login load_shop \
@@ -486,6 +486,7 @@ jobs:
             if [[ "${E}" != *"${VAR}"* ]]; then
               VAR="runscript_${KEY}"
             fi
+            echo "runscript_${KEY}=${!VAR}"
             cat >>"${GITHUB_OUTPUT}" <<EOF
           runscript_${KEY}<<runscript_${KEY}_delimeter
           ${!VAR}
