@@ -475,7 +475,7 @@ jobs:
           PREFIX="${S[0]//-/_}"
           SCRIPT="${S[1]}"
           echo "runscript_script=${SCRIPT}"|tee -a "${GITHUB_OUTPUT}"
-          for KEY in title docker_login load_shop \
+          for KEY in docker_login load_shop \
             container_name container_options container_method \
             cache_bucket \
             composer_file composer_backup composer_transform composer_update composer_update_options \
@@ -495,6 +495,7 @@ jobs:
           done
           SUFFIX="${PREFIX}_${SCRIPT}-${{ steps.rstn.outputs.matrix_suffix }}"
           echo "runscript_suffix=${SUFFIX}"|sed -E 's#"|,|:|<|>|\||\*|\?|\/|\\#_#g' | tee -a "${GITHUB_OUTPUT}"
+          echo "runscript_title=${PREFIX}_${SCRIPT}"|sed -E 's#"|,|:|<|>|\||\*|\?|\/|\\#_#g' | tee -a "${GITHUB_OUTPUT}"
 
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v4'
@@ -546,7 +547,7 @@ jobs:
           container_name: ${{ steps.rt.outputs.runscript_container_name }}
           container_options: ${{ steps.rt.outputs.runscript_container_options }}
           container_method: ${{ steps.rt.outputs.runscript_container_method }}
-          output_artifact: ${{ steps.rt.outputs.runscript_output_prefix}}-${{steps.rt.outputs.runscript_suffic }}
+          output_artifact: ${{ steps.rt.outputs.runscript_output_prefix}}-${{steps.rt.outputs.runscript_suffix }}
           debug: ${{ needs.init.outputs.debug }}
           github_token: ${{ secrets.enterprise_github_token || github.token }}
 
@@ -554,7 +555,7 @@ jobs:
         if: ${{ always() && steps.rt.outputs.runscript_coverage_prefix != '' }}
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.rt.outputs.runscript_coverage_prefix}}-${{steps.rt.outputs.runscript_suffic }}
+          name: ${{ steps.rt.outputs.runscript_coverage_prefix}}-${{steps.rt.outputs.runscript_suffix }}
           path: source/${{ steps.rt.outputs.runscript_path }}/tests/Reports/*.xml
 
       - name: 'Stop shop'
@@ -571,7 +572,7 @@ jobs:
           priority: '100'
           phase: test
           job: runscript
-          title: '${{ matrix.script }}'
+          title: '${{ steps.rt.outputs.runscript_title }}'
           php: ${{matrix.php}}
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
