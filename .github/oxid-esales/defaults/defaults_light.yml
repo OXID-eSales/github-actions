@@ -245,7 +245,7 @@ install_shop_with_modules:
 
 runscript: &runscript
   matrix:
-    <<: &matrix
+    <<: *matrix
     # This needs to be set in the workflow config
     script: 'skip'
   max_parallel: 64
@@ -288,8 +288,8 @@ runscript: &runscript
     prefix: 'coverage-reports-runscript'
 
 runslim:
-  <<: &runscript
-  matrix: &matrix_slim
+  <<: *runscript
+  matrix: *matrix_slim
 
 # Running the sonarcloud scanner on the gathered coverage reports
 sonarcloud:
