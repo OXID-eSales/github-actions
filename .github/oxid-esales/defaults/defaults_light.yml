@@ -243,11 +243,10 @@ install_shop_with_modules:
     # The configuration file name is dynamic, the matrix variables will be appended
     artifact_prefix: 'shop-setup'
 
-runscript:
+runscript: &runscript
   matrix:
-    php: *matrix_php_slim
-    mysql: *matrix_mysql_slim
-    # This is only used in the module workflow, so the default is to skip this
+    <<: &matrix
+    # This needs to be set in the workflow config
     script: 'skip'
   max_parallel: 64
   # When looping over multiple modules, title must be set for every element
@@ -287,6 +286,10 @@ runscript:
 
   coverage:
     prefix: 'coverage-reports-runscript'
+
+runslim:
+  <<: &runscript
+  matrix: &matrix_slim
 
 # Running the sonarcloud scanner on the gathered coverage reports
 sonarcloud:

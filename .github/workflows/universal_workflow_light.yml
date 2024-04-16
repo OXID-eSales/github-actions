@@ -192,6 +192,12 @@ jobs:
       runscript_matrix_php: ${{ steps.ltp.outputs.runscript_matrix_php }}
       runscript_matrix_script: ${{ steps.ltp.outputs.runscript_matrix_script }}
       runscript_max_parallel: ${{ steps.ltp.outputs.runscript_max_parallel }}
+      # runslim variables
+      runslim_matrix_mysql: ${{ steps.ltp.outputs.runsclim_matrix_mysql }}
+      runslim_matrix_php: ${{ steps.ltp.outputs.runsclim_matrix_php }}
+      runslim_matrix_script: ${{ steps.ltp.outputs.runslim_matrix_script }}
+      runslim_max_parallel: ${{ steps.ltp.outputs.runslim_max_parallel }}
+
       # sonarcloud variables
       sonarcloud_matrix_mysql: ${{ steps.ltp.outputs.sonarcloud_matrix_mysql }}
       sonarcloud_matrix_php: ${{ steps.ltp.outputs.sonarcloud_matrix_php }}
@@ -579,8 +585,171 @@ jobs:
           status: ${{job.status}}
           debug: ${{ inputs.debug }}
 
+  runslim:
+    needs: ['init', 'install_shop_with_modules']
+    if: ${{ needs.init.outputs.runslim_matrix_script != 'skip' }}
+    strategy:
+      matrix:
+        php: ${{ fromJSON(needs.init.outputs.runslim_matrix_php) }}
+        mysql: ${{ fromJSON(needs.init.outputs.runslim_matrix_mysql) }}
+        script: ${{ fromJSON(needs.init.outputs.runslim_matrix_script) }}
+      fail-fast: false
+      max-parallel: ${{ fromJSON(needs.init.outputs.runslim_max_parallel) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    env:
+      MATRIX_PHP: ${{ matrix.php }}
+      MATRIX_MYSQL: ${{ matrix.mysql }}
+    steps:
+      - name: Load cached testplan
+        id: rstn
+        uses: OXID-eSales/github-actions/load_cached_testplan@v0
+        with:
+          php: ${{ matrix.php }}
+          mysql: ${{ matrix.mysql }}
+          prefix: '${{ needs.init.outputs.global_title }}'
+          root_testplan: ${{ needs.init.outputs.testplan }}
+          matrix_testplan: ''
+          plan_folder: ${{ inputs.plan_folder }}
+          cache_name: ${{ needs.init.outputs.init_cache_name }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          cache_bucket: ${{ needs.init.outputs.init_cache_bucket }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Load Testplan'
+        id: rsltp
+        uses: 'joernott/load_testplan@v1'
+        with:
+          files: '${{steps.rstn.outputs.testplan}}'
+          set_output: true
+          set_print: true
+          set_env: true
+          yaml: generated_testplan.yaml
+          token: ${{ secrets.enterprise_github_token }}
+
+      - name: Convert variables
+        id: rt
+        shell: bash
+        run: |
+          ${{ needs.init.outputs.debug }}
+          set +x
+          E=$(env|grep -e "^runslim_")
+          MATRIX_SCRIPT='${{ matrix.script }}'
+          if [[ ${MATRIX_SCRIPT} != *":"* ]]; then
+            echo -e "\033[0;31m ${X} does not contain a ':'. You need to specify scripts as '<prefix>:<script_name>'"
+            exit 1
+          fi
+          IFS=':' read -r -a S <<< "${MATRIX_SCRIPT}"
+          PREFIX="${S[0]//-/_}"
+          SCRIPT="${S[1]}"
+          echo "runslim_script=${SCRIPT}"|tee -a "${GITHUB_OUTPUT}"
+          for KEY in docker_login load_shop \
+            container_name container_options container_method \
+            cache_bucket \
+            composer_file composer_backup composer_transform composer_update composer_update_options \
+            custom_script custom_script_container \
+            path install_options \
+            output_prefix coverage_prefix; do
+            VAR="runslim_${PREFIX}_${KEY}"
+            if [[ "${E}" != *"${VAR}"* ]]; then
+              VAR="runslim_${KEY}"
+            fi
+            echo "runslim_${KEY}=${!VAR}"
+            cat >>"${GITHUB_OUTPUT}" <<EOF
+          runslim_${KEY}<<runslim_${KEY}_delimeter
+          ${!VAR}
+          runslim_${KEY}_delimeter
+          EOF
+          done
+          SUFFIX="${PREFIX}_${SCRIPT}-${{ steps.rstn.outputs.matrix_suffix }}"
+          echo "runslim_suffix=${SUFFIX}"|sed -E 's#"|,|:|<|>|\||\*|\?|\/|\\#_#g' | tee -a "${GITHUB_OUTPUT}"
+          echo "runslim_title=${PREFIX}_${SCRIPT}"|sed -E 's#"|,|:|<|>|\||\*|\?|\/|\\#_#g' | tee -a "${GITHUB_OUTPUT}"
+
+      - name: 'Start shop'
+        uses: 'OXID-eSales/github-actions/start_shop@v4'
+        with:
+          cached_shop: '${{ steps.rt.outputs.runslim_load_shop}}_${{ steps.rstn.outputs.matrix_suffix }}'
+          cache_bucket: ${{ steps.rt.outputs.runslim_cache_bucket }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          docker_login: ${{ steps.rt.outputs.runslim_docker_login }}
+          docker_user: ${{ secrets.DOCKER_HUB_USER }}
+          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+          wait_for_selenium: true
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Modify composer.json'
+        if: ${{ steps.rt.outputs.runslim_composer_transform != '' }}
+        uses: 'OXID-eSales/github-actions/composer_merge@v0'
+        with:
+          file: 'source/${{ steps.rt.outputs.runslim_path }}/composer.json'
+          backup: true
+          transform: |
+            ${{ steps.rt.outputs.runslim_composer_transform }}
+          update: ${{ steps.rt.outputs.runslim_composer_update }}
+          update_options: ${{ steps.rt.outputs.runslim_composer_update_options }}
+          container_name: ${{ steps.rt.outputs.runslim_container_name }}
+          container_options: ${{ steps.rt.outputs.runslim_container_options }}
+          container_method: 'exec'
+          debug: ${{ needs.init.outputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
+
+      - name: Run custom scripts
+        if: ${{ steps.rt.outputs.runslim_custom_script != '' || steps.rt.outputs.runslim_custom_script_container != '' }}
+        uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
+        with:
+          container_name: ${{ steps.rt.outputs.runslim_container_name }}
+          container_options: ${{ steps.rt.outputs.runslim_container_options }}
+          container_method: ${{ steps.rt.outputs.runslim_container_method }}
+          custom_script: ${{ steps.rt.outputs.runslim_custom_script }}
+          custom_script_container: ${{ steps.rt.outputs.runslim_custom_script_container }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Run runslim check'
+        uses: 'OXID-eSales/github-actions/run_composer_script@v0'
+        with:
+          script: ${{ steps.rt.outputs.runslim_script }}
+          path: ${{ steps.rt.outputs.runslim_path }}
+          run_composer_install: ${{ steps.rt.outputs.runslim_run_composer_install }}
+          install_options: ${{ steps.rt.outputs.runslim_install_options }}
+          container_name: ${{ steps.rt.outputs.runslim_container_name }}
+          container_options: ${{ steps.rt.outputs.runslim_container_options }}
+          container_method: ${{ steps.rt.outputs.runslim_container_method }}
+          output_artifact: ${{ steps.rt.outputs.runslim_output_prefix}}-${{steps.rt.outputs.runslim_suffix }}
+          debug: ${{ needs.init.outputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
+
+      - name: Upload coverage report
+        if: ${{ always() && steps.rt.outputs.runslim_coverage_prefix != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.rt.outputs.runslim_coverage_prefix}}-${{steps.rt.outputs.runslim_suffix }}
+          path: source/${{ steps.rt.outputs.runslim_path }}/tests/Reports/*.xml
+
+      - name: 'Stop shop'
+        if: ${{ always() }}
+        uses: 'OXID-eSales/github-actions/stop_shop@v4'
+        with:
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Write Report'
+        if: always()
+        uses: OXID-eSales/github-actions/append_report@v4
+        with:
+          prefix: '${{ needs.init.outputs.global_title }}'
+          priority: '100'
+          phase: test
+          job: runslim
+          title: '${{ steps.rt.outputs.runslim_title }}'
+          php: ${{matrix.php}}
+          mysql: ${{matrix.mysql}}
+          status: ${{job.status}}
+          debug: ${{ inputs.debug }}
+
   sonarcloud:
-    needs: ['init', 'install_shop_with_modules', 'runscript']
+    needs: ['init', 'install_shop_with_modules', 'runscript', 'runslim']
     # yamllint disable-line rule:line-length
     if: ${{ always() && needs.init.outputs.sonarcloud_matrix_testplan != '' && needs.init.outputs.sonarcloud_matrix_testplan != 'none' && needs.init.outputs.sonarcloud_matrix_testplan != 'skip' }}
     strategy:
@@ -746,6 +915,7 @@ jobs:
       - init
       - install_shop_with_modules
       - runscript
+      - runslim
       - sonarcloud
       - yamllint
       - actionlint
