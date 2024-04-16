@@ -508,6 +508,7 @@ jobs:
           docker_login: ${{ steps.rt.outputs.runscript_docker_login }}
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+          wait_for_selenium: true
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Modify composer.json'
