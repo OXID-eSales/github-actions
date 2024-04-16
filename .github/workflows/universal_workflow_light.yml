@@ -563,7 +563,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.rt.outputs.runscript_coverage_prefix}}-${{steps.rt.outputs.runscript_suffix }}
-          path: source/${{ steps.rt.outputs.runscript_path }}/tests/Reports/*.xml
+          path: source/${{ steps.rt.outputs.runscript_path }}/tests/Reports/*
 
       - name: 'Stop shop'
         if: ${{ always() }}
@@ -726,7 +726,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.rt.outputs.runslim_coverage_prefix}}-${{steps.rt.outputs.runslim_suffix }}
-          path: source/${{ steps.rt.outputs.runslim_path }}/tests/Reports/*.xml
+          path: source/${{ steps.rt.outputs.runslim_path }}/tests/Reports/*
 
       - name: 'Stop shop'
         if: ${{ always() }}
