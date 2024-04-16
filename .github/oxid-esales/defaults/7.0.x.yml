@@ -1,8 +1,10 @@
 workflow:
   matrix: &matrix
-    # We only test the latest recommended versions here but both template engines
     php: &matrix_php '["8.0","8.1"]'
     mysql: &matrix_mysql '["5.7","8.0"]'
+  matrix_slim: &matrix_slim
+    php: &matrix_php '["8.1"]'
+    mysql: &matrix_mysql '["5.7"]'
 
 global:
   git: &git
@@ -48,7 +50,7 @@ runscript:
   matrix: *matrix
 
 runslim:
-  matrix: *matrix
+  matrix: *matrix_slim
 
 phpunit:
   matrix: *matrix
@@ -71,9 +73,7 @@ runtest:
       }
 
 sonarcloud:
-  matrix: &matrix_slim
-    php: '["8.0"]'
-    mysql: '["5.7"]'
+  matrix: *matrix_slim
 
 phpcs_tests:
   matrix: *matrix_slim
