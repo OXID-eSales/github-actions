@@ -481,7 +481,7 @@ jobs:
             composer_file composer_backup composer_transform composer_update composer_update_options \
             custom_script custom_script_container \
             path install_options \
-            output_files output_prefix ; do
+            output_prefix coverage_prefix; do
             VAR="runscript_${PREFIX}_${KEY}"
             if [[ "${E}" != *"${VAR}"* ]]; then
               VAR="runscript_${KEY}"
