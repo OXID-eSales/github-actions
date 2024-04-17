@@ -38,8 +38,9 @@ inputs:
     default: 'https://github.com/OXID-eSales/oxideshop_ce.git'
   git_shop_ref:
     type: string
-    required: true
+    required: false
     description: 'Branch, tag or hash of the commit to check out'
+    default: ''
   git_enterprise_ref:
     type: string
     required: false
@@ -62,8 +63,9 @@ inputs:
     default: ''
   github_sha:
     type: string
-    required: true
+    required: false
     description: 'github.sha is used in generating the cache id'
+    default: ''
   github_run_number:
     type: string
     required: false
