@@ -548,6 +548,7 @@ jobs:
           custom_script: ${{ steps.rt.outputs.runscript_custom_script }}
           custom_script_container: ${{ steps.rt.outputs.runscript_custom_script_container }}
           debug: ${{ needs.init.outputs.debug }}
+          token: ${{ github.token }}
 
       - name: 'Run runscript check'
         uses: 'OXID-eSales/github-actions/run_composer_script@v0'
