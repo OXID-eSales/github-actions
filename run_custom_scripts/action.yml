@@ -31,7 +31,11 @@ inputs:
     description: 'Appended to debugging scripts'
     default: ''
     required: false
-
+  token:
+    type: string
+    description: 'If set, this will expose a GITHUB_TOKEN variable'
+    default: ''
+    required: false
 runs:
   using: "composite"
   steps:
@@ -41,6 +45,9 @@ runs:
       run: |
         # run_custom_scripts: Run custom script
         ${{ inputs.debug }}
+        if [ -n '${{ inputs.token }}' ]; then
+          export GITHUB_TOKEN='${{ inputs.token }}'
+        fi
         ${{ inputs.custom_script }}
 
     - name: Run custom script inside the container
@@ -49,6 +56,10 @@ runs:
       run: |
         # run_custom_scripts: Run custom script inside the container
         ${{ inputs.debug }}
+        TOKEN_OPTION=''
+        if [ -n '${{ inputs.token }}' ]; then
+          TOKEN_OPTION='-e GITHUB_TOKEN=${{ inputs.token }}'
+        fi
         cat >source/custom_script.sh <<'EOF'
         #!/bin/bash
         ${{ inputs.custom_script_container }}
@@ -58,6 +69,7 @@ runs:
         chmod 0755 source/custom_script.sh
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
+          ${TOKEN_OPTION} \
           ${{ inputs.container_name}} \
           /var/www/custom_script.sh
         rm source/custom_script.sh
