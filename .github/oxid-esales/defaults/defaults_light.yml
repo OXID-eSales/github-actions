@@ -127,6 +127,11 @@ global:
     # and can be used by referencing .Data.global.composer.dev_ref
     dev_ref: &dev_ref dev-b-8.0.x
 
+    # This definition can be used instead of dev-{{ .Github.RefName }}. In case
+    # of a pull request, the ref name is something like merge/42 which confuses
+    # composer. In the workflow, we then replace this with a working reference
+    ref_name: dev-{{ .Github.RefName }}
+
     # Use these settings below to merge a json configuration with an existing
     # composer.json
 

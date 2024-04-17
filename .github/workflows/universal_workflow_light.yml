@@ -103,6 +103,11 @@ jobs:
           # Generated from workflow input custom_testplan_yaml
           ${{ inputs.custom_testplan_yaml }}
           EOF
+          if [ '${{ github.event_name }}' == 'pull_request' ]; then
+            REF=$(echo '{{ .Github.HeadRef }}'|sed -e 's|/refs/heads/||')
+            sed -e "s|ref_name: dev-.*|ref_name: dev-${REF}|" -i '${{ inputs.plan_folder }}/defaults/defaults_light.yml'
+          fi
+
           TESTPLAN=$(echo "${{ inputs.testplan }}"|sed -e 's|~|${{ inputs.plan_folder }}|g')
           echo "testplan=${{ inputs.plan_folder }}/defaults/defaults_light.yml,${TESTPLAN}" >>"${GITHUB_OUTPUT}"
 
