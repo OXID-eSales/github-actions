@@ -287,6 +287,40 @@ jobs:
           enterprise_github_token: ${{ secrets.enterprise_github_token || github.token }}
           debug: ${{ needs.init.outputs.debug }}
 
+      - name: Run composer for each module
+        shell: bash
+        run: |
+          PREFIXES=$(echo '${{steps.isltp.outputs.runscript_matrix_script}}'|tr ',' '\n'|tr -d '[]"'|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
+          for PREFIX in ${PREFIXES}; do
+            VAR="runscript_${PREFIX}_path"
+            COMPOSER_PATH="${!VAR}"
+            echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
+            docker compose ${{ steps.isltp.outputs.install_shop_with_modules_container_method }} -T \
+            ${{ steps.isltp.outputs.install_shop_with_modules_container_options }} \
+              --workdir "/var/www/${COMPOSER_PATH}" \
+              ${{ steps.isltp.outputs.install_shop_with_modules_container_name }} \
+              composer update ${{ steps.isltp.outputs.install_shop_with_modules_composer_update_options}}
+          done
+
+      - name: Generate debugging script for running composer for each module
+        if: ${{ inputs.debug == true }}
+        shell: bash
+        run: |
+          echo "banner 'Run composer for each module'" >>debug/debug.sh
+          PREFIXES=$(echo '${{steps.isltp.outputs.runscript_matrix_script}}'|tr ',' '\n'|tr -d '[]"'|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
+          for PREFIX in ${PREFIXES}; do
+            VAR="runscript_${PREFIX}_path"
+            COMPOSER_PATH="${!VAR}"
+            cat >>debug/debug.sh <<EODS
+            echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
+            docker compose ${{ steps.isltp.outputs.install_shop_with_modules_container_method }} -T \
+            ${{ steps.isltp.outputs.install_shop_with_modules_container_options }} \
+              --workdir "/var/www/${COMPOSER_PATH}" \
+              ${{ steps.isltp.outputs.install_shop_with_modules_container_name }} \
+              composer update ${{ steps.isltp.outputs.install_shop_with_modules_composer_update_options}}
+          EODS
+          done
+
       - name: 'Stop shop for preparedShop cache'
         if: ${{ steps.isltp.outputs.install_shop_with_modules_cache_prepared_shop == 'true' }}
         uses: 'OXID-eSales/github-actions/stop_shop@v4'
@@ -356,22 +390,6 @@ jobs:
           custom_script: ${{ steps.isltp.outputs.install_shop_with_modules_custom_script }}
           custom_script_container: ${{ steps.isltp.outputs.install_shop_with_modules_custom_script_container }}
           debug: ${{ needs.init.outputs.debug }}
-
-      - name: Run composer for each module
-        shell: bash
-        run: |
-          ${{ needs.init.outputs.debug }}
-          PREFIXES=$(echo '${{steps.isltp.outputs.runscript_matrix_script}}'|tr ',' '\n'|tr -d '[]"'|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
-          for PREFIX in ${PREFIXES}; do
-            VAR="runscript_${PREFIX}_path"
-            COMPOSER_PATH="${!VAR}"
-            echo -e "\033[0;35mRuning composer install for ${PREFIX} in ${COMPOSER_PATH} using 'runscript_${PREFIX}_path'\033[0m"
-            docker compose ${{ steps.isltp.outputs.install_shop_with_modules_container_method }} -T \
-            ${{ steps.isltp.outputs.install_shop_with_modules_container_options }} \
-              --workdir "/var/www/${COMPOSER_PATH}" \
-              ${{ steps.isltp.outputs.install_shop_with_modules_container_name }} \
-              composer update ${{ steps.isltp.outputs.install_shop_with_modules_composer_update_options}}
-          done
 
       - name: 'Stop shop'
         if: ${{ always() }}
