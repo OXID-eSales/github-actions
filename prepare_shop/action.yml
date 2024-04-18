@@ -408,6 +408,6 @@ runs:
         if [ -f source/source/config.inc.php.dist ]; then
           cp source/source/config.inc.php.dist source/source/config.inc.php
         fi
-        if [ -f source/vendor/oxid-esales/oxid-eshop-ce/config.inc.php.dist ]; then
-          cp source/vendor/oxid-esales/oxid-eshop-ce/config.inc.php.dist source/vendor/oxid-esales/oxid-eshop-ce/config.inc.php
+        if [ -f source/vendor/oxid-esales/oxid-eshop-ce/source/config.inc.php.dist ]; then
+          cp source/vendor/oxid-esales/oxid-eshop-ce/source/config.inc.php.dist source/vendor/oxid-esales/oxid-eshop-ce/source/config.inc.php
         fi
