@@ -569,7 +569,7 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.install_module_testplan.outputs.install_module_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v0'
+        uses: 'OXID-eSales/github-actions/composer_merge@v4'
         with:
           file: 'source/dev-packages/${{ steps.install_module_testplan.outputs.install_module_path }}/composer.json'
           backup: true
@@ -864,7 +864,7 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.codeception_testplan.outputs.codeception_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v0'
+        uses: 'OXID-eSales/github-actions/composer_merge@v4'
         with:
           file: '${{ steps.codeception_testplan.outputs.codeception_composer_file }}'
           backup: true
@@ -892,7 +892,7 @@ jobs:
 
       - name: 'Run codeception tests'
         id: codeception_run
-        uses: 'OXID-eSales/github-actions/codeception@v0'
+        uses: 'OXID-eSales/github-actions/codeception@v4'
         with:
           container_name: ${{ steps.codeception_testplan.outputs.codeception_container_name }}
           container_options: '${{ steps.codeception_testplan.outputs.codeception_container_options }} ${{ steps.pre_script.outputs.container_options }}'
@@ -999,7 +999,7 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.runtest_testplan.outputs.runtest_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v0'
+        uses: 'OXID-eSales/github-actions/composer_merge@v4'
         with:
           file: '${{ steps.runtest_testplan.outputs.runtest_composer_file }}'
           backup: true
@@ -1144,7 +1144,7 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.phpmd_testplan.outputs.phpmd_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v0'
+        uses: 'OXID-eSales/github-actions/composer_merge@v4'
         with:
           file: '${{ steps.phpmd_testplan.outputs.phpmd_composer_file }}'
           backup: true
@@ -1170,7 +1170,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Run phpmd check'
-        uses: 'OXID-eSales/github-actions/phpmd@v0'
+        uses: 'OXID-eSales/github-actions/phpmd@v4'
         with:
           source_path: ${{ steps.phpmd_testplan.outputs.phpmd_source_path }}
           report_path: ${{ steps.phpmd_testplan.outputs.phpmd_report_path }}
@@ -1265,7 +1265,7 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.phpstan_testplan.outputs.phpstan_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v0'
+        uses: 'OXID-eSales/github-actions/composer_merge@v4'
         with:
           file: '${{ steps.phpstan_testplan.outputs.phpstan_composer_file }}'
           backup: true
@@ -1291,7 +1291,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Run phpstan check'
-        uses: 'OXID-eSales/github-actions/phpstan@v0'
+        uses: 'OXID-eSales/github-actions/phpstan@v4'
         with:
           source_path: ${{ steps.phpstan_testplan.outputs.phpstan_source_path }}
           report_path: ${{ steps.phpstan_testplan.outputs.phpstan_report_path }}
@@ -1525,7 +1525,7 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.styles_testplan.outputs.styles_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v0'
+        uses: 'OXID-eSales/github-actions/composer_merge@v4'
         with:
           file: 'source/dev-packages/${{ steps.styles_testplan.outputs.styles_path }}/composer.json'
           backup: true

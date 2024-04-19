@@ -233,7 +233,7 @@ jobs:
     steps:
       - name: Load cached testplan
         id: istn
-        uses: OXID-eSales/github-actions/load_cached_testplan@v0
+        uses: OXID-eSales/github-actions/load_cached_testplan@v4
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -261,7 +261,7 @@ jobs:
 
       - name: 'Prepare Shop'
         id: prepare_shop
-        uses: 'OXID-eSales/github-actions/prepare_shop@v0'
+        uses: 'OXID-eSales/github-actions/prepare_shop@v4'
         with:
           container_name: ${{ steps.isltp.outputs.install_shop_with_modules_container_name }}
           container_options: ${{ steps.isltp.outputs.install_shop_with_modules_container_options }}
@@ -368,7 +368,7 @@ jobs:
 
       - name: 'Install shop'
         id: install_shop
-        uses: 'OXID-eSales/github-actions/install_shop@v0'
+        uses: 'OXID-eSales/github-actions/install_shop@v4'
         with:
           container_name: ${{ steps.isltp.outputs.install_shop_with_modules_container_name }}
           container_options: ${{ steps.isltp.outputs.install_shop_with_modules_container_options }}
@@ -462,7 +462,7 @@ jobs:
     steps:
       - name: Load cached testplan
         id: rstn
-        uses: OXID-eSales/github-actions/load_cached_testplan@v0
+        uses: OXID-eSales/github-actions/load_cached_testplan@v4
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -542,7 +542,7 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.rt.outputs.runscript_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v0'
+        uses: 'OXID-eSales/github-actions/composer_merge@v4'
         with:
           file: 'source/${{ steps.rt.outputs.runscript_path }}/composer.json'
           backup: true
@@ -558,7 +558,7 @@ jobs:
 
       - name: Run custom scripts
         if: ${{ steps.rt.outputs.runscript_custom_script != '' || steps.rt.outputs.runscript_custom_script_container != '' }}
-        uses: 'OXID-eSales/github-actions/run_custom_scripts@v0'
+        uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
         with:
           container_name: ${{ steps.rt.outputs.runscript_container_name }}
           container_options: ${{ steps.rt.outputs.runscript_container_options }}
@@ -569,7 +569,7 @@ jobs:
           token: ${{ github.token }}
 
       - name: 'Run runscript check'
-        uses: 'OXID-eSales/github-actions/run_composer_script@v0'
+        uses: 'OXID-eSales/github-actions/run_composer_script@v4'
         with:
           script: ${{ steps.rt.outputs.runscript_script }}
           path: ${{ steps.rt.outputs.runscript_path }}
@@ -626,7 +626,7 @@ jobs:
     steps:
       - name: Load cached testplan
         id: rstn
-        uses: OXID-eSales/github-actions/load_cached_testplan@v0
+        uses: OXID-eSales/github-actions/load_cached_testplan@v4
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -706,7 +706,7 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.rt.outputs.runslim_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v0'
+        uses: 'OXID-eSales/github-actions/composer_merge@v4'
         with:
           file: 'source/${{ steps.rt.outputs.runslim_path }}/composer.json'
           backup: true
@@ -732,7 +732,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Run runslim check'
-        uses: 'OXID-eSales/github-actions/run_composer_script@v0'
+        uses: 'OXID-eSales/github-actions/run_composer_script@v4'
         with:
           script: ${{ steps.rt.outputs.runslim_script }}
           path: ${{ steps.rt.outputs.runslim_path }}
@@ -963,7 +963,7 @@ jobs:
 
       - name: 'Clean Cache'
         # if: ${{ steps.generate_report.outputs.overall_status == 'success' }}
-        uses: 'OXID-eSales/github-actions/clean_cache@v0'
+        uses: 'OXID-eSales/github-actions/clean_cache@v4'
         env:
           GH_TOKEN: ${{ github.token }}
         with:
