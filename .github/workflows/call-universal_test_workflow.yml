@@ -1696,6 +1696,8 @@ jobs:
 
       - name: 'Checkout the repo for cleanup'
         uses: actions/checkout@v4
+        with:
+          path: repo
 
       - name: 'Clean Cache'
         # if: ${{ steps.generate_report.outputs.overall_status == 'success' }}
@@ -1703,6 +1705,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         with:
+          path: repo
           runs_on: ${{ inputs.runs_on }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
