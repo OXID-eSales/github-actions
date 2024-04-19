@@ -947,9 +947,6 @@ jobs:
     env:
       SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"
     steps:
-      - name: 'Checkout the repo for cleanup'
-        uses: actions/checkout@v4
-
       - name: 'Generate report'
         id: generate_report
         uses: 'OXID-eSales/github-actions/generate_report@v4'
@@ -959,12 +956,18 @@ jobs:
           title: '${{ needs.init.outputs.finish_slack_title }}'
           debug: ${{ inputs.debug }}
 
+      - name: 'Checkout the repo for cleanup'
+        uses: actions/checkout@v4
+        with:
+          path: repo
+
       - name: 'Clean Cache'
         # if: ${{ steps.generate_report.outputs.overall_status == 'success' }}
-        uses: 'OXID-eSales/github-actions/clean_cache@v4'
+        uses: 'OXID-eSales/github-actions/clean_cache@v0'
         env:
           GH_TOKEN: ${{ github.token }}
         with:
+          path: repo
           runs_on: ${{ inputs.runs_on }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
