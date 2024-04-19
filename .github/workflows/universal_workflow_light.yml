@@ -134,7 +134,7 @@ jobs:
       - name: 'Create first testplan archive'
         if: always()
         id: begin_report
-        uses: OXID-eSales/github-actions/begin_report@v4
+        uses: OXID-eSales/github-actions/begin_report@v0
         with:
           title: ${{ steps.ltp.outputs.finish_slack_title }}
           prefix: '${{ steps.post_ltp.outputs.title }}'
@@ -151,7 +151,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           prefix: '${{ steps.post_ltp.outputs.title }}'
           header: true
@@ -233,7 +233,7 @@ jobs:
     steps:
       - name: Load cached testplan
         id: istn
-        uses: OXID-eSales/github-actions/load_cached_testplan@v4
+        uses: OXID-eSales/github-actions/load_cached_testplan@v0
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -261,7 +261,7 @@ jobs:
 
       - name: 'Prepare Shop'
         id: prepare_shop
-        uses: 'OXID-eSales/github-actions/prepare_shop@v4'
+        uses: 'OXID-eSales/github-actions/prepare_shop@v0'
         with:
           container_name: ${{ steps.isltp.outputs.install_shop_with_modules_container_name }}
           container_options: ${{ steps.isltp.outputs.install_shop_with_modules_container_options }}
@@ -323,7 +323,7 @@ jobs:
 
       - name: 'Stop shop for preparedShop cache'
         if: ${{ steps.isltp.outputs.install_shop_with_modules_cache_prepared_shop == 'true' }}
-        uses: 'OXID-eSales/github-actions/stop_shop@v4'
+        uses: 'OXID-eSales/github-actions/stop_shop@v0'
         with:
           debug: ${{ needs.init.outputs.debug }}
 
@@ -368,7 +368,7 @@ jobs:
 
       - name: 'Install shop'
         id: install_shop
-        uses: 'OXID-eSales/github-actions/install_shop@v4'
+        uses: 'OXID-eSales/github-actions/install_shop@v0'
         with:
           container_name: ${{ steps.isltp.outputs.install_shop_with_modules_container_name }}
           container_options: ${{ steps.isltp.outputs.install_shop_with_modules_container_options }}
@@ -382,7 +382,7 @@ jobs:
       - name: Run custom scripts
         # yamllint disable-line rule:line-length
         if: ${{ steps.isltp.outputs.install_shop_with_modules_custom_script != '' || steps.isltp.outputs.install_shop_with_modules_custom_script_container != '' }}
-        uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
+        uses: 'OXID-eSales/github-actions/run_custom_scripts@v0'
         with:
           container_name: ${{ steps.isltp.outputs.install_shop_with_modules_container_name }}
           container_options: ${{ steps.isltp.outputs.install_shop_with_modules_container_options }}
@@ -393,7 +393,7 @@ jobs:
 
       - name: 'Stop shop'
         if: ${{ always() }}
-        uses: 'OXID-eSales/github-actions/stop_shop@v4'
+        uses: 'OXID-eSales/github-actions/stop_shop@v0'
         with:
           debug: ${{ needs.init.outputs.debug }}
 
@@ -429,7 +429,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
           priority: '020'
@@ -462,7 +462,7 @@ jobs:
     steps:
       - name: Load cached testplan
         id: rstn
-        uses: OXID-eSales/github-actions/load_cached_testplan@v4
+        uses: OXID-eSales/github-actions/load_cached_testplan@v0
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -527,7 +527,7 @@ jobs:
           echo "runscript_title=${PREFIX}_${SCRIPT}"|sed -E 's#"|,|:|<|>|\||\*|\?|\/|\\#_#g' | tee -a "${GITHUB_OUTPUT}"
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v4'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: '${{ steps.rt.outputs.runscript_load_shop}}_${{ steps.rstn.outputs.matrix_suffix }}'
           cache_bucket: ${{ steps.rt.outputs.runscript_cache_bucket }}
@@ -542,7 +542,7 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.rt.outputs.runscript_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v4'
+        uses: 'OXID-eSales/github-actions/composer_merge@v0'
         with:
           file: 'source/${{ steps.rt.outputs.runscript_path }}/composer.json'
           backup: true
@@ -558,7 +558,7 @@ jobs:
 
       - name: Run custom scripts
         if: ${{ steps.rt.outputs.runscript_custom_script != '' || steps.rt.outputs.runscript_custom_script_container != '' }}
-        uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
+        uses: 'OXID-eSales/github-actions/run_custom_scripts@v0'
         with:
           container_name: ${{ steps.rt.outputs.runscript_container_name }}
           container_options: ${{ steps.rt.outputs.runscript_container_options }}
@@ -569,7 +569,7 @@ jobs:
           token: ${{ github.token }}
 
       - name: 'Run runscript check'
-        uses: 'OXID-eSales/github-actions/run_composer_script@v4'
+        uses: 'OXID-eSales/github-actions/run_composer_script@v0'
         with:
           script: ${{ steps.rt.outputs.runscript_script }}
           path: ${{ steps.rt.outputs.runscript_path }}
@@ -591,13 +591,13 @@ jobs:
 
       - name: 'Stop shop'
         if: ${{ always() }}
-        uses: 'OXID-eSales/github-actions/stop_shop@v4'
+        uses: 'OXID-eSales/github-actions/stop_shop@v0'
         with:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
           priority: '100'
@@ -626,7 +626,7 @@ jobs:
     steps:
       - name: Load cached testplan
         id: rstn
-        uses: OXID-eSales/github-actions/load_cached_testplan@v4
+        uses: OXID-eSales/github-actions/load_cached_testplan@v0
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -691,7 +691,7 @@ jobs:
           echo "runslim_title=${PREFIX}_${SCRIPT}"|sed -E 's#"|,|:|<|>|\||\*|\?|\/|\\#_#g' | tee -a "${GITHUB_OUTPUT}"
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v4'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: '${{ steps.rt.outputs.runslim_load_shop}}_${{ steps.rstn.outputs.matrix_suffix }}'
           cache_bucket: ${{ steps.rt.outputs.runslim_cache_bucket }}
@@ -706,7 +706,7 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.rt.outputs.runslim_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v4'
+        uses: 'OXID-eSales/github-actions/composer_merge@v0'
         with:
           file: 'source/${{ steps.rt.outputs.runslim_path }}/composer.json'
           backup: true
@@ -722,7 +722,7 @@ jobs:
 
       - name: Run custom scripts
         if: ${{ steps.rt.outputs.runslim_custom_script != '' || steps.rt.outputs.runslim_custom_script_container != '' }}
-        uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
+        uses: 'OXID-eSales/github-actions/run_custom_scripts@v0'
         with:
           container_name: ${{ steps.rt.outputs.runslim_container_name }}
           container_options: ${{ steps.rt.outputs.runslim_container_options }}
@@ -732,7 +732,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Run runslim check'
-        uses: 'OXID-eSales/github-actions/run_composer_script@v4'
+        uses: 'OXID-eSales/github-actions/run_composer_script@v0'
         with:
           script: ${{ steps.rt.outputs.runslim_script }}
           path: ${{ steps.rt.outputs.runslim_path }}
@@ -754,13 +754,13 @@ jobs:
 
       - name: 'Stop shop'
         if: ${{ always() }}
-        uses: 'OXID-eSales/github-actions/stop_shop@v4'
+        uses: 'OXID-eSales/github-actions/stop_shop@v0'
         with:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
           priority: '100'
@@ -791,7 +791,7 @@ jobs:
     steps:
       - name: Load cached testplan
         id: sonarcloud_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v4
+        uses: OXID-eSales/github-actions/load_cached_testplan@v0
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -822,7 +822,7 @@ jobs:
           fetch-depth: 0
 
       - name: 'SonarCloud Scan'
-        uses: 'OXID-eSales/github-actions/sonarcloud@v4'
+        uses: 'OXID-eSales/github-actions/sonarcloud@v0'
         with:
           coverage_artifact: 'coverage-reports-*-${{ steps.sonarcloud_testplan_name.outputs.matrix_suffix }}'
           output_artifact: 'coverage-reports-${{ needs.init.outputs.global_title }}'
@@ -839,7 +839,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
           priority: '240'
@@ -863,7 +863,7 @@ jobs:
 
       - name: Lint yaml files
         id: yamllint
-        uses: OXID-eSales/github-actions/yamllint@v4
+        uses: OXID-eSales/github-actions/yamllint@v0
         with:
           file_or_dir: ${{ needs.init.outputs.yamllint_file_or_dir }}
           config_data: ${{ needs.init.outputs.yamllint_rules }}
@@ -871,7 +871,7 @@ jobs:
 
       - name: 'Write yamllint Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
           priority: '240'
@@ -920,7 +920,7 @@ jobs:
 
       - name: 'Write actionlint Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
           priority: '250'
@@ -949,7 +949,7 @@ jobs:
     steps:
       - name: 'Generate report'
         id: generate_report
-        uses: 'OXID-eSales/github-actions/generate_report@v4'
+        uses: 'OXID-eSales/github-actions/generate_report@v0'
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
           slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -963,7 +963,7 @@ jobs:
 
       - name: 'Clean Cache'
         # if: ${{ steps.generate_report.outputs.overall_status == 'success' }}
-        uses: 'OXID-eSales/github-actions/clean_cache@v4'
+        uses: 'OXID-eSales/github-actions/clean_cache@v0'
         env:
           GH_TOKEN: ${{ github.token }}
         with:
