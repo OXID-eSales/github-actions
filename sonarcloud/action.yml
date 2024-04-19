@@ -86,15 +86,25 @@ runs:
         # sonarcloud: Fix Paths In Coverage Reports
         ${{ inputs.debug }}
         COVERAGE_FILES=""
-        for FILE in $(find coverage-reports -iname '*.xml'); do
+        for FILE in $(find coverage-reports -iname 'coverage*.xml'); do
           echo -e "\033[0;35mFixing paths in ${FILE}\033[0m"
           cp "${FILE}" "${FILE}.orig"
           sed -e 's|${{ inputs.strip_path }}||' -i ${FILE}
           COVERAGE_FILES="${COVERAGE_FILES},${FILE}"
-          diff -y --color=always "${FILE}.orig" "${FILE}" || true
+          # diff -y --color=always "${FILE}.orig" "${FILE}" || true
         done
         # remove leading comma when adding this
-        echo "COVERAGE_FILES=${COVERAGE_FILES:1}" | tee -a $GITHUB_ENV
+        echo "COVERAGE_PARAM=-Dsonar.php.coverage.reportPaths=${COVERAGE_FILES:1}"| tee -a "${GITHUB_ENV}"
+        PHPUNIT_FILES=""
+        for FILE in $(find coverage-reports -iname 'phpunit*.xml'); do
+          echo -e "\033[0;35mFixing paths in ${FILE}\033[0m"
+          cp "${FILE}" "${FILE}.orig"
+          sed -e 's|${{ inputs.strip_path }}||' -i ${FILE}
+          PHPUNIT_FILES="${PHPUNIT_FILES},${FILE}"
+          # diff -y --color=always "${FILE}.orig" "${FILE}" || true
+        done
+        # remove leading comma when adding this
+        echo "PHPUNIT_PARAM=-Dsonar.php.tests.reportPath=${PHPUNIT_FILES:1}"| tee -a "${GITHUB_ENV}"
 
     - name: Update consolidated coverage artifact
       uses: 'OXID-eSales/github-actions/consolidate_artifacts@v4'
@@ -125,7 +135,8 @@ runs:
           -Dsonar.projectKey=${{ inputs.sonarcloud_project_key }}
           -Dsonar.projectName=${{ inputs.sonarcloud_project_name }}
           -Dsonar.branch.name=${{ inputs.github_ref_name }}
-          -Dsonar.php.coverage.reportPath=${{ env.COVERAGE_FILES }}
+          ${{ env.COVERAGE_PARAM }}
+          ${{ env.PHPUNIT_PARAM }}
           ${{ inputs.sonarcloud_parameters }}
           ${{ env.TARGET_BRANCH_PARAM }}
 
