@@ -794,7 +794,7 @@ jobs:
     steps:
       - name: Load cached testplan
         id: runtest_testplan_name
-        uses: OXID-eSales/github-actions/load_cached_testplan@v4
+        uses: OXID-eSales/github-actions/load_cached_testplan@v0
         with:
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -827,7 +827,7 @@ jobs:
           path: swapfile
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v4'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           cached_shop: '${{ steps.runtest_testplan.outputs.runtest_load_shop}}_${{ steps.runtest_testplan_name.outputs.matrix_suffix }}'
           cache_bucket: ${{ steps.runtest_testplan.outputs.runtest_cache_bucket }}
@@ -841,7 +841,7 @@ jobs:
 
       - name: 'Modify composer.json'
         if: ${{ steps.runtest_testplan.outputs.runtest_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v4'
+        uses: 'OXID-eSales/github-actions/composer_merge@v0'
         with:
           file: '${{ steps.runtest_testplan.outputs.runtest_composer_file }}'
           backup: true
@@ -858,12 +858,12 @@ jobs:
       - name: Copy config file
         run: |
           cp source/vendor/oxid-esales/testing-library/test_config.yml.dist source/test_config.yml
+          cp source/vendor/oxid-esales/testing-library/test_config.yml.dist source/vendor/oxid-esales/oxideshop-ce/test_config.yml
           ${{ needs.init.outputs.debug }}
-
 
       - name: Run custom scripts
         if: ${{ steps.runtest_testplan.outputs.runtest_custom_script != '' && steps.runtest_testplan.outputs.runtest_custom_script_container != '' }}
-        uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
+        uses: 'OXID-eSales/github-actions/run_custom_scripts@v0'
         with:
           container_name: ${{ steps.runtest_testplan.outputs.runtest_container_name }}
           container_options: ${{ steps.runtest_testplan.outputs.runtest_container_options }}
@@ -874,7 +874,7 @@ jobs:
 
       - name: 'Run tests'
         id: runtest_run
-        uses: 'OXID-eSales/github-actions/runtests@v4'
+        uses: 'OXID-eSales/github-actions/runtests@v0'
         with:
           container_name: ${{ steps.runtest_testplan.outputs.runtest_container_name }}
           container_options: ${{ steps.runtest_testplan.outputs.runtest_container_options }}
@@ -895,13 +895,13 @@ jobs:
 
       - name: 'Stop shop'
         if: ${{ always() }}
-        uses: 'OXID-eSales/github-actions/stop_shop@v4'
+        uses: 'OXID-eSales/github-actions/stop_shop@v0'
         with:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
           priority: '130'
