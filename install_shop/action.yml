@@ -84,8 +84,12 @@ runs:
       run: |
         # install_shop: Activate iDebug
         ${{ inputs.debug }}
-        perl -pi -e 's#iDebug = 0;#iDebug = -1;#g;' source/source/config.inc.php
-
+        if [ -f source/source/config.inc.php ]; then
+          perl -pi -e 's#iDebug = 0;#iDebug = -1;#g;' source/source/config.inc.php
+        fi
+        if [ -f source/vendor/oxid-esales/oxideshop-ce/source/config.inc.php ]; then
+          perl -pi -e 's#iDebug = 0;#iDebug = -1;#g;' source/vendor/oxid-esales/oxideshop-ce/source/config.inc.php
+        fi
     - name: Activate theme
       if: ${{ inputs.is_enterprise == 'true' }}
       shell: bash
