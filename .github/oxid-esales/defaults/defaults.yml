@@ -490,6 +490,7 @@ runtest:
     <<: *container
     options: '-e XDEBUG_MODE=coverage'
   cache: *cache
+  title: 'deprecated_tests'
   composer:
     <<: *composer
     transform: |

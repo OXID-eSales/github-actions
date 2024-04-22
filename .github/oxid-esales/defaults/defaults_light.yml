@@ -296,6 +296,70 @@ runslim:
   <<: *runscript
   matrix: *matrix_slim
 
+# These deprecated tests use the runtests action. Many options are similar to
+# codeception/phpunit
+runtest:
+  matrix:
+    php: *matrix_php
+    mysql: *matrix_mysql
+
+    # Providing a list of testplans to be executed with runtests
+    # by default, these are the deprecated tests
+    testplan: 'skip'
+  max_parallel: *max_parallel
+  docker_login: *docker_login
+  load_shop: *install_module_prefix
+  container:
+    <<: *container
+    options: '-e XDEBUG_MODE=coverage'
+  cache: *cache
+  composer:
+    <<: *composer
+    transform: |
+      {
+          "require-dev": {
+              "oxid-esales/testing-library": "dev-b-8.0.x",
+              "oxid-esales/tests-deprecated-ce": "dev-b-8.0.x",
+              "codeception/module-webdriver": "^3.1",
+              "phpunit/phpunit": "^9.1.1"
+          }
+      }
+
+  # Run custom script outside the container'
+  custom_script: ''
+
+  # Run custom script inside the container like 'bin/oe-console oe:b2b:installdemodata --shop-id=1'
+  custom_script_container: ''
+
+  # Name of the config file to copy
+  config_file: 'vendor/oxid-esales/testing-library/test_config.yml.dist'
+
+  # Should we run reset-shop
+  reset_shop: true
+
+  test: 'AllTestsUnit'
+  additional_options: '--coverage-clover=/var/www/deprecated_tests_coverage.xml'
+  logfile:
+    prefix: 'runtests'
+
+  output:
+    files: |
+      source/unit.cov
+      source/source/log/oxideshop.log
+      source/test_config.yml
+      data/php/logs/error_log.txt
+    prefix: 'deprecated_tests_artifacts'
+  coverage:
+    path: 'source/deprecated_tests_coverage.xml'
+    prefix: coverage-reports-runtest
+  failure_pattern: *failure_pattern
+
+  # Where to find the reset-shop binary
+  reset_shop_binary: 'vendor/bin/reset-shop'
+
+  # Where to find the runtests binary
+  runtests_binary: 'vendor/bin/runtests'
+
 # Running the sonarcloud scanner on the gathered coverage reports
 sonarcloud:
   # We only run sonarcloud for one of the matrix combinations of PHP/MySQL
