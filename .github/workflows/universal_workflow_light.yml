@@ -862,7 +862,7 @@ jobs:
           ${{ needs.init.outputs.debug }}
 
       - name: Run custom scripts
-        if: ${{ steps.runtest_testplan.outputs.runtest_custom_script != '' && steps.runtest_testplan.outputs.runtest_custom_script_container != '' }}
+        if: ${{ steps.runtest_testplan.outputs.runtest_custom_script != '' || steps.runtest_testplan.outputs.runtest_custom_script_container != '' }}
         uses: 'OXID-eSales/github-actions/run_custom_scripts@v0'
         with:
           container_name: ${{ steps.runtest_testplan.outputs.runtest_container_name }}
