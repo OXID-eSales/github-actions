@@ -573,6 +573,7 @@ jobs:
           token: ${{ github.token }}
 
       - name: 'Run runscript check'
+        if: ${{ steps.rt.outputs.runscript_script != ''}}
         uses: 'OXID-eSales/github-actions/run_composer_script@v0'
         with:
           script: ${{ steps.rt.outputs.runscript_script }}
