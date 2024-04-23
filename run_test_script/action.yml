@@ -74,8 +74,8 @@ runs:
         # run_test_script: Run shell script ${{ inputs.script }}
         ${{ inputs.debug }}
         mkdir -p source/${{ inputs.path }}/tests/Output source/${{ inputs.path }}/tests/Reports
-        SCRIPT=$(echo '${{ inputs.script }}'|sed -e "s|^~|tests/Scripts|")
-        chmod a+x "${SCRIPT}"
+        SCRIPT=$(echo '${{ inputs.script }}'|sed -e "s|^~|./tests/Scripts|")
+        chmod a+x "source/${{ inputs.path }}/${SCRIPT}"
         echo -e "\033[0;35m###  Run ${SCRIPT} in ${{ inputs.path }} ###\033[0m"
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
