@@ -54,7 +54,7 @@ runs:
   using: "composite"
   steps:
     - name: Run composer script
-      if: ${{ ! startsWith('~/', inputs.script) }}
+      if: ${{ ! startsWith(inputs.script, '~/') }}
       shell: bash
       run: |
         # run_test_script: Run composer script ${{ inputs.script }}
@@ -68,7 +68,7 @@ runs:
           composer ${{ inputs.script }}
 
     - name: Run shell script
-      if: ${{ startsWith('~/', inputs.script) }}
+      if: ${{ startsWith(inputs.script, '~/' ) }}
       shell: bash
       run: |
         # run_test_script: Run shell script ${{ inputs.script }}
