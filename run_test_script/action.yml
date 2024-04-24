@@ -93,6 +93,7 @@ runs:
           echo -e "\033[0;35mPHP error log\033[0m"
           cat data/php/logs/error_log.txt
         fi
+        touch data/php/logs/error_log.txt
         cp data/php/logs/error_log.txt source/${{ inputs.path }}/tests/Output/
 
     - name: Upload artifact
