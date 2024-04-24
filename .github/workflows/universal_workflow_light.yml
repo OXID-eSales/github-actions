@@ -273,6 +273,8 @@ jobs:
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
           git_sdk_url: ${{ steps.isltp.outputs.install_shop_with_modules_git_sdk_url }}
           git_sdk_ref: ${{ steps.isltp.outputs.install_shop_with_modules_git_sdk_ref }}
+          git_shop_url: ${{ needs.init.outputs.install_shop_with_modules_git_shop_url }}
+          git_shop_ref: ${{ needs.init.outputs.install_shop_with_modules_git_shop_ref }}
           compilation_url: ${{ steps.isltp.outputs.install_shop_with_modules_composer_root_url }}
           github_ref_name: ${{ github.ref_name }}
           php: ${{ matrix.php }}
