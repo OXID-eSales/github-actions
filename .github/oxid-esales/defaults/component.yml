@@ -1,0 +1,61 @@
+install_shop_with_modules:
+  cache:
+    prepared_shop: true
+  container:
+    options: '-e SHOP_PATH=vendor/{{ .Data.global.org }}/{{ .Data.global.name }}/source'
+  composer:
+    transform: |
+      {
+          "preferred-install": {
+            "{{ .Data.global.org }}/*": "source",
+          },
+          "require": {
+              "{{ .Data.global.org }}/{{ .Data.global.name }}": "{{ .Data.global.composer.ref_name }}"
+          },
+          "repositories": {
+            "{{ .Data.global.org }}/{{ .Data.global.name }}": {
+              "type": "git",
+              "url": "https://github.com/{{ .Data.global.repo }}.git"
+            }
+          }
+      }
+  output:
+    files: |
+      docker-compose.yml
+      source/composer.json*
+      source/composer.lock
+      source/source/config.inc.php
+      source/vendor/oxid-esales/oxideshop-ce/source/config.inc.php
+      data/php/logs/error_log.txt
+      files.txt
+
+runscript: &runscript
+  matrix:
+    script: 'skip'
+  component:
+    path: 'vendor/{{ .Data.global.org}}/{{ .Data.global.name }}'
+  deprecated:
+    path: 'vendor/{{ .Data.global.org}}/{{ .Data.global.name }}'
+    composer:
+      transform: |
+        {
+            "require-dev": {
+                "oxid-esales/testing-library": "{{ .Data.global.composer.dev_ref }}",
+                "oxid-esales/tests-deprecated-ce": "{{ .Data.global.composer.dev_ref }}",
+                "codeception/module-webdriver": "^3.1",
+                "phpunit/phpunit": "^9.1.1"
+            }
+        }
+
+runslim:
+  <<: *runscript
+  matrix:
+    script: 'skip'
+
+sonarcloud:
+  matrix:
+    testplan: 'skip'
+  strip_path: '/var/www/vendor/{{ print .Data.global.org }}/{{ print .Data.global.name}}/'
+
+finish:
+  slack_title: '{{ print .Data.global.name}} ({{ .Data.global.git.shop_ref }}) by {{ .Github.Actor }}'
