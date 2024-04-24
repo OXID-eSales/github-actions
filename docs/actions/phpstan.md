@@ -21,6 +21,10 @@ Additional options to pass to phpmd.
 If set to true, not only phpmd-report but an additional phpmd run with text output
 will be executed. This output is visible in the github logs and will be saved in the archive.
 
+**generate_baseline:** *not required*, *default:* false  
+If set to true, we will generate a phpstan baseline file and save it in the actions output.
+This can then be moved to the tests/PhpStan folder of the repo to replace the old baseline.
+
 **container_name:** *not required*, *default:*  php  
 Name of the container to run the test in.
 
@@ -32,6 +36,9 @@ Whether we use exec to run the command in the existing php container or run to s
 
 **output_artifact:** *not required*, *default:*  phpmd  
 Github run artifact to put the output files in.
+
+**failure_pattern:** *not required*, *default:*  '"errors":[1-9][0-9]*|"file_errors":[1-9][0-9]*'  
+Grep pattern which indicate that the test failed.
 
 **debug:** *not required*, *default:* ''  
 Code snippet to generate the debugging code

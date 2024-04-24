@@ -49,6 +49,7 @@ inputs:
     description: 'Github token for composer'
     default: ''
     required: false
+
 runs:
   using: "composite"
   steps:
