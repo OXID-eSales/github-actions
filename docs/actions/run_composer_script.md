@@ -32,5 +32,8 @@ Github run artifact for the output.
 **debug:** *not required*, *default:* false  
 Set to true to generate a debugging script.
 
+**github_token:** *not required*, *default:* ''  
+If set, this will configure the github token before running composer.
+
 ## Outputs:
 none

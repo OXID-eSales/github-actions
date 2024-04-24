@@ -32,6 +32,6 @@ This repository contains re-usable GitHub workflows and actions for the OXID-eSa
 - Analysis actions
     - [phpcs](docs/actions/phpcs.md) runs phpcs over the given installation
     - [phpmd](docs/actions/phpmd.md) runs phpmd over the given installation
-    - [phpstan](docs/actions/phpstan.md) runs phpcs over the given installation
+    - [phpstan](docs/actions/phpstan.md) runs phpstan over the given installation
     - [sonarcloud](docs/actions/sonarcloud.md) runs sonarcloud over the given installation
     - DEPRTECATED [styles](docs/actions/styles.md) runs phpcs, phpstan and phpmd reports

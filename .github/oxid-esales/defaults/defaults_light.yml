@@ -37,7 +37,7 @@ workflow:
     # This string contains a json array of php versions to test against.
     php: &matrix_php '["8.1","8.2"]'
 
-    # This json array are the mysql versions to test
+    # This string contains a json array of mysql versions to test
     mysql: &matrix_mysql '["5.7","8.0"]'
 
   # This matrix definition is used, when we only want one analysis done
@@ -61,7 +61,7 @@ global:
   # This action can be used on the community edition (ce) and enterprise
   # edition (ee) of the shop. On top of setting this to true, a few extra
   # variables/secrets must be provided for using the action on ee.
-  # If is enterprise is set to true, you need to provide the following
+  # If the variable is_enterprise is set to true, you need to provide the following variables:
   # - secrets.enterprise_github_token
   # - testplan entry global.git_enterprise_ref
   is_enterprise: &is_enterprise false
