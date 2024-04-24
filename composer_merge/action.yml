@@ -49,7 +49,11 @@ inputs:
     description: 'Github token for composer'
     default: ''
     required: false
-
+  update_workdir:
+    type: string
+    description: 'Working directory for composer update'
+    default: ''
+    required: false
 runs:
   using: "composite"
   steps:
@@ -105,10 +109,14 @@ runs:
         ${{ inputs.debug }}
         rm .composer_merge.tmp.json
         cat '${{ inputs.file }}'
-
         if [ '${{ inputs.update }}' == 'true' ]; then
+          WORKDIR_OPTIONS=''
+          if [ -n '${{ inputs.update_workdir }}' ]; then
+            WORKDIR_OPTIONS="--workdir '${{ inputs.update_workdir }}'"
+          fi
           echo -e "\033[0;35m### Running composer update with ${{ inputs.update_options }}\033[0m"
           docker compose ${{ inputs.container_method }} -T \
+            ${WORKDIR_OPTIONS} \
             ${{ inputs.container_options }} \
             ${{ inputs.container_name}} \
             composer update ${{ inputs.update_options }}

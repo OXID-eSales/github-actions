@@ -311,7 +311,7 @@ jobs:
         shell: bash
         run: |
           echo "banner 'Run composer for each module'" >>debug/debug.sh
-          PREFIXES=$(echo '${{steps.isltp.outputs.runscript_matrix_script}}'|tr ',' '\n'|tr -d '[]"'|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
+          PREFIXES=$(echo '${{steps.isltp.outputs.runscript_matrix_script}}'|tr ',' '\n'|tr -d '[]" '|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
           echo -e "\033[0;35mUnique prefixes: ${PREFIXES}\033[0m"
           for PREFIX in ${PREFIXES}; do
             VAR="runscript_${PREFIX}_path"
@@ -560,6 +560,7 @@ jobs:
           container_method: 'exec'
           debug: ${{ needs.init.outputs.debug }}
           github_token: ${{ secrets.enterprise_github_token || github.token }}
+          update_workdir: '/var/www/${{ steps.rt.outputs.runscript_path }}'
 
       - name: Run custom scripts
         if: ${{ steps.rt.outputs.runscript_custom_script != '' || steps.rt.outputs.runscript_custom_script_container != '' }}
