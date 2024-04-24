@@ -7,7 +7,7 @@ install_shop_with_modules:
     transform: |
       {
           "preferred-install": {
-            "{{ .Data.global.org }}/*": "source",
+            "{{ .Data.global.org }}/*": "source"
           },
           "require": {
               "{{ .Data.global.org }}/{{ .Data.global.name }}": "{{ .Data.global.composer.ref_name }}"
