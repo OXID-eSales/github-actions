@@ -124,7 +124,7 @@ jobs:
         run: |
           cp "${GITHUB_OUTPUT}" generated_output.txt
           cp "${GITHUB_ENV}" generated_env.txt
-          echo 'title=${{steps.ltp.outputs.global_title}}'|sed -E 's#"|,|:|\<|\>|\||\*|\?|\/|\\|\r|\n#_#g' | tee -a "${GITHUB_OUTPUT}"
+          echo 'title=${{steps.ltp.outputs.global_title}}'|sed -E 's#"|,|:|<|>|\||\*|\?|\/|\\#_#g' | tee -a "${GITHUB_OUTPUT}"
 
       - name: 'Create first testplan archive'
         if: always()
@@ -257,6 +257,16 @@ jobs:
       phpcs_tests_matrix_php: ${{ steps.ltp.outputs.phpcs_tests_matrix_php }}
       phpcs_tests_max_parallel: ${{ steps.ltp.outputs.phpcs_tests_max_parallel }}
       phpcs_tests_skip: ${{ steps.ltp.outputs.phpcs_tests_skip }}
+      # phpmd variables
+      phpmd_matrix_mysql: ${{ steps.ltp.outputs.phpmd_matrix_mysql }}
+      phpmd_matrix_php: ${{ steps.ltp.outputs.phpmd_matrix_php }}
+      phpmd_matrix_testplan: ${{ steps.ltp.outputs.phpmd_matrix_testplan }}
+      phpmd_max_parallel: ${{ steps.ltp.outputs.phpmd_max_parallel }}
+      # phpstan variables
+      phpstan_matrix_mysql: ${{ steps.ltp.outputs.phpstan_matrix_mysql }}
+      phpstan_matrix_php: ${{ steps.ltp.outputs.phpstan_matrix_php }}
+      phpstan_matrix_testplan: ${{ steps.ltp.outputs.phpstan_matrix_testplan }}
+      phpstan_max_parallel: ${{ steps.ltp.outputs.phpstan_max_parallel }}
       # styles variables
       styles_matrix_mysql: ${{ steps.ltp.outputs.styles_matrix_mysql }}
       styles_matrix_php: ${{ steps.ltp.outputs.styles_matrix_php }}
@@ -303,9 +313,6 @@ jobs:
           github_event_name: ${{ github.event_name }}
           github_event_number: ${{ github.event.number }}
           github_base_ref: ${{ github.base_ref }}
-          github_sha: ${{ github.sha }}
-          github_run_number: ${{ github.run_number }}
-          github_run_attempt: ${{ github.run_attempt }}
           github_ref_name: ${{ github.ref_name }}
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
@@ -574,6 +581,7 @@ jobs:
           container_options: ${{ steps.install_module_testplan.outputs.install_module_container_options }}
           container_method: 'exec'
           debug: ${{ needs.init.outputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
       - name: Install module
         if: ${{ matrix.testplan != 'skip' }}
@@ -868,6 +876,7 @@ jobs:
           container_options: ${{ steps.codeception_testplan.outputs.codeception_container_options }}
           container_method: 'exec'
           debug: ${{ needs.init.outputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
       - name: Run custom scripts
         # yamllint disable-line rule:line-length
@@ -1002,6 +1011,7 @@ jobs:
           container_options: ${{ steps.runtest_testplan.outputs.runtest_container_options }}
           container_method: 'exec'
           debug: ${{ needs.init.outputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
       - name: Copy config file
         run: |
@@ -1076,6 +1086,307 @@ jobs:
           phase: report
           debug: false
 
+  phpmd:
+    needs: ['init', 'install_module', 'begin_report_phase']
+    if: ${{ needs.init.outputs.phpmd_matrix_testplan != 'skip' }}
+    strategy:
+      matrix:
+        php: ${{ fromJSON(needs.init.outputs.phpmd_matrix_php) }}
+        mysql: ${{ fromJSON(needs.init.outputs.phpmd_matrix_mysql) }}
+        testplan: ${{ fromJSON(needs.init.outputs.phpmd_matrix_testplan) }}
+      fail-fast: false
+      max-parallel: ${{ fromJSON(needs.init.outputs.phpmd_max_parallel) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    env:
+      MATRIX_PHP: ${{ matrix.php }}
+      MATRIX_MYSQL: ${{ matrix.mysql }}
+      MATRIX_TESTPLAN: ${{ matrix.testplan }}
+    steps:
+      - name: Load cached testplan
+        id: phpmd_testplan_name
+        uses: OXID-eSales/github-actions/load_cached_testplan@v4
+        with:
+          php: ${{ matrix.php }}
+          mysql: ${{ matrix.mysql }}
+          prefix: '${{ needs.init.outputs.global_title }}'
+          root_testplan: ${{ needs.init.outputs.testplan }}
+          matrix_testplan: ${{ matrix.testplan }}
+          plan_folder: ${{ inputs.plan_folder }}
+          cache_name: ${{ needs.init.outputs.init_cache_name }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          cache_bucket: ${{ needs.init.outputs.init_cache_bucket }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Load Testplan'
+        id: phpmd_testplan
+        uses: 'joernott/load_testplan@v1'
+        with:
+          files: '${{steps.phpmd_testplan_name.outputs.testplan}}'
+          set_output: true
+          set_print: true
+          yaml: generated_testplan.yaml
+          token: ${{ secrets.enterprise_github_token }}
+
+      - name: 'Start shop'
+        uses: 'OXID-eSales/github-actions/start_shop@v4'
+        with:
+          cached_shop: '${{ steps.phpmd_testplan.outputs.phpmd_load_shop}}_${{ steps.phpmd_testplan_name.outputs.matrix_suffix }}'
+          cache_bucket: ${{ steps.phpmd_testplan.outputs.phpmd_cache_bucket }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          docker_login: ${{ steps.phpmd_testplan.outputs.phpmd_docker_login }}
+          docker_user: ${{ secrets.DOCKER_HUB_USER }}
+          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Modify composer.json'
+        if: ${{ steps.phpmd_testplan.outputs.phpmd_composer_transform != '' }}
+        uses: 'OXID-eSales/github-actions/composer_merge@v4'
+        with:
+          file: '${{ steps.phpmd_testplan.outputs.phpmd_composer_file }}'
+          backup: true
+          transform: |
+            ${{ steps.phpmd_testplan.outputs.phpmd_composer_transform }}
+          update: ${{ steps.phpmd_testplan.outputs.phpmd_composer_update }}
+          update_options: ${{ steps.phpmd_testplan.outputs.phpmd_composer_update_options }}
+          container_name: ${{ steps.phpmd_testplan.outputs.phpmd_container_name }}
+          container_options: ${{ steps.phpmd_testplan.outputs.phpmd_container_options }}
+          container_method: ${{ steps.phpmd_testplan.outputs.phpmd_container_method }}
+          debug: ${{ needs.init.outputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
+
+      - name: Run custom scripts
+        if: ${{ steps.phpmd_testplan.outputs.phpmd_custom_script != '' && steps.phpmd_testplan.outputs.phpmd_custom_script_container != '' }}
+        uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
+        with:
+          container_name: ${{ steps.phpmd_testplan.outputs.phpmd_container_name }}
+          container_options: ${{ steps.phpmd_testplan.outputs.phpmd_container_options }}
+          container_method: ${{ steps.phpmd_testplan.outputs.phpmd_container_method }}
+          custom_script: ${{ steps.phpmd_testplan.outputs.phpmd_custom_script }}
+          custom_script_container: ${{ steps.phpmd_testplan.outputs.phpmd_custom_script_container }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Run phpmd check'
+        uses: 'OXID-eSales/github-actions/phpmd@v4'
+        with:
+          source_path: ${{ steps.phpmd_testplan.outputs.phpmd_source_path }}
+          report_path: ${{ steps.phpmd_testplan.outputs.phpmd_report_path }}
+          config: ${{ steps.phpmd_testplan.outputs.phpmd_config }}
+          baseline_file: ${{ steps.phpmd_testplan.outputs.phpmd_baseline_file }}
+          additional_options: ${{ steps.phpmd_testplan.outputs.phpmd_additional_options }}
+          title: ${{ steps.phpmd_testplan.outputs.phpmd_title }}
+          verbose: ${{ steps.phpmd_testplan.outputs.phpmd_verbose }}
+          generate_baseline: ${{ steps.phpmd_testplan.outputs.phpmd_generate_baseline }}
+          container_name: ${{ steps.phpmd_testplan.outputs.phpmd_container_name }}
+          container_options: ${{ steps.phpmd_testplan.outputs.phpmd_container_options }}
+          container_method: ${{ steps.phpmd_testplan.outputs.phpmd_container_method }}
+          output_artifact: ${{ steps.phpmd_testplan.outputs.phpmd_output_prefix}}_${{ steps.phpmd_testplan_name.outputs.matrix_suffix }}
+          failure_pattern: ${{ steps.phpmd_testplan.outputs.phpmd_failure_pattern }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Stop shop'
+        if: ${{ always() }}
+        uses: 'OXID-eSales/github-actions/stop_shop@v4'
+        with:
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Write Report'
+        if: always()
+        uses: OXID-eSales/github-actions/append_report@v4
+        with:
+          prefix: '${{ needs.init.outputs.global_title }}'
+          priority: '210'
+          phase: report
+          job: phpmd
+          title: '${{ steps.phpmd_testplan.outputs.phpmd_title }}'
+          php: ${{matrix.php}}
+          mysql: ${{matrix.mysql}}
+          status: ${{job.status}}
+          debug: ${{ inputs.debug }}
+
+  phpstan:
+    needs: ['init', 'install_module', 'begin_report_phase']
+    if: ${{ needs.init.outputs.phpstan_matrix_testplan != 'skip' }}
+    strategy:
+      matrix:
+        php: ${{ fromJSON(needs.init.outputs.phpstan_matrix_php) }}
+        mysql: ${{ fromJSON(needs.init.outputs.phpstan_matrix_mysql) }}
+        testplan: ${{ fromJSON(needs.init.outputs.phpstan_matrix_testplan) }}
+      fail-fast: false
+      max-parallel: ${{ fromJSON(needs.init.outputs.phpstan_max_parallel) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    env:
+      MATRIX_PHP: ${{ matrix.php }}
+      MATRIX_MYSQL: ${{ matrix.mysql }}
+      MATRIX_TESTPLAN: ${{ matrix.testplan }}
+    steps:
+      - name: Load cached testplan
+        id: phpstan_testplan_name
+        uses: OXID-eSales/github-actions/load_cached_testplan@v4
+        with:
+          php: ${{ matrix.php }}
+          mysql: ${{ matrix.mysql }}
+          prefix: '${{ needs.init.outputs.global_title }}'
+          root_testplan: ${{ needs.init.outputs.testplan }}
+          matrix_testplan: ${{ matrix.testplan }}
+          plan_folder: ${{ inputs.plan_folder }}
+          cache_name: ${{ needs.init.outputs.init_cache_name }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          cache_bucket: ${{ needs.init.outputs.init_cache_bucket }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Load Testplan'
+        id: phpstan_testplan
+        uses: 'joernott/load_testplan@v1'
+        with:
+          files: '${{steps.phpstan_testplan_name.outputs.testplan}}'
+          set_output: true
+          set_print: true
+          yaml: generated_testplan.yaml
+          token: ${{ secrets.enterprise_github_token }}
+
+      - name: 'Start shop'
+        uses: 'OXID-eSales/github-actions/start_shop@v4'
+        with:
+          cached_shop: '${{ steps.phpstan_testplan.outputs.phpstan_load_shop}}_${{ steps.phpstan_testplan_name.outputs.matrix_suffix }}'
+          cache_bucket: ${{ steps.phpstan_testplan.outputs.phpstan_cache_bucket }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          docker_login: ${{ steps.phpstan_testplan.outputs.phpstan_docker_login }}
+          docker_user: ${{ secrets.DOCKER_HUB_USER }}
+          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Modify composer.json'
+        if: ${{ steps.phpstan_testplan.outputs.phpstan_composer_transform != '' }}
+        uses: 'OXID-eSales/github-actions/composer_merge@v4'
+        with:
+          file: '${{ steps.phpstan_testplan.outputs.phpstan_composer_file }}'
+          backup: true
+          transform: |
+            ${{ steps.phpstan_testplan.outputs.phpstan_composer_transform }}
+          update: ${{ steps.phpstan_testplan.outputs.phpstan_composer_update }}
+          update_options: ${{ steps.phpstan_testplan.outputs.phpstan_composer_update_options }}
+          container_name: ${{ steps.phpstan_testplan.outputs.phpstan_container_name }}
+          container_options: ${{ steps.phpstan_testplan.outputs.phpstan_container_options }}
+          container_method: ${{ steps.phpstan_testplan.outputs.phpstan_container_method }}
+          debug: ${{ needs.init.outputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
+
+      - name: Run custom scripts
+        if: ${{ steps.phpstan_testplan.outputs.phpstan_custom_script != '' && steps.phpstan_testplan.outputs.phpstan_custom_script_container != '' }}
+        uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
+        with:
+          container_name: ${{ steps.phpstan_testplan.outputs.phpstan_container_name }}
+          container_options: ${{ steps.phpstan_testplan.outputs.phpstan_container_options }}
+          container_method: ${{ steps.phpstan_testplan.outputs.phpstan_container_method }}
+          custom_script: ${{ steps.phpstan_testplan.outputs.phpstan_custom_script }}
+          custom_script_container: ${{ steps.phpstan_testplan.outputs.phpstan_custom_script_container }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Run phpstan check'
+        uses: 'OXID-eSales/github-actions/phpstan@v4'
+        with:
+          source_path: ${{ steps.phpstan_testplan.outputs.phpstan_source_path }}
+          report_path: ${{ steps.phpstan_testplan.outputs.phpstan_report_path }}
+          neon_file: ${{ steps.phpstan_testplan.outputs.phpstan_neon_file }}
+          additional_options: ${{ steps.phpstan_testplan.outputs.phpstan_additional_options }}
+          title: ${{ steps.phpstan_testplan.outputs.phpstan_title }}
+          verbose: ${{ steps.phpstan_testplan.outputs.phpstan_verbose }}
+          generate_baseline: ${{ steps.phpstan_testplan.outputs.phpstan_generate_baseline }}
+          container_name: ${{ steps.phpstan_testplan.outputs.phpstan_container_name }}
+          container_options: ${{ steps.phpstan_testplan.outputs.phpstan_container_options }}
+          container_method: ${{ steps.phpstan_testplan.outputs.phpstan_container_method }}
+          output_artifact: ${{ steps.phpstan_testplan.outputs.phpstan_output_prefix}}_${{ steps.phpstan_testplan_name.outputs.matrix_suffix }}
+          failure_pattern: ${{ steps.phpstan_testplan.outputs.phpstan_failure_pattern }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Stop shop'
+        if: ${{ always() }}
+        uses: 'OXID-eSales/github-actions/stop_shop@v4'
+        with:
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Write Report'
+        if: always()
+        uses: OXID-eSales/github-actions/append_report@v4
+        with:
+          prefix: '${{ needs.init.outputs.global_title }}'
+          priority: '220'
+          phase: report
+          job: phpstan
+          title: '${{ steps.phpstan_testplan.outputs.phpstan_title }}'
+          php: ${{matrix.php}}
+          mysql: ${{matrix.mysql}}
+          status: ${{job.status}}
+          debug: ${{ inputs.debug }}
+
+  phpcs_tests:
+    needs: ['init', 'install_module', 'begin_report_phase']
+    if: ${{ always() && needs.init.outputs.phpcs_tests_skip != 'true' && needs.install_module.result == 'success' }}
+    strategy:
+      matrix:
+        php: ${{ fromJSON(needs.init.outputs.phpcs_tests_matrix_php) }}
+        mysql: ${{ fromJSON(needs.init.outputs.phpcs_tests_matrix_mysql) }}
+      fail-fast: false
+      max-parallel: ${{ fromJSON(needs.init.outputs.phpcs_tests_max_parallel) }}
+    runs-on: ${{ fromJSON(inputs.runs_on) }}
+    steps:
+      - name: 'Start shop'
+        uses: 'OXID-eSales/github-actions/start_shop@v4'
+        with:
+          cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
+          cache_bucket: ${{ needs.init.outputs.phpcs_tests_cache_bucket }}
+          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
+          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
+          docker_login: ${{ needs.init.outputs.phpcs_tests_docker_login }}
+          docker_user: ${{ secrets.DOCKER_HUB_USER }}
+          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Run phpcs tests'
+        uses: 'OXID-eSales/github-actions/phpcs@v4'
+        with:
+          container_name: ${{ needs.init.outputs.phpcs_tests_container_name }}
+          container_options: ${{ needs.init.outputs.phpcs_tests_container_options }}
+          container_method: ${{ needs.init.outputs.phpcs_tests_container_method }}
+          git_ref: ${{ needs.init.outputs.phpcs_tests_git_ref }}
+          diff_only: ${{ needs.init.outputs.phpcs_tests_diff_only}}
+          filter: ${{ needs.init.outputs.phpcs_tests_filter}}
+          additional_options: ${{ needs.init.outputs.phpcs_tests_additional_options }}
+          logfile: phpcs-PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_codesniff_log.txt
+          output_artifact: ${{ needs.init.outputs.phpcs_tests_output_prefix }}-${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}
+          output_files: ${{ needs.init.outputs.phpcs_tests_output_files }}
+          failure_pattern: ${{ needs.init.outputs.phpcs_tests_failure_pattern }}
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Stop shop'
+        if: ${{ always() }}
+        uses: 'OXID-eSales/github-actions/stop_shop@v4'
+        with:
+          debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Write Report'
+        if: always()
+        uses: OXID-eSales/github-actions/append_report@v4
+        with:
+          prefix: '${{ needs.init.outputs.global_title }}'
+          priority: '230'
+          phase: report
+          job: phpcs
+          title: 'default'
+          php: ${{matrix.php}}
+          mysql: ${{matrix.mysql}}
+          status: ${{job.status}}
+          debug: ${{ inputs.debug }}
+
   sonarcloud:
     needs: ['init', 'install_module', 'phpunit', 'codeception', 'begin_report_phase']
     # yamllint disable-line rule:line-length
@@ -1146,73 +1457,13 @@ jobs:
         uses: OXID-eSales/github-actions/append_report@v4
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
-          priority: '210'
+          priority: '240'
           phase: report
           job: sonarcloud
           title: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_title }}
           php: ${{matrix.php}}
           mysql: ${{matrix.mysql}}
           testplan: ${{matrix.testplan}}
-          status: ${{job.status}}
-          debug: ${{ inputs.debug }}
-
-  phpcs_tests:
-    needs: ['init', 'install_module', 'begin_report_phase']
-    if: ${{ always() && needs.init.outputs.phpcs_tests_skip != 'true' && needs.install_module.result == 'success' }}
-    strategy:
-      matrix:
-        php: ${{ fromJSON(needs.init.outputs.phpcs_tests_matrix_php) }}
-        mysql: ${{ fromJSON(needs.init.outputs.phpcs_tests_matrix_mysql) }}
-      fail-fast: false
-      max-parallel: ${{ fromJSON(needs.init.outputs.phpcs_tests_max_parallel) }}
-    runs-on: ${{ fromJSON(inputs.runs_on) }}
-    steps:
-      - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v4'
-        with:
-          cached_shop: '${{ needs.init.outputs.install_module_cache_prefix}}_${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
-          cache_bucket: ${{ needs.init.outputs.phpcs_tests_cache_bucket }}
-          cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
-          cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}
-          cache_secret_key: ${{ secrets.CACHE_SECRET_KEY }}
-          docker_login: ${{ needs.init.outputs.phpcs_tests_docker_login }}
-          docker_user: ${{ secrets.DOCKER_HUB_USER }}
-          docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
-          debug: ${{ needs.init.outputs.debug }}
-
-      - name: 'Run phpcs tests'
-        uses: 'OXID-eSales/github-actions/phpcs@v4'
-        with:
-          container_name: ${{ needs.init.outputs.phpcs_tests_container_name }}
-          container_options: ${{ needs.init.outputs.phpcs_tests_container_options }}
-          container_method: ${{ needs.init.outputs.phpcs_tests_container_method }}
-          git_ref: ${{ needs.init.outputs.phpcs_tests_git_ref }}
-          diff_only: ${{ needs.init.outputs.phpcs_tests_diff_only}}
-          filter: ${{ needs.init.outputs.phpcs_tests_filter}}
-          additional_options: ${{ needs.init.outputs.phpcs_tests_additional_options }}
-          logfile: phpcs-PHP${{ matrix.php }}_MYSQL${{ matrix.mysql }}_codesniff_log.txt
-          output_artifact: ${{ needs.init.outputs.phpcs_tests_output_prefix }}-${{needs.init.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}
-          output_files: ${{ needs.init.outputs.phpcs_tests_output_files }}
-          failure_pattern: ${{ needs.init.outputs.phpcs_tests_failure_pattern }}
-          debug: ${{ needs.init.outputs.debug }}
-
-      - name: 'Stop shop'
-        if: ${{ always() }}
-        uses: 'OXID-eSales/github-actions/stop_shop@v4'
-        with:
-          debug: ${{ needs.init.outputs.debug }}
-
-      - name: 'Write Report'
-        if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
-        with:
-          prefix: '${{ needs.init.outputs.global_title }}'
-          priority: '220'
-          phase: report
-          job: phpcs
-          title: 'default'
-          php: ${{matrix.php}}
-          mysql: ${{matrix.mysql}}
           status: ${{job.status}}
           debug: ${{ inputs.debug }}
 
@@ -1286,6 +1537,7 @@ jobs:
           container_options: ${{ steps.styles_testplan.outputs.styles_container_options }}
           container_method: 'exec'
           debug: ${{ needs.init.outputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
       - name: Run custom scripts
         if: ${{ steps.styles_testplan.outputs.styles_custom_script != '' && steps.styles_testplan.outputs.styles_custom_script_container != '' }}
@@ -1322,7 +1574,7 @@ jobs:
         uses: OXID-eSales/github-actions/append_report@v4
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
-          priority: '230'
+          priority: '250'
           phase: report
           job: styles
           title: '${{ steps.styles_testplan.outputs.styles_title }}'
@@ -1424,6 +1676,8 @@ jobs:
       - runtest
       - sonarcloud
       - phpcs_tests
+      - phpmd
+      - phpstan
       - styles
       - yamllint
       - actionlint
@@ -1440,12 +1694,18 @@ jobs:
           title: '${{ needs.init.outputs.finish_slack_title }}'
           debug: ${{ inputs.debug }}
 
+      - name: 'Checkout the repo for cleanup'
+        uses: actions/checkout@v4
+        with:
+          path: repo
+
       - name: 'Clean Cache'
         # if: ${{ steps.generate_report.outputs.overall_status == 'success' }}
         uses: 'OXID-eSales/github-actions/clean_cache@v4'
         env:
           GH_TOKEN: ${{ github.token }}
         with:
+          path: repo
           runs_on: ${{ inputs.runs_on }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
           cache_access_key: ${{ secrets.CACHE_ACCESS_KEY }}

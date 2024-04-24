@@ -74,7 +74,7 @@ runs:
           --db-name example \
           --db-user root \
           --db-password root \
-          --shop-url http://localhost.local \
+          --shop-url http://localhost.local/ \
           --shop-directory /var/www/source \
           --compile-directory /var/www/source/tmp
 

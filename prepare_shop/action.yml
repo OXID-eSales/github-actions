@@ -26,6 +26,11 @@ inputs:
     required: false
     description: 'Branch, tag or hash of the commit to check out'
     default: 'master'
+  compilation_url:
+    type: string
+    required: false
+    description: 'URL for downloading the base compilation url'
+    default: ''
   git_shop_url:
     type: string
     required: false
@@ -33,8 +38,9 @@ inputs:
     default: 'https://github.com/OXID-eSales/oxideshop_ce.git'
   git_shop_ref:
     type: string
-    required: true
+    required: false
     description: 'Branch, tag or hash of the commit to check out'
+    default: ''
   git_enterprise_ref:
     type: string
     required: false
@@ -57,8 +63,9 @@ inputs:
     default: ''
   github_sha:
     type: string
-    required: true
+    required: false
     description: 'github.sha is used in generating the cache id'
+    default: ''
   github_run_number:
     type: string
     required: false
@@ -177,8 +184,17 @@ runs:
         git checkout --progress --force $(echo $BRANCH|head -1)
         ${{ inputs.debug }}
 
+    - name: Fetch the compilation composer.json
+      if: ${{ inputs.compilation_url != '' }}
+      shell: bash
+      run: |
+        # prepare_shop: Fetch the compilation composer.json
+        ${{ inputs.debug }}
+        mkdir -p source
+        curl -sSjkLo source/composer.json '${{ inputs.compilation_url }}'
+
     - name: Clone the shop  (${{ inputs.git_shop_ref }})
-      if: ${{ inputs.github_event_name != 'pull_request' || ( github.repository != 'OXID-eSales/oxideshop_ce') }}
+      if: ${{ inputs.compilation_url == '' && (inputs.github_event_name != 'pull_request' || ( github.repository != 'OXID-eSales/oxideshop_ce')) }}
       shell: bash
       run: |
         # prepare_shop: Clone the shop
@@ -191,7 +207,7 @@ runs:
         git clone --depth 2 ${URL} --branch ${{ inputs.git_shop_ref }} --single-branch source
 
     - name: Clone the shop (PR ${{ inputs.github_event_number }})
-      if: ${{ inputs.github_event_name == 'pull_request' && github.repository == 'OXID-eSales/oxideshop_ce' }}
+      if: ${{ inputs.compilation_url == '' && (inputs.github_event_name == 'pull_request' && github.repository == 'OXID-eSales/oxideshop_ce') }}
       shell: bash
       run: |
         # prepare_shop: Clone the shop (PR)
@@ -389,4 +405,9 @@ runs:
       run: |
         # prepare_shop: Setup config inc file
         ${{ inputs.debug }}
-        cp source/source/config.inc.php.dist source/source/config.inc.php
+        if [ -f source/source/config.inc.php.dist ]; then
+          cp source/source/config.inc.php.dist source/source/config.inc.php
+        fi
+        if [ -f source/vendor/oxid-esales/oxideshop-ce/source/config.inc.php.dist ]; then
+          cp source/vendor/oxid-esales/oxideshop-ce/source/config.inc.php.dist source/vendor/oxid-esales/oxideshop-ce/source/config.inc.php
+        fi

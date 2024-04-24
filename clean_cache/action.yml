@@ -21,6 +21,10 @@ inputs:
     type: string
     required: true
     description: 'Runner for this workflow'
+  path:
+    type: string
+    required: true
+    description: 'Path in which the current project is checked out'
   debug:
     type: string
     description: 'Appended to debugging scripts'
@@ -65,6 +69,9 @@ runs:
       shell: bash
       run: |
         # clean_cache: Cleanup cached github objects
+        if [ -n '${{ inputs.path}}' ]; then
+          cd '${{ inputs.path}}'
+        fi
         GH=$(type -p 'gh'||true)
         if [ -n "${GH}" ]; then
           PATTERN=$(echo  '${{inputs.cache_objects}}' | tr  '\n' ' ' )
