@@ -301,9 +301,8 @@ jobs:
             echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
             docker compose ${{ steps.isltp.outputs.install_shop_with_modules_container_method }} -T \
             ${{ steps.isltp.outputs.install_shop_with_modules_container_options }} \
-              --workdir "/var/www/${COMPOSER_PATH}" \
               ${{ steps.isltp.outputs.install_shop_with_modules_container_name }} \
-              composer update ${{ steps.isltp.outputs.install_shop_with_modules_composer_update_options}}
+              composer update ${{ steps.isltp.outputs.install_shop_with_modules_composer_update_options}} -d "/var/www/${COMPOSER_PATH}"
           done
 
       - name: Generate debugging script for running composer for each module
@@ -320,9 +319,8 @@ jobs:
             echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
             docker compose ${{ steps.isltp.outputs.install_shop_with_modules_container_method }} -T \
             ${{ steps.isltp.outputs.install_shop_with_modules_container_options }} \
-              --workdir "/var/www/${COMPOSER_PATH}" \
               ${{ steps.isltp.outputs.install_shop_with_modules_container_name }} \
-              composer update ${{ steps.isltp.outputs.install_shop_with_modules_composer_update_options}}
+              composer update ${{ steps.isltp.outputs.install_shop_with_modules_composer_update_options}} -d "/var/www/${COMPOSER_PATH}"
           EODS
           done
 
