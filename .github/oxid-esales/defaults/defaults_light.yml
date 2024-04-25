@@ -95,7 +95,7 @@ global:
     # This definition can be used instead of {{ .Github.RefName }}. In case
     # of a pull request, the ref name is something like merge/42 which confuses
     # composer. In the workflow, we then replace this with a working reference
-    safe_ref_name: {{ .Github.RefName }}
+    safe_ref_name: '{{ .Github.RefName }}'
 
   # When running on a self hosted runner with access to a local s3 cache:
   # Set the following secrets:
