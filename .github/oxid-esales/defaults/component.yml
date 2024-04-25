@@ -1,24 +1,6 @@
 install_shop_with_modules:
-  cache:
-    prepared_shop: true
   container:
     options: '-e SHOP_PATH=vendor/{{ .Data.global.org }}/{{ .Data.global.name }}/source'
-  composer:
-    transform: |
-      {
-          "preferred-install": {
-            "{{ .Data.global.org }}/*": "source"
-          },
-          "require": {
-              "{{ .Data.global.org }}/{{ .Data.global.name }}": "{{ .Data.global.composer.ref_name }}"
-          },
-          "repositories": {
-            "{{ .Data.global.org }}/{{ .Data.global.name }}": {
-              "type": "git",
-              "url": "https://github.com/{{ .Data.global.repo }}.git"
-            }
-          }
-      }
   output:
     files: |
       docker-compose.yml
