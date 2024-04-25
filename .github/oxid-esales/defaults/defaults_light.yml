@@ -243,6 +243,8 @@ install_shop_with_modules:
   # Run custom script inside the container like 'bin/oe-console oe:setup:demodata'
   custom_script_container: ''
 
+  # Skip the shop installation logic (not needed for components)
+  skip_shop_installation: false
   # Exporting an artifact with Configuration files for the shop setup
   output:
     files: |

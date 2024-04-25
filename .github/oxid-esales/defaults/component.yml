@@ -1,4 +1,6 @@
 install_shop_with_modules:
+  cache:
+    prepared_shop: false
   container:
     options: '-e SHOP_PATH=vendor/{{ .Data.global.org }}/{{ .Data.global.name }}/source'
   output:
@@ -15,9 +17,9 @@ runscript: &runscript
   matrix:
     script: 'skip'
   component:
-    path: 'vendor/{{ .Data.global.org}}/{{ .Data.global.name }}'
+    path: ''
   deprecated:
-    path: 'vendor/{{ .Data.global.org}}/{{ .Data.global.name }}'
+    path: ''
     composer:
       transform: |
         {

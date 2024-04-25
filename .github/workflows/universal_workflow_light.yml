@@ -298,11 +298,13 @@ jobs:
           for PREFIX in ${PREFIXES}; do
             VAR="runscript_${PREFIX}_path"
             COMPOSER_PATH="${!VAR}"
-            echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
-            docker compose ${{ steps.isltp.outputs.install_shop_with_modules_container_method }} -T \
-            ${{ steps.isltp.outputs.install_shop_with_modules_container_options }} \
-              ${{ steps.isltp.outputs.install_shop_with_modules_container_name }} \
-              composer update ${{ steps.isltp.outputs.install_shop_with_modules_composer_update_options}} -d "/var/www/${COMPOSER_PATH}"
+            if [ -n "${COMPOSER_PATH}" ]; then
+              echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
+              docker compose ${{ steps.isltp.outputs.install_shop_with_modules_container_method }} -T \
+              ${{ steps.isltp.outputs.install_shop_with_modules_container_options }} \
+                ${{ steps.isltp.outputs.install_shop_with_modules_container_name }} \
+                composer update ${{ steps.isltp.outputs.install_shop_with_modules_composer_update_options}} -d "/var/www/${COMPOSER_PATH}"
+            fi
           done
 
       - name: Generate debugging script for running composer for each module
@@ -315,7 +317,8 @@ jobs:
           for PREFIX in ${PREFIXES}; do
             VAR="runscript_${PREFIX}_path"
             COMPOSER_PATH="${!VAR}"
-            cat >>debug/debug.sh <<EODS
+            if [ -n "${COMPOSER_PATH}" ]; then
+              cat >>debug/debug.sh <<EODS
             echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
             docker compose ${{ steps.isltp.outputs.install_shop_with_modules_container_method }} -T \
             ${{ steps.isltp.outputs.install_shop_with_modules_container_options }} \
@@ -323,6 +326,7 @@ jobs:
               ${{ steps.isltp.outputs.install_shop_with_modules_container_name }} \
               composer update ${{ steps.isltp.outputs.install_shop_with_modules_composer_update_options}}
           EODS
+            fi
           done
 
       - name: 'Stop shop for preparedShop cache'
@@ -370,20 +374,9 @@ jobs:
           echo -e "\033[0;35m### Starting containers\033[0m"
           make up
 
-      - name: Run custom scripts
-        # yamllint disable-line rule:line-length
-        if: ${{ steps.isltp.outputs.install_shop_with_modules_custom_script != '' || steps.isltp.outputs.install_shop_with_modules_custom_script_container != '' }}
-        uses: 'OXID-eSales/github-actions/run_custom_scripts@v0'
-        with:
-          container_name: ${{ steps.isltp.outputs.install_shop_with_modules_container_name }}
-          container_options: ${{ steps.isltp.outputs.install_shop_with_modules_container_options }}
-          container_method: ${{ steps.isltp.outputs.install_shop_with_modules_container_method }}
-          custom_script: ${{ steps.isltp.outputs.install_shop_with_modules_custom_script }}
-          custom_script_container: ${{ steps.isltp.outputs.install_shop_with_modules_custom_script_container }}
-          debug: ${{ needs.init.outputs.debug }}
-
       - name: 'Install shop'
         id: install_shop
+        if: ${{ steps.isltp.outputs.install_shop_with_modules_skip_shop_installation == false }}
         uses: 'OXID-eSales/github-actions/install_shop@v0'
         with:
           container_name: ${{ steps.isltp.outputs.install_shop_with_modules_container_name }}
