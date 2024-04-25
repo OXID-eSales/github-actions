@@ -15,8 +15,6 @@ install_shop_with_modules:
       files.txt
 
 runscript: &runscript
-  matrix:
-    script: 'skip'
   component:
     path: ''
   deprecated:
@@ -34,8 +32,6 @@ runscript: &runscript
 
 runslim:
   <<: *runscript
-  matrix:
-    script: 'skip'
 
 sonarcloud:
   matrix:
