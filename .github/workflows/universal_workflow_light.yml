@@ -376,7 +376,7 @@ jobs:
 
       - name: 'Install shop'
         id: install_shop
-        if: ${{ steps.isltp.outputs.install_shop_with_modules_skip_shop_installation == false }}
+        if: ${{ steps.isltp.outputs.install_shop_with_modules_skip_shop_installation == 'false' }}
         uses: 'OXID-eSales/github-actions/install_shop@v0'
         with:
           container_name: ${{ steps.isltp.outputs.install_shop_with_modules_container_name }}
