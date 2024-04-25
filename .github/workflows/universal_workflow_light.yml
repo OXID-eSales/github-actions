@@ -395,6 +395,18 @@ jobs:
           output_artifact: '${{ steps.isltp.outputs.install_shop_with_modules_output_artifact_prefix }}-${{steps.istn.outputs.matrix_suffix}}'
           debug: ${{ needs.init.outputs.debug }}
 
+      - name: Run custom scripts
+        # yamllint disable-line rule:line-length
+        if: ${{ steps.isltp.outputs.install_shop_with_modules_custom_script != '' || steps.isltp.outputs.install_shop_with_modules_custom_script_container != '' }}
+        uses: 'OXID-eSales/github-actions/run_custom_scripts@v0'
+        with:
+          container_name: ${{ steps.isltp.outputs.install_shop_with_modules_container_name }}
+          container_options: ${{ steps.isltp.outputs.install_shop_with_modules_container_options }}
+          container_method: ${{ steps.isltp.outputs.install_shop_with_modules_container_method }}
+          custom_script: ${{ steps.isltp.outputs.install_shop_with_modules_custom_script }}
+          custom_script_container: ${{ steps.isltp.outputs.install_shop_with_modules_custom_script_container }}
+          debug: ${{ needs.init.outputs.debug }}
+
       - name: 'Stop shop'
         if: ${{ always() }}
         uses: 'OXID-eSales/github-actions/stop_shop@v0'
