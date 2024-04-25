@@ -3,6 +3,7 @@ install_shop_with_modules:
     prepared_shop: false
   container:
     options: '-e SHOP_PATH=vendor/{{ .Data.global.org }}/{{ .Data.global.name }}/source'
+  skip_shop_installation: true
   output:
     files: |
       docker-compose.yml
