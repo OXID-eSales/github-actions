@@ -48,10 +48,13 @@ runs:
         # generate_report: Process job results for slack
         COMPACT_FILE="compact_slack_reports/compact.md"
         SKIPPED_EMOJI=':white_circle:'
-        SKIPPED_URL=
+        SKIPPED_URL='https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/26aa.png'
         SUCCESS_EMOJI=':white_check_mark:'
+        SUCCESS_EMOJI='https://emoji.slack-edge.com/T03LW1LM5/party/e36e56e7a1febcfc.gif'
         CANCELLED_EMOJI=':black_circle:'
+        CANCELLED_URL='https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/26ab.png'
         FAILURE_EMOJI=':x:'
+        FAILURE_URL='https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/1f622.png'
         STATUS=(skipped success cancelled failure)
         CUMULATED=0
         OVERALL=0
