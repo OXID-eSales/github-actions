@@ -81,10 +81,10 @@ runs:
         # install_module: Locate Console
         cd source
         if [ -f 'bin/oe-console' ]; then
-          OE_CONSOLE='bin/bin/oe-console'
+          OE_CONSOLE='bin/oe-console'
         else
-          if [ -f 'vendor/bin/bin/oe-console' ]; then
-            OE_CONSOLE='vendor/bin/bin/oe-console'
+          if [ -f 'vendor/bin/oe-console' ]; then
+            OE_CONSOLE='vendor/bin/oe-console'
           else
             echo -e "\033[0;31mCan't find oe-console in bin or vendor/bin!\033[0m"
             exit 1
