@@ -132,7 +132,7 @@ jobs:
         run: |
           cp "${GITHUB_OUTPUT}" generated_output.txt
           cp "${GITHUB_ENV}" generated_env.txt
-          echo 'title=${{steps.ltp.outputs.global_title}}'|sed -E 's#"|,|:|<|>|\||\*|\?|\/|\\#_#g' | tee -a "${GITHUB_OUTPUT}"
+          echo 'title=${{steps.ltp.outputs.global_title}}'|sed -E 's#~|"|,|:|<|>|\||\*|\?|\/|\\#_#g' -e 's|__|_|g'| tee -a "${GITHUB_OUTPUT}"
 
       - name: 'Create first testplan archive'
         if: always()
@@ -533,8 +533,8 @@ jobs:
           EOF
           done
           SUFFIX="${PREFIX}_${SCRIPT}-${{ steps.rstn.outputs.matrix_suffix }}"
-          echo "runscript_suffix=${SUFFIX}"|sed -E 's#"|,|:|<|>|\||\*|\?|\/|\\#_#g' | tee -a "${GITHUB_OUTPUT}"
-          echo "runscript_title=${PREFIX}_${SCRIPT}"|sed -E 's#"|,|:|<|>|\||\*|\?|\/|\\#_#g' | tee -a "${GITHUB_OUTPUT}"
+          echo "runscript_suffix=${SUFFIX}"|sed -E 's#~|"|,|:|<|>|\||\*|\?|\/|\\#_#g' -e 's|__|_|g'| tee -a "${GITHUB_OUTPUT}"
+          echo "runscript_title=${PREFIX}_${SCRIPT}"|sed -E 's#~|"|,|:|<|>|\||\*|\?|\/|\\#_#g' -e 's|__|_|g'| tee -a "${GITHUB_OUTPUT}"
 
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v4'
