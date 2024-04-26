@@ -104,7 +104,9 @@ runs:
           # diff -y --color=always "${FILE}.orig" "${FILE}" || true
         done
         # remove leading comma when adding this
-        echo "PHPUNIT_PARAM=-Dsonar.php.tests.reportPath=${PHPUNIT_FILES:1}"| tee -a "${GITHUB_ENV}"
+        if [ -n "${PHPUNIT_FILES:1}" ]; then
+          echo "PHPUNIT_PARAM=-Dsonar.php.tests.reportPath=${PHPUNIT_FILES:1}"| tee -a "${GITHUB_ENV}"
+        fi
 
     - name: Update consolidated coverage artifact
       uses: 'OXID-eSales/github-actions/consolidate_artifacts@v4'

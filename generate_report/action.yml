@@ -46,7 +46,9 @@ runs:
       shell: bash
       run: |
         # generate_report: Process job results for slack
+        COMPACT_FILE="compact_slack_reports/compact.md"
         SKIPPED_EMOJI=':white_circle:'
+        SKIPPED_URL=
         SUCCESS_EMOJI=':white_check_mark:'
         CANCELLED_EMOJI=':black_circle:'
         FAILURE_EMOJI=':x:'
@@ -55,7 +57,7 @@ runs:
         OVERALL=0
         LAST_GROUP=''
         TEST_FILES=$(find job_status/ -type f -iname "*.txt"|sort)
-        mkdir -p slack_reports
+        mkdir -p slack_reports compact_slack_reports
         for FILE in ${TEST_FILES}; do
           F=$(echo "${FILE}" | sed -e 's|^.*job_status/||' -e 's|\.txt$ ||')
           IFS='-' read -r -a PARTS <<< "${F}"
