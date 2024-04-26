@@ -1,8 +1,11 @@
 install_shop_with_modules:
   cache:
     prepared_shop: false
-  container:
-    options: '-e SHOP_PATH=vendor/{{ .Data.global.org }}/{{ .Data.global.name }}/source'
+  git:
+    shop_url: 'https://github.com/{{ .Data.global.repo }}.git'
+  composer:
+    root_url: ''
+    transform: ''
   skip_shop_installation: true
   output:
     files: |
@@ -36,7 +39,7 @@ runslim:
 sonarcloud:
   matrix:
     testplan: 'skip'
-  strip_path: '/var/www/vendor/{{ print .Data.global.org }}/{{ print .Data.global.name}}/'
+  strip_path: '/var/www/{{ print .Data.global.org }}/{{ print .Data.global.name}}/'
 
 finish:
   slack_title: '{{ print .Data.global.name}} ({{ .Data.global.git.shop_ref }}) by {{ .Github.Actor }}'
