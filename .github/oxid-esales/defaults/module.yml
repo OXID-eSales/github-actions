@@ -35,6 +35,7 @@ runslim:
   <<: *runscript
 
 sonarcloud:
+  strip_path: '/var/www/vendor/{{ .Data.global.org}}/{{ .Data.global.name }}/'
   parameters: |
     -Dsonar.language=php
     -Dsonar.scm.provider=git

@@ -59,7 +59,7 @@ runs:
         Testplan: ${{ inputs.TESTPLAN }}
 
         EOF
-
+        echo '${{inputs.title}} (<${{ inputs.job }}|Summary>) ' >compact_slack_report.md
     - name: Start debug script
       id: debug
       shell: bash
@@ -176,6 +176,7 @@ runs:
           slack_reports/000-header.md
           debug/000-start.sh
           debug/999-end.sh
+          compact_slack_report.md
           ${{ inputs.files }}
         if-no-files-found: ignore
         retention-days: 1

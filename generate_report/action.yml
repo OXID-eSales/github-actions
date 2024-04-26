@@ -46,15 +46,11 @@ runs:
       shell: bash
       run: |
         # generate_report: Process job results for slack
-        COMPACT_FILE="compact_slack_reports/compact.md"
+        COMPACT_FILE="compact_slack_report.md"
         SKIPPED_EMOJI=':white_circle:'
-        SKIPPED_URL='https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/26aa.png'
         SUCCESS_EMOJI=':white_check_mark:'
-        SUCCESS_EMOJI='https://emoji.slack-edge.com/T03LW1LM5/party/e36e56e7a1febcfc.gif'
         CANCELLED_EMOJI=':black_circle:'
-        CANCELLED_URL='https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/26ab.png'
         FAILURE_EMOJI=':x:'
-        FAILURE_URL='https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/1f622.png'
         STATUS=(skipped success cancelled failure)
         CUMULATED=0
         OVERALL=0
@@ -98,6 +94,7 @@ runs:
             echo -n "- ${PHASE}/${JOB}: ${TITLE} " >"${SLACK_FILE}"
           fi
           echo -n "${!JOB_EMOJI} " >>"${SLACK_FILE}"
+          echo -n "${!JOB_EMOJI} " >>"${COMPACT_FILE}"
 
         done
         SLACK_FILE="slack_reports/${PRIORITY}-${PHASE}-${JOB}.md"
@@ -127,7 +124,8 @@ runs:
           cat "${FILE}" >>"slack_report-${GROUP}.md"
         done
         TITLE='${{inputs.title}} ${{ steps.process_slack.outputs.overall_status}}'
-        cat >slack.json <<EOF
+        if [ '${{ inputs.compact }}' == 'false' ]; then
+          cat >slack.json <<EOF
         {
           "blocks": [
             {
@@ -139,9 +137,9 @@ runs:
               }
             }
         EOF
-        for GROUP in ${GROUPLIST}; do
-          MARKDOWN=$(cat "slack_report-${GROUP}.md"|sed 's/$/\\n/g' | tr -d '\n')
-          cat >>slack.json <<EOF
+          for GROUP in ${GROUPLIST}; do
+            MARKDOWN=$(cat "slack_report-${GROUP}.md"|sed 's/$/\\n/g' | tr -d '\n')
+            cat >>slack.json <<EOF
             ,
             {
               "type": "section",
@@ -154,12 +152,30 @@ runs:
             "type": "divider"
             }
         EOF
-        done
-        cat >>slack.json <<EOF
+          done
+          cat >>slack.json <<EOF
           ]
         }
         EOF
-
+        else
+          MARKDOWN=$(cat "compact_slack_report.md"|sed 's/$/\\n/g' | tr -d '\n')
+          cat >slack.json <<EOF
+        {
+          "blocks": [
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "${MARKDOWN}"
+              }
+            },
+            {
+            "type": "divider"
+            }
+          ]
+        }
+        EOF
+        fi
     - name: 'Generate cache objects list'
       id: cache_list
       shell: bash
