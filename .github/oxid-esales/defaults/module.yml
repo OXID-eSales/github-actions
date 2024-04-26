@@ -28,7 +28,6 @@ install_shop_with_modules:
     {{ .Data.install_shop_with_modules.custom_script_container }}
 
 runscript: &runscript
-  matrix:
   module:
     path: 'vendor/{{ .Data.global.org}}/{{ .Data.global.name }}'
 
