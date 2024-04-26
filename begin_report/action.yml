@@ -59,7 +59,7 @@ runs:
         Testplan: ${{ inputs.TESTPLAN }}
 
         EOF
-        echo '${{inputs.title}} (<${{ inputs.job }}|Summary>) ' >compact_slack_report.md
+        echo -n '${{inputs.title}} (<${{ inputs.job }}|Summary>) ' >compact_slack_report.md
     - name: Start debug script
       id: debug
       shell: bash
