@@ -105,7 +105,6 @@ runs:
         ${{ inputs.debug }}
         rm .composer_merge.tmp.json
         cat '${{ inputs.file }}'
-
         if [ '${{ inputs.update }}' == 'true' ]; then
           echo -e "\033[0;35m### Running composer update with ${{ inputs.update_options }}\033[0m"
           docker compose ${{ inputs.container_method }} -T \

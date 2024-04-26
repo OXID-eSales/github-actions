@@ -105,6 +105,9 @@ jobs:
           EOF
           if [ '${{ github.event_name }}' == 'pull_request' ]; then
             REF=$(echo '{{ .Github.HeadRef }}'|sed -e 's|/refs/heads/||')
+            # This is the git ref name
+            sed -e "s|safe_ref_name:.*|safe_ref_name: ${REF}|" -i '${{ inputs.plan_folder }}/defaults/defaults_light.yml'
+            # This is the same for composer but with an added dev- prefix
             sed -e "s|ref_name: dev-.*|ref_name: dev-${REF}|" -i '${{ inputs.plan_folder }}/defaults/defaults_light.yml'
           fi
 
@@ -202,7 +205,6 @@ jobs:
       runslim_matrix_php: ${{ steps.ltp.outputs.runslim_matrix_php }}
       runslim_matrix_script: ${{ steps.ltp.outputs.runslim_matrix_script }}
       runslim_max_parallel: ${{ steps.ltp.outputs.runslim_max_parallel }}
-
       # sonarcloud variables
       sonarcloud_matrix_mysql: ${{ steps.ltp.outputs.sonarcloud_matrix_mysql }}
       sonarcloud_matrix_php: ${{ steps.ltp.outputs.sonarcloud_matrix_php }}
@@ -271,6 +273,8 @@ jobs:
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
           git_sdk_url: ${{ steps.isltp.outputs.install_shop_with_modules_git_sdk_url }}
           git_sdk_ref: ${{ steps.isltp.outputs.install_shop_with_modules_git_sdk_ref }}
+          git_shop_url: ${{ steps.isltp.outputs.install_shop_with_modules_git_shop_url }}
+          git_shop_ref: ${{ steps.isltp.outputs.install_shop_with_modules_git_shop_ref }}
           compilation_url: ${{ steps.isltp.outputs.install_shop_with_modules_composer_root_url }}
           github_ref_name: ${{ github.ref_name }}
           php: ${{ matrix.php }}
@@ -290,16 +294,17 @@ jobs:
       - name: Run composer for each module
         shell: bash
         run: |
-          PREFIXES=$(echo '${{steps.isltp.outputs.runscript_matrix_script}}'|tr ',' '\n'|tr -d '[]"'|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
+          PREFIXES=$(echo '${{steps.isltp.outputs.runscript_matrix_script}}'|tr ',' '\n'|tr -d '[]" '|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
           for PREFIX in ${PREFIXES}; do
             VAR="runscript_${PREFIX}_path"
             COMPOSER_PATH="${!VAR}"
-            echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
-            docker compose ${{ steps.isltp.outputs.install_shop_with_modules_container_method }} -T \
-            ${{ steps.isltp.outputs.install_shop_with_modules_container_options }} \
-              --workdir "/var/www/${COMPOSER_PATH}" \
-              ${{ steps.isltp.outputs.install_shop_with_modules_container_name }} \
-              composer update ${{ steps.isltp.outputs.install_shop_with_modules_composer_update_options}}
+            if [ -n "${COMPOSER_PATH}" ]; then
+              echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
+              docker compose ${{ steps.isltp.outputs.install_shop_with_modules_container_method }} -T \
+              ${{ steps.isltp.outputs.install_shop_with_modules_container_options }} \
+                ${{ steps.isltp.outputs.install_shop_with_modules_container_name }} \
+                composer update ${{ steps.isltp.outputs.install_shop_with_modules_composer_update_options}} -d "/var/www/${COMPOSER_PATH}"
+            fi
           done
 
       - name: Generate debugging script for running composer for each module
@@ -307,11 +312,13 @@ jobs:
         shell: bash
         run: |
           echo "banner 'Run composer for each module'" >>debug/debug.sh
-          PREFIXES=$(echo '${{steps.isltp.outputs.runscript_matrix_script}}'|tr ',' '\n'|tr -d '[]"'|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
+          PREFIXES=$(echo '${{steps.isltp.outputs.runscript_matrix_script}}'|tr ',' '\n'|tr -d '[]" '|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
+          echo -e "\033[0;35mUnique prefixes: ${PREFIXES}\033[0m"
           for PREFIX in ${PREFIXES}; do
             VAR="runscript_${PREFIX}_path"
             COMPOSER_PATH="${!VAR}"
-            cat >>debug/debug.sh <<EODS
+            if [ -n "${COMPOSER_PATH}" ]; then
+              cat >>debug/debug.sh <<EODS
             echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
             docker compose ${{ steps.isltp.outputs.install_shop_with_modules_container_method }} -T \
             ${{ steps.isltp.outputs.install_shop_with_modules_container_options }} \
@@ -319,6 +326,7 @@ jobs:
               ${{ steps.isltp.outputs.install_shop_with_modules_container_name }} \
               composer update ${{ steps.isltp.outputs.install_shop_with_modules_composer_update_options}}
           EODS
+            fi
           done
 
       - name: 'Stop shop for preparedShop cache'
@@ -368,6 +376,7 @@ jobs:
 
       - name: 'Install shop'
         id: install_shop
+        if: ${{ steps.isltp.outputs.install_shop_with_modules_skip_shop_installation == 'false' }}
         uses: 'OXID-eSales/github-actions/install_shop@v4'
         with:
           container_name: ${{ steps.isltp.outputs.install_shop_with_modules_container_name }}
@@ -549,7 +558,7 @@ jobs:
           transform: |
             ${{ steps.rt.outputs.runscript_composer_transform }}
           update: ${{ steps.rt.outputs.runscript_composer_update }}
-          update_options: ${{ steps.rt.outputs.runscript_composer_update_options }}
+          update_options: '${{ steps.rt.outputs.runscript_composer_update_options }} -d /var/www/${{ steps.rt.outputs.runscript_path }}'
           container_name: ${{ steps.rt.outputs.runscript_container_name }}
           container_options: ${{ steps.rt.outputs.runscript_container_options }}
           container_method: 'exec'
@@ -569,7 +578,7 @@ jobs:
           token: ${{ github.token }}
 
       - name: 'Run runscript check'
-        uses: 'OXID-eSales/github-actions/run_composer_script@v4'
+        uses: 'OXID-eSales/github-actions/run_test_script@v4'
         with:
           script: ${{ steps.rt.outputs.runscript_script }}
           path: ${{ steps.rt.outputs.runscript_path }}
@@ -732,7 +741,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Run runslim check'
-        uses: 'OXID-eSales/github-actions/run_composer_script@v4'
+        uses: 'OXID-eSales/github-actions/run_test_script@v4'
         with:
           script: ${{ steps.rt.outputs.runslim_script }}
           path: ${{ steps.rt.outputs.runslim_path }}

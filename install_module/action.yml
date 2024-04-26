@@ -80,8 +80,18 @@ runs:
       run: |
         # install_module: Locate Console
         cd source
-        OE_CONSOLE=$(find . -iname "oe-console" -type f|head -1|sed -e "s|^$(pwd)/||")
+        if [ -f 'bin/oe-console' ]; then
+          OE_CONSOLE='bin/oe-console'
+        else
+          if [ -f 'vendor/bin/oe-console' ]; then
+            OE_CONSOLE='vendor/bin/oe-console'
+          else
+            echo -e "\033[0;31mCan't find oe-console in bin or vendor/bin!\033[0m"
+            exit 1
+          fi
+        fi
         echo "OE_CONSOLE=${OE_CONSOLE}"|tee -a "${GITHUB_ENV}"
+
 
     - name: Configure enterprise credentials
       shell: bash

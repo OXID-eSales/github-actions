@@ -405,7 +405,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: Run custom scripts
-        if: ${{ needs.init.outputs.install_shop_custom_script != '' && needs.init.outputs.install_shop_custom_script_container != '' }}
+        if: ${{ needs.init.outputs.install_shop_custom_script != '' || needs.init.outputs.install_shop_custom_script_container != '' }}
         uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
         with:
           container_name: ${{ needs.init.outputs.install_shop_container_name }}
@@ -605,7 +605,7 @@ jobs:
 
       - name: Run custom scripts
         # yamllint disable-line rule:line-length
-        if: ${{ matrix.testplan != 'skip' && steps.install_module_testplan.outputs.install_module_custom_script != '' && steps.install_module_testplan.outputs.install_module_custom_script_container != '' }}
+        if: ${{ matrix.testplan != 'skip' && (steps.install_module_testplan.outputs.install_module_custom_script != '' || steps.install_module_testplan.outputs.install_module_custom_script_container != '') }}
         uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
         with:
           container_name: ${{ steps.install_module_testplan.outputs.install_module_container_name }}
@@ -744,7 +744,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: Run custom scripts
-        if: ${{ steps.phpunit_testplan.outputs.phpunit_custom_script != '' && steps.phpunit_testplan.outputs.phpunit_custom_script_container != '' }}
+        if: ${{ steps.phpunit_testplan.outputs.phpunit_custom_script != '' || steps.phpunit_testplan.outputs.phpunit_custom_script_container != '' }}
         uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
         with:
           container_name: ${{ steps.phpunit_testplan.outputs.phpunit_container_name }}
@@ -880,7 +880,7 @@ jobs:
 
       - name: Run custom scripts
         # yamllint disable-line rule:line-length
-        if: ${{ steps.codeception_testplan.outputs.codeception_custom_script != '' && steps.codeception_testplan.outputs.codeception_custom_script_container != '' }}
+        if: ${{ steps.codeception_testplan.outputs.codeception_custom_script != '' || steps.codeception_testplan.outputs.codeception_custom_script_container != '' }}
         uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
         with:
           container_name: ${{ steps.codeception_testplan.outputs.codeception_container_name }}
@@ -1020,7 +1020,7 @@ jobs:
 
 
       - name: Run custom scripts
-        if: ${{ steps.runtest_testplan.outputs.runtest_custom_script != '' && steps.runtest_testplan.outputs.runtest_custom_script_container != '' }}
+        if: ${{ steps.runtest_testplan.outputs.runtest_custom_script != '' || steps.runtest_testplan.outputs.runtest_custom_script_container != '' }}
         uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
         with:
           container_name: ${{ steps.runtest_testplan.outputs.runtest_container_name }}
@@ -1159,7 +1159,7 @@ jobs:
           github_token: ${{ secrets.enterprise_github_token || github.token }}
 
       - name: Run custom scripts
-        if: ${{ steps.phpmd_testplan.outputs.phpmd_custom_script != '' && steps.phpmd_testplan.outputs.phpmd_custom_script_container != '' }}
+        if: ${{ steps.phpmd_testplan.outputs.phpmd_custom_script != '' || steps.phpmd_testplan.outputs.phpmd_custom_script_container != '' }}
         uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
         with:
           container_name: ${{ steps.phpmd_testplan.outputs.phpmd_container_name }}
@@ -1280,7 +1280,7 @@ jobs:
           github_token: ${{ secrets.enterprise_github_token || github.token }}
 
       - name: Run custom scripts
-        if: ${{ steps.phpstan_testplan.outputs.phpstan_custom_script != '' && steps.phpstan_testplan.outputs.phpstan_custom_script_container != '' }}
+        if: ${{ steps.phpstan_testplan.outputs.phpstan_custom_script != '' || steps.phpstan_testplan.outputs.phpstan_custom_script_container != '' }}
         uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
         with:
           container_name: ${{ steps.phpstan_testplan.outputs.phpstan_container_name }}
@@ -1540,7 +1540,7 @@ jobs:
           github_token: ${{ secrets.enterprise_github_token || github.token }}
 
       - name: Run custom scripts
-        if: ${{ steps.styles_testplan.outputs.styles_custom_script != '' && steps.styles_testplan.outputs.styles_custom_script_container != '' }}
+        if: ${{ steps.styles_testplan.outputs.styles_custom_script != '' || steps.styles_testplan.outputs.styles_custom_script_container != '' }}
         uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
         with:
           container_name: ${{ steps.styles_testplan.outputs.styles_container_name }}

@@ -92,6 +92,11 @@ global:
     # Branch to check out for modules/plugins etc
     default_ref: &default_ref 'b-8.0.x'
 
+    # This definition can be used instead of {{ .Github.RefName }}. In case
+    # of a pull request, the ref name is something like merge/42 which confuses
+    # composer. In the workflow, we then replace this with a working reference
+    safe_ref_name: '{{ .Github.RefName }}'
+
   # When running on a self hosted runner with access to a local s3 cache:
   # Set the following secrets:
   # - secrets.CACHE_ENDPOINT
@@ -238,6 +243,8 @@ install_shop_with_modules:
   # Run custom script inside the container like 'bin/oe-console oe:setup:demodata'
   custom_script_container: ''
 
+  # Skip the shop installation logic (not needed for components)
+  skip_shop_installation: false
   # Exporting an artifact with Configuration files for the shop setup
   output:
     files: |
@@ -337,16 +344,6 @@ sonarcloud:
     -Dsonar.language=php
     -Dsonar.scm.provider=git
     -Dsonar.sources=source
-    -Dsonar.tests=tests
-
-  # DEPRECATED: (we use a separate config for this now) for the internal run, leave the project key empty if you don't have a need
-  # for this second run with different settings
-  internal_project_key: 'OXID-eSales_oxideshop_ce_internal'
-  internal_project_name: 'oxideshop_ce_internal'
-  internal_parameters: |
-    -Dsonar.language=php
-    -Dsonar.scm.provider=git
-    -Dsonar.sources=source/Internal
     -Dsonar.tests=tests
 
 # yamllint validates the github actions/testplan yaml files
