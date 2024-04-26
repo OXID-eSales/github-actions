@@ -124,7 +124,10 @@ jobs:
         run: |
           cp "${GITHUB_OUTPUT}" generated_output.txt
           cp "${GITHUB_ENV}" generated_env.txt
-          echo 'title=${{steps.ltp.outputs.global_title}}'|sed -E 's#\~|"|,|:|<|>|\||\*|\?|\/|\\#_#g' -e 's|__|_|g'| tee -a "${GITHUB_OUTPUT}"
+          echo 'title=${{steps.ltp.outputs.global_title}}'| \
+            sed -E 's#\~|"|,|:|<|>|\||\*|\?|\/|\\#_#g' | \
+            sed -e 's#\-\-*#-#' -e 's#\_\_*#_#g'| \
+            tee -a "${GITHUB_OUTPUT}"
 
       - name: 'Create first testplan archive'
         if: always()
