@@ -174,8 +174,8 @@ runs:
       run: |
         # prepare_shop: Clone testing environment master
         REF='${{ inputs.git_sdk_ref }}'
-        git config  advice.detachedHead false
         git init
+        git config advice.detachedHead false
         git remote add origin ${{ inputs.git_sdk_url }}
         git -c protocol.version=2 fetch \
           --no-tags --prune --no-recurse-submodules \
