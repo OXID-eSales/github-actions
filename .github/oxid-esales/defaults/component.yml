@@ -36,10 +36,5 @@ runscript: &runscript
 runslim:
   <<: *runscript
 
-sonarcloud:
-  matrix:
-    testplan: 'skip'
-  strip_path: '/var/www/{{ print .Data.global.org }}/{{ print .Data.global.name}}/'
-
 finish:
   slack_title: '{{ print .Data.global.name}} ({{ .Data.global.git.shop_ref }}) by {{ .Github.Actor }}'

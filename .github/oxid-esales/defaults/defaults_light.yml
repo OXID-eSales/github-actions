@@ -346,16 +346,6 @@ sonarcloud:
     -Dsonar.sources=source
     -Dsonar.tests=tests
 
-  # DEPRECATED: (we use a separate config for this now) for the internal run, leave the project key empty if you don't have a need
-  # for this second run with different settings
-  internal_project_key: 'OXID-eSales_oxideshop_ce_internal'
-  internal_project_name: 'oxideshop_ce_internal'
-  internal_parameters: |
-    -Dsonar.language=php
-    -Dsonar.scm.provider=git
-    -Dsonar.sources=source/Internal
-    -Dsonar.tests=tests
-
 # yamllint validates the github actions/testplan yaml files
 yamllint:
   # Skip this part of the test run
