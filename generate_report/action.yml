@@ -166,7 +166,7 @@ runs:
               "type": "section",
               "text": {
                 "type": "mrkdwn",
-                "text": "${MARKDOWN}"
+                "text": "${MARKDOWN} :arrow_right: ${{ steps.process_slack.outputs.overall_status}}"
               }
             },
             {

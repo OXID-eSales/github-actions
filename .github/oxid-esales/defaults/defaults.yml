@@ -816,4 +816,7 @@ finish:
   matrix:
     php: *matrix_php
     mysql: *matrix_mysql
+  # This is used as a title for slack notifications
   slack_title: '{{ .Github.Workflow }} ({{ .Github.RefName }}) on {{ .Github.Repository }} by {{ .Github.Actor }}'
+  # Should we use the compact slack format onstead of the long one?
+  slack_compact: false

@@ -129,7 +129,7 @@ jobs:
       - name: 'Create first testplan archive'
         if: always()
         id: begin_report
-        uses: OXID-eSales/github-actions/begin_report@v4
+        uses: OXID-eSales/github-actions/begin_report@v0
         with:
           title: ${{ steps.ltp.outputs.finish_slack_title }}
           prefix: '${{ steps.post_ltp.outputs.title }}'
@@ -283,6 +283,7 @@ jobs:
       finish_matrix_php: ${{ steps.ltp.outputs.finish_matrix_php }}
       finish_skip: ${{ steps.ltp.outputs.finish_skip }}
       finish_slack_title: ${{ steps.ltp.outputs.finish_slack_title }}
+      finish_slack_compact: ${{ steps.ltp.outputs.finish_slack_compact }}
 
   prepare_shop:
     needs: init
@@ -1687,11 +1688,12 @@ jobs:
     steps:
       - name: 'Generate report'
         id: generate_report
-        uses: 'OXID-eSales/github-actions/generate_report@v4'
+        uses: 'OXID-eSales/github-actions/generate_report@v0'
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
           slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           title: '${{ needs.init.outputs.finish_slack_title }}'
+          compact: '${{ needs.init.outputs.finish_slack_compact }}'
           debug: ${{ inputs.debug }}
 
       - name: 'Checkout the repo for cleanup'
