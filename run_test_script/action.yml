@@ -74,19 +74,20 @@ runs:
         # run_test_script: Run shell script ${{ inputs.script }}
         ${{ inputs.debug }}
         mkdir -p source/${{ inputs.path }}/tests/Output source/${{ inputs.path }}/tests/Reports
-        if [ -d "source/${{ inputs.path }}/tests/Scripts" ]; then
-          FOLDER="Scripts"
-        else
-          FOLDER="scripts"
+        SCRIPT=$(echo '${{ inputs.script }}'|sed -e "s|^~/|tests/Scripts|")
+        if [ ! -f "source/${{ inputs.path }}/${SCRIPT}" ]; then
+          SCRIPT=$(echo '${{ inputs.script }}'|sed -e "s|^~/|tests/scripts|")
         fi
-        SCRIPT=$(echo '${{ inputs.script }}'|sed -e "s|^~|./tests/${FOLDER}|")
+        if [ ! -f "source/${{ inputs.path }}/${SCRIPT}" ]; then
+          echo -e "\033[0;31m###  Could not find source/${{ inputs.path }}/${SCRIPT} ###\033[0m"
+        fi
         chmod a+x "source/${{ inputs.path }}/${SCRIPT}"
         echo -e "\033[0;35m###  Run ${SCRIPT} in ${{ inputs.path }} ###\033[0m"
         docker compose ${{ inputs.container_method }} -T \
           ${{ inputs.container_options }} \
           --workdir '/var/www/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
-          ${SCRIPT}
+          /var/www/${{ inputs.path }}/${SCRIPT}
 
     - name: Output php error log
       if: always()
