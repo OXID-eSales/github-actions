@@ -587,7 +587,7 @@ jobs:
           token: ${{ github.token }}
 
       - name: 'Run runscript check'
-        uses: 'OXID-eSales/github-actions/run_test_script@v4'
+        uses: 'OXID-eSales/github-actions/run_test_script@v0'
         with:
           script: ${{ steps.rt.outputs.runscript_script }}
           path: ${{ steps.rt.outputs.runscript_path }}
