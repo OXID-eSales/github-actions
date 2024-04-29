@@ -119,12 +119,11 @@ jobs:
         if: always()
         run: |
           RESULT=0
-          SUMMARY=""
           YML_FILES=$(find . -iname '*.yml')
           for YML in ${YML_FILES}; do
             COUNTERPART=$(echo "${YML}"| sed -e 's|\.yml$|.yaml|')
             echo "Checking, if ${YML} matches ${COUNTERPART}"
-            if diff -y --color=always "${YML}" "${COUNTERPART}"; then
+            if diff -y --suppress-common-lines --color=always "${YML}" "${COUNTERPART}"; then
               echo -e "\033[0;31mError: Files ${YML} and ${COUNTERPART} differ!\033[0m"
               RESULT=1
             fi
