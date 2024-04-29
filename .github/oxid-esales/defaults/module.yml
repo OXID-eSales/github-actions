@@ -34,5 +34,13 @@ runscript: &runscript
 runslim:
   <<: *runscript
 
+sonarcloud:
+  strip_path: '/var/www/vendor/{{ .Data.global.org}}/{{ .Data.global.name }}/'
+  parameters: |
+    -Dsonar.language=php
+    -Dsonar.scm.provider=git
+    -Dsonar.sources=src
+    -Dsonar.tests=tests
+
 finish:
   slack_title: '{{ print .Data.global.name }} ({{ .Data.global.git.shop_ref }}) by {{ .Github.Actor }}'

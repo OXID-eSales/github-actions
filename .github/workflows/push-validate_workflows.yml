@@ -124,4 +124,5 @@ jobs:
           prefix: 'validate'
           slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           title: 'Workflow validation on ${{ github.repository }} by ${{ github.actor }}'
+          compact: true
           debug: false

@@ -124,7 +124,10 @@ jobs:
         run: |
           cp "${GITHUB_OUTPUT}" generated_output.txt
           cp "${GITHUB_ENV}" generated_env.txt
-          echo 'title=${{steps.ltp.outputs.global_title}}'|sed -E 's#"|,|:|<|>|\||\*|\?|\/|\\#_#g' | tee -a "${GITHUB_OUTPUT}"
+          echo 'title=${{steps.ltp.outputs.global_title}}'| \
+            sed -E 's#\~|"|,|:|<|>|\||\*|\?|\/|\\#_#g' | \
+            sed -e 's#\-\-*#-#' -e 's#\_\_*#_#g'| \
+            tee -a "${GITHUB_OUTPUT}"
 
       - name: 'Create first testplan archive'
         if: always()
@@ -283,6 +286,7 @@ jobs:
       finish_matrix_php: ${{ steps.ltp.outputs.finish_matrix_php }}
       finish_skip: ${{ steps.ltp.outputs.finish_skip }}
       finish_slack_title: ${{ steps.ltp.outputs.finish_slack_title }}
+      finish_slack_compact: ${{ steps.ltp.outputs.finish_slack_compact }}
 
   prepare_shop:
     needs: init
@@ -1692,6 +1696,7 @@ jobs:
           prefix: '${{ needs.init.outputs.global_title }}'
           slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           title: '${{ needs.init.outputs.finish_slack_title }}'
+          compact: '${{ needs.init.outputs.finish_slack_compact }}'
           debug: ${{ inputs.debug }}
 
       - name: 'Checkout the repo for cleanup'
