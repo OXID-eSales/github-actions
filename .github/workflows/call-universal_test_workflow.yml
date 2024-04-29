@@ -132,7 +132,7 @@ jobs:
       - name: 'Create first testplan archive'
         if: always()
         id: begin_report
-        uses: OXID-eSales/github-actions/begin_report@v0
+        uses: OXID-eSales/github-actions/begin_report@v4
         with:
           title: ${{ steps.ltp.outputs.finish_slack_title }}
           prefix: '${{ steps.post_ltp.outputs.title }}'
@@ -1691,7 +1691,7 @@ jobs:
     steps:
       - name: 'Generate report'
         id: generate_report
-        uses: 'OXID-eSales/github-actions/generate_report@v0'
+        uses: 'OXID-eSales/github-actions/generate_report@v4'
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
           slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}

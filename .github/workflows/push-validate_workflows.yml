@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: 'Write Report Header'
         if: always()
-        uses: OXID-eSales/github-actions/begin_report@v0
+        uses: OXID-eSales/github-actions/begin_report@v4
         with:
           prefix: 'validate'
           title: 'Workflow validation on ${{ github.repository }} by ${{ github.actor }}'
@@ -119,7 +119,7 @@ jobs:
       SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"
     steps:
       - name: 'Output report'
-        uses: 'OXID-eSales/github-actions/generate_report@v0'
+        uses: 'OXID-eSales/github-actions/generate_report@v4'
         with:
           prefix: 'validate'
           slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
