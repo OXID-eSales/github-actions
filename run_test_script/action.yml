@@ -74,9 +74,9 @@ runs:
         # run_test_script: Run shell script ${{ inputs.script }}
         ${{ inputs.debug }}
         mkdir -p source/${{ inputs.path }}/tests/Output source/${{ inputs.path }}/tests/Reports
-        SCRIPT=$(echo '${{ inputs.script }}'|sed -e "s|^~/|tests/Scripts|")
+        SCRIPT=$(echo '${{ inputs.script }}'|sed -e "s|^~/|tests/Scripts/|")
         if [ ! -f "source/${{ inputs.path }}/${SCRIPT}" ]; then
-          SCRIPT=$(echo '${{ inputs.script }}'|sed -e "s|^~/|tests/scripts|")
+          SCRIPT=$(echo '${{ inputs.script }}'|sed -e "s|^~/|tests/scripts/|")
         fi
         if [ ! -f "source/${{ inputs.path }}/${SCRIPT}" ]; then
           echo -e "\033[0;31m###  Could not find source/${{ inputs.path }}/${SCRIPT} ###\033[0m"
