@@ -108,12 +108,70 @@ jobs:
           status: ${{job.status}}
           debug: false
 
+  matchingyaml:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Run Check that yaml files always match theiy yml counterpart
+        if: always()
+        run: |
+          RESULT=0
+          YML_FILES=$(find . -iname '*.yml')
+          for YML in ${YML_FILES}; do
+            COUNTERPART="${YML//\.yml$/.yaml}"
+            echo "Checking, if ${YML} matches ${COUNTERPART}"
+            if diff -y --suppress-common-lines --color=always "${YML}" "${COUNTERPART}"; then
+              echo -e "\033[0;32mOK: Files ${YML} and ${COUNTERPART} match!${LINE}"
+            else
+              echo -e "\033[0;31mError: Files ${YML} and ${COUNTERPART} differ!\033[0m"
+              RESULT=1
+            fi
+          done
+          YAML_FILES=$(find . -iname '*.yaml')
+          for YAML in ${YAML_FILES}; do
+            COUNTERPART="${YAML//\.yaml$/.yml/}"
+            if [ ! -f "${COUNTERPART}" ]; then
+              echo "No matching counterpart for ${YAML}"
+            else
+              echo "Checking, if ${YAML} matches ${COUNTERPART}"
+              if diff -y --suppress-common-lines --color=always "${YAML}" "${COUNTERPART}"; then
+                echo -e "\033[0;32mOK: Files ${YML} and ${COUNTERPART} match!${LINE}"
+              else
+                echo -e "\033[0;31mError: Files ${YAML} and ${COUNTERPART} differ!\033[0m"
+                RESULT=1
+              fi
+            fi
+          done
+          if [ ${RESULT} -ne 0 ]; then
+            echo -e "\033[0;31mCheck failed, there are mismatches between yaml and yml files!\033[0m"
+            exit 1
+          fi
+
+      - name: 'Write actionlint Report'
+        if: always()
+        uses: OXID-eSales/github-actions/append_report@v4
+        with:
+          prefix: 'validate'
+          priority: '030'
+          phase: lint
+          job: 'matchingyaml'
+          title: ''
+          php: ''
+          mysql: ''
+          testplan: ''
+          status: ${{job.status}}
+          debug: false
+
   finish:
     if: always()
     needs:
       - init
       - yamllint
       - actionlint
+      - matchingyaml
     runs-on: 'ubuntu-latest'
     env:
       SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"

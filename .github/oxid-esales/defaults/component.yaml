@@ -1,0 +1,41 @@
+install_shop_with_modules:
+  cache:
+    prepared_shop: false
+  git:
+    shop_url: 'https://github.com/{{ .Data.global.repo }}.git'
+    shop_ref: '{{ .Data.global.git.safe_ref_name }}'
+  composer:
+    root_url: ''
+    transform: ''
+  skip_shop_installation: true
+  output:
+    files: |
+      docker-compose.yml
+      source/composer.json*
+      source/composer.lock
+      source/source/config.inc.php
+      source/vendor/oxid-esales/oxideshop-ce/source/config.inc.php
+      data/php/logs/error_log.txt
+      files.txt
+
+runscript: &runscript
+  component:
+    path: ''
+  deprecated:
+    path: ''
+    composer:
+      transform: |
+        {
+            "require-dev": {
+                "oxid-esales/testing-library": "{{ .Data.global.composer.dev_ref }}",
+                "oxid-esales/tests-deprecated-ce": "{{ .Data.global.composer.dev_ref }}",
+                "codeception/module-webdriver": "^3.1",
+                "phpunit/phpunit": "^9.1.1"
+            }
+        }
+
+runslim:
+  <<: *runscript
+
+finish:
+  slack_title: '{{ print .Data.global.name}} ({{ .Data.global.git.shop_ref }}) by {{ .Github.Actor }}'
