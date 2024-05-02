@@ -103,6 +103,8 @@ jobs:
           # Generated from workflow input custom_testplan_yaml
           ${{ inputs.custom_testplan_yaml }}
           EOF
+          # The next line can be removed in v5 when the transition to yaml is finished
+          cp '${{ inputs.plan_folder }}/_custom.yaml' '${{ inputs.plan_folder }}/_custom.yml'
           TESTPLAN=$(echo "${{ inputs.testplan }}"|sed -e 's|~|${{ inputs.plan_folder }}|g')
           echo "testplan=${{ inputs.plan_folder }}/defaults/defaults.yaml,${TESTPLAN}" >>"${GITHUB_OUTPUT}"
 
