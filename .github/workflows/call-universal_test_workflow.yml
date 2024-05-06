@@ -1441,6 +1441,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          repository: '${{ steps.sonarcloud_testplan.outputs.sonarcloud_git_repository }}'
+          ref: '${{ steps.sonarcloud_testplan.outputs.sonarcloud_git_ref }}'
+          token: ${{ secrets.enterprise_github_token || github.token }}
 
       - name: 'SonarCloud Scan'
         uses: 'OXID-eSales/github-actions/sonarcloud@v4'

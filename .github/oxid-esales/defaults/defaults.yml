@@ -553,6 +553,12 @@ sonarcloud:
   # You only need to change the title when running multiple sonarcloud scans in one workflow
   title: 'sonarcloud'
 
+  # By default, the current repository and the current branch are checked out. When running the
+  # workflow in a different repository, we need to change this
+  git:
+    repository: ''
+    ref: ''
+
   # Run custom script outside the container'
   custom_script: ''
 
