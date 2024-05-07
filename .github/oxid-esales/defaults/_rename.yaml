@@ -2,10 +2,6 @@
 # It is needed before the implementation of the breaking changes
 # in v5 of these actions
 #
-# {{with pipeline}} T1 {{else}} T0 {{end}}
-# 	If the value of the pipeline is empty, dot is unaffected and T0
-# 	is executed; otherwise, dot is set to the value of the pipeline
-# 	and T1 is executed.
 
 global:
   git:
