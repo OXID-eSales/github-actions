@@ -15,6 +15,6 @@ global:
     repository: '{{ with .Data.global.git.repository }}{{ . }}{{ else }}{{ len (slice (printf "%*s" (len .Data.global.git.shop_url) "") 4) |slice .Data.global.git.shop_url 19 }}{{ end -}}'
     ref: '{{ with .Data.global.git.ref }}{{ . }}{{ else }}{{ .Data.global.git.shop_ref }}{{ end -}}'
 
-{{- with .Data.install}}
+#{{- with .Data.install}}
 install: {{.Data.install_shop_with_modules}}
-{{end}}
+#{{end}}
