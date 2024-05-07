@@ -1,0 +1,22 @@
+# This is a helper which renames fields to their new names
+# It is needed before the implementation of the breaking changes
+# in v5 of these actions
+#
+# {{with pipeline}} T1 {{else}} T0 {{end}}
+# 	If the value of the pipeline is empty, dot is unaffected and T0
+# 	is executed; otherwise, dot is set to the value of the pipeline
+# 	and T1 is executed.
+
+
+
+global:
+  git:
+    # See https://stackoverflow.com/questions/25689829/arithmetic-in-go-templates#72465098
+    # for an idea how to decrement the len of the by 4 and
+    # https://go.dev/play/p/XTqvu0J9Sw1 for a breakdown of this expression
+    repository: {{ with .Data.global.git.repository }}{{ . }}{{ else }}{{ len (slice (printf "%*s" (len .Data.global.git.shop_url) "") 4) |slice .Data.global.git.shop_url 19 }}{{ end -}}
+    ref: {{ with .Data.global.git.ref }}{{ . }}{{ else }}{{ .Data.global.git.shop_ref }}{{ end -}}
+
+{{- with .Data.install }}
+install: {{ .Data.install_shop_with_modules }}
+{{ end }}
