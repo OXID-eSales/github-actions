@@ -137,7 +137,7 @@ runs:
         MATRIX='PHP${{inputs.php}}_MYSQL${{inputs.mysql}}'
         TITLE=$( \
           echo "testplan-${{inputs.prefix}}-${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}-${MATRIX}" \
-          | sed -e 's|/||g' \
+          | sed -e 's#/|\s##g' \
         )
         echo "title=${TITLE}" >>"${GITHUB_OUTPUT}"
 
