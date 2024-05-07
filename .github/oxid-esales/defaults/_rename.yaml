@@ -12,5 +12,52 @@ global:
     ref: '{{ with .Data.global.git.ref }}{{ . }}{{ else }}{{ .Data.global.git.shop_ref }}{{ end -}}'
 
 #{{- if not .Data.install}}
-install: {{.Data.install_shop_with_modules}}
+install:
+  matrix: '{{ .Data.install_shop_with_modules.matrix }}'
+  max_parallel: '{{ .Data.install_shop_with_modules.max_parallel }}'
+  docker_login: '{{ .Data.install_shop_with_modules.docker_login }}'
+  container:
+    name: '{{ .Data.install_shop_with_modules.container.name }}'
+    options: '{{ .Data.install_shop_with_modules.container.options }}'
+    method: '{{ .Data.install_shop_with_modules.container.method}}'
+  git:
+    sdk_url: '{{ .Data.install_shop_with_modules.git.sdk_url }}'
+    sdk_repository: '{{ with .Data.install_shop_with_modules.git.sdk_repository }}{{ . }}{{ else }}{{ len (slice (printf "%*s" (len .Data.install_shop_with_modules.git.sdk_url) "") 4) |slice .Data.install_shop_with_modules.git.sdk_url 19 }}{{ end -}}'
+    sdk_ref: '{{ .Data.install_shop_with_modules.git.sdk_ref }}'
+    shop_url: '{{ .Data.install_shop_with_modules.git.shop_url }}'
+    shop_ref: '{{ .Data.install_shop_with_modules.git.shop_ref }}'
+    repository: '{{ with .Data.install_shop_with_modules.git.repository }}{{ . }}{{ else }}{{ len (slice (printf "%*s" (len .Data.install_shop_with_modules.git.shop_url) "") 4) |slice .Data.install_shop_with_modules.git.shop_url 19 }}{{ end -}}'
+    ref: '{{ with .Data.install_shop_with_modules.git.ref }}{{ . }}{{ else }}{{ .Data.install_shop_with_modules.git.shop_ref }}{{ end -}}'
+    enterprise_url: '{{ .Data.install_shop_with_modules.git.enterprise_url }}'
+    enterprise_repository: '{{ with .Data.install_shop_with_modules.git.enterprise_repository }}{{ . }}{{ else }}{{ len (slice (printf "%*s" (len .Data.install_shop_with_modules.git.enterprise_url) "") 4) |slice .Data.install_shop_with_modules.git.enterprise_url 19 }}{{ end -}}'
+    enterprise_ref: '{{ .Data.install_shop_with_modules.git.enterprise_ref }}'
+    default_ref: '{{ .Data.install_shop_with_modules.git.default_ref }}'
+    safe_ref_name: '{{ .Data.install_shop_with_modules.git.safe_ref_name }}'
+  cache:
+    bucket: '{{ .Data.install_shop_with_modules.cache.bucket }}'
+    prefix: '{{ .Data.install_shop_with_modules.cache.prefix }}'
+    prepared_shop: '{{ .Data.install_shop_with_modules.cache.prepared_shop }}'
+    prepared_shop_prefix: '{{ .Data.install_shop_with_modules.cache.prepared_shop_prefix }}'
+  composer:
+    dev_ref: '{{ .Data.install_shop_with_modules.composer.dev_ref }}'
+    ref_name: '{{ .Data.install_shop_with_modules.composer.ref_name }}'
+    file: '{{ .Data.install_shop_with_modules.composer.file }}'
+    backup: '{{ .Data.install_shop_with_modules.composer.backup }}'
+    transform: '{{ .Data.install_shop_with_modules.composer.transform }}'
+    update: '{{ .Data.install_shop_with_modules.composer.update }}'
+    update-options: '{{ .Data.install_shop_with_modules.composer.update_options }}'
+    root_url: '{{ .Data.install_shop_with_modules.composer.root_url }}'
+  custom_ini:
+    error_reporting: '{{ .Data.install_shop_with_modules.custom_ini.error_reporting }}'
+    xdebug: '{{ .Data.install_shop_with_modules.custom_ini.xdebug }}'
+  add_services: '{{ .Data.install_shop_with_modules.add_services }}'
+  config:
+    idebug: '{{ .Data.install_shop_with_modules.config.idebug }}'
+  custom_script: '{{ .Data.install_shop_with_modules.custom_script }}'
+  custom_script_container: '{{ .Data.install_shop_with_modules.custom_script_container }}'
+  skip_shop_installation: '{{ .Data.install_shop_with_modules.skip_shop_installation }}'
+  output:
+    files: '{{ .Data.install_shop_with_modules.output.files }}'
+    # The configuration file name is dynamic, the matrix variables will be appended
+    artifact_prefix: 'install'
 #{{end}}
