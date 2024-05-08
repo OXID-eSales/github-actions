@@ -115,7 +115,8 @@ jobs:
 
           TESTPLAN=$(echo "${{ inputs.testplan }}"|sed -e 's|~|${{ inputs.plan_folder }}|g')
           # ToDo: Remove the ,${{ inputs.plan_folder }}/defaults/_rename.yaml when releasing v5
-          echo "testplan=${{ inputs.plan_folder }}/defaults/defaults_light.yaml,${TESTPLAN},${{ inputs.plan_folder }}/defaults/_rename.yaml" >>"${GITHUB_OUTPUT}"
+          DEFAULTS="${{ inputs.plan_folder }}/defaults/defaults_light.yaml"
+          echo "testplan=${DEFAULTS},${TESTPLAN},${{ inputs.plan_folder }}/defaults/_rename.yaml" >>"${GITHUB_OUTPUT}"
 
       - name: 'Load Testplan'
         id: ltp
@@ -543,7 +544,7 @@ jobs:
             sed -e 's#\-\-*#-#' -e 's#\_\_*#_#g'| \
             tee -a "${GITHUB_OUTPUT}"
           echo "runscript_title=${PREFIX}_${SCRIPT}"| \
-            sed -E 's#\~|"|,|:|<|>|\||\*|\?|\/|\\#_#g' | \
+            sed -E 's#\s|\~|"|,|:|<|>|\||\*|\?|\/|\\#_#g' | \
             sed -e 's#\-\-*#-#' -e 's#\_\_*#_#g' | \
             tee -a "${GITHUB_OUTPUT}"
 
