@@ -162,7 +162,7 @@ runs:
         # append_report: Generate safe title
         TITLE=$( \
           echo 'testplan-${{inputs.prefix}}-000_header' \
-          | sed -e 's|/||g' \
+          | sed -e 's#/|\s##g' \
         )
         echo "title=${TITLE}" >>"${GITHUB_OUTPUT}"
 

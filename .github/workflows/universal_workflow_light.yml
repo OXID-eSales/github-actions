@@ -103,7 +103,7 @@ jobs:
           # Generated from workflow input custom_testplan_yaml
           ${{ inputs.custom_testplan_yaml }}
           EOF
-          # The next line can be removed in v5 when the transition to yaml is finished
+          # ToDo: The next line can be removed in v5 when the transition to yaml is finished
           cp '${{ inputs.plan_folder }}/_custom.yaml' '${{ inputs.plan_folder }}/_custom.yml'
           if [ '${{ github.event_name }}' == 'pull_request' ]; then
             REF=$(echo '{{ .Github.HeadRef }}'|sed -e 's|/refs/heads/||')
@@ -114,7 +114,9 @@ jobs:
           fi
 
           TESTPLAN=$(echo "${{ inputs.testplan }}"|sed -e 's|~|${{ inputs.plan_folder }}|g')
-          echo "testplan=${{ inputs.plan_folder }}/defaults/defaults_light.yaml,${TESTPLAN}" >>"${GITHUB_OUTPUT}"
+          # ToDo: Remove the ,${{ inputs.plan_folder }}/defaults/_rename.yaml when releasing v5
+          DEFAULTS="${{ inputs.plan_folder }}/defaults/defaults_light.yaml"
+          echo "testplan=${DEFAULTS},${TESTPLAN},${{ inputs.plan_folder }}/defaults/_rename.yaml" >>"${GITHUB_OUTPUT}"
 
       - name: 'Load Testplan'
         id: ltp
@@ -135,7 +137,7 @@ jobs:
           cp "${GITHUB_OUTPUT}" generated_output.txt
           cp "${GITHUB_ENV}" generated_env.txt
           echo 'title=${{steps.ltp.outputs.global_title}}'| \
-            sed -E 's#\~|"|,|:|<|>|\||\*|\?|\/|\\#_#g' | \
+            sed -E 's#\s|\~|"|,|:|<|>|\||\*|\?|\/|\\#_#g' | \
             sed -e 's#\-\-*#-#' -e 's#\_\_*#_#g'| \
             tee -a "${GITHUB_OUTPUT}"
       - name: 'Create first testplan archive'
@@ -538,11 +540,11 @@ jobs:
           done
           SUFFIX="${PREFIX}_${SCRIPT}-${{ steps.rstn.outputs.matrix_suffix }}"
           echo "runscript_suffix=${SUFFIX}"| \
-            sed -E 's#\~|"|,|:|<|>|\||\*|\?|\/|\\#_#g' | \
+            sed -E 's#\s|\~|"|,|:|<|>|\||\*|\?|\/|\\#_#g' | \
             sed -e 's#\-\-*#-#' -e 's#\_\_*#_#g'| \
             tee -a "${GITHUB_OUTPUT}"
           echo "runscript_title=${PREFIX}_${SCRIPT}"| \
-            sed -E 's#\~|"|,|:|<|>|\||\*|\?|\/|\\#_#g' | \
+            sed -E 's#\s|\~|"|,|:|<|>|\||\*|\?|\/|\\#_#g' | \
             sed -e 's#\-\-*#-#' -e 's#\_\_*#_#g' | \
             tee -a "${GITHUB_OUTPUT}"
 
