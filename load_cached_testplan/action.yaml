@@ -99,7 +99,7 @@ runs:
         MATRIX_TESTPLAN=$(echo "${{ inputs.matrix_testplan }}"|sed -e 's|~|${{ inputs.plan_folder }}|g')
         # ToDo: Remove the ,${{ inputs.plan_folder }}/defaults/_rename.yaml when releasing v5
         if [[ '${{ inputs.matrix_testplan}}' == '-' || -z '${{ inputs.matrix_testplan}}' ]]; then
-          echo "testplan=${DEFAULT_TESTPLAN},${{ inputs.plan_folder }}/defaults/_rename.yaml" | tee -a "${GITHUB_OUTPUT}"
+          echo "testplan=${DEFAULT_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
         else
           echo "testplan=${DEFAULT_TESTPLAN},${MATRIX_TESTPLAN},${{ inputs.plan_folder }}/defaults/_rename.yaml" | tee -a "${GITHUB_OUTPUT}"
         fi
