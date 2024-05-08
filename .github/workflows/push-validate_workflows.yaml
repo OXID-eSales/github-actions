@@ -132,7 +132,7 @@ jobs:
           done
           YAML_FILES=$(find . -iname '*.yaml')
           for YAML in ${YAML_FILES}; do
-            COUNTERPART="${YAML//.yaml/.yml/}"
+            COUNTERPART="${YAML//.yaml/.yml}"
             if [ -f "${COUNTERPART}" ]; then
               echo "Checking, if ${YAML} matches ${COUNTERPART}"
               if diff -y --suppress-common-lines --color=always "${YAML}" "${COUNTERPART}"; then
