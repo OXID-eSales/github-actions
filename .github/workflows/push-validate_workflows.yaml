@@ -133,9 +133,7 @@ jobs:
           YAML_FILES=$(find . -iname '*.yaml')
           for YAML in ${YAML_FILES}; do
             COUNTERPART="${YAML//.yaml/.yml/}"
-            if [ ! -f "${COUNTERPART}" ]; then
-              echo "No matching counterpart for ${YAML}"
-            else
+            if [ -f "${COUNTERPART}" ]; then
               echo "Checking, if ${YAML} matches ${COUNTERPART}"
               if diff -y --suppress-common-lines --color=always "${YAML}" "${COUNTERPART}"; then
                 echo -e "\033[0;32mOK: Files ${YAML} and ${COUNTERPART} match!${LINE}"
@@ -143,6 +141,8 @@ jobs:
                 echo -e "\033[0;31mError: Files ${YAML} and ${COUNTERPART} differ!\033[0m"
                 RESULT=1
               fi
+            else
+              echo "No matching counterpart (${COUNTERPART}) for ${YAML}"
             fi
           done
           if [ ${RESULT} -ne 0 ]; then
