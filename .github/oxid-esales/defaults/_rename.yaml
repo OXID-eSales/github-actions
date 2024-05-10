@@ -12,7 +12,7 @@ global:
     repository: '{{ with .Data.global.git.repository }}{{ . }}{{ else }}{{ len (slice (printf "%*s" (len .Data.global.git.shop_url) "") 4) |slice .Data.global.git.shop_url 19 }}{{ end -}}'
     ref: '{{ with .Data.global.git.ref }}{{ . }}{{ else }}{{ .Data.global.git.shop_ref }}{{ end -}}'
 
-# {{- if not .Data.install}}
+# {{- if not .Data.install }}This only shows up, if the install section has not been defined
 install:
   matrix: '{{ .Data.install_shop_with_modules.matrix }}'
   max_parallel: '{{ .Data.install_shop_with_modules.max_parallel }}'
@@ -64,4 +64,4 @@ install:
     files: '{{ .Data.install_shop_with_modules.output.files }}'
     # The configuration file name is dynamic, the matrix variables will be appended
     artifact_prefix: 'install'
-# {{end}}
+# {{end}}End of the install section

@@ -101,6 +101,8 @@ runs:
         fi
         touch data/php/logs/error_log.txt
         cp data/php/logs/error_log.txt source/${{ inputs.path }}/tests/Output/
+        cp data/mysql/mysql/slow_log* source/${{ inputs.path }}/tests/Output/
+        cp data/mysql/mysql/general_log.CSV source/${{ inputs.path }}/tests/Output/
 
     - name: Upload artifact
       if: always()
