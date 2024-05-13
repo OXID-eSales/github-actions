@@ -252,7 +252,10 @@ install_shop_with_modules:
       source/composer.json*
       source/composer.lock
       source/source/config.inc.php
+      source/vendor/oxid-esales/oxideshop-ce/source/config.inc.php
       data/php/logs/error_log.txt
+      data/mysql/mysql/slow_log*
+      data/mysql/mysql/general_log*
       files.txt
     # The configuration file name is dynamic, the matrix variables will be appended
     artifact_prefix: 'shop-setup'

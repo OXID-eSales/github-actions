@@ -313,6 +313,18 @@ jobs:
                 composer update ${{ steps.isltp.outputs.install_shop_with_modules_composer_update_options}} -d "/var/www/${COMPOSER_PATH}"
             fi
           done
+          PREFIXES=$(echo '${{steps.isltp.outputs.runslim_matrix_script}}'|tr ',' '\n'|tr -d '[]" '|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
+          for PREFIX in ${PREFIXES}; do
+            VAR="runslim_${PREFIX}_path"
+            COMPOSER_PATH="${!VAR}"
+            if [ -n "${COMPOSER_PATH}" ]; then
+              echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runslim_${PREFIX}_path'\033[0m"
+              docker compose ${{ steps.isltp.outputs.install_shop_with_modules_container_method }} -T \
+              ${{ steps.isltp.outputs.install_shop_with_modules_container_options }} \
+                ${{ steps.isltp.outputs.install_shop_with_modules_container_name }} \
+                composer update ${{ steps.isltp.outputs.install_shop_with_modules_composer_update_options}} -d "/var/www/${COMPOSER_PATH}"
+            fi
+          done
 
       - name: Generate debugging script for running composer for each module
         if: ${{ inputs.debug == true }}
@@ -327,6 +339,22 @@ jobs:
             if [ -n "${COMPOSER_PATH}" ]; then
               cat >>debug/debug.sh <<EODS
             echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
+            docker compose ${{ steps.isltp.outputs.install_shop_with_modules_container_method }} -T \
+            ${{ steps.isltp.outputs.install_shop_with_modules_container_options }} \
+              --workdir "/var/www/${COMPOSER_PATH}" \
+              ${{ steps.isltp.outputs.install_shop_with_modules_container_name }} \
+              composer update ${{ steps.isltp.outputs.install_shop_with_modules_composer_update_options}}
+          EODS
+            fi
+          done
+          PREFIXES=$(echo '${{steps.isltp.outputs.runslim_matrix_script}}'|tr ',' '\n'|tr -d '[]" '|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
+          echo -e "\033[0;35mUnique prefixes: ${PREFIXES}\033[0m"
+          for PREFIX in ${PREFIXES}; do
+            VAR="runslim_${PREFIX}_path"
+            COMPOSER_PATH="${!VAR}"
+            if [ -n "${COMPOSER_PATH}" ]; then
+              cat >>debug/debug.sh <<EODS
+            echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runslim_${PREFIX}_path'\033[0m"
             docker compose ${{ steps.isltp.outputs.install_shop_with_modules_container_method }} -T \
             ${{ steps.isltp.outputs.install_shop_with_modules_container_options }} \
               --workdir "/var/www/${COMPOSER_PATH}" \
