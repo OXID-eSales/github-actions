@@ -51,7 +51,7 @@ install:
     backup: '{{ if not .Data.install.composer.backup }}{{ .Data.install_shop_with_modules.composer.backup }}{{ end }}'
     transform: '{{ if not .Data.install.composer.transform }}{{ .Data.install_shop_with_modules.composer.transform }}{{ end }}'
     update: '{{ if not .Data.install.composer.update }}{{ .Data.install_shop_with_modules.composer.update }}{{ end }}'
-    update-options: '{{ if not .Data.install.composer.update_options }}{{ .Data.install_shop_with_modules.composer.update_options }}{{ end }}'
+    update_options: '{{ if not .Data.install.composer.update_options }}{{ .Data.install_shop_with_modules.composer.update_options }}{{ end }}'
     root_url: '{{ if not .Data.install.composer.root_url }}{{ .Data.install_shop_with_modules.composer.root_url }}{{ end }}'
   custom_ini:
     error_reporting: '{{ if not .Data.install.custom_ini.error_reporting }}{{ .Data.install_shop_with_modules.custom_ini.error_reporting }}{{ end }}'
