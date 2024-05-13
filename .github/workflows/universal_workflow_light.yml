@@ -197,10 +197,10 @@ jobs:
       testplan: ${{ steps.consolidate_plans.outputs.testplan }}
       init_cache_bucket: ${{ steps.ltp.outputs.init_cache_bucket }}
       init_cache_name: ${{ steps.ltp.outputs.init_cache_name }}
-      # install_shop_with_modules variables
-      install_shop_with_modules_matrix_mysql: ${{ steps.ltp.outputs.install_shop_with_modules_matrix_mysql }}
-      install_shop_with_modules_matrix_php: ${{ steps.ltp.outputs.install_shop_with_modules_matrix_php }}
-      install_shop_with_modules_max_parallel: ${{ steps.ltp.outputs.install_shop_with_modules_max_parallel }}
+      # install variables
+      install_matrix_mysql: ${{ steps.ltp.outputs.install_matrix_mysql }}
+      install_matrix_php: ${{ steps.ltp.outputs.install_matrix_php }}
+      install_max_parallel: ${{ steps.ltp.outputs.install_max_parallel }}
       # runscript variables
       runscript_matrix_mysql: ${{ steps.ltp.outputs.runscript_matrix_mysql }}
       runscript_matrix_php: ${{ steps.ltp.outputs.runscript_matrix_php }}
@@ -229,19 +229,19 @@ jobs:
       finish_slack_title: ${{ steps.ltp.outputs.finish_slack_title }}
       finish_slack_compact: ${{ steps.ltp.outputs.finish_slack_compact }}
 
-  install_shop_with_modules:
+  install:
     needs: init
     strategy:
       matrix:
-        php: ${{ fromJSON(needs.init.outputs.install_shop_with_modules_matrix_php) }}
-        mysql: ${{ fromJSON(needs.init.outputs.install_shop_with_modules_matrix_mysql) }}
+        php: ${{ fromJSON(needs.init.outputs.install_matrix_php) }}
+        mysql: ${{ fromJSON(needs.init.outputs.install_matrix_mysql) }}
       fail-fast: false
-      max-parallel: ${{ fromJSON(needs.init.outputs.install_shop_with_modules_max_parallel) }}
+      max-parallel: ${{ fromJSON(needs.init.outputs.install_max_parallel) }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
 
     steps:
       - name: Load cached testplan
-        id: istn
+        id: itn
         uses: OXID-eSales/github-actions/load_cached_testplan@v4
         with:
           php: ${{ matrix.php }}
@@ -258,10 +258,10 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Load Testplan'
-        id: isltp
+        id: iltp
         uses: 'joernott/load_testplan@v1'
         with:
-          files: '${{steps.istn.outputs.testplan}}'
+          files: '${{steps.itn.outputs.testplan}}'
           set_output: true
           set_print: true
           set_env: true
@@ -272,45 +272,45 @@ jobs:
         id: prepare_shop
         uses: 'OXID-eSales/github-actions/prepare_shop@v4'
         with:
-          container_name: ${{ steps.isltp.outputs.install_shop_with_modules_container_name }}
-          container_options: ${{ steps.isltp.outputs.install_shop_with_modules_container_options }}
-          container_method: ${{ steps.isltp.outputs.install_shop_with_modules_container_method }}
-          docker_login: ${{ steps.isltp.outputs.install_shop_with_modules_docker_login }}
+          container_name: ${{ steps.iltp.outputs.install_container_name }}
+          container_options: ${{ steps.iltp.outputs.install_container_options }}
+          container_method: ${{ steps.iltp.outputs.install_container_method }}
+          docker_login: ${{ steps.iltp.outputs.install_docker_login }}
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
-          git_sdk_url: ${{ steps.isltp.outputs.install_shop_with_modules_git_sdk_url }}
-          git_sdk_ref: ${{ steps.isltp.outputs.install_shop_with_modules_git_sdk_ref }}
-          git_shop_url: ${{ steps.isltp.outputs.install_shop_with_modules_git_shop_url }}
-          git_shop_ref: ${{ steps.isltp.outputs.install_shop_with_modules_git_shop_ref }}
-          compilation_url: ${{ steps.isltp.outputs.install_shop_with_modules_composer_root_url }}
+          git_sdk_url: ${{ steps.iltp.outputs.install_git_sdk_url }}
+          git_sdk_ref: ${{ steps.iltp.outputs.install_git_sdk_ref }}
+          git_shop_url: ${{ steps.iltp.outputs.install_git_shop_url }}
+          git_shop_ref: ${{ steps.iltp.outputs.install_git_shop_ref }}
+          compilation_url: ${{ steps.iltp.outputs.install_composer_root_url }}
           github_ref_name: ${{ github.ref_name }}
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
-          custom_ini_error_reporting: ${{ steps.isltp.outputs.install_shop_with_modules_custom_ini_error_reporting }}
-          custom_ini_xdebug: ${{ steps.isltp.outputs.install_shop_with_modules_custom_ini_xdebug }}
-          add_services: ${{ steps.isltp.outputs.install_shop_with_modules_add_services }}
-          composer_file: ${{ steps.isltp.outputs.install_shop_with_modules_composer_file }}
-          composer_transform: ${{ steps.isltp.outputs.install_shop_with_modules_composer_transform}}
-          composer_backup: ${{ steps.isltp.outputs.install_shop_with_modules_composer_backup}}
-          composer_update: ${{ steps.isltp.outputs.install_shop_with_modules_composer_update}}
-          composer_update_options: ${{ steps.isltp.outputs.install_shop_with_modules_composer_update_options}}
-          composer_dev_ref: ${{ steps.isltp.outputs.install_shop_with_modules_composer_dev_ref}}
+          custom_ini_error_reporting: ${{ steps.iltp.outputs.install_custom_ini_error_reporting }}
+          custom_ini_xdebug: ${{ steps.iltp.outputs.install_custom_ini_xdebug }}
+          add_services: ${{ steps.iltp.outputs.install_add_services }}
+          composer_file: ${{ steps.iltp.outputs.install_composer_file }}
+          composer_transform: ${{ steps.iltp.outputs.install_composer_transform}}
+          composer_backup: ${{ steps.iltp.outputs.install_composer_backup}}
+          composer_update: ${{ steps.iltp.outputs.install_composer_update}}
+          composer_update_options: ${{ steps.iltp.outputs.install_composer_update_options}}
+          composer_dev_ref: ${{ steps.iltp.outputs.install_composer_dev_ref}}
           enterprise_github_token: ${{ secrets.enterprise_github_token || github.token }}
           debug: ${{ needs.init.outputs.debug }}
 
       - name: Run composer for each module
         shell: bash
         run: |
-          PREFIXES=$(echo '${{steps.isltp.outputs.runscript_matrix_script}}'|tr ',' '\n'|tr -d '[]" '|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
+          PREFIXES=$(echo '${{steps.iltp.outputs.runscript_matrix_script}}'|tr ',' '\n'|tr -d '[]" '|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
           for PREFIX in ${PREFIXES}; do
             VAR="runscript_${PREFIX}_path"
             COMPOSER_PATH="${!VAR}"
             if [ -n "${COMPOSER_PATH}" ]; then
               echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
-              docker compose ${{ steps.isltp.outputs.install_shop_with_modules_container_method }} -T \
-              ${{ steps.isltp.outputs.install_shop_with_modules_container_options }} \
-                ${{ steps.isltp.outputs.install_shop_with_modules_container_name }} \
-                composer update ${{ steps.isltp.outputs.install_shop_with_modules_composer_update_options}} -d "/var/www/${COMPOSER_PATH}"
+              docker compose ${{ steps.iltp.outputs.install_container_method }} -T \
+              ${{ steps.iltp.outputs.install_container_options }} \
+                ${{ steps.iltp.outputs.install_container_name }} \
+                composer update ${{ steps.iltp.outputs.install_composer_update_options}} -d "/var/www/${COMPOSER_PATH}"
             fi
           done
 
@@ -319,7 +319,7 @@ jobs:
         shell: bash
         run: |
           echo "banner 'Run composer for each module'" >>debug/debug.sh
-          PREFIXES=$(echo '${{steps.isltp.outputs.runscript_matrix_script}}'|tr ',' '\n'|tr -d '[]" '|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
+          PREFIXES=$(echo '${{steps.iltp.outputs.runscript_matrix_script}}'|tr ',' '\n'|tr -d '[]" '|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
           echo -e "\033[0;35mUnique prefixes: ${PREFIXES}\033[0m"
           for PREFIX in ${PREFIXES}; do
             VAR="runscript_${PREFIX}_path"
@@ -327,84 +327,84 @@ jobs:
             if [ -n "${COMPOSER_PATH}" ]; then
               cat >>debug/debug.sh <<EODS
             echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
-            docker compose ${{ steps.isltp.outputs.install_shop_with_modules_container_method }} -T \
-            ${{ steps.isltp.outputs.install_shop_with_modules_container_options }} \
+            docker compose ${{ steps.iltp.outputs.install_container_method }} -T \
+            ${{ steps.iltp.outputs.install_container_options }} \
               --workdir "/var/www/${COMPOSER_PATH}" \
-              ${{ steps.isltp.outputs.install_shop_with_modules_container_name }} \
-              composer update ${{ steps.isltp.outputs.install_shop_with_modules_composer_update_options}}
+              ${{ steps.iltp.outputs.install_container_name }} \
+              composer update ${{ steps.iltp.outputs.install_composer_update_options}}
           EODS
             fi
           done
 
       - name: 'Stop shop for preparedShop cache'
-        if: ${{ steps.isltp.outputs.install_shop_with_modules_cache_prepared_shop == 'true' }}
+        if: ${{ steps.iltp.outputs.install_cache_prepared_shop == 'true' }}
         uses: 'OXID-eSales/github-actions/stop_shop@v4'
         with:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: Cache preparedShop on s3
-        if: ${{ steps.isltp.outputs.install_shop_with_modules_cache_prepared_shop == 'true' && steps.isltp.outputs.use_private_cache == 'true' }}
+        if: ${{ steps.iltp.outputs.install_cache_prepared_shop == 'true' && steps.iltp.outputs.use_private_cache == 'true' }}
         uses: tespkg/actions-cache/save@v1
         with:
           path: |
             ./*
-          key: '${{ steps.isltp.outputs.install_shop_with_modules_cache_prepared_shop_prefix }}_${{steps.istn.outputs.matrix_suffix}}'
+          key: '${{ steps.iltp.outputs.install_cache_prepared_shop_prefix }}_${{steps.itn.outputs.matrix_suffix}}'
           endpoint: ${{ secrets.CACHE_ENDPOINT }}
           accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
           secretKey: ${{ secrets.CACHE_SECRET_KEY }}
-          bucket: ${{ steps.isltp.outputs.install_shop_with_modules_cache_bucket }}
+          bucket: ${{ steps.iltp.outputs.install_cache_bucket }}
 
       - name: Cache preparedShop on github
-        if: ${{ steps.isltp.outputs.install_shop_with_modules_cache_prepared_shop == 'true' && steps.isltp.outputs.use_private_cache != 'true'}}
+        if: ${{ steps.iltp.outputs.install_cache_prepared_shop == 'true' && steps.iltp.outputs.use_private_cache != 'true'}}
         uses: actions/cache/save@v4
         with:
           path: |
             ./*
-          key: '${{ steps.isltp.outputs.install_shop_with_modules_cache_prepared_shop_prefix }}_${{steps.istn.outputs.matrix_suffix}}'
+          key: '${{ steps.iltp.outputs.install_cache_prepared_shop_prefix }}_${{steps.itn.outputs.matrix_suffix}}'
 
       - name: Debug cache preparedShop
-        if: ${{ inputs.debug == true && steps.isltp.outputs.install_shop_with_modules_cache_prepared_shop == true }}
+        if: ${{ inputs.debug == true && steps.iltp.outputs.install_cache_prepared_shop == true }}
         shell: bash
         run: |
-          # install_shop_with_modules: Debug cache current installation
+          # install: Debug cache current installation
           # we need to add the dot folders here explicitly because bash works differently than the action
           MATRIX='PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
-          CACHE_NAME="${{ steps.isltp.outputs.install_shop_with_modules_cache_prepared_shop_prefix}}_${{steps.isltp.outputs.global_title}}-${MATRIX}"
+          CACHE_NAME="${{ steps.iltp.outputs.install_cache_prepared_shop_prefix}}_${{steps.iltp.outputs.global_title}}-${MATRIX}"
           echo "write_cache '${CACHE_NAME}' ./* .env .env.dist .gitignore .git" >>debug/debug.sh
 
       - name: 'Start shop after caching preparedShop'
-        if: ${{ steps.isltp.outputs.install_shop_with_modules_cache_prepared_shop == 'true' }}
+        if: ${{ steps.iltp.outputs.install_cache_prepared_shop == 'true' }}
         shell: bash
         run: |
-          # install_shop_with_modules: Start containers
+          # install: Start containers
           ${{ needs.init.outputs.debug }}
           echo -e "\033[0;35m### Starting containers\033[0m"
           make up
 
       - name: 'Install shop'
         id: install_shop
-        if: ${{ steps.isltp.outputs.install_shop_with_modules_skip_shop_installation == 'false' }}
+        if: ${{ steps.iltp.outputs.install_skip_shop_installation == 'false' }}
         uses: 'OXID-eSales/github-actions/install_shop@v4'
         with:
-          container_name: ${{ steps.isltp.outputs.install_shop_with_modules_container_name }}
-          container_options: ${{ steps.isltp.outputs.install_shop_with_modules_container_options }}
-          container_method: ${{ steps.isltp.outputs.install_shop_with_modules_container_method }}
-          is_enterprise: ${{ steps.isltp.outputs.install_shop_with_modules_is_enterprise }}
-          config_idebug: ${{ steps.isltp.outputs.install_shop_with_modules_config_idebug }}
-          output_files: ${{ steps.isltp.outputs.install_shop_with_modules_output_files }}
-          output_artifact: '${{ steps.isltp.outputs.install_shop_with_modules_output_artifact_prefix }}-${{steps.istn.outputs.matrix_suffix}}'
+          container_name: ${{ steps.iltp.outputs.install_container_name }}
+          container_options: ${{ steps.iltp.outputs.install_container_options }}
+          container_method: ${{ steps.iltp.outputs.install_container_method }}
+          is_enterprise: ${{ steps.iltp.outputs.install_is_enterprise }}
+          config_idebug: ${{ steps.iltp.outputs.install_config_idebug }}
+          output_files: ${{ steps.iltp.outputs.install_output_files }}
+          output_artifact: '${{ steps.iltp.outputs.install_output_artifact_prefix }}-${{steps.itn.outputs.matrix_suffix}}'
           debug: ${{ needs.init.outputs.debug }}
 
       - name: Run custom scripts
         # yamllint disable-line rule:line-length
-        if: ${{ steps.isltp.outputs.install_shop_with_modules_custom_script != '' || steps.isltp.outputs.install_shop_with_modules_custom_script_container != '' }}
+        if: ${{ steps.iltp.outputs.install_custom_script != '' || steps.iltp.outputs.install_custom_script_container != '' }}
         uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
         with:
-          container_name: ${{ steps.isltp.outputs.install_shop_with_modules_container_name }}
-          container_options: ${{ steps.isltp.outputs.install_shop_with_modules_container_options }}
-          container_method: ${{ steps.isltp.outputs.install_shop_with_modules_container_method }}
-          custom_script: ${{ steps.isltp.outputs.install_shop_with_modules_custom_script }}
-          custom_script_container: ${{ steps.isltp.outputs.install_shop_with_modules_custom_script_container }}
+          container_name: ${{ steps.iltp.outputs.install_container_name }}
+          container_options: ${{ steps.iltp.outputs.install_container_options }}
+          container_method: ${{ steps.iltp.outputs.install_container_method }}
+          custom_script: ${{ steps.iltp.outputs.install_custom_script }}
+          custom_script_container: ${{ steps.iltp.outputs.install_custom_script_container }}
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Stop shop'
@@ -417,10 +417,10 @@ jobs:
         if: ${{ inputs.debug }}
         shell: bash
         run: |
-          # install_shop_with_modules: Debug cache current installation
+          # install: Debug cache current installation
           # we need to add the dot folders here explicitly because bash works differently than the action
           MATRIX='PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
-          CACHE_NAME="${{ steps.isltp.outputs.install_shop_with_modules_cache_prefix}}_${{steps.isltp.outputs.global_title}}-${MATRIX}"
+          CACHE_NAME="${{ steps.iltp.outputs.install_cache_prefix}}_${{steps.iltp.outputs.global_title}}-${MATRIX}"
           echo "write_cache '${CACHE_NAME}' ./* .env .env.dist .gitignore .git" >>debug/debug.sh
 
       - name: Cache current installation on s3
@@ -429,11 +429,11 @@ jobs:
         with:
           path: |
             ./*
-          key: '${{ steps.isltp.outputs.install_shop_with_modules_cache_prefix}}_${{steps.istn.outputs.matrix_suffix}}'
+          key: '${{ steps.iltp.outputs.install_cache_prefix}}_${{steps.itn.outputs.matrix_suffix}}'
           endpoint: ${{ secrets.CACHE_ENDPOINT }}
           accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
           secretKey: ${{ secrets.CACHE_SECRET_KEY }}
-          bucket: ${{ steps.isltp.outputs.install_shop_with_modules_cache_bucket }}
+          bucket: ${{ steps.iltp.outputs.install_cache_bucket }}
 
       - name: Cache current installation on github
         if: ${{ needs.init.outputs.use_private_cache != 'true' }}
@@ -441,7 +441,7 @@ jobs:
         with:
           path: |
             ./*
-          key: '${{ steps.isltp.outputs.install_shop_with_modules_cache_prefix}}_${{steps.istn.outputs.matrix_suffix}}'
+          key: '${{ steps.iltp.outputs.install_cache_prefix}}_${{steps.itn.outputs.matrix_suffix}}'
 
       - name: 'Write Report'
         if: always()
@@ -450,19 +450,19 @@ jobs:
           prefix: '${{ needs.init.outputs.global_title }}'
           priority: '020'
           phase: install
-          job: install_shop_with_modules
+          job: install
           php: ${{matrix.php}}
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
           # yamllint disable rule:line-length
           cached_object: |
-            ${{ steps.isltp.outputs.install_shop_with_modules_cache_prepared_shop_prefix}}_${{steps.isltp.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}
-            ${{ steps.isltp.outputs.install_shop_with_modules_cache_prefix}}_${{steps.isltp.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}
+            ${{ steps.iltp.outputs.install_cache_prepared_shop_prefix}}_${{steps.iltp.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}
+            ${{ steps.iltp.outputs.install_cache_prefix}}_${{steps.iltp.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}
           # yamllint enable rule:line-length
           debug: ${{ inputs.debug }}
 
   runscript:
-    needs: ['init', 'install_shop_with_modules']
+    needs: ['init', 'install']
     if: ${{ needs.init.outputs.runscript_matrix_script != 'skip' }}
     strategy:
       matrix:
@@ -632,7 +632,7 @@ jobs:
           debug: ${{ inputs.debug }}
 
   runslim:
-    needs: ['init', 'install_shop_with_modules']
+    needs: ['init', 'install']
     if: ${{ needs.init.outputs.runslim_matrix_script != 'skip' }}
     strategy:
       matrix:
@@ -795,7 +795,7 @@ jobs:
           debug: ${{ inputs.debug }}
 
   sonarcloud:
-    needs: ['init', 'install_shop_with_modules', 'runscript', 'runslim']
+    needs: ['init', 'install', 'runscript', 'runslim']
     # yamllint disable-line rule:line-length
     if: ${{ always() && needs.init.outputs.sonarcloud_matrix_testplan != '' && needs.init.outputs.sonarcloud_matrix_testplan != 'none' && needs.init.outputs.sonarcloud_matrix_testplan != 'skip' }}
     strategy:
@@ -878,7 +878,7 @@ jobs:
           debug: ${{ inputs.debug }}
 
   yamllint:
-    needs: ['init', 'install_shop_with_modules']
+    needs: ['init', 'install']
     if: ${{ always() && needs.init.outputs.yamllint_skip != 'true' }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
@@ -910,7 +910,7 @@ jobs:
           debug: false
 
   actionlint:
-    needs: ['init', 'install_shop_with_modules']
+    needs: ['init', 'install']
     if: ${{ always() && needs.init.outputs.actionlint_skip != 'true' }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
@@ -962,7 +962,7 @@ jobs:
     if: ${{ always() && needs.init.outputs.finish_skip != 'true' }}
     needs:
       - init
-      - install_shop_with_modules
+      - install
       - runscript
       - runslim
       - sonarcloud
