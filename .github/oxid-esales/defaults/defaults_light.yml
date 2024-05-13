@@ -157,7 +157,7 @@ global:
     update: true
 
     # Options for composer update
-    update-options: '--no-interaction'
+    update_options: '--no-interaction'
 
   # This grep pattern is applied to the generated phpunit, codeception and runtest log file. If we have
   # a hit matching the pattern below, the step will fail.
