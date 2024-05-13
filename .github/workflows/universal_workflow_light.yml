@@ -115,8 +115,8 @@ jobs:
 
           TESTPLAN=$(echo "${{ inputs.testplan }}"|sed -e 's|~|${{ inputs.plan_folder }}|g')
           # ToDo: Remove the ,${{ inputs.plan_folder }}/defaults/_rename.yaml when releasing v5
-          DEFAULTS="${{ inputs.plan_folder }}/defaults/defaults_light.yaml,${{ inputs.plan_folder }}/defaults/_rename.yaml"
-          echo "testplan=${DEFAULTS},${TESTPLAN}" >>"${GITHUB_OUTPUT}"
+          DEFAULTS="${{ inputs.plan_folder }}/defaults/defaults_light.yaml"
+          echo "testplan=${DEFAULTS},${TESTPLAN},${{ inputs.plan_folder }}/defaults/_rename.yaml" >>"${GITHUB_OUTPUT}"
 
       - name: 'Load Testplan'
         id: ltp
