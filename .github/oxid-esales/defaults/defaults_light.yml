@@ -187,6 +187,10 @@ init:
     name: '{{ .Github.EventName }}-{{ .Github.RefName }}-testplan-{{ .Env.GITHUB_REPOSITORY_ID }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
 
 # This step installs the sdk, shop and module(s)
+install:
+  method: 'legacy'
+
+# This step installs the sdk, shop and module(s)
 install_shop_with_modules:
   matrix: *matrix
   max_parallel: *max_parallel
