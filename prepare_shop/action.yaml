@@ -190,7 +190,7 @@ runs:
   steps:
     - name: Clone testing environment master DEPRECATED
       # Remove this whole step in v5
-      if: ${{ git_sdk_repository == '' }}
+      if: ${{ inputs.git_sdk_repository == '' }}
       shell: bash
       run: |
         # prepare_shop: Clone testing environment master
@@ -209,7 +209,7 @@ runs:
         ${{ inputs.debug }}
 
     - name: Clone testing environment master
-      if: ${{ git_sdk_repository != '' }}
+      if: ${{ inputs.git_sdk_repository != '' }}
       shell: bash
       run: |
         # prepare_shop: Clone testing environment master

@@ -387,9 +387,8 @@ jobs:
           echo -e "\033[0;35m### Starting containers\033[0m"
           make up
 
-      - name: 'Install shop'
-        id: install_shop
-        if: ${{ steps.iltp.outputs.install_skip_shop_installation == 'false' }}
+      - name: 'Install shop (legacy)'
+        if: ${{ steps.iltp.outputs.install_method == 'legacy' && steps.iltp.outputs.install_skip_shop_installation == 'false' }}
         uses: 'OXID-eSales/github-actions/install_shop@v4'
         with:
           container_name: ${{ steps.iltp.outputs.install_container_name }}
@@ -400,6 +399,18 @@ jobs:
           output_files: ${{ steps.iltp.outputs.install_output_files }}
           output_artifact: '${{ steps.iltp.outputs.install_output_artifact_prefix }}-${{steps.itn.outputs.matrix_suffix}}'
           debug: ${{ needs.init.outputs.debug }}
+
+      - name: 'Install shop (script)'
+        if: ${{ steps.iltp.outputs.install_method == 'script' && steps.iltp.outputs.install_skip_shop_installation == 'false' }}
+        run: |
+          SCRIPT="source/vendor/oxid-esales/oxideshop-ce/.github/oxid-esales/install.sh"
+          if [ -f "${SCRIPT}" ]; then
+            chmod a+x "${SCRIPT}"
+            "${SCRIPT}"
+          else
+          echo -e "\033[0;31mCould not finds ${SCRIPT}\033[0m"
+            exit 1
+          fi
 
       - name: Run custom scripts
         # yamllint disable-line rule:line-length
