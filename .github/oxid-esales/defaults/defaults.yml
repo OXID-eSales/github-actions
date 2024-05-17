@@ -516,7 +516,7 @@ runtest:
   reset_shop: true
 
   test: 'AllTestsUnit'
-  additional_options: '--coverage-clover=/var/www/deprecated_tests_coverage.xml'
+  additional_options: '--coverage-clover=/var/www/coverage_deprecated_tests.xml'
   logfile:
     prefix: 'runtests'
 
@@ -528,7 +528,7 @@ runtest:
       data/php/logs/error_log.txt
     prefix: 'deprecated_tests_artifacts'
   coverage:
-    path: 'source/deprecated_tests_coverage.xml'
+    path: 'source/coverage_deprecated_tests.xml'
     prefix: coverage-reports-runtest
   failure_pattern: *failure_pattern
 
