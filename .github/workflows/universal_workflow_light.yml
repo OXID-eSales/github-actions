@@ -270,7 +270,7 @@ jobs:
 
       - name: 'Prepare Shop'
         id: prepare_shop
-        uses: 'OXID-eSales/github-actions/prepare_shop@v4'
+        uses: 'OXID-eSales/github-actions/prepare_shop@v0'
         with:
           container_name: ${{ steps.iltp.outputs.install_container_name }}
           container_options: ${{ steps.iltp.outputs.install_container_options }}
@@ -278,10 +278,16 @@ jobs:
           docker_login: ${{ steps.iltp.outputs.install_docker_login }}
           docker_user: ${{ secrets.DOCKER_HUB_USER }}
           docker_token: ${{ secrets.DOCKER_HUB_TOKEN }}
+          # Deprecated, use git_sdk_repository instead. This will be removed in in v5
           git_sdk_url: ${{ steps.iltp.outputs.install_git_sdk_url }}
+          git_sdk_repository: ${{ steps.iltp.outputs.install_git_sdk_repository }}
           git_sdk_ref: ${{ steps.iltp.outputs.install_git_sdk_ref }}
+          # Deprecated, use git_repository instead. This will be removed in in v5
           git_shop_url: ${{ steps.iltp.outputs.install_git_shop_url }}
+          # Deprecated, use git_ref instead. This will be removed in in v5
           git_shop_ref: ${{ steps.iltp.outputs.install_git_shop_ref }}
+          git_repository: ${{ steps.iltp.outputs.install_git_repository }}
+          git_ref: ${{ steps.iltp.outputs.install_git_ref }}
           compilation_url: ${{ steps.iltp.outputs.install_composer_root_url }}
           github_ref_name: ${{ github.ref_name }}
           php: ${{ matrix.php }}
