@@ -295,7 +295,7 @@ runs:
 
     - name: Clone the ee shop (PR)
       id: clone_ee_pr
-      # Deprecated for v5: This whole block should go away when using the new light workflow 
+      # Deprecated for v5: This whole block should go away when using the new light workflow
       if: ${{ inputs.github_event_name == 'pull_request' && github.repository == 'OXID-eSales/oxideshop_ee' }}
       shell: bash
       run: |
