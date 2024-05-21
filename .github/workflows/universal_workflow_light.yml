@@ -444,6 +444,12 @@ jobs:
         run: |
           # install_shop: Write files list
           find . >files.txt
+          # Compensate for multiline problems
+          cat >>"${GITHUB_ENV}" <<EOF
+          ARTIFACT_PATHS<<artifacts_path_delim
+          ${{ steps.iltp.outputs.install_output_files }}
+          artifacts_path_delim
+          EOF
     
       - name: Upload configuration artifacts
         if: always()
@@ -451,7 +457,7 @@ jobs:
         with:
           name: '${{ steps.iltp.outputs.install_output_artifact_prefix }}-${{steps.itn.outputs.matrix_suffix}}'
           path: |-
-            ${{ steps.iltp.outputs.install_output_files }}
+            ${{ env.ARTIFACT_PATHS }}
           
       - name: Run custom scripts
         # yamllint disable-line rule:line-length

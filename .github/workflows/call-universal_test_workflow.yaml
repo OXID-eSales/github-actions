@@ -414,6 +414,12 @@ jobs:
         run: |
           # install_shop: Write files list
           find . >files.txt
+          # Compensate for multiline problems
+          cat >>"${GITHUB_ENV}" <<EOF
+          ARTIFACT_PATHS<<artifacts_path_delim
+          ${{ needs.init.outputs.install_shop_output_files }}
+          artifacts_path_delim
+          EOF
     
       - name: Upload configuration artifacts
         if: always()
@@ -421,7 +427,7 @@ jobs:
         with:
           name: 'configs-install_shop-${{needs.init.outputs.global_title}}-PHP${{ matrix.php }}-MYSQL${{ matrix.mysql }}'
           path: |-
-            ${{ needs.init.outputs.install_shop_output_files }}
+            ${{ env.ARTIFACT_PATHS }}
 
       - name: Run custom scripts
         if: ${{ needs.init.outputs.install_shop_custom_script != '' || needs.init.outputs.install_shop_custom_script_container != '' }}
