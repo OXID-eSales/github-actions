@@ -101,6 +101,6 @@ runs:
         if [[ '${{ inputs.matrix_testplan}}' == '-' || -z '${{ inputs.matrix_testplan}}' ]]; then
           echo "testplan=${DEFAULT_TESTPLAN},${{ inputs.plan_folder }}/defaults/_rename.yaml" | tee -a "${GITHUB_OUTPUT}"
         else
-          echo "testplan=${DEFAULT_TESTPLAN},${MATRIX_TESTPLAN},${{ inputs.plan_folder }}/defaults/_rename.yaml" | tee -a "${GITHUB_OUTPUT}"
+          echo "testplan=${DEFAULT_TESTPLAN},${MATRIX_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
         fi
         echo "matrix_suffix=${{inputs.prefix}}-PHP${{inputs.php}}-MYSQL${{inputs.mysql}}" | tee -a "${GITHUB_OUTPUT}"
