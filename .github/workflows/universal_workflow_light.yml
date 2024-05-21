@@ -417,15 +417,13 @@ jobs:
 
       - name: 'Install shop (legacy)'
         if: ${{ steps.iltp.outputs.install_method == 'legacy' && steps.iltp.outputs.install_skip_shop_installation == 'false' }}
-        uses: 'OXID-eSales/github-actions/install_shop@v4'
+        uses: 'OXID-eSales/github-actions/install_shop@v0'
         with:
           container_name: ${{ steps.iltp.outputs.install_container_name }}
           container_options: ${{ steps.iltp.outputs.install_container_options }}
           container_method: ${{ steps.iltp.outputs.install_container_method }}
           is_enterprise: ${{ steps.iltp.outputs.install_is_enterprise }}
           config_idebug: ${{ steps.iltp.outputs.install_config_idebug }}
-          output_files: ${{ steps.iltp.outputs.install_output_files }}
-          output_artifact: '${{ steps.iltp.outputs.install_output_artifact_prefix }}-${{steps.itn.outputs.matrix_suffix}}'
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Install shop (script)'
@@ -440,6 +438,20 @@ jobs:
             exit 1
           fi
 
+      - name: Write files list
+        if: always()
+        shell: bash
+        run: |
+          # install_shop: Write files list
+          find . >files.txt
+    
+      - name: Upload configuration artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: '${{ steps.iltp.outputs.install_output_artifact_prefix }}-${{steps.itn.outputs.matrix_suffix}}'
+          path: ${{ steps.iltp.outputs.install_output_files }}
+          
       - name: Run custom scripts
         # yamllint disable-line rule:line-length
         if: ${{ steps.iltp.outputs.install_custom_script != '' || steps.iltp.outputs.install_custom_script_container != '' }}
