@@ -447,7 +447,7 @@ jobs:
           # Compensate for multiline problems
           {
             echo 'ARTIFACT_PATHS<<EOF'
-            echo "${{ steps.iltp.outputs.install_output_files }}" | sed 's/,|\s/\n/g'
+            echo "${{ steps.iltp.outputs.install_output_files }}" | sed -E 's/,|\s/\n/g'
             echo EOF
           } >> "${GITHUB_ENV}"
           cat "${GITHUB_ENV}"
