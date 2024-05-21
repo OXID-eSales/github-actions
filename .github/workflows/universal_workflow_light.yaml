@@ -449,7 +449,8 @@ jobs:
             echo 'ARTIFACT_PATHS<<EOF'
             echo "${{ steps.iltp.outputs.install_output_files }}" | sed 's/,|\s/\n/g'
             echo EOF
-          } >> "$GITHUB_ENV"
+          } >> "${GITHUB_ENV}"
+          cat "${GITHUB_ENV}"
 
       - name: Upload configuration artifacts
         if: always()
