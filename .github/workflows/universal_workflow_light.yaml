@@ -450,7 +450,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: '${{ steps.iltp.outputs.install_output_artifact_prefix }}-${{steps.itn.outputs.matrix_suffix}}'
-          path: |
+          path: |-
             ${{ steps.iltp.outputs.install_output_files }}
           
       - name: Run custom scripts

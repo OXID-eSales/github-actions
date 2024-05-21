@@ -420,7 +420,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: 'configs-install_shop-${{needs.init.outputs.global_title}}-PHP${{ matrix.php }}-MYSQL${{ matrix.mysql }}'
-          path: |
+          path: |-
             ${{ needs.init.outputs.install_shop_output_files }}
 
       - name: Run custom scripts
