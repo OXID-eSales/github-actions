@@ -415,11 +415,11 @@ jobs:
           # install_shop: Write files list
           find . >files.txt
           # Compensate for multiline problems
-          cat >>"${GITHUB_ENV}" <<EOF
-          ARTIFACT_PATHS<<artifacts_path_delim
-          ${{ needs.init.outputs.install_shop_output_files }}
-          artifacts_path_delim
-          EOF
+          {
+            echo 'ARTIFACT_PATHS<<EOF'
+            echo "${{ needs.init.outputs.install_shop_output_files }}" | sed 's/,|\s/\n/g'
+            echo EOF
+          } >> "$GITHUB_ENV"
     
       - name: Upload configuration artifacts
         if: always()

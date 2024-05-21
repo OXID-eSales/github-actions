@@ -445,12 +445,12 @@ jobs:
           # install_shop: Write files list
           find . >files.txt
           # Compensate for multiline problems
-          cat >>"${GITHUB_ENV}" <<EOF
-          ARTIFACT_PATHS<<artifacts_path_delim
-          ${{ steps.iltp.outputs.install_output_files }}
-          artifacts_path_delim
-          EOF
-    
+          {
+            echo 'ARTIFACT_PATHS<<EOF'
+            echo "${{ steps.iltp.outputs.install_output_files }}" | sed 's/,|\s/\n/g'
+            echo EOF
+          } >> "$GITHUB_ENV"
+
       - name: Upload configuration artifacts
         if: always()
         uses: actions/upload-artifact@v4
