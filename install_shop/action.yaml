@@ -24,31 +24,11 @@ inputs:
     type: boolean
     required: false
     default: false
-  output_files:
-    type: string
-    required: false
-    description: 'Configuration files for the shop setup'
-    default: |
-      docker-compose.yml
-      source/composer.json
-      source/composer.lock
-      source/source/config.inc.php
-      data/php/logs/error_log.txt
-      files.txt
-  output_artifact:
-    type: string
-    required: false
-    description: 'Github run artifact for the config output'
-    default: 'configs_install_shop'
   debug:
     type: string
     description: 'Appended to debugging scripts'
     default: ''
     required: false
-outputs:
-  installed_shop:
-    description: 'Name of the cached shop installation'
-    value: ${{ steps.init.outputs.installed_shop }}
 runs:
   using: "composite"
   steps:
@@ -99,6 +79,7 @@ runs:
         if [ -f source/vendor/oxid-esales/oxideshop-ce/source/config.inc.php ]; then
           perl -pi -e 's#iDebug = 0;#iDebug = -1;#g;' source/vendor/oxid-esales/oxideshop-ce/source/config.inc.php
         fi
+
     - name: Activate theme
       if: ${{ inputs.is_enterprise == 'true' }}
       shell: bash
@@ -110,13 +91,6 @@ runs:
           ${{ inputs.container_name }} \
           ${{ env.OE_CONSOLE }} oe:theme:activate apex
 
-    - name: Write files list
-      if: always()
-      shell: bash
-      run: |
-        # install_shop: Write files list
-        find . >files.txt
-
     - name: Output php error log
       if: always()
       shell: bash
@@ -127,10 +101,3 @@ runs:
           echo -e "\033[0;35mPHP error log\033[0m"
           cat data/php/logs/error_log.txt
         fi
-
-    - name: Upload configuration artifacts
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ inputs.output_artifact }}
-        path: ${{ inputs.output_files }}
