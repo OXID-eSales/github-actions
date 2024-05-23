@@ -406,9 +406,28 @@ jobs:
           container_method: ${{ needs.init.outputs.install_shop_container_method }}
           is_enterprise: ${{ needs.init.outputs.install_shop_is_enterprise }}
           config_idebug: ${{ needs.init.outputs.install_shop_config_idebug }}
-          output_files: ${{ needs.init.outputs.install_shop_output_files }}
-          output_artifact: 'configs-install_shop-${{needs.init.outputs.global_title}}-PHP${{ matrix.php }}-MYSQL${{ matrix.mysql }}'
           debug: ${{ needs.init.outputs.debug }}
+
+      - name: Write files list
+        if: always()
+        shell: bash
+        run: |
+          # install_shop: Write files list
+          find . >files.txt
+          # Compensate for multiline problems
+          {
+            echo 'ARTIFACT_PATHS<<EOF'
+            echo "${{ needs.init.outputs.install_shop_output_files }}" | sed -E 's/,|\s/\n/g'
+            echo EOF
+          } >> "${GITHUB_ENV}"
+    
+      - name: Upload configuration artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'configs-install_shop-${{needs.init.outputs.global_title}}-PHP${{ matrix.php }}-MYSQL${{ matrix.mysql }}'
+          path: |-
+            ${{ env.ARTIFACT_PATHS }}
 
       - name: Run custom scripts
         if: ${{ needs.init.outputs.install_shop_custom_script != '' || needs.init.outputs.install_shop_custom_script_container != '' }}

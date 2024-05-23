@@ -81,7 +81,7 @@ jobs:
             git add --all
             git commit -m "Merge main"
           fi
-          FILES=$(find . -iname '*.yml')
+          FILES=$(find . -iname '*.yml' -o -name "*.yaml")
           for FILE in ${FILES}; do
           sed -E 's|OXID-eSales/github-actions/(.*)@v([0-9][0-9]*)|OXID-eSales/github-actions/\1@v${{ inputs.major}}|g' \
               -i "${FILE}"

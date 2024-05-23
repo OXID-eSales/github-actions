@@ -157,7 +157,7 @@ global:
     update: true
 
     # Options for composer update
-    update-options: '--no-interaction'
+    update_options: '--no-interaction'
 
   # This grep pattern is applied to the generated phpunit, codeception and runtest log file. If we have
   # a hit matching the pattern below, the step will fail.
@@ -185,6 +185,10 @@ init:
   cache:
     bucket: *cache_bucket
     name: '{{ .Github.EventName }}-{{ .Github.RefName }}-testplan-{{ .Env.GITHUB_REPOSITORY_ID }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
+
+# This step installs the sdk, shop and module(s)
+install:
+  method: 'legacy'
 
 # This step installs the sdk, shop and module(s)
 install_shop_with_modules:
