@@ -442,7 +442,7 @@ jobs:
         if: always()
         shell: bash
         run: |
-          # install_shop: Write files list
+          # install: Write files list
           find . >files.txt
           # Compensate for multiline problems
           {
@@ -457,6 +457,8 @@ jobs:
         with:
           name: '${{ steps.iltp.outputs.install_output_artifact_prefix }}-${{steps.itn.outputs.matrix_suffix}}'
           path: |-
+            files.txt
+            generated_testplan.yaml
             ${{ env.ARTIFACT_PATHS }}
 
       - name: Run custom scripts
