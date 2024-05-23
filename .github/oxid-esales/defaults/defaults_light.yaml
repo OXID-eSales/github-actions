@@ -72,7 +72,10 @@ global:
   # Repository related settings
   git: &git
     # URL for the docker-eshop sdk repository to clone
+    # Deprecated, remove in v5
     sdk_url: &git_sdk_url 'https://github.com/OXID-eSales/docker-eshop-sdk.git'
+    # Name of the repository containing the oxideshop sdk
+    sdk_repository: &git_sdk_repository 'OXID-eSales/docker-eshop-sdk'
 
     # Branch to check out for the SDK
     sdk_ref: &git_sdk_ref 'master'
