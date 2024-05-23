@@ -420,7 +420,7 @@ jobs:
             echo "${{ needs.init.outputs.install_shop_output_files }}" | sed -E 's/,|\s/\n/g'
             echo EOF
           } >> "${GITHUB_ENV}"
-    
+
       - name: Upload configuration artifacts
         if: always()
         uses: actions/upload-artifact@v4
