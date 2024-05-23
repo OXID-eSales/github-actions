@@ -1,7 +1,7 @@
 # install_shop
 
 This action first runs oe-console oe:setup:shop, configuring the shop to use
-the mysl database in  the mysql container, <http://localhost.local> as shop URL, /var/www/source
+the mysql database in  the mysql container, <http://localhost.local> as shop URL, /var/www/source
 as shop-directory and /var/www/source/tmp as compile-directory.
 
 If the input "config_idebug" is set to true, iDebug is activated in source/source/config.inc.php.
