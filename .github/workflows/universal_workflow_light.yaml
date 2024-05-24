@@ -126,8 +126,8 @@ jobs:
           set_output: true
           set_env: true
           set_print: true
-          # loglevel: trace
-          # logfile: load_testplan.log
+          loglevel: trace
+          logfile: load_testplan_init.log
           yaml: generated_testplan.yaml
 
       - name: 'Prepare artifact and generate safe title'
@@ -155,7 +155,7 @@ jobs:
             generated_testplan.yaml
             generated_output.txt
             generated_env.txt
-            load_testplan.log
+            load_testplan_init.log
           debug: ${{ inputs.debug }}
 
       - name: 'Write Report'
@@ -266,6 +266,8 @@ jobs:
           set_print: true
           set_env: true
           yaml: generated_testplan.yaml
+          loglevel: trace
+          logfile: load_testplan_install.log
           token: ${{ secrets.enterprise_github_token }}
 
       - name: 'Prepare Shop'
@@ -459,6 +461,7 @@ jobs:
           path: |-
             files.txt
             generated_testplan.yaml
+            load_testplan_install.log
             ${{ env.ARTIFACT_PATHS }}
 
       - name: Run custom scripts
