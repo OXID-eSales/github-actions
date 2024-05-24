@@ -252,7 +252,7 @@ install_shop:
     artifact_prefix: 'configs_install_shop'
 
 # This section here is for compatibility reasons with the _rename template
-install:
+install_shop_with_modules:
   <<: *prepare_shop
   is_enterprise: *is_enterprise
   config: *install_config
