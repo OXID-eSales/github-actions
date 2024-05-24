@@ -15,7 +15,7 @@ install:
   matrix:
     php: '{{ if .Data.install.matrix.php }}{{ .Data.install.matrix.php }}{{ else }}{{ .Data.install_shop_with_modules.matrix.php }}{{ end }}'
     mysql: '{{ if .Data.install.matrix.mysql }}{{ .Data.install.matrix.mysql }}{{ else }}{{ .Data.install_shop_with_modules.matrix.mysql }}{{ end }}'
-  max_parallel: '{{ if .Data.install.max_parallel }}{{ .Data.install.max_parallel }}{{ else }}{{ .Data.install_shop_with_modules.max_parallel }}{{ end }}'
+  max_parallel: {{ if .Data.install.max_parallel }}{{ .Data.install.max_parallel }}{{ else }}{{ .Data.install_shop_with_modules.max_parallel }}{{ end }}
   docker_login: '{{ if .Data.install.docker_login }}{{ .Data.install.docker_login }}{{ else }}{{ .Data.install_shop_with_modules.docker_login }}{{ end }}'
   container:
     name: '{{ if .Data.install.container.name }}{{ .Data.install.container.name }}{{ else }}{{ .Data.install_shop_with_modules.container.name }}{{ end }}'
@@ -44,7 +44,8 @@ install:
     ref_name: '{{ if .Data.install.composer.ref_name }}{{ .Data.install.composer.ref_name }}{{ else }}{{ .Data.install_shop_with_modules.composer.ref_name }}{{ end }}'
     file: '{{ if .Data.install.composer.file }}{{ .Data.install.composer.file }}{{ else }}{{ .Data.install_shop_with_modules.composer.file }}{{ end }}'
     backup: '{{ if .Data.install.composer.backup }}{{ .Data.install.composer.backup }}{{ else }}{{ .Data.install_shop_with_modules.composer.backup }}{{ end }}'
-    transform: '{{ if .Data.install.composer.transform }}{{ .Data.install.composer.transform }}{{ else }}{{ .Data.install_shop_with_modules.composer.transform }}{{ end }}'
+    transform: |
+      {{ if .Data.install.composer.transform }}{{ .Data.install.composer.transform }}{{ else }}{{ .Data.install_shop_with_modules.composer.transform }}{{ end }}
     update: '{{ if .Data.install.composer.update }}{{ .Data.install.composer.update }}{{ else }}{{ .Data.install_shop_with_modules.composer.update }}{{ end }}'
     update_options: '{{ if .Data.install.composer.update_options }}{{ .Data.install.composer.update_options }}{{ else }}{{ .Data.install_shop_with_modules.composer.update_options }}{{ end }}'
     root_url: '{{ if .Data.install.composer.root_url }}{{ .Data.install.composer.root_url }}{{ else }}{{ .Data.install_shop_with_modules.composer.root_url }}{{ end }}'
@@ -54,10 +55,13 @@ install:
   add_services: '{{ if .Data.install.add_services }}{{ .Data.install.add_services }}{{ else }}{{ .Data.install_shop_with_modules.add_services }}{{ end }}'
   config:
     idebug: '{{ if .Data.install.config.idebug }}{{ .Data.install.config.idebug }}{{ else }}{{ .Data.install_shop_with_modules.config.idebug }}{{ end }}'
-  custom_script: '{{ if .Data.install.custom_script }}{{ .Data.install.custom_script }}{{ else }}{{ .Data.install_shop_with_modules.custom_script }}{{ end }}'
-  custom_script_container: '{{ if .Data.install.custom_script_container }}{{ .Data.install.custom_script_container }}{{ else }}{{ .Data.install_shop_with_modules.custom_script_container }}{{ end }}'
+  custom_script: |
+    {{ if .Data.install.custom_script }}{{ .Data.install.custom_script }}{{ else }}{{ .Data.install_shop_with_modules.custom_script }}{{ end }}
+  custom_script_container: |
+    {{ if .Data.install.custom_script_container }}{{ .Data.install.custom_script_container }}{{ else }}{{ .Data.install_shop_with_modules.custom_script_container }}{{ end }}
   skip_shop_installation: '{{ if .Data.install.skip_shop_installation }}{{ .Data.install.skip_shop_installation }}{{ else }}{{ .Data.install_shop_with_modules.skip_shop_installation }}{{ end }}'
   output:
-    files: '{{ if .Data.install.output.files }}{{ .Data.install.output.files }}{{ else }}{{ .Data.install_shop_with_modules.output.files }}{{ end }}'
+    files: |
+      {{ if .Data.install.output.files }}{{ .Data.install.output.files }}{{ else }}{{ .Data.install_shop_with_modules.output.files }}{{ end }}
     # The configuration file name is dynamic, the matrix variables will be appended
     artifact_prefix: 'install'
