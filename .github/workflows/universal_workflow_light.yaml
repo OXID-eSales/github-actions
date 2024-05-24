@@ -571,7 +571,7 @@ jobs:
           set_print: true
           set_env: true
           yaml: generated_testplan.yaml
-          loglevel: info
+          loglevel: trace
           logfile: load_testplan_runscript.log
           token: ${{ secrets.enterprise_github_token }}
 
