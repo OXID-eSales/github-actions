@@ -15,7 +15,7 @@ install:
   matrix:
     php: '{{ if .Data.install.matrix.php }}{{ .Data.install.matrix.php }}{{ else }}{{ .Data.install_shop_with_modules.matrix.php }}{{ end }}'
     mysql: '{{ if .Data.install.matrix.mysql }}{{ .Data.install.matrix.mysql }}{{ else }}{{ .Data.install_shop_with_modules.matrix.mysql }}{{ end }}'
-  max_parallel: {{ if .Data.install.max_parallel }}{{ .Data.install.max_parallel }}{{ else }}{{ .Data.install_shop_with_modules.max_parallel }}{{ end }}
+  max_parallel: '{{ if .Data.install.max_parallel }}{{ .Data.install.max_parallel }}{{ else }}{{ .Data.install_shop_with_modules.max_parallel }}{{ end }}'
   docker_login: '{{ if .Data.install.docker_login }}{{ .Data.install.docker_login }}{{ else }}{{ .Data.install_shop_with_modules.docker_login }}{{ end }}'
   container:
     name: '{{ if .Data.install.container.name }}{{ .Data.install.container.name }}{{ else }}{{ .Data.install_shop_with_modules.container.name }}{{ end }}'
