@@ -1,7 +1,6 @@
 # This is a helper which renames fields to their new names
 # It is needed before the implementation of the breaking changes
 # in v5 of these actions
-#
 
 global:
   git:
