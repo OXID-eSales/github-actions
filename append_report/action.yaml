@@ -147,6 +147,7 @@ runs:
       with:
         name: '${{ steps.safe_title.outputs.title }}'
         path: |
+          load_testplan*.log
           job_status/*.txt
           reports/*.md
           slack_reports/*.md
