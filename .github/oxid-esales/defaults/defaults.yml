@@ -179,7 +179,7 @@ init:
 # for the install_shop and shop_setup tests. It generates a cached object
 # used in those steps.
 # See docs/actions/prepare_shop.md for more information on the custom action.
-prepare_shop:
+prepare_shop: &prepare_shop
   matrix: *matrix
   max_parallel: *max_parallel
   docker_login: *docker_login
