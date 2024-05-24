@@ -1,7 +1,6 @@
 # This is a helper which renames fields to their new names
 # It is needed before the implementation of the breaking changes
 # in v5 of these actions
-#
 
 global:
   git:
@@ -45,7 +44,8 @@ install:
     ref_name: '{{ if .Data.install.composer.ref_name }}{{ .Data.install.composer.ref_name }}{{ else }}{{ .Data.install_shop_with_modules.composer.ref_name }}{{ end }}'
     file: '{{ if .Data.install.composer.file }}{{ .Data.install.composer.file }}{{ else }}{{ .Data.install_shop_with_modules.composer.file }}{{ end }}'
     backup: '{{ if .Data.install.composer.backup }}{{ .Data.install.composer.backup }}{{ else }}{{ .Data.install_shop_with_modules.composer.backup }}{{ end }}'
-    transform: '{{ if .Data.install.composer.transform }}{{ .Data.install.composer.transform }}{{ else }}{{ .Data.install_shop_with_modules.composer.transform }}{{ end }}'
+    transform: |
+      {{ if .Data.install.composer.transform }}{{ indent .Data.install.composer.transform 6 }}{{ else }}{{ indent .Data.install_shop_with_modules.composer.transform 6 }}{{ end }}
     update: '{{ if .Data.install.composer.update }}{{ .Data.install.composer.update }}{{ else }}{{ .Data.install_shop_with_modules.composer.update }}{{ end }}'
     update_options: '{{ if .Data.install.composer.update_options }}{{ .Data.install.composer.update_options }}{{ else }}{{ .Data.install_shop_with_modules.composer.update_options }}{{ end }}'
     root_url: '{{ if .Data.install.composer.root_url }}{{ .Data.install.composer.root_url }}{{ else }}{{ .Data.install_shop_with_modules.composer.root_url }}{{ end }}'
@@ -55,10 +55,13 @@ install:
   add_services: '{{ if .Data.install.add_services }}{{ .Data.install.add_services }}{{ else }}{{ .Data.install_shop_with_modules.add_services }}{{ end }}'
   config:
     idebug: '{{ if .Data.install.config.idebug }}{{ .Data.install.config.idebug }}{{ else }}{{ .Data.install_shop_with_modules.config.idebug }}{{ end }}'
-  custom_script: '{{ if .Data.install.custom_script }}{{ .Data.install.custom_script }}{{ else }}{{ .Data.install_shop_with_modules.custom_script }}{{ end }}'
-  custom_script_container: '{{ if .Data.install.custom_script_container }}{{ .Data.install.custom_script_container }}{{ else }}{{ .Data.install_shop_with_modules.custom_script_container }}{{ end }}'
+  custom_script: |
+    {{ if .Data.install.custom_script }}{{ indent .Data.install.custom_script 4 }}{{ else }}{{ indent .Data.install_shop_with_modules.custom_script 4 }}{{ end }}
+  custom_script_container: |
+    {{ if .Data.install.custom_script_container }}{{ indent .Data.install.custom_script_container 4 }}{{ else }}{{ indent .Data.install_shop_with_modules.custom_script_container 4 }}{{ end }}
   skip_shop_installation: '{{ if .Data.install.skip_shop_installation }}{{ .Data.install.skip_shop_installation }}{{ else }}{{ .Data.install_shop_with_modules.skip_shop_installation }}{{ end }}'
   output:
-    files: '{{ if .Data.install.output.files }}{{ .Data.install.output.files }}{{ else }}{{ .Data.install_shop_with_modules.output.files }}{{ end }}'
+    files: |
+      {{ if .Data.install.output.files }}{{ indent .Data.install.output.files 6 }}{{ else }}{{ indent .Data.install_shop_with_modules.output.files 6 }}{{ end }}
     # The configuration file name is dynamic, the matrix variables will be appended
     artifact_prefix: 'install'
