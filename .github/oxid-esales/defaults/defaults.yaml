@@ -230,7 +230,7 @@ install_shop:
     prefix: &install_shop_prefix 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
 
   # Modifying source/source/config.inc.php
-  config:
+  config: &install_config
     # Set iDebug in source/source/config.inc.php
     idebug: false
   # Run custom script outside the container
@@ -240,7 +240,7 @@ install_shop:
   custom_script_container: ''
 
   # Exporting an artifact with Configuration files for the shop setup
-  output:
+  output: &install_output
     files: |
       docker-compose.yml
       source/composer.json*
@@ -250,6 +250,15 @@ install_shop:
       files.txt
     # The configuration file name is dynamic, the matrix variables will be appended
     artifact_prefix: 'configs_install_shop'
+
+# This section here is for compatibility reasons with the _rename template
+install:
+  <<: *prepare_shop
+  is_enterprise: *is_enterprise
+  config: *install_config
+  custom_script: ''
+  custom_script_container: ''
+  output: *install_output
 
 # This installs a single module for testing. If no module is defined, you need
 # to ensure that the cache_prefix for this step is identical to the cache_prefix
