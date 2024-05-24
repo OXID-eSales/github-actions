@@ -126,7 +126,7 @@ jobs:
           set_output: true
           set_env: true
           set_print: true
-          loglevel: trace
+          loglevel: info
           logfile: load_testplan_init.log
           yaml: generated_testplan.yaml
 
