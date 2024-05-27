@@ -92,11 +92,18 @@ runs:
         echo "restore_cache '${{ inputs.cached_shop }}'" >debug/debug.sh
 
     - name: Login to Docker Hub
-      if: ${{ inputs.docker_login == 'true' }}
+      if: ${{ inputs.docker_login == 'true' && inputs.docker_user != '' }}
       uses: docker/login-action@v3
       with:
         username: ${{ inputs.docker_user }}
         password: ${{ inputs.docker_token }}
+
+    - name: Warn on missing docker credentials
+      if: ${{ inputs.docker_login == 'true' && inputs.docker_user == '' }}
+      shell: bash
+      run: |
+        # prepare_shop: Warn on missing docker credentials
+        echo "::warning title=Missing secrets::Please set the repository secrets DOCKER_HUB_USER and DOCKER_HUB_TOKEN to avoid running into docker.io rate limiting"
 
     - name: Start containers
       shell: bash
