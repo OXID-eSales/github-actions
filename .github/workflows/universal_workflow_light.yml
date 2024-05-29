@@ -321,7 +321,7 @@ jobs:
             if [ -n "${COMPOSER_PATH}" ]; then
               if [ -n "${COMPOSER_TRANSFORM}" ]; then
                 echo -e "\033[0;35mtransforming composer.json for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
-                cat > .composer_merge.tmp.json <<'EOF'
+                cat > .composer_merge.tmp.json <<EOF
           ${COMPOSER_TRANSFORM}
           EOF
                 export INPUT_FILES="source/${COMPOSER_PATH}/composer.json,.composer_merge.tmp.json"
@@ -347,7 +347,7 @@ jobs:
             if [ -n "${COMPOSER_PATH}" ]; then
               if [ -n "${COMPOSER_TRANSFORM}" ]; then
                 echo -e "\033[0;35mtransforming composer.json for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
-                cat > .composer_merge.tmp.json <<'EOF'
+                cat > .composer_merge.tmp.json <<EOF
           ${COMPOSER_TRANSFORM}
           EOF
                 export INPUT_FILES="source/${COMPOSER_PATH}/composer.json,.composer_merge.tmp.json"
