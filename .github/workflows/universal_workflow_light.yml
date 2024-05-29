@@ -324,9 +324,9 @@ jobs:
                 cat > .composer_merge.tmp.json <<'EOF'
           ${COMPOSER_TRANSFORM}
           EOF
-                export INPUT_FILES="/var/www/${COMPOSER_PATH}/composer.json,.composer_merge.tmp.json"
+                export INPUT_FILES="${COMPOSER_PATH}/composer.json,.composer_merge.tmp.json"
                 export INPUT_INPUT_TYPE="json"
-                export INPUT_JSON="/var/www/${COMPOSER_PATH}/composer.json"
+                export INPUT_JSON="${COMPOSER_PATH}/composer.json"
                 "${LOAD_TESTPLAN}"
                 unset INPUT_FILES INPUT_INPUT_TYPE INPUT_JSON
               fi
@@ -349,9 +349,9 @@ jobs:
                 cat > .composer_merge.tmp.json <<'EOF'
           ${COMPOSER_TRANSFORM}
           EOF
-                export INPUT_FILES="/var/www/${COMPOSER_PATH}/composer.json,.composer_merge.tmp.json"
+                export INPUT_FILES="${COMPOSER_PATH}/composer.json,.composer_merge.tmp.json"
                 export INPUT_INPUT_TYPE="json"
-                export INPUT_JSON="/var/www/${COMPOSER_PATH}/composer.json"
+                export INPUT_JSON="${COMPOSER_PATH}/composer.json"
                 "${LOAD_TESTPLAN}"
                 unset INPUT_FILES INPUT_INPUT_TYPE INPUT_JSON
               fi
