@@ -309,7 +309,7 @@ jobs:
       - name: Run composer for each module
         shell: bash
         run: |
-          git clone --depth=1 --quiet --branch v1 git@github.com:joernott/load_testplan.git load_testplan
+          git clone --depth=1 --quiet --branch v1 https://github.com/joernott/load_testplan.git load_testplan
           LOAD_TESTPLAN=$(find ./load_testplan -iname 'main-linux-amd64-*')
           chmod a+x "${LOAD_TESTPLAN}"
           PREFIXES=$(echo '${{steps.iltp.outputs.runscript_matrix_script}}'|tr ',' '\n'|tr -d '[]" '|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
