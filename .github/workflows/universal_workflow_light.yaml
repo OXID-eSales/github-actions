@@ -309,11 +309,27 @@ jobs:
       - name: Run composer for each module
         shell: bash
         run: |
+          git clone --depth=1 --quiet --branch v1 git@github.com:joernott/load_testplan.git load_testplan
+          LOAD_TESTPLAN=$(find ./load_testplan -iname 'main-linux-amd64-*')
+          chmod a+x "${LOAD_TESTPLAN}"
           PREFIXES=$(echo '${{steps.iltp.outputs.runscript_matrix_script}}'|tr ',' '\n'|tr -d '[]" '|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
           for PREFIX in ${PREFIXES}; do
             VAR="runscript_${PREFIX}_path"
             COMPOSER_PATH="${!VAR}"
+            VAR="runscript_${PREFIX}_composer_transform"
+            COMPOSER_TRANSFORM="${!VAR}"
             if [ -n "${COMPOSER_PATH}" ]; then
+              if [ -n "${COMPOSER_TRANSFORM}" ]; then
+                echo -e "\033[0;35mtransforming composer.json for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
+                cat > .composer_merge.tmp.json <<'EOF'
+                  ${COMPOSER_TRANSFORM}
+                EOF
+                export INPUT_FILES="/var/www/${COMPOSER_PATH}/composer.json,.composer_merge.tmp.json"
+                export INPUT_INPUT_TYPE="json"
+                export INPUT_JSON="/var/www/${COMPOSER_PATH}/composer.json"
+                "${LOAD_TESTPLAN}"
+                unset INPUT_FILES INPUT_INPUT_TYPE INPUT_JSON
+              fi
               echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
               docker compose ${{ steps.iltp.outputs.install_container_method }} -T \
               ${{ steps.iltp.outputs.install_container_options }} \
@@ -325,7 +341,20 @@ jobs:
           for PREFIX in ${PREFIXES}; do
             VAR="runslim_${PREFIX}_path"
             COMPOSER_PATH="${!VAR}"
+            VAR="runslim_${PREFIX}_composer_transform"
+            COMPOSER_TRANSFORM="${!VAR}"
             if [ -n "${COMPOSER_PATH}" ]; then
+              if [ -n "${COMPOSER_TRANSFORM}" ]; then
+                echo -e "\033[0;35mtransforming composer.json for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
+                cat > .composer_merge.tmp.json <<'EOF'
+                  ${COMPOSER_TRANSFORM}
+                EOF
+                export INPUT_FILES="/var/www/${COMPOSER_PATH}/composer.json,.composer_merge.tmp.json"
+                export INPUT_INPUT_TYPE="json"
+                export INPUT_JSON="/var/www/${COMPOSER_PATH}/composer.json"
+                "${LOAD_TESTPLAN}"
+                unset INPUT_FILES INPUT_INPUT_TYPE INPUT_JSON
+              fi
               echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runslim_${PREFIX}_path'\033[0m"
               docker compose ${{ steps.iltp.outputs.install_shop_with_modules_container_method }} -T \
               ${{ steps.iltp.outputs.install_shop_with_modules_container_options }} \
