@@ -324,11 +324,12 @@ jobs:
                 cat > .composer_merge.tmp.json <<'EOF'
           ${COMPOSER_TRANSFORM}
           EOF
-                export INPUT_FILES="${COMPOSER_PATH}/composer.json,.composer_merge.tmp.json"
+                export INPUT_FILES="source/${COMPOSER_PATH}/composer.json,.composer_merge.tmp.json"
                 export INPUT_INPUT_TYPE="json"
-                export INPUT_JSON="${COMPOSER_PATH}/composer.json"
+                export INPUT_JSON="source/${COMPOSER_PATH}/composer.json"
                 "${LOAD_TESTPLAN}"
                 unset INPUT_FILES INPUT_INPUT_TYPE INPUT_JSON
+                rm .composer_merge.tmp.json
               fi
               echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
               docker compose ${{ steps.iltp.outputs.install_container_method }} -T \
@@ -349,11 +350,12 @@ jobs:
                 cat > .composer_merge.tmp.json <<'EOF'
           ${COMPOSER_TRANSFORM}
           EOF
-                export INPUT_FILES="${COMPOSER_PATH}/composer.json,.composer_merge.tmp.json"
+                export INPUT_FILES="source/${COMPOSER_PATH}/composer.json,.composer_merge.tmp.json"
                 export INPUT_INPUT_TYPE="json"
-                export INPUT_JSON="${COMPOSER_PATH}/composer.json"
+                export INPUT_JSON="source/${COMPOSER_PATH}/composer.json"
                 "${LOAD_TESTPLAN}"
                 unset INPUT_FILES INPUT_INPUT_TYPE INPUT_JSON
+                rm .composer_merge.tmp.json
               fi
               echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runslim_${PREFIX}_path'\033[0m"
               docker compose ${{ steps.iltp.outputs.install_shop_with_modules_container_method }} -T \
