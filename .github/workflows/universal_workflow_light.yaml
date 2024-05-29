@@ -362,6 +362,7 @@ jobs:
                 composer update ${{ steps.iltp.outputs.install_shop_with_modules_composer_update_options}} -d "/var/www/${COMPOSER_PATH}"
             fi
           done
+          rm -rf ./load_testplan
 
       - name: Generate debugging script for running composer for each module
         if: ${{ inputs.debug == true }}
@@ -662,21 +663,21 @@ jobs:
           wait_for_selenium: true
           debug: ${{ needs.init.outputs.debug }}
 
-      - name: 'Modify composer.json'
-        if: ${{ steps.rt.outputs.runscript_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v4'
-        with:
-          file: 'source/${{ steps.rt.outputs.runscript_path }}/composer.json'
-          backup: true
-          transform: |
-            ${{ steps.rt.outputs.runscript_composer_transform }}
-          update: ${{ steps.rt.outputs.runscript_composer_update }}
-          update_options: '${{ steps.rt.outputs.runscript_composer_update_options }} -d /var/www/${{ steps.rt.outputs.runscript_path }}'
-          container_name: ${{ steps.rt.outputs.runscript_container_name }}
-          container_options: ${{ steps.rt.outputs.runscript_container_options }}
-          container_method: 'exec'
-          debug: ${{ needs.init.outputs.debug }}
-          github_token: ${{ secrets.enterprise_github_token || github.token }}
+      # - name: 'Modify composer.json'
+      #   if: ${{ steps.rt.outputs.runscript_composer_transform != '' }}
+      #   uses: 'OXID-eSales/github-actions/composer_merge@v4'
+      #   with:
+      #     file: 'source/${{ steps.rt.outputs.runscript_path }}/composer.json'
+      #     backup: true
+      #     transform: |
+      #       ${{ steps.rt.outputs.runscript_composer_transform }}
+      #     update: ${{ steps.rt.outputs.runscript_composer_update }}
+      #     update_options: '${{ steps.rt.outputs.runscript_composer_update_options }} -d /var/www/${{ steps.rt.outputs.runscript_path }}'
+      #     container_name: ${{ steps.rt.outputs.runscript_container_name }}
+      #     container_options: ${{ steps.rt.outputs.runscript_container_options }}
+      #     container_method: 'exec'
+      #     debug: ${{ needs.init.outputs.debug }}
+      #     github_token: ${{ secrets.enterprise_github_token || github.token }}
 
       - name: Run custom scripts
         if: ${{ steps.rt.outputs.runscript_custom_script != '' || steps.rt.outputs.runscript_custom_script_container != '' }}
@@ -828,21 +829,21 @@ jobs:
           wait_for_selenium: true
           debug: ${{ needs.init.outputs.debug }}
 
-      - name: 'Modify composer.json'
-        if: ${{ steps.rt.outputs.runslim_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v4'
-        with:
-          file: 'source/${{ steps.rt.outputs.runslim_path }}/composer.json'
-          backup: true
-          transform: |
-            ${{ steps.rt.outputs.runslim_composer_transform }}
-          update: ${{ steps.rt.outputs.runslim_composer_update }}
-          update_options: ${{ steps.rt.outputs.runslim_composer_update_options }}
-          container_name: ${{ steps.rt.outputs.runslim_container_name }}
-          container_options: ${{ steps.rt.outputs.runslim_container_options }}
-          container_method: 'exec'
-          debug: ${{ needs.init.outputs.debug }}
-          github_token: ${{ secrets.enterprise_github_token || github.token }}
+      # - name: 'Modify composer.json'
+      #   if: ${{ steps.rt.outputs.runslim_composer_transform != '' }}
+      #   uses: 'OXID-eSales/github-actions/composer_merge@v4'
+      #   with:
+      #     file: 'source/${{ steps.rt.outputs.runslim_path }}/composer.json'
+      #     backup: true
+      #     transform: |
+      #       ${{ steps.rt.outputs.runslim_composer_transform }}
+      #     update: ${{ steps.rt.outputs.runslim_composer_update }}
+      #     update_options: ${{ steps.rt.outputs.runslim_composer_update_options }}
+      #     container_name: ${{ steps.rt.outputs.runslim_container_name }}
+      #     container_options: ${{ steps.rt.outputs.runslim_container_options }}
+      #     container_method: 'exec'
+      #     debug: ${{ needs.init.outputs.debug }}
+      #     github_token: ${{ secrets.enterprise_github_token || github.token }}
 
       - name: Run custom scripts
         if: ${{ steps.rt.outputs.runslim_custom_script != '' || steps.rt.outputs.runslim_custom_script_container != '' }}
