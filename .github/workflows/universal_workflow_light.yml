@@ -911,9 +911,16 @@ jobs:
       MATRIX_PHP: ${{ matrix.php }}
       MATRIX_MYSQL: ${{ matrix.mysql }}
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     steps:
+      - name: Warn if sonarcloud secret is missing
+        if: ${{ env.SONAR_TOKEN == '' }}
+        run: |
+          echo "::warning title=Missing secrets::Please set the repository secrets SONAR_TOKEN to run sonarcloud scans"
+
       - name: Load cached testplan
         id: sonarcloud_testplan_name
+        if: ${{ env.SONAR_TOKEN != '' }}
         uses: OXID-eSales/github-actions/load_cached_testplan@v4
         with:
           php: ${{ matrix.php }}
@@ -931,6 +938,7 @@ jobs:
 
       - name: 'Load Testplan'
         id: sonarcloud_testplan
+        if: ${{ env.SONAR_TOKEN != '' }}
         uses: 'joernott/load_testplan@v1'
         with:
           files: '${{steps.sonarcloud_testplan_name.outputs.testplan}}'
@@ -942,6 +950,7 @@ jobs:
           token: ${{ secrets.enterprise_github_token }}
 
       - name: Checkout shop
+        if: ${{ env.SONAR_TOKEN != '' }}
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -950,6 +959,7 @@ jobs:
           token: ${{ secrets.enterprise_github_token || github.token }}
 
       - name: 'SonarCloud Scan'
+        if: ${{ env.SONAR_TOKEN != '' }}
         uses: 'OXID-eSales/github-actions/sonarcloud@v4'
         with:
           coverage_artifact: 'coverage-reports-*-${{ steps.sonarcloud_testplan_name.outputs.matrix_suffix }}'
