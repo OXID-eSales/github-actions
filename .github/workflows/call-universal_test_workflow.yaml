@@ -143,6 +143,7 @@ jobs:
           bucket: ${{ steps.ltp.outputs.init_cache_bucket }}
 
       - name: Obfuscate _custom yaml
+        if: always()
         shell: python
         run: |
           import yaml

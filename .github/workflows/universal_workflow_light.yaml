@@ -162,6 +162,7 @@ jobs:
           key: '${{ steps.ltp.outputs.init_cache_name }}'
 
       - name: Obfuscate _custom yaml
+        if: always()
         shell: python
         run: |
           import yaml
