@@ -131,6 +131,41 @@ jobs:
             sed -e 's#\-\-*#-#' -e 's#\_\_*#_#g'| \
             tee -a "${GITHUB_OUTPUT}"
 
+      - name: Cache testplan
+        uses: tespkg/actions-cache/save@v1
+        with:
+          path: |
+            ${{ inputs.plan_folder }}/*
+          key: '${{ steps.ltp.outputs.init_cache_name }}'
+          endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
+          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
+          bucket: ${{ steps.ltp.outputs.init_cache_bucket }}
+
+      - name: Obfuscate _custom yaml
+        if: always()
+        shell: python
+        run: |
+          import yaml
+
+          def obfuscate(d):
+              for k, v in d.items():
+                  if isinstance(v, dict):
+                      obfuscate(v)
+                  else:
+                      d[k]='***'
+              return d
+
+          with open('${{ inputs.plan_folder }}/_custom.yaml','r') as f:
+              data = yaml.safe_load(f)
+          if isinstance(data, dict):
+              if 'secrets' in data:
+                  data['secrets']=obfuscate(data['secrets'])
+              with open('${{ inputs.plan_folder }}/_custom.yaml', 'w') as file:
+                  yaml.dump(data, file)
+              with open('${{ inputs.plan_folder }}/_custom.yml', 'w') as file:
+                  yaml.dump(data, file)
+
       - name: 'Create first testplan archive'
         if: always()
         id: begin_report
@@ -159,17 +194,6 @@ jobs:
           priority: '001'
           cached_object: ${{ steps.ltp.outputs.init_cache_name }}
           debug: false
-
-      - name: Cache testplan
-        uses: tespkg/actions-cache/save@v1
-        with:
-          path: |
-            ${{ inputs.plan_folder }}/*
-          key: '${{ steps.ltp.outputs.init_cache_name }}'
-          endpoint: ${{ secrets.CACHE_ENDPOINT }}
-          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
-          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
-          bucket: ${{ steps.ltp.outputs.init_cache_bucket }}
 
     outputs:
       debug: ${{ steps.begin_report.outputs.debug }}
