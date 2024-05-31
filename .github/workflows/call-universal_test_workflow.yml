@@ -155,13 +155,13 @@ jobs:
                       d[k]='***'
               return d
 
-          with open(f'${{ inputs.plan_folder }}/_custom.yaml','r') as f:
+          with open('${{ inputs.plan_folder }}/_custom.yaml','r') as f:
               data = yaml.safe_load(f)
           if 'secrets' in data:
               data['secrets']=obfuscate(data['secrets'])
-          with open(f'${{ inputs.plan_folder }}/_custom.yaml', 'w') as file:
+          with open('${{ inputs.plan_folder }}/_custom.yaml', 'w') as file:
               yaml.dump(data, file)
-          with open(f'${{ inputs.plan_folder }}/_custom.yml', 'w') as file:
+          with open('${{ inputs.plan_folder }}/_custom.yml', 'w') as file:
               yaml.dump(data, file)
 
       - name: 'Create first testplan archive'
