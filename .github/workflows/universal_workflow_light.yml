@@ -140,6 +140,51 @@ jobs:
             sed -E 's#\s|\~|"|,|:|<|>|\||\*|\?|\/|\\#_#g' | \
             sed -e 's#\-\-*#-#' -e 's#\_\_*#_#g'| \
             tee -a "${GITHUB_OUTPUT}"
+
+      - name: Cache testplan on S3
+        if: ${{ inputs.runs_on != '"ubuntu-latest"'}}
+        uses: tespkg/actions-cache/save@v1
+        with:
+          path: |
+            ${{ inputs.plan_folder }}/*
+          key: '${{ steps.ltp.outputs.init_cache_name }}'
+          endpoint: ${{ secrets.CACHE_ENDPOINT }}
+          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
+          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
+          bucket: ${{ steps.ltp.outputs.init_cache_bucket }}
+
+      - name: Cache testplan on Github
+        if: ${{ inputs.runs_on == '"ubuntu-latest"'}}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ${{ inputs.plan_folder }}/*
+          key: '${{ steps.ltp.outputs.init_cache_name }}'
+
+      - name: Obfuscate _custom yaml
+        if: always()
+        shell: python
+        run: |
+          import yaml
+
+          def obfuscate(d):
+              for k, v in d.items():
+                  if isinstance(v, dict):
+                      obfuscate(v)
+                  else:
+                      d[k]='***'
+              return d
+
+          with open('${{ inputs.plan_folder }}/_custom.yaml','r') as f:
+              data = yaml.safe_load(f)
+          if isinstance(data, dict):
+              if 'secrets' in data:
+                  data['secrets']=obfuscate(data['secrets'])
+              with open('${{ inputs.plan_folder }}/_custom.yaml', 'w') as file:
+                  yaml.dump(data, file)
+              with open('${{ inputs.plan_folder }}/_custom.yml', 'w') as file:
+                  yaml.dump(data, file)
+
       - name: 'Create first testplan archive'
         if: always()
         id: begin_report
@@ -168,26 +213,6 @@ jobs:
           priority: '001'
           cached_object: ${{ steps.ltp.outputs.init_cache_name }}
           debug: false
-
-      - name: Cache testplan on S3
-        if: ${{ inputs.runs_on != '"ubuntu-latest"'}}
-        uses: tespkg/actions-cache/save@v1
-        with:
-          path: |
-            ${{ inputs.plan_folder }}/*
-          key: '${{ steps.ltp.outputs.init_cache_name }}'
-          endpoint: ${{ secrets.CACHE_ENDPOINT }}
-          accessKey: ${{ secrets.CACHE_ACCESS_KEY }}
-          secretKey: ${{ secrets.CACHE_SECRET_KEY }}
-          bucket: ${{ steps.ltp.outputs.init_cache_bucket }}
-
-      - name: Cache testplan on Github
-        if: ${{ inputs.runs_on == '"ubuntu-latest"'}}
-        uses: actions/cache/save@v4
-        with:
-          path: |
-            ${{ inputs.plan_folder }}/*
-          key: '${{ steps.ltp.outputs.init_cache_name }}'
 
     outputs:
       debug: ${{ steps.begin_report.outputs.debug }}
@@ -309,11 +334,26 @@ jobs:
       - name: Run composer for each module
         shell: bash
         run: |
+          git clone --depth=1 --quiet --branch v1 https://github.com/joernott/load_testplan.git load_testplan
+          LOAD_TESTPLAN=$(find ./load_testplan -iname 'main-linux-amd64-*')
+          chmod a+x "${LOAD_TESTPLAN}"
           PREFIXES=$(echo '${{steps.iltp.outputs.runscript_matrix_script}}'|tr ',' '\n'|tr -d '[]" '|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
           for PREFIX in ${PREFIXES}; do
             VAR="runscript_${PREFIX}_path"
             COMPOSER_PATH="${!VAR}"
+            VAR="runscript_${PREFIX}_composer_transform"
+            COMPOSER_TRANSFORM="${!VAR}"
             if [ -n "${COMPOSER_PATH}" ]; then
+              if [ -n "${COMPOSER_TRANSFORM}" ]; then
+                echo -e "\033[0;35mtransforming composer.json for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
+                echo "${COMPOSER_TRANSFORM}" > .composer_merge.tmp.json
+                export INPUT_FILES="source/${COMPOSER_PATH}/composer.json,.composer_merge.tmp.json"
+                export INPUT_INPUT_TYPE="json"
+                export INPUT_JSON="source/${COMPOSER_PATH}/composer.json"
+                "${LOAD_TESTPLAN}"
+                unset INPUT_FILES INPUT_INPUT_TYPE INPUT_JSON
+                rm .composer_merge.tmp.json
+              fi
               echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
               docker compose ${{ steps.iltp.outputs.install_container_method }} -T \
               ${{ steps.iltp.outputs.install_container_options }} \
@@ -325,7 +365,19 @@ jobs:
           for PREFIX in ${PREFIXES}; do
             VAR="runslim_${PREFIX}_path"
             COMPOSER_PATH="${!VAR}"
+            VAR="runslim_${PREFIX}_composer_transform"
+            COMPOSER_TRANSFORM="${!VAR}"
             if [ -n "${COMPOSER_PATH}" ]; then
+              if [ -n "${COMPOSER_TRANSFORM}" ]; then
+                echo -e "\033[0;35mtransforming composer.json for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
+                echo "${COMPOSER_TRANSFORM}" > .composer_merge.tmp.json
+                export INPUT_FILES="source/${COMPOSER_PATH}/composer.json,.composer_merge.tmp.json"
+                export INPUT_INPUT_TYPE="json"
+                export INPUT_JSON="source/${COMPOSER_PATH}/composer.json"
+                "${LOAD_TESTPLAN}"
+                unset INPUT_FILES INPUT_INPUT_TYPE INPUT_JSON
+                rm .composer_merge.tmp.json
+              fi
               echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runslim_${PREFIX}_path'\033[0m"
               docker compose ${{ steps.iltp.outputs.install_shop_with_modules_container_method }} -T \
               ${{ steps.iltp.outputs.install_shop_with_modules_container_options }} \
@@ -333,18 +385,7 @@ jobs:
                 composer update ${{ steps.iltp.outputs.install_shop_with_modules_composer_update_options}} -d "/var/www/${COMPOSER_PATH}"
             fi
           done
-          PREFIXES=$(echo '${{steps.isltp.outputs.runslim_matrix_script}}'|tr ',' '\n'|tr -d '[]" '|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
-          for PREFIX in ${PREFIXES}; do
-            VAR="runslim_${PREFIX}_path"
-            COMPOSER_PATH="${!VAR}"
-            if [ -n "${COMPOSER_PATH}" ]; then
-              echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runslim_${PREFIX}_path'\033[0m"
-              docker compose ${{ steps.isltp.outputs.install_shop_with_modules_container_method }} -T \
-              ${{ steps.isltp.outputs.install_shop_with_modules_container_options }} \
-                ${{ steps.isltp.outputs.install_shop_with_modules_container_name }} \
-                composer update ${{ steps.isltp.outputs.install_shop_with_modules_composer_update_options}} -d "/var/www/${COMPOSER_PATH}"
-            fi
-          done
+          rm -rf ./load_testplan
 
       - name: Generate debugging script for running composer for each module
         if: ${{ inputs.debug == true }}
@@ -380,22 +421,6 @@ jobs:
               --workdir "/var/www/${COMPOSER_PATH}" \
               ${{ steps.iltp.outputs.install_shop_with_modules_container_name }} \
               composer update ${{ steps.iltp.outputs.install_shop_with_modules_composer_update_options}}
-          EODS
-            fi
-          done
-          PREFIXES=$(echo '${{steps.isltp.outputs.runslim_matrix_script}}'|tr ',' '\n'|tr -d '[]" '|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
-          echo -e "\033[0;35mUnique prefixes: ${PREFIXES}\033[0m"
-          for PREFIX in ${PREFIXES}; do
-            VAR="runslim_${PREFIX}_path"
-            COMPOSER_PATH="${!VAR}"
-            if [ -n "${COMPOSER_PATH}" ]; then
-              cat >>debug/debug.sh <<EODS
-            echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runslim_${PREFIX}_path'\033[0m"
-            docker compose ${{ steps.isltp.outputs.install_shop_with_modules_container_method }} -T \
-            ${{ steps.isltp.outputs.install_shop_with_modules_container_options }} \
-              --workdir "/var/www/${COMPOSER_PATH}" \
-              ${{ steps.isltp.outputs.install_shop_with_modules_container_name }} \
-              composer update ${{ steps.isltp.outputs.install_shop_with_modules_composer_update_options}}
           EODS
             fi
           done
@@ -661,21 +686,7 @@ jobs:
           wait_for_selenium: true
           debug: ${{ needs.init.outputs.debug }}
 
-      - name: 'Modify composer.json'
-        if: ${{ steps.rt.outputs.runscript_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v4'
-        with:
-          file: 'source/${{ steps.rt.outputs.runscript_path }}/composer.json'
-          backup: true
-          transform: |
-            ${{ steps.rt.outputs.runscript_composer_transform }}
-          update: ${{ steps.rt.outputs.runscript_composer_update }}
-          update_options: '${{ steps.rt.outputs.runscript_composer_update_options }} -d /var/www/${{ steps.rt.outputs.runscript_path }}'
-          container_name: ${{ steps.rt.outputs.runscript_container_name }}
-          container_options: ${{ steps.rt.outputs.runscript_container_options }}
-          container_method: 'exec'
-          debug: ${{ needs.init.outputs.debug }}
-          github_token: ${{ secrets.enterprise_github_token || github.token }}
+      # - name: 'Modify composer.json' is handled in the install job before caching
 
       - name: Run custom scripts
         if: ${{ steps.rt.outputs.runscript_custom_script != '' || steps.rt.outputs.runscript_custom_script_container != '' }}
@@ -827,21 +838,7 @@ jobs:
           wait_for_selenium: true
           debug: ${{ needs.init.outputs.debug }}
 
-      - name: 'Modify composer.json'
-        if: ${{ steps.rt.outputs.runslim_composer_transform != '' }}
-        uses: 'OXID-eSales/github-actions/composer_merge@v4'
-        with:
-          file: 'source/${{ steps.rt.outputs.runslim_path }}/composer.json'
-          backup: true
-          transform: |
-            ${{ steps.rt.outputs.runslim_composer_transform }}
-          update: ${{ steps.rt.outputs.runslim_composer_update }}
-          update_options: ${{ steps.rt.outputs.runslim_composer_update_options }}
-          container_name: ${{ steps.rt.outputs.runslim_container_name }}
-          container_options: ${{ steps.rt.outputs.runslim_container_options }}
-          container_method: 'exec'
-          debug: ${{ needs.init.outputs.debug }}
-          github_token: ${{ secrets.enterprise_github_token || github.token }}
+      # - name: 'Modify composer.json' is handled in the install job before caching
 
       - name: Run custom scripts
         if: ${{ steps.rt.outputs.runslim_custom_script != '' || steps.rt.outputs.runslim_custom_script_container != '' }}
