@@ -142,6 +142,13 @@ jobs:
           secretKey: ${{ secrets.CACHE_SECRET_KEY }}
           bucket: ${{ steps.ltp.outputs.init_cache_bucket }}
 
+      - name: Install missing python3-yaml on private runners
+        if: ${{ inputs.runs_on != '"ubuntu-latest"'}}
+        shell: bash
+        run: |
+            sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update
+            sudo apt-get -qq install python3-yaml
+
       - name: Obfuscate _custom yaml
         if: always()
         shell: python
