@@ -491,6 +491,7 @@ jobs:
       - name: 'Install shop (script)'
         if: ${{ steps.iltp.outputs.install_method == 'script' && steps.iltp.outputs.install_skip_shop_installation == 'false' }}
         run: |
+          ${{ needs.init.outputs.debug }}
           SCRIPT="source/vendor/oxid-esales/oxideshop-ce/.github/oxid-esales/install.sh"
           if [ -f "${SCRIPT}" ]; then
             chmod a+x "${SCRIPT}"
@@ -499,6 +500,30 @@ jobs:
           echo -e "\033[0;31mCould not finds ${SCRIPT}\033[0m"
             exit 1
           fi
+
+      - name: Activate modules
+        shell: bash
+        run: |
+          ${{ needs.init.outputs.debug }}
+          cd source
+          if [ -f 'bin/oe-console' ]; then
+            OE_CONSOLE='bin/oe-console'
+          else
+            if [ -f 'vendor/bin/oe-console' ]; then
+              OE_CONSOLE='vendor/bin/oe-console'
+            else
+              echo -e "\033[0;31mCan't find oe-console in bin or vendor/bin!\033[0m"
+              exit 1
+            fi
+          fi
+          MODULES=$(echo -n "${{ steps.iltp.outputs.install_activate_modules }}"| tr '\n' ' ')
+          for MODULE in ${MODULES}; do
+            echo -e "\033[0;35m###  activating module ${MODULE} ###\033[0m"
+            docker compose ${{ steps.iltp.outputs.install_container_method }} -T \
+              ${{ steps.iltp.outputs.install_container_options }} \
+              ${{ steps.iltp.outputs.install_container_name}} \
+              ${OE_CONSOLE} oe:module:activate "${MODULE}"
+          done
 
       - name: Write files list
         if: always()

@@ -161,7 +161,7 @@ runs:
         for MODULE in ${MODULES}; do
           echo -e "\033[0;35m###  activating module ${MODULE} ###\033[0m"
           docker compose ${{ inputs.container_method }} -T \
-            ${{ inputs. container_options }} \
+            ${{ inputs.container_options }} \
             ${{ inputs.container_name}} \
             ${{ env.OE_CONSOLE }} oe:module:activate "${MODULE}"
         done
