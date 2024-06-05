@@ -416,8 +416,7 @@ jobs:
           ${JSON}
           EOF
           EODS
-              else
-                cat >>debug/debug.sh <<EODS
+              cat >>debug/debug.sh <<EODS
             echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
             docker compose ${{ steps.iltp.outputs.install_container_method }} -T \
             ${{ steps.iltp.outputs.install_container_options }} \
@@ -425,7 +424,6 @@ jobs:
               ${{ steps.iltp.outputs.install_container_name }} \
               composer update ${{ steps.iltp.outputs.install_composer_update_options}}
           EODS
-              fi
             fi
           done
           PREFIXES=$(echo '${{steps.iltp.outputs.runslim_matrix_script}}'|tr ',' '\n'|tr -d '[]" '|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
@@ -445,8 +443,7 @@ jobs:
           ${JSON}
           EOF
           EODS
-              else
-                cat >>debug/debug.sh <<EODS
+              cat >>debug/debug.sh <<EODS
             echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runslim_${PREFIX}_path'\033[0m"
             docker compose ${{ steps.iltp.outputs.install_shop_with_modules_container_method }} -T \
             ${{ steps.iltp.outputs.install_shop_with_modules_container_options }} \
@@ -454,7 +451,6 @@ jobs:
               ${{ steps.iltp.outputs.install_shop_with_modules_container_name }} \
               composer update ${{ steps.iltp.outputs.install_shop_with_modules_composer_update_options}}
           EODS
-              fi
             fi
           done
 
