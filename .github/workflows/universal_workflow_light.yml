@@ -404,8 +404,20 @@ jobs:
           for PREFIX in ${PREFIXES}; do
             VAR="runscript_${PREFIX}_path"
             COMPOSER_PATH="${!VAR}"
+            VAR="runscript_${PREFIX}_composer_transform"
+            COMPOSER_TRANSFORM="${!VAR}"
             if [ -n "${COMPOSER_PATH}" ]; then
-              cat >>debug/debug.sh <<EODS
+              if [ -n "${COMPOSER_TRANSFORM}" ]; then
+                JSON=$(cat source/${COMPOSER_PATH}/composer.json)
+                cat >>debug/debug.sh <<EODS
+          echo -e "\033[0;35mSimulating composer transform for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
+          cp "source/${COMPOSER_PATH}/composer.json" "source/${COMPOSER_PATH}/composer.json.bak"
+          cat >"source/${COMPOSER_PATH}/composer.json" <<'EOF'
+          ${JSON}
+          EOF
+          EODS
+              else
+                cat >>debug/debug.sh <<EODS
             echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
             docker compose ${{ steps.iltp.outputs.install_container_method }} -T \
             ${{ steps.iltp.outputs.install_container_options }} \
@@ -413,6 +425,7 @@ jobs:
               ${{ steps.iltp.outputs.install_container_name }} \
               composer update ${{ steps.iltp.outputs.install_composer_update_options}}
           EODS
+              fi
             fi
           done
           PREFIXES=$(echo '${{steps.iltp.outputs.runslim_matrix_script}}'|tr ',' '\n'|tr -d '[]" '|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
@@ -420,8 +433,20 @@ jobs:
           for PREFIX in ${PREFIXES}; do
             VAR="runslim_${PREFIX}_path"
             COMPOSER_PATH="${!VAR}"
+            VAR="runslim_${PREFIX}_composer_transform"
+            COMPOSER_TRANSFORM="${!VAR}"
             if [ -n "${COMPOSER_PATH}" ]; then
-              cat >>debug/debug.sh <<EODS
+              if [ -n "${COMPOSER_TRANSFORM}" ]; then
+                JSON=$(cat source/${COMPOSER_PATH}/composer.json)
+                cat >>debug/debug.sh <<EODS
+          echo -e "\033[0;35mSimulating composer transform for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
+          cp "source/${COMPOSER_PATH}/composer.json" "source/${COMPOSER_PATH}/composer.json.bak"
+          cat >"source/${COMPOSER_PATH}/composer.json" <<'EOF'
+          ${JSON}
+          EOF
+          EODS
+              else
+                cat >>debug/debug.sh <<EODS
             echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runslim_${PREFIX}_path'\033[0m"
             docker compose ${{ steps.iltp.outputs.install_shop_with_modules_container_method }} -T \
             ${{ steps.iltp.outputs.install_shop_with_modules_container_options }} \
@@ -429,6 +454,7 @@ jobs:
               ${{ steps.iltp.outputs.install_shop_with_modules_container_name }} \
               composer update ${{ steps.iltp.outputs.install_shop_with_modules_composer_update_options}}
           EODS
+              fi
             fi
           done
 
@@ -491,6 +517,7 @@ jobs:
       - name: 'Install shop (script)'
         if: ${{ steps.iltp.outputs.install_method == 'script' && steps.iltp.outputs.install_skip_shop_installation == 'false' }}
         run: |
+          ${{ needs.init.outputs.debug }}
           SCRIPT="source/vendor/oxid-esales/oxideshop-ce/.github/oxid-esales/install.sh"
           if [ -f "${SCRIPT}" ]; then
             chmod a+x "${SCRIPT}"
@@ -499,6 +526,30 @@ jobs:
           echo -e "\033[0;31mCould not finds ${SCRIPT}\033[0m"
             exit 1
           fi
+
+      - name: Activate modules
+        shell: bash
+        run: |
+          ${{ needs.init.outputs.debug }}
+          cd source
+          if [ -f 'bin/oe-console' ]; then
+            OE_CONSOLE='bin/oe-console'
+          else
+            if [ -f 'vendor/bin/oe-console' ]; then
+              OE_CONSOLE='vendor/bin/oe-console'
+            else
+              echo -e "\033[0;31mCan't find oe-console in bin or vendor/bin!\033[0m"
+              exit 1
+            fi
+          fi
+          MODULES=$(echo -n "${{ steps.iltp.outputs.install_activate_modules }}"| tr '\n' ' ')
+          for MODULE in ${MODULES}; do
+            echo -e "\033[0;35m###  activating module ${MODULE} ###\033[0m"
+            docker compose ${{ steps.iltp.outputs.install_container_method }} -T \
+              ${{ steps.iltp.outputs.install_container_options }} \
+              ${{ steps.iltp.outputs.install_container_name}} \
+              ${OE_CONSOLE} oe:module:activate "${MODULE}"
+          done
 
       - name: Write files list
         if: always()
