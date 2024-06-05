@@ -408,7 +408,7 @@ jobs:
             COMPOSER_TRANSFORM="${!VAR}"
             if [ -n "${COMPOSER_PATH}" ]; then
               if [ -n "${COMPOSER_TRANSFORM}" ]; then
-                JSON=$(cat source/${COMPOSER_PATH}/composer.json)
+                JSON=$(cat "source/${COMPOSER_PATH}/composer.json")
                 cat >>debug/debug.sh <<EODS
           echo -e "\033[0;35mSimulating composer transform for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
           cp "source/${COMPOSER_PATH}/composer.json" "source/${COMPOSER_PATH}/composer.json.bak"
@@ -437,7 +437,7 @@ jobs:
             COMPOSER_TRANSFORM="${!VAR}"
             if [ -n "${COMPOSER_PATH}" ]; then
               if [ -n "${COMPOSER_TRANSFORM}" ]; then
-                JSON=$(cat source/${COMPOSER_PATH}/composer.json)
+                JSON=$(cat "source/${COMPOSER_PATH}/composer.json")
                 cat >>debug/debug.sh <<EODS
           echo -e "\033[0;35mSimulating composer transform for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
           cp "source/${COMPOSER_PATH}/composer.json" "source/${COMPOSER_PATH}/composer.json.bak"
