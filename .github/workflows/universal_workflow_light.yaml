@@ -411,7 +411,9 @@ jobs:
             COMPOSER_PATH="${!VAR}"
             VAR="runscript_${PREFIX}_composer_transform"
             COMPOSER_TRANSFORM="${!VAR}"
-            if [ -n "${COMPOSER_PATH}" ]; then
+            VAR="runscript_${PREFIX}_composer_early"
+            EARLY="${!VAR}"
+            if [[ -n "${COMPOSER_PATH}" && "${EARLY}" == 'true' ]]; then
               if [ -n "${COMPOSER_TRANSFORM}" ]; then
                 JSON=$(cat "source/${COMPOSER_PATH}/composer.json")
                 cat >>debug/debug.sh <<EODS
@@ -421,6 +423,7 @@ jobs:
           ${JSON}
           EOF
           EODS
+              fi
               cat >>debug/debug.sh <<EODS
             echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
             docker compose ${{ steps.iltp.outputs.install_container_method }} -T \
@@ -438,7 +441,9 @@ jobs:
             COMPOSER_PATH="${!VAR}"
             VAR="runslim_${PREFIX}_composer_transform"
             COMPOSER_TRANSFORM="${!VAR}"
-            if [ -n "${COMPOSER_PATH}" ]; then
+            VAR="runslim_${PREFIX}_composer_early"
+            EARLY="${!VAR}"
+            if [[ -n "${COMPOSER_PATH}" && "${EARLY}" == 'true' ]]; then
               if [ -n "${COMPOSER_TRANSFORM}" ]; then
                 JSON=$(cat "source/${COMPOSER_PATH}/composer.json")
                 cat >>debug/debug.sh <<EODS
@@ -448,6 +453,7 @@ jobs:
           ${JSON}
           EOF
           EODS
+              fi
               cat >>debug/debug.sh <<EODS
             echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runslim_${PREFIX}_path'\033[0m"
             docker compose ${{ steps.iltp.outputs.install_shop_with_modules_container_method }} -T \
