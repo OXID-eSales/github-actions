@@ -547,11 +547,10 @@ jobs:
         shell: bash
         run: |
           ${{ needs.init.outputs.debug }}
-          cd source
-          if [ -f 'bin/oe-console' ]; then
+          if [ -f 'source/bin/oe-console' ]; then
             OE_CONSOLE='bin/oe-console'
           else
-            if [ -f 'vendor/bin/oe-console' ]; then
+            if [ -f 'source/vendor/bin/oe-console' ]; then
               OE_CONSOLE='vendor/bin/oe-console'
             else
               echo -e "\033[0;31mCan't find oe-console in bin or vendor/bin!\033[0m"
