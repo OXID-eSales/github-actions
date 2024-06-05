@@ -49,6 +49,7 @@ install:
     update: '{{ if .Data.install.composer.update }}{{ .Data.install.composer.update }}{{ else }}{{ .Data.install_shop_with_modules.composer.update }}{{ end }}'
     update_options: '{{ if .Data.install.composer.update_options }}{{ .Data.install.composer.update_options }}{{ else }}{{ .Data.install_shop_with_modules.composer.update_options }}{{ end }}'
     root_url: '{{ if .Data.install.composer.root_url }}{{ .Data.install.composer.root_url }}{{ else }}{{ .Data.install_shop_with_modules.composer.root_url }}{{ end }}'
+    early: '{{ if .Data.install.composer.early }}{{ .Data.install.composer.early }}{{ else }}{{ .Data.install_shop_with_modules.composer.early }}{{ end }}'
   custom_ini:
     error_reporting: '{{ if .Data.install.custom_ini.error_reporting }}{{ .Data.install.custom_ini.error_reporting }}{{ else }}{{ .Data.install_shop_with_modules.custom_ini.error_reporting }}{{ end }}'
     xdebug: '{{ if .Data.install.custom_ini.xdebug }}{{ .Data.install.custom_ini.xdebug }}{{ else }}{{ .Data.install_shop_with_modules.custom_ini.xdebug }}{{ end }}'
