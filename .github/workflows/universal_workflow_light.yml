@@ -517,7 +517,23 @@ jobs:
       - name: 'Install shop (script)'
         if: ${{ steps.iltp.outputs.install_method == 'script' && steps.iltp.outputs.install_skip_shop_installation == 'false' }}
         run: |
-          ${{ needs.init.outputs.debug }}
+          SCRIPT="source/vendor/oxid-esales/oxideshop-ce/.github/oxid-esales/install.sh"
+          if [ -f "${SCRIPT}" ]; then
+            chmod a+x "${SCRIPT}"
+            "${SCRIPT}"
+          else
+            echo -e "\033[0;31mCould not finds ${SCRIPT}\033[0m"
+            exit 1
+          fi
+
+      - name: 'Debug Install shop (script)'
+        if: ${{ steps.iltp.outputs.install_method == 'script' && steps.iltp.outputs.install_skip_shop_installation == 'false' }}
+        run: |
+          echo "banner 'Install shop (script)'" >>debug/debug.sh
+          for E in $(env|grep -E "^global_|install_|custom_|secrets_"); do
+            echo "export ${E}" >>debug/debug.sh
+          done
+          cat >>debug/debug.sh <<EOF
           SCRIPT="source/vendor/oxid-esales/oxideshop-ce/.github/oxid-esales/install.sh"
           if [ -f "${SCRIPT}" ]; then
             chmod a+x "${SCRIPT}"
@@ -526,16 +542,15 @@ jobs:
           echo -e "\033[0;31mCould not finds ${SCRIPT}\033[0m"
             exit 1
           fi
-
+          EOF
       - name: Activate modules
         shell: bash
         run: |
           ${{ needs.init.outputs.debug }}
-          cd source
-          if [ -f 'bin/oe-console' ]; then
+          if [ -f 'source/bin/oe-console' ]; then
             OE_CONSOLE='bin/oe-console'
           else
-            if [ -f 'vendor/bin/oe-console' ]; then
+            if [ -f 'source/vendor/bin/oe-console' ]; then
               OE_CONSOLE='vendor/bin/oe-console'
             else
               echo -e "\033[0;31mCan't find oe-console in bin or vendor/bin!\033[0m"
