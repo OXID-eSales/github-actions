@@ -379,7 +379,7 @@ jobs:
             COMPOSER_TRANSFORM="${!VAR}"
             VAR="runslim_${PREFIX}_composer_early"
             EARLY="${!VAR}"
-            if [[ -n "${COMPOSER_PATH}" && "${EARLY}" == 'true']]; then
+            if [[ -n "${COMPOSER_PATH}" && "${EARLY}" == 'true' ]]; then
               if [ -n "${COMPOSER_TRANSFORM}" ]; then
                 echo -e "\033[0;35mtransforming composer.json for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
                 echo "${COMPOSER_TRANSFORM}" > .composer_merge.tmp.json
