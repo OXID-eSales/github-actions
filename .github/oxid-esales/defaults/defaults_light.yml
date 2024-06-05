@@ -214,7 +214,9 @@ install_shop_with_modules:
 
   composer:
     <<: *composer
+    # This is a composer template we're transforming into whatever we need
     root_url: 'https://raw.githubusercontent.com/OXID-eSales/docker-eshop-sdk-recipes/master/parts/bases/composer.json.base'
+    # This is the default transformation
     transform: |
       {
           "preferred-install": {
@@ -228,6 +230,10 @@ install_shop_with_modules:
               "oxid-esales/apex-theme": "dev-b-8.0.x"
           }
       }
+
+    # Should we run composer transform in the install job (true) or only when running tests.
+    # The default is to run them early but you need to set it to false for the shop
+    early: true
 
   # These modify php "custom.ini"
   custom_ini:
