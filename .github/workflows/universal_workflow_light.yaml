@@ -556,7 +556,7 @@ jobs:
           for E in $(env|grep -E "^global_|^install_|^custom_|^secrets_"|grep -v "_transform="); do
             IFS=';' read -ra EXP <<< "$E"
             VAL=("${EXP[@]:1}")
-            echo "export ${EXP[0]}='${VAL[@]}'" >>debug/debug.sh
+            echo "export ${EXP[0]}='${VAL[*]}'" >>debug/debug.sh
           done
           cat >>debug/debug.sh <<EOF
           SCRIPT="source/vendor/oxid-esales/oxideshop-ce/.github/oxid-esales/install.sh"
