@@ -353,7 +353,6 @@ jobs:
             VAR="runscript_${PREFIX}_composer_early"
             EARLY="${!VAR}"
             [ -z "${EARLY}" ] && EARLY="${runscript_composer_early}"
-            COMPOSER_TRANSFORM="${!VAR}"
             if [[ -n "${COMPOSER_PATH}" && "${EARLY}" == 'false' ]]; then
               echo -e "\033[0;35mSkipping composer install  for '${PREFIX}', runscript_${PREFIX}_composer_early=='${EARLY}'\033[0m"
             else
