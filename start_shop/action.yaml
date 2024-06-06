@@ -101,11 +101,10 @@ runs:
     - name: Warn on missing docker credentials
       if: ${{ inputs.docker_login == 'true' && inputs.docker_user == '' }}
       shell: bash
-      # yamllint disable rule:line-length
       run: |
         # prepare_shop: Warn on missing docker credentials
-        echo "::warning title=Missing secrets::Please set the repository secrets DOCKER_HUB_USER and DOCKER_HUB_TOKEN to avoid running into docker.io rate limiting"
-      # yamllint enable rule:line-length
+        MSG="Please set the repository secrets DOCKER_HUB_USER and DOCKER_HUB_TOKEN to avoid running into docker.io rate limiting"
+        echo "::warning title=Missing secrets::${MSG}"
 
     - name: Start containers
       shell: bash
