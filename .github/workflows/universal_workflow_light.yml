@@ -382,7 +382,10 @@ jobs:
             COMPOSER_TRANSFORM="${!VAR}"
             VAR="runslim_${PREFIX}_composer_early"
             EARLY="${!VAR}"
-            if [[ -n "${COMPOSER_PATH}" && "${EARLY}" == 'true' ]]; then
+            [ -z "${EARLY}" ] && EARLY="${runslim_composer_early}"
+            if [[ -n "${COMPOSER_PATH}" && "${EARLY}" == 'false' ]]; then
+              echo -e "\033[0;35mSkipping composer install  for '${PREFIX}', runscript_${PREFIX}_composer_early=='${EARLY}'\033[0m"
+            else
               if [ -n "${COMPOSER_TRANSFORM}" ]; then
                 echo -e "\033[0;35mtransforming composer.json for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
                 echo "${COMPOSER_TRANSFORM}" > .composer_merge.tmp.json
@@ -416,7 +419,12 @@ jobs:
             COMPOSER_TRANSFORM="${!VAR}"
             VAR="runscript_${PREFIX}_composer_early"
             EARLY="${!VAR}"
-            if [[ -n "${COMPOSER_PATH}" && "${EARLY}" == 'true' ]]; then
+            [ -z "${EARLY}" ] && EARLY="${runscript_composer_early}"
+            if [[ -n "${COMPOSER_PATH}" && "${EARLY}" == 'false' ]]; then
+            cat >>debug/debug.sh <<EODS
+              echo -e "\033[0;35mSkipping composer install  for '${PREFIX}', runscript_${PREFIX}_composer_early=='${EARLY}'\033[0m"
+          EODS
+            else
               if [ -n "${COMPOSER_TRANSFORM}" ]; then
                 JSON=$(cat "source/${COMPOSER_PATH}/composer.json")
                 cat >>debug/debug.sh <<EODS
@@ -446,7 +454,12 @@ jobs:
             COMPOSER_TRANSFORM="${!VAR}"
             VAR="runslim_${PREFIX}_composer_early"
             EARLY="${!VAR}"
-            if [[ -n "${COMPOSER_PATH}" && "${EARLY}" == 'true' ]]; then
+            [ -z "${EARLY}" ] && EARLY="${runslim_composer_early}"
+            if [[ -n "${COMPOSER_PATH}" && "${EARLY}" == 'false' ]]; then
+              cat >>debug/debug.sh <<EODS
+                echo -e "\033[0;35mSkipping composer install  for '${PREFIX}', runscript_${PREFIX}_composer_early=='${EARLY}'\033[0m"
+          EODS
+            else
               if [ -n "${COMPOSER_TRANSFORM}" ]; then
                 JSON=$(cat "source/${COMPOSER_PATH}/composer.json")
                 cat >>debug/debug.sh <<EODS
@@ -542,8 +555,8 @@ jobs:
           echo "banner 'Install shop (script)'" >>debug/debug.sh
           for E in $(env|grep -E "^global_|^install_|^custom_|^secrets_"|grep -v "_transform="); do
             IFS=';' read -ra EXP <<< "$E"
-            VAL="${EXP[@]:1}"
-            echo "export ${EXP[0]}='${VAL}'" >>debug/debug.sh
+            VAL=("${EXP[@]:1}")
+            echo "export ${EXP[0]}='${VAL[@]}'" >>debug/debug.sh
           done
           cat >>debug/debug.sh <<EOF
           SCRIPT="source/vendor/oxid-esales/oxideshop-ce/.github/oxid-esales/install.sh"
