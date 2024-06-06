@@ -556,7 +556,7 @@ jobs:
           for E in $(env|grep -E "^global_|^install_|^custom_|^secrets_"|grep -v "_transform="); do
             IFS=';' read -ra EXP <<< "$E"
             VAL=("${EXP[@]:1}")
-            # shellcheck ignore SC2145
+            # shellcheck disable=SC2145
             echo "export ${EXP[0]}='${VAL[@]}'" >>debug/debug.sh
           done
           cat >>debug/debug.sh <<EOF
