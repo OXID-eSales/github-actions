@@ -232,8 +232,8 @@ install_shop_with_modules:
       }
 
     # Should we run composer transform in the install job (true) or only when running tests.
-    # The default is to run them early but you need to set it to false for the shop
-    early: true
+    # The default is to run them just before running the tests only for that instance and module
+    early: false
 
   # These modify php "custom.ini"
   custom_ini:
