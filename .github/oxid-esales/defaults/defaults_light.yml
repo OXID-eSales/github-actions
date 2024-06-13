@@ -142,6 +142,10 @@ global:
     # composer. In the workflow, we then replace this with a working reference
     ref_name: dev-{{ .Github.RefName }}
 
+    # Run composer for every module in the install job if early is set to true
+    # Do not use this with oxideshop-ce
+    early: false
+
     # Use these settings below to merge a json configuration with an existing
     # composer.json
 
