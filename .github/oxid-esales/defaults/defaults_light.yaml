@@ -144,7 +144,7 @@ global:
 
     # Run composer for every module in the install job if early is set to true
     # Do not use this with oxideshop-ce
-    early: false
+    early: &early false
 
     # Use these settings below to merge a json configuration with an existing
     # composer.json
@@ -293,6 +293,7 @@ runscript: &runscript
   cache:
     bucket: *cache_bucket
   composer:
+    early: *early
     file: 'source/dev-packages/test-module/composer.json'
     backup: true
     transform: ''
