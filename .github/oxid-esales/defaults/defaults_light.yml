@@ -142,6 +142,10 @@ global:
     # composer. In the workflow, we then replace this with a working reference
     ref_name: dev-{{ .Github.RefName }}
 
+    # Run composer for every module in the install job if early is set to true
+    # Do not use this with oxideshop-ce
+    early: false
+
     # Use these settings below to merge a json configuration with an existing
     # composer.json
 
@@ -214,7 +218,9 @@ install_shop_with_modules:
 
   composer:
     <<: *composer
+    # This is a composer template we're transforming into whatever we need
     root_url: 'https://raw.githubusercontent.com/OXID-eSales/docker-eshop-sdk-recipes/master/parts/bases/composer.json.base'
+    # This is the default transformation
     transform: |
       {
           "preferred-install": {
@@ -228,6 +234,10 @@ install_shop_with_modules:
               "oxid-esales/apex-theme": "dev-b-8.0.x"
           }
       }
+
+    # Should we run composer transform in the install job (true) or only when running tests.
+    # The default is to run them just before running the tests only for that instance and module
+    early: false
 
   # These modify php "custom.ini"
   custom_ini:

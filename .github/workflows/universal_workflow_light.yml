@@ -350,7 +350,12 @@ jobs:
             COMPOSER_PATH="${!VAR}"
             VAR="runscript_${PREFIX}_composer_transform"
             COMPOSER_TRANSFORM="${!VAR}"
-            if [ -n "${COMPOSER_PATH}" ]; then
+            VAR="runscript_${PREFIX}_composer_early"
+            EARLY="${!VAR}"
+            [ -z "${EARLY}" ] && EARLY="${runscript_composer_early}"
+            if [[ -n "${COMPOSER_PATH}" && "${EARLY}" == 'false' ]]; then
+              echo -e "\033[0;35mSkipping composer install  for '${PREFIX}', runscript_${PREFIX}_composer_early=='${EARLY}'\033[0m"
+            else
               if [ -n "${COMPOSER_TRANSFORM}" ]; then
                 echo -e "\033[0;35mtransforming composer.json for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
                 echo "${COMPOSER_TRANSFORM}" > .composer_merge.tmp.json
@@ -374,7 +379,12 @@ jobs:
             COMPOSER_PATH="${!VAR}"
             VAR="runslim_${PREFIX}_composer_transform"
             COMPOSER_TRANSFORM="${!VAR}"
-            if [ -n "${COMPOSER_PATH}" ]; then
+            VAR="runslim_${PREFIX}_composer_early"
+            EARLY="${!VAR}"
+            [ -z "${EARLY}" ] && EARLY="${runslim_composer_early}"
+            if [[ -n "${COMPOSER_PATH}" && "${EARLY}" == 'false' ]]; then
+              echo -e "\033[0;35mSkipping composer install  for '${PREFIX}', runscript_${PREFIX}_composer_early=='${EARLY}'\033[0m"
+            else
               if [ -n "${COMPOSER_TRANSFORM}" ]; then
                 echo -e "\033[0;35mtransforming composer.json for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
                 echo "${COMPOSER_TRANSFORM}" > .composer_merge.tmp.json
@@ -392,6 +402,10 @@ jobs:
                 composer update ${{ steps.iltp.outputs.install_shop_with_modules_composer_update_options}} -d "/var/www/${COMPOSER_PATH}"
             fi
           done
+          docker compose ${{ steps.iltp.outputs.install_shop_with_modules_container_method }} -T \
+          ${{ steps.iltp.outputs.install_shop_with_modules_container_options }} \
+            ${{ steps.iltp.outputs.install_shop_with_modules_container_name }} \
+            composer update ${{ steps.iltp.outputs.install_shop_with_modules_composer_update_options}}
           rm -rf ./load_testplan
 
       - name: Generate debugging script for running composer for each module
@@ -404,7 +418,26 @@ jobs:
           for PREFIX in ${PREFIXES}; do
             VAR="runscript_${PREFIX}_path"
             COMPOSER_PATH="${!VAR}"
-            if [ -n "${COMPOSER_PATH}" ]; then
+            VAR="runscript_${PREFIX}_composer_transform"
+            COMPOSER_TRANSFORM="${!VAR}"
+            VAR="runscript_${PREFIX}_composer_early"
+            EARLY="${!VAR}"
+            [ -z "${EARLY}" ] && EARLY="${runscript_composer_early}"
+            if [[ -n "${COMPOSER_PATH}" && "${EARLY}" == 'false' ]]; then
+            cat >>debug/debug.sh <<EODS
+              echo -e "\033[0;35mSkipping composer install  for '${PREFIX}', runscript_${PREFIX}_composer_early=='${EARLY}'\033[0m"
+          EODS
+            else
+              if [ -n "${COMPOSER_TRANSFORM}" ]; then
+                JSON=$(cat "source/${COMPOSER_PATH}/composer.json")
+                cat >>debug/debug.sh <<EODS
+          echo -e "\033[0;35mSimulating composer transform for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
+          cp "source/${COMPOSER_PATH}/composer.json" "source/${COMPOSER_PATH}/composer.json.bak"
+          cat >"source/${COMPOSER_PATH}/composer.json" <<'EOF'
+          ${JSON}
+          EOF
+          EODS
+              fi
               cat >>debug/debug.sh <<EODS
             echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
             docker compose ${{ steps.iltp.outputs.install_container_method }} -T \
@@ -420,7 +453,26 @@ jobs:
           for PREFIX in ${PREFIXES}; do
             VAR="runslim_${PREFIX}_path"
             COMPOSER_PATH="${!VAR}"
-            if [ -n "${COMPOSER_PATH}" ]; then
+            VAR="runslim_${PREFIX}_composer_transform"
+            COMPOSER_TRANSFORM="${!VAR}"
+            VAR="runslim_${PREFIX}_composer_early"
+            EARLY="${!VAR}"
+            [ -z "${EARLY}" ] && EARLY="${runslim_composer_early}"
+            if [[ -n "${COMPOSER_PATH}" && "${EARLY}" == 'false' ]]; then
+              cat >>debug/debug.sh <<EODS
+                echo -e "\033[0;35mSkipping composer install  for '${PREFIX}', runscript_${PREFIX}_composer_early=='${EARLY}'\033[0m"
+          EODS
+            else
+              if [ -n "${COMPOSER_TRANSFORM}" ]; then
+                JSON=$(cat "source/${COMPOSER_PATH}/composer.json")
+                cat >>debug/debug.sh <<EODS
+          echo -e "\033[0;35mSimulating composer transform for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
+          cp "source/${COMPOSER_PATH}/composer.json" "source/${COMPOSER_PATH}/composer.json.bak"
+          cat >"source/${COMPOSER_PATH}/composer.json" <<'EOF'
+          ${JSON}
+          EOF
+          EODS
+              fi
               cat >>debug/debug.sh <<EODS
             echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runslim_${PREFIX}_path'\033[0m"
             docker compose ${{ steps.iltp.outputs.install_shop_with_modules_container_method }} -T \
@@ -431,6 +483,12 @@ jobs:
           EODS
             fi
           done
+          cat >>debug/debug.sh <<EODS
+            docker compose ${{ steps.iltp.outputs.install_shop_with_modules_container_method }} -T \
+              ${{ steps.iltp.outputs.install_shop_with_modules_container_options }} \
+                ${{ steps.iltp.outputs.install_shop_with_modules_container_name }} \
+                composer update ${{ steps.iltp.outputs.install_shop_with_modules_composer_update_options}}
+          EODS
 
       - name: 'Stop shop for preparedShop cache'
         if: ${{ steps.iltp.outputs.install_cache_prepared_shop == 'true' }}
@@ -459,7 +517,7 @@ jobs:
           key: '${{ steps.iltp.outputs.install_cache_prepared_shop_prefix }}_${{steps.itn.outputs.matrix_suffix}}'
 
       - name: Debug cache preparedShop
-        if: ${{ inputs.debug == true && steps.iltp.outputs.install_cache_prepared_shop == true }}
+        if: ${{ inputs.debug == 'true' && steps.iltp.outputs.install_cache_prepared_shop == true }}
         shell: bash
         run: |
           # install: Debug cache current installation
@@ -496,9 +554,52 @@ jobs:
             chmod a+x "${SCRIPT}"
             "${SCRIPT}"
           else
+            echo -e "\033[0;31mCould not finds ${SCRIPT}\033[0m"
+            exit 1
+          fi
+
+      - name: 'Debug Install shop (script)'
+        if: ${{ steps.iltp.outputs.install_method == 'script' && steps.iltp.outputs.install_skip_shop_installation == 'false' }}
+        run: |
+          echo "banner 'Install shop (script)'" >>debug/debug.sh
+          for E in $(env|grep -E "^global_|^install_|^custom_|^secrets_"|grep -v "_transform="); do
+            IFS=';' read -ra EXP <<< "$E"
+            VAL=("${EXP[@]:1}")
+            # shellcheck disable=SC2145
+            echo "export ${EXP[0]}='${VAL[@]}'" >>debug/debug.sh
+          done
+          cat >>debug/debug.sh <<EOF
+          SCRIPT="source/vendor/oxid-esales/oxideshop-ce/.github/oxid-esales/install.sh"
+          if [ -f "${SCRIPT}" ]; then
+            chmod a+x "${SCRIPT}"
+            "${SCRIPT}"
+          else
           echo -e "\033[0;31mCould not finds ${SCRIPT}\033[0m"
             exit 1
           fi
+          EOF
+      - name: Activate modules
+        shell: bash
+        run: |
+          ${{ needs.init.outputs.debug }}
+          if [ -f 'source/bin/oe-console' ]; then
+            OE_CONSOLE='bin/oe-console'
+          else
+            if [ -f 'source/vendor/bin/oe-console' ]; then
+              OE_CONSOLE='vendor/bin/oe-console'
+            else
+              echo -e "\033[0;31mCan't find oe-console in bin or vendor/bin!\033[0m"
+              exit 1
+            fi
+          fi
+          MODULES=$(echo -n "${{ steps.iltp.outputs.install_activate_modules }}"| tr '\n' ' ')
+          for MODULE in ${MODULES}; do
+            echo -e "\033[0;35m###  activating module ${MODULE} ###\033[0m"
+            docker compose ${{ steps.iltp.outputs.install_container_method }} -T \
+              ${{ steps.iltp.outputs.install_container_options }} \
+              ${{ steps.iltp.outputs.install_container_name}} \
+              ${OE_CONSOLE} oe:module:activate "${MODULE}"
+          done
 
       - name: Write files list
         if: always()
@@ -654,7 +755,7 @@ jobs:
           for KEY in docker_login load_shop \
             container_name container_options container_method \
             cache_bucket \
-            composer_file composer_backup composer_transform composer_update composer_update_options \
+            composer_file composer_backup composer_transform composer_update composer_update_options composer_early \
             custom_script custom_script_container \
             path install_options \
             output_prefix coverage_prefix; do
@@ -668,7 +769,11 @@ jobs:
           ${!VAR}
           runscript_${KEY}_delimeter
           EOF
+            export "runslim_${KEY}"="${!VAR}"
           done
+          if [ "${runslim_composer_early}" == 'false' ]; then
+            echo 'runslim_run_composer_install=true'| tee -a "${GITHUB_OUTPUT}"
+          fi
           SUFFIX="${PREFIX}_${SCRIPT}-${{ steps.rstn.outputs.matrix_suffix }}"
           echo "runscript_suffix=${SUFFIX}"| \
             sed -E 's#\s|\~|"|,|:|<|>|\||\*|\?|\/|\\#_#g' | \
@@ -693,7 +798,21 @@ jobs:
           wait_for_selenium: true
           debug: ${{ needs.init.outputs.debug }}
 
-      # - name: 'Modify composer.json' is handled in the install job before caching
+      - name: 'Modify composer.json'
+        if: ${{ steps.rt.outputs.runscript_composer_transform != '' && steps.rt.outputs.runscript_composer_early == 'false' }}
+        uses: 'OXID-eSales/github-actions/composer_merge@v4'
+        with:
+          file: 'source/${{ steps.rt.outputs.runscript_path }}/composer.json'
+          backup: true
+          transform: |
+            ${{ steps.rt.outputs.runscript_composer_transform }}
+          update: ${{ steps.rt.outputs.runscript_composer_update }}
+          update_options: '${{ steps.rt.outputs.runscript_composer_update_options }} -d /var/www/${{ steps.rt.outputs.runscript_path }}'
+          container_name: ${{ steps.rt.outputs.runscript_container_name }}
+          container_options: ${{ steps.rt.outputs.runscript_container_options }}
+          container_method: 'exec'
+          debug: ${{ needs.init.outputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
       - name: Run custom scripts
         if: ${{ steps.rt.outputs.runscript_custom_script != '' || steps.rt.outputs.runscript_custom_script_container != '' }}
@@ -812,7 +931,7 @@ jobs:
           for KEY in docker_login load_shop \
             container_name container_options container_method \
             cache_bucket \
-            composer_file composer_backup composer_transform composer_update composer_update_options \
+            composer_file composer_backup composer_transform composer_update composer_update_options composer_early \
             custom_script custom_script_container \
             path install_options \
             output_prefix coverage_prefix; do
@@ -826,7 +945,11 @@ jobs:
           ${!VAR}
           runslim_${KEY}_delimeter
           EOF
+            export "runslim_${KEY}"="${!VAR}"
           done
+          if [ "${runslim_composer_early}" == 'false' ]; then
+            echo 'runslim_run_composer_install=true'| tee -a "${GITHUB_OUTPUT}"
+          fi
           SUFFIX="${PREFIX}_${SCRIPT}-${{ steps.rstn.outputs.matrix_suffix }}"
           echo "runslim_suffix=${SUFFIX}"|sed -E 's#"|,|:|<|>|\||\*|\?|\/|\\#_#g' | tee -a "${GITHUB_OUTPUT}"
           echo "runslim_title=${PREFIX}_${SCRIPT}"|sed -E 's#"|,|:|<|>|\||\*|\?|\/|\\#_#g' | tee -a "${GITHUB_OUTPUT}"
@@ -845,7 +968,21 @@ jobs:
           wait_for_selenium: true
           debug: ${{ needs.init.outputs.debug }}
 
-      # - name: 'Modify composer.json' is handled in the install job before caching
+      - name: 'Modify composer.json'
+        if: ${{ steps.rt.outputs.runslim_composer_transform != '' && steps.rt.outputs.runslim_composer_early == 'false' }}
+        uses: 'OXID-eSales/github-actions/composer_merge@v4'
+        with:
+          file: 'source/${{ steps.rt.outputs.runslim_path }}/composer.json'
+          backup: true
+          transform: |
+            ${{ steps.rt.outputs.runslim_composer_transform }}
+          update: ${{ steps.rt.outputs.runslim_composer_update }}
+          update_options: ${{ steps.rt.outputs.runslim_composer_update_options }}
+          container_name: ${{ steps.rt.outputs.runslim_container_name }}
+          container_options: ${{ steps.rt.outputs.runslim_container_options }}
+          container_method: 'exec'
+          debug: ${{ needs.init.outputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
       - name: Run custom scripts
         if: ${{ steps.rt.outputs.runslim_custom_script != '' || steps.rt.outputs.runslim_custom_script_container != '' }}
