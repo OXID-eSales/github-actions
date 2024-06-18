@@ -563,12 +563,13 @@ jobs:
         run: |
           echo "banner 'Install shop (script)'" >>debug/debug.sh
           VARS=$(env|grep -E "^global_|^install_|^custom_|^secrets_"|grep -v "^install_shop_with_modules_|_transform=")
-          while read -r E <<< "$VARS" ; do
+          IFS=$'\n'
+          while read -r E ; do
             IFS='=' read -ra EXP <<< "$E"
             VAL=("${EXP[@]:1}")
             # shellcheck disable=SC2145
             echo "export ${EXP[0]}='${VAL[@]}'" >>debug/debug.sh
-          done
+          done <<< "$VARS"
           cat >>debug/debug.sh <<EOF
           SCRIPT="source/vendor/oxid-esales/oxideshop-ce/.github/oxid-esales/install.sh"
           if [ -f "${SCRIPT}" ]; then
