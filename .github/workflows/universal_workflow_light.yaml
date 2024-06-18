@@ -562,7 +562,8 @@ jobs:
         if: ${{ steps.iltp.outputs.install_method == 'script' && steps.iltp.outputs.install_skip_shop_installation == 'false' }}
         run: |
           echo "banner 'Install shop (script)'" >>debug/debug.sh
-          for E in $(env|grep -E "^global_|^install_|^custom_|^secrets_"|grep -v "_transform="); do
+          VARS=$(env|grep -E "^global_|^install_|^custom_|^secrets_"|grep -v "^install_shop_with_modules_|_transform=")
+          while read -r E <<< "$VARS" ; do
             IFS='=' read -ra EXP <<< "$E"
             VAL=("${EXP[@]:1}")
             # shellcheck disable=SC2145
