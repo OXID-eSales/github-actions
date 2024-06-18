@@ -195,7 +195,11 @@ init:
 
 # This step installs the sdk, shop and module(s)
 install:
+  # This can be either 'legacy' or 'script'
   method: 'legacy'
+
+  # The path for the script to install the shop
+  script: 'source/vendor/oxid-esales/oxideshop-ce/.github/oxid-esales/install.sh'
 
 # This step installs the sdk, shop and module(s)
 install_shop_with_modules:
