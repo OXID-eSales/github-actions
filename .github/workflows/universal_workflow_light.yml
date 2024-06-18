@@ -574,10 +574,11 @@ jobs:
             chmod a+x "${SCRIPT}"
             "${SCRIPT}"
           else
-          echo -e "\033[0;31mCould not find ${SCRIPT}\033[0m"
+            echo -e "\033[0;31mCould not find ${SCRIPT}\033[0m"
             exit 1
           fi
           'EOF'
+
       - name: Activate modules
         shell: bash
         run: |
