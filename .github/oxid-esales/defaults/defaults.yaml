@@ -38,13 +38,13 @@ workflow:
     php: &matrix_php '["8.1","8.2"]'
 
     # This json array are the mysql versions to test
-    mysql: &matrix_mysql '["5.7","8.0"]'
+    mysql: &matrix_mysql '["5.7","8.0.36"]'
 
   # This matrix definition is used, when we only want one analysis done
   # It covers the recommended combination of PHP and MySQL
   matrix_slim: &matrix_slim
     php: &matrix_php_slim '["8.2"]'
-    mysql: &matrix_mysql_slim '["8.0"]'
+    mysql: &matrix_mysql_slim '["8.0.36"]'
 
   # How many matrix tests should run in parallel. When running on our private runners, we need to
   # reduce this to get consistent test results
