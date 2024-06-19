@@ -517,7 +517,7 @@ jobs:
           key: '${{ steps.iltp.outputs.install_cache_prepared_shop_prefix }}_${{steps.itn.outputs.matrix_suffix}}'
 
       - name: Debug cache preparedShop
-        if: ${{ inputs.debug == 'true' && steps.iltp.outputs.install_cache_prepared_shop == true }}
+        if: ${{ inputs.debug == 'true' && steps.iltp.outputs.install_cache_prepared_shop == 'true' }}
         shell: bash
         run: |
           # install: Debug cache current installation
@@ -562,14 +562,15 @@ jobs:
         if: ${{ steps.iltp.outputs.install_method == 'script' && steps.iltp.outputs.install_skip_shop_installation == 'false' }}
         run: |
           echo "banner 'Install shop (script)'" >>debug/debug.sh
-          VARS=$(env|grep -E "^global_|^install_|^custom_|^secrets_"|grep -v "^install_shop_with_modules_|_transform=")
-          while read -r E <<< "$VARS" ; do
+          VARS=$(env|grep -E "^global_|^install_|^custom_|^secrets_"|grep -v "^install_shop_with_modules_"|grep -v "|_transform=")
+          IFS=$'\n'
+          while read -r E ; do
             IFS='=' read -ra EXP <<< "$E"
             VAL=("${EXP[@]:1}")
             # shellcheck disable=SC2145
             echo "export ${EXP[0]}='${VAL[@]}'" >>debug/debug.sh
-          done
-          cat >>debug/debug.sh <<EOF
+          done <<< "$VARS"
+          cat >>debug/debug.sh <<'EOF'
           SCRIPT="source/vendor/oxid-esales/oxideshop-ce/.github/oxid-esales/install.sh"
           if [ -f "${SCRIPT}" ]; then
             chmod a+x "${SCRIPT}"
@@ -578,7 +579,7 @@ jobs:
             echo -e "\033[0;31mCould not find ${SCRIPT}\033[0m"
             exit 1
           fi
-          'EOF'
+          EOF
 
       - name: Activate modules
         shell: bash
