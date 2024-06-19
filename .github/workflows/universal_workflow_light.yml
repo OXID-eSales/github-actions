@@ -366,7 +366,7 @@ jobs:
                 unset INPUT_FILES INPUT_INPUT_TYPE INPUT_JSON
                 rm .composer_merge.tmp.json
               fi
-              echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
+              echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path, runscript_${PREFIX}_composer_early=='${EARLY}''\033[0m"
               docker compose ${{ steps.iltp.outputs.install_container_method }} -T \
               ${{ steps.iltp.outputs.install_container_options }} \
                 ${{ steps.iltp.outputs.install_container_name }} \
@@ -395,7 +395,7 @@ jobs:
                 unset INPUT_FILES INPUT_INPUT_TYPE INPUT_JSON
                 rm .composer_merge.tmp.json
               fi
-              echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runslim_${PREFIX}_path'\033[0m"
+              echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runslim_${PREFIX}_path, runslim_${PREFIX}_composer_early=='${EARLY}''\033[0m"
               docker compose ${{ steps.iltp.outputs.install_shop_with_modules_container_method }} -T \
               ${{ steps.iltp.outputs.install_shop_with_modules_container_options }} \
                 ${{ steps.iltp.outputs.install_shop_with_modules_container_name }} \
@@ -517,7 +517,7 @@ jobs:
           key: '${{ steps.iltp.outputs.install_cache_prepared_shop_prefix }}_${{steps.itn.outputs.matrix_suffix}}'
 
       - name: Debug cache preparedShop
-        if: ${{ inputs.debug == 'true' && steps.iltp.outputs.install_cache_prepared_shop == true }}
+        if: ${{ inputs.debug == 'true' && steps.iltp.outputs.install_cache_prepared_shop == 'true' }}
         shell: bash
         run: |
           # install: Debug cache current installation
@@ -562,22 +562,25 @@ jobs:
         if: ${{ steps.iltp.outputs.install_method == 'script' && steps.iltp.outputs.install_skip_shop_installation == 'false' }}
         run: |
           echo "banner 'Install shop (script)'" >>debug/debug.sh
-          for E in $(env|grep -E "^global_|^install_|^custom_|^secrets_"|grep -v "_transform="); do
-            IFS=';' read -ra EXP <<< "$E"
+          VARS=$(env|grep -E "^global_|^install_|^custom_|^secrets_"|grep -v "^install_shop_with_modules_"|grep -v "|_transform=")
+          IFS=$'\n'
+          while read -r E ; do
+            IFS='=' read -ra EXP <<< "$E"
             VAL=("${EXP[@]:1}")
             # shellcheck disable=SC2145
             echo "export ${EXP[0]}='${VAL[@]}'" >>debug/debug.sh
-          done
-          cat >>debug/debug.sh <<EOF
+          done <<< "$VARS"
+          cat >>debug/debug.sh <<'EOF'
           SCRIPT="source/vendor/oxid-esales/oxideshop-ce/.github/oxid-esales/install.sh"
           if [ -f "${SCRIPT}" ]; then
             chmod a+x "${SCRIPT}"
             "${SCRIPT}"
           else
-          echo -e "\033[0;31mCould not finds ${SCRIPT}\033[0m"
+            echo -e "\033[0;31mCould not find ${SCRIPT}\033[0m"
             exit 1
           fi
           EOF
+
       - name: Activate modules
         shell: bash
         run: |

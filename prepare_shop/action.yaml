@@ -384,7 +384,7 @@ runs:
         docker compose ps --all
 
     - name: Output docker logs if make up failed
-      if: failure()
+      if: always()
       shell: bash
       run: |
         # prepare_shop: Output docker logs if make up failed
