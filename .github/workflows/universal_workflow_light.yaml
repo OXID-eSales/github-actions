@@ -353,8 +353,9 @@ jobs:
             VAR="runscript_${PREFIX}_composer_early"
             EARLY="${!VAR}"
             [ -z "${EARLY}" ] && EARLY="${runscript_composer_early}"
-            if [[ -n "${COMPOSER_PATH}" && "${EARLY}" == 'false' ]]; then
-              echo -e "\033[0;35mSkipping composer install  for '${PREFIX}', runscript_${PREFIX}_composer_early=='${EARLY}'\033[0m"
+            E="runscript_${PREFIX}_composer_early=='${EARLY}'"
+            if [[ -n "${COMPOSER_PATH}" && "${EARLY}" != 'true' ]]; then
+              echo -e "\033[0;35mSkipping composer install  for '${PREFIX}', ${E}\033[0m"
             else
               if [ -n "${COMPOSER_TRANSFORM}" ]; then
                 echo -e "\033[0;35mtransforming composer.json for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
@@ -366,7 +367,7 @@ jobs:
                 unset INPUT_FILES INPUT_INPUT_TYPE INPUT_JSON
                 rm .composer_merge.tmp.json
               fi
-              echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path, runscript_${PREFIX}_composer_early=='${EARLY}''\033[0m"
+              echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path, ${E}'\033[0m"
               docker compose ${{ steps.iltp.outputs.install_container_method }} -T \
               ${{ steps.iltp.outputs.install_container_options }} \
                 ${{ steps.iltp.outputs.install_container_name }} \
@@ -382,8 +383,9 @@ jobs:
             VAR="runslim_${PREFIX}_composer_early"
             EARLY="${!VAR}"
             [ -z "${EARLY}" ] && EARLY="${runslim_composer_early}"
-            if [[ -n "${COMPOSER_PATH}" && "${EARLY}" == 'false' ]]; then
-              echo -e "\033[0;35mSkipping composer install  for '${PREFIX}', runscript_${PREFIX}_composer_early=='${EARLY}'\033[0m"
+            E="runslim_${PREFIX}_composer_early=='${EARLY}'"
+            if [[ -n "${COMPOSER_PATH}" && "${EARLY}" != 'true' ]]; then
+              echo -e "\033[0;35mSkipping composer install  for '${PREFIX}', ${E}\033[0m"
             else
               if [ -n "${COMPOSER_TRANSFORM}" ]; then
                 echo -e "\033[0;35mtransforming composer.json for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
@@ -395,7 +397,7 @@ jobs:
                 unset INPUT_FILES INPUT_INPUT_TYPE INPUT_JSON
                 rm .composer_merge.tmp.json
               fi
-              echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runslim_${PREFIX}_path, runslim_${PREFIX}_composer_early=='${EARLY}''\033[0m"
+              echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runslim_${PREFIX}_path, ${E}\033[0m"
               docker compose ${{ steps.iltp.outputs.install_shop_with_modules_container_method }} -T \
               ${{ steps.iltp.outputs.install_shop_with_modules_container_options }} \
                 ${{ steps.iltp.outputs.install_shop_with_modules_container_name }} \
@@ -423,15 +425,16 @@ jobs:
             VAR="runscript_${PREFIX}_composer_early"
             EARLY="${!VAR}"
             [ -z "${EARLY}" ] && EARLY="${runscript_composer_early}"
-            if [[ -n "${COMPOSER_PATH}" && "${EARLY}" == 'false' ]]; then
+            E="runscript_${PREFIX}_composer_early=='${EARLY}'"
+            if [[ -n "${COMPOSER_PATH}" && "${EARLY}" != 'true' ]]; then
             cat >>debug/debug.sh <<EODS
-              echo -e "\033[0;35mSkipping composer install  for '${PREFIX}', runscript_${PREFIX}_composer_early=='${EARLY}'\033[0m"
+              echo -e "\033[0;35mSkipping composer install  for '${PREFIX}', ${E}\033[0m"
           EODS
             else
               if [ -n "${COMPOSER_TRANSFORM}" ]; then
                 JSON=$(cat "source/${COMPOSER_PATH}/composer.json")
                 cat >>debug/debug.sh <<EODS
-          echo -e "\033[0;35mSimulating composer transform for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
+          echo -e "\033[0;35mSimulating composer transform for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path', ${E}\033[0m"
           cp "source/${COMPOSER_PATH}/composer.json" "source/${COMPOSER_PATH}/composer.json.bak"
           cat >"source/${COMPOSER_PATH}/composer.json" <<'EOF'
           ${JSON}
@@ -458,15 +461,16 @@ jobs:
             VAR="runslim_${PREFIX}_composer_early"
             EARLY="${!VAR}"
             [ -z "${EARLY}" ] && EARLY="${runslim_composer_early}"
-            if [[ -n "${COMPOSER_PATH}" && "${EARLY}" == 'false' ]]; then
+            E="runslim_${PREFIX}_composer_early=='${EARLY}'"
+            if [[ -n "${COMPOSER_PATH}" && "${EARLY}" != 'true' ]]; then
               cat >>debug/debug.sh <<EODS
-                echo -e "\033[0;35mSkipping composer install  for '${PREFIX}', runscript_${PREFIX}_composer_early=='${EARLY}'\033[0m"
+                echo -e "\033[0;35mSkipping composer install  for '${PREFIX}', ${E}\033[0m"
           EODS
             else
               if [ -n "${COMPOSER_TRANSFORM}" ]; then
                 JSON=$(cat "source/${COMPOSER_PATH}/composer.json")
                 cat >>debug/debug.sh <<EODS
-          echo -e "\033[0;35mSimulating composer transform for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path'\033[0m"
+          echo -e "\033[0;35mSimulating composer transform for '${PREFIX}' in '${COMPOSER_PATH}' using 'runscript_${PREFIX}_path', ${E}\033[0m"
           cp "source/${COMPOSER_PATH}/composer.json" "source/${COMPOSER_PATH}/composer.json.bak"
           cat >"source/${COMPOSER_PATH}/composer.json" <<'EOF'
           ${JSON}
@@ -549,7 +553,7 @@ jobs:
       - name: 'Install shop (script)'
         if: ${{ steps.iltp.outputs.install_method == 'script' && steps.iltp.outputs.install_skip_shop_installation == 'false' }}
         run: |
-          SCRIPT="source/vendor/oxid-esales/oxideshop-ce/.github/oxid-esales/install.sh"
+          SCRIPT="${{ steps.iltp.outputs.install_script }}"
           if [ -f "${SCRIPT}" ]; then
             chmod a+x "${SCRIPT}"
             "${SCRIPT}"
@@ -571,7 +575,7 @@ jobs:
             echo "export ${EXP[0]}='${VAL[@]}'" >>debug/debug.sh
           done <<< "$VARS"
           cat >>debug/debug.sh <<'EOF'
-          SCRIPT="source/vendor/oxid-esales/oxideshop-ce/.github/oxid-esales/install.sh"
+          SCRIPT="${{ steps.iltp.outputs.install_script }}"
           if [ -f "${SCRIPT}" ]; then
             chmod a+x "${SCRIPT}"
             "${SCRIPT}"
