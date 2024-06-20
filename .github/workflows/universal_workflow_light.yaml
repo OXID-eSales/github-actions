@@ -553,7 +553,7 @@ jobs:
       - name: 'Install shop (script)'
         if: ${{ steps.iltp.outputs.install_method == 'script' && steps.iltp.outputs.install_skip_shop_installation == 'false' }}
         run: |
-          SCRIPT="source/vendor/oxid-esales/oxideshop-ce/.github/oxid-esales/install.sh"
+          SCRIPT="${{ steps.iltp.outputs.install_script }}"
           if [ -f "${SCRIPT}" ]; then
             chmod a+x "${SCRIPT}"
             "${SCRIPT}"
@@ -575,7 +575,7 @@ jobs:
             echo "export ${EXP[0]}='${VAL[@]}'" >>debug/debug.sh
           done <<< "$VARS"
           cat >>debug/debug.sh <<'EOF'
-          SCRIPT="source/vendor/oxid-esales/oxideshop-ce/.github/oxid-esales/install.sh"
+          SCRIPT="${{ steps.iltp.outputs.install_script }}"
           if [ -f "${SCRIPT}" ]; then
             chmod a+x "${SCRIPT}"
             "${SCRIPT}"
