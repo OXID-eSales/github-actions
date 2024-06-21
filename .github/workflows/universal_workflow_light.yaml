@@ -821,6 +821,16 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
           github_token: ${{ secrets.enterprise_github_token || github.token }}
 
+      - name: Run composer if there is no transform
+        if: ${{ steps.rt.outputs.runscript_composer_transform == '' && steps.rt.outputs.runscript_composer_early == 'false' }}
+        run: |
+          # run composer
+          ${{ inputs.debug }}
+          docker compose exec -T \
+            ${{ steps.rt.outputs.runscript_container_options }} \
+            ${{ steps.rt.outputs.runscript_container_name }} \
+            composer update --no-interaction -d "/var/www/${{ steps.rt.outputs.runscript_path }}"
+
       - name: Run custom scripts
         if: ${{ steps.rt.outputs.runscript_custom_script != '' || steps.rt.outputs.runscript_custom_script_container != '' }}
         uses: 'OXID-eSales/github-actions/run_custom_scripts@v4'
@@ -990,6 +1000,16 @@ jobs:
           container_method: 'exec'
           debug: ${{ needs.init.outputs.debug }}
           github_token: ${{ secrets.enterprise_github_token || github.token }}
+
+      - name: Run composer if there is no transform
+        if: ${{ steps.rt.outputs.runslim_composer_transform == '' && steps.rt.outputs.runslim_composer_early == 'false' }}
+        run: |
+          # run composer
+          ${{ inputs.debug }}
+          docker compose exec -T \
+            ${{ steps.rt.outputs.runslim_container_options }} \
+            ${{ steps.rt.outputs.runslim_container_name }} \
+            composer update --no-interaction -d "/var/www/${{ steps.rt.outputs.runslim_path }}"
 
       - name: Run custom scripts
         if: ${{ steps.rt.outputs.runslim_custom_script != '' || steps.rt.outputs.runslim_custom_script_container != '' }}
