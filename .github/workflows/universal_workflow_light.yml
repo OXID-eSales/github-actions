@@ -829,6 +829,10 @@ jobs:
           docker compose exec -T \
             ${{ steps.rt.outputs.runscript_container_options }} \
             ${{ steps.rt.outputs.runscript_container_name }} \
+            composer config -g github-oauth.github.com "${{ secrets.enterprise_github_token || github.token }}"
+          docker compose exec -T \
+            ${{ steps.rt.outputs.runscript_container_options }} \
+            ${{ steps.rt.outputs.runscript_container_name }} \
             composer update --no-interaction -d "/var/www/${{ steps.rt.outputs.runscript_path }}"
 
       - name: Run custom scripts
@@ -1006,6 +1010,10 @@ jobs:
         run: |
           # run composer
           ${{ inputs.debug }}
+          docker compose exec -T \
+            ${{ steps.rt.outputs.runslim_container_options }} \
+            ${{ steps.rt.outputs.runslim_container_name }} \
+            composer config -g github-oauth.github.com "${{ secrets.enterprise_github_token || github.token }}"
           docker compose exec -T \
             ${{ steps.rt.outputs.runslim_container_options }} \
             ${{ steps.rt.outputs.runslim_container_name }} \
