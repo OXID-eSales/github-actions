@@ -521,7 +521,7 @@ jobs:
           key: '${{ steps.iltp.outputs.install_cache_prepared_shop_prefix }}_${{steps.itn.outputs.matrix_suffix}}'
 
       - name: Debug cache preparedShop
-        if: ${{ inputs.debug == 'true' && steps.iltp.outputs.install_cache_prepared_shop == 'true' }}
+        if: ${{ steps.iltp.outputs.install_cache_prepared_shop == 'true' }}
         shell: bash
         run: |
           # install: Debug cache current installation
