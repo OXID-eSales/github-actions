@@ -528,6 +528,7 @@ jobs:
           # we need to add the dot folders here explicitly because bash works differently than the action
           MATRIX='PHP${{matrix.php}}-MYSQL${{matrix.mysql}}'
           CACHE_NAME="${{ steps.iltp.outputs.install_cache_prepared_shop_prefix}}_${{steps.iltp.outputs.global_title}}-${MATRIX}"
+          echo 'banner "install: Debug cache current installation"'
           echo "write_cache '${CACHE_NAME}' ./* .env .env.dist .gitignore .git" >>debug/debug.sh
 
       - name: 'Start shop after caching preparedShop'
