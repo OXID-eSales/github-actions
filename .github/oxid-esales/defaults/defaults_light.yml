@@ -270,6 +270,7 @@ install_shop_with_modules:
   output:
     files: |
       docker-compose.yml
+      docker*.log
       source/composer.json*
       source/composer.lock
       source/source/config.inc.php

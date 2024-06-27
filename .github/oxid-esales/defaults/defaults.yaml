@@ -243,6 +243,7 @@ install_shop:
   output: &install_output
     files: |
       docker-compose.yml
+      docker*.log
       source/composer.json*
       source/composer.lock
       source/source/config.inc.php
@@ -286,6 +287,7 @@ install_module:
   output:
     files: |
       docker-compose.yml
+      docker*.log
       source/composer.json*
       source/composer.lock
       source/source/config.inc.php
@@ -371,6 +373,7 @@ phpunit:
   output:
     # Which files should be archived
     files: |
+      docker*.log
       source/source/log/oxideshop.log
       data/php/logs/error_log.txt
       job_status*.txt
@@ -465,6 +468,7 @@ codeception:
   output:
     files: |
       docker-compose.yml
+      docker*.log
       source/composer.json
       source/composer.lock
       source/source/config.inc.php
@@ -531,6 +535,7 @@ runtest:
 
   output:
     files: |
+      docker*.log
       source/unit.cov
       source/source/log/oxideshop.log
       source/test_config.yml

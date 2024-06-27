@@ -388,7 +388,6 @@ runs:
       shell: bash
       run: |
         # prepare_shop: Output docker logs if make up failed
-        echo -e "\033[0;31m### Starting docker failed\033[0m"
         echo -e "\033[0;35m###  docker-compose.yml ###\033[0m"
         cat docker-compose.yml
         echo -e "\033[0;35m###  docker compose logs ###\033[0m"
