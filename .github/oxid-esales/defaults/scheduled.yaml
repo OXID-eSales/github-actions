@@ -4,12 +4,19 @@
 
 global:
   title: '{{ .Github.EventName }}-{{ .Data.global.git.default_ref }}'
+  git: &git
+    shop_ref: '{{ .Data.global.git.default_ref }}'
+    ref: '{{ .Data.global.git.default_ref }}'
+    enterprise_ref: '{{ .Data.global.git.default_ref }}'
+  composer: &composer
+    ref_name: 'dev-{{ .Data.global.git.default_ref }}'
 
 install: &install
-  git:
-    shop_ref: '{{ .Data.global.git.default_ref }}'
+  git: *git
+  composer: *composer
 
 prepare_shop: *install
+
 install_shop_with_modules: *install
 
 sonarcloud:
