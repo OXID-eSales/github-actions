@@ -496,7 +496,7 @@ jobs:
 
       - name: 'Stop shop for preparedShop cache'
         if: ${{ steps.iltp.outputs.install_cache_prepared_shop == 'true' }}
-        uses: 'OXID-eSales/github-actions/stop_shop@v0'
+        uses: 'OXID-eSales/github-actions/stop_shop@v4'
         with:
           debug: ${{ needs.init.outputs.debug }}
 
@@ -657,7 +657,7 @@ jobs:
 
       - name: 'Stop shop'
         if: ${{ always() }}
-        uses: 'OXID-eSales/github-actions/stop_shop@v0'
+        uses: 'OXID-eSales/github-actions/stop_shop@v4'
         with:
           debug: ${{ needs.init.outputs.debug }}
 
@@ -859,7 +859,7 @@ jobs:
           token: ${{ github.token }}
 
       - name: 'Run runscript check'
-        uses: 'OXID-eSales/github-actions/run_test_script@v0'
+        uses: 'OXID-eSales/github-actions/run_test_script@v4'
         with:
           script: ${{ steps.rt.outputs.runscript_script }}
           path: ${{ steps.rt.outputs.runscript_path }}
@@ -881,13 +881,13 @@ jobs:
 
       - name: 'Stop shop'
         if: ${{ always() }}
-        uses: 'OXID-eSales/github-actions/stop_shop@v0'
+        uses: 'OXID-eSales/github-actions/stop_shop@v4'
         with:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v0
+        uses: OXID-eSales/github-actions/append_report@v4
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
           priority: '100'
@@ -1042,7 +1042,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Run runslim check'
-        uses: 'OXID-eSales/github-actions/run_test_script@v0'
+        uses: 'OXID-eSales/github-actions/run_test_script@v4'
         with:
           script: ${{ steps.rt.outputs.runslim_script }}
           path: ${{ steps.rt.outputs.runslim_path }}
@@ -1064,7 +1064,7 @@ jobs:
 
       - name: 'Stop shop'
         if: ${{ always() }}
-        uses: 'OXID-eSales/github-actions/stop_shop@v0'
+        uses: 'OXID-eSales/github-actions/stop_shop@v4'
         with:
           debug: ${{ needs.init.outputs.debug }}
 
