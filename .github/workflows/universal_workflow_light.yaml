@@ -589,6 +589,7 @@ jobs:
       - name: Activate modules
         shell: bash
         run: |
+          # Activate modules
           ${{ needs.init.outputs.debug }}
           if [ -f 'source/bin/oe-console' ]; then
             OE_CONSOLE='bin/oe-console'
