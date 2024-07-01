@@ -103,6 +103,11 @@ runs:
         cp data/php/logs/error_log.txt source/${{ inputs.path }}/tests/Output/
         cp data/mysql/mysql/slow_log* source/${{ inputs.path }}/tests/Output/
         cp data/mysql/mysql/general_log* source/${{ inputs.path }}/tests/Output/
+        docker compose logs --tail=all >source/${{ inputs.path }}/tests/Output/docker-compose.log
+        for c in $(docker ps -aq); do
+          echo -e "\033[0;35m###  Logs for $c ###\033[0m"
+          docker logs -n 2000 $c >source/${{ inputs.path }}/tests/Output/docker-$c.log
+        done
 
     - name: Upload artifact
       if: always()

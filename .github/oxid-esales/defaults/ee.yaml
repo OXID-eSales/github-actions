@@ -17,7 +17,7 @@ global:
     enterprise_ref: '{{ .Github.RefName }}'
 
 # See docs/actions/prepare_shop.md for more information.
-prepare_shop:
+install: &install
   composer:
     transform: |
       {
@@ -68,6 +68,9 @@ prepare_shop:
     # Needs to be here as $shop_type is different
     prefix: 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
 
+# BEGIN Deprecated, will be superseded by install:
+prepare_shop: *install
+
 # See docs/actions/start_shop.md and docs/actions/install_shop.md for more information.
 install_shop:
   git: *git
@@ -75,12 +78,15 @@ install_shop:
   cache:
     prefix: &install_shop_prefix 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
 
+install_shop_with_modules: *install
+
 install_module:
   cache:
     # Need to set this as we don't install a module. When installing a module:
     # 'moduleInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
     prefix: *install_shop_prefix
   load_shop: *install_shop_prefix
+# END Deprecated
 
 phpunit:
   load_shop: *install_shop_prefix

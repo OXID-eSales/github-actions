@@ -13,7 +13,7 @@ global:
   composer: &composer
     dev_ref: &dev_ref dev-b-7.0.x
 
-prepare_shop:
+install: &install
   matrix: *matrix
   git: *git
   composer:
@@ -32,9 +32,14 @@ prepare_shop:
           }
       }
 
+# BEGIN Deprecated, will be superseded by install:
+prepare_shop: *install
+
 install_shop:
   matrix: *matrix
   git: *git
+
+install_shop_with_modules: *install
 
 install_module:
   matrix: *matrix
@@ -42,9 +47,7 @@ install_module:
     module:
       ref: *default_ref
   composer: *composer
-
-install_shop_with_modules:
-  matrix: *matrix
+# END Deprecated
 
 runscript:
   matrix: *matrix
