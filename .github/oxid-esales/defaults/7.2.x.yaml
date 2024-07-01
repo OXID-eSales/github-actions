@@ -9,7 +9,8 @@ workflow:
 global:
   git: &git
     default_ref: &default_ref 'b-7.2.x'
-
+    safe_ref_name: 'b-7.2.x'
+    enterprise_ref: 'b-7.2.x'
 
   composer: &composer
     dev_ref: &dev_ref dev-b-7.2.x
