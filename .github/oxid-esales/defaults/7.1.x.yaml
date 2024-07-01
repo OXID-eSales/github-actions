@@ -34,9 +34,6 @@ install: &install
 
 # BEGIN Deprecated, will be superseded by install:
 prepare_shop: *install
-install_shop:
-  matrix: *matrix
-  git: *git
 
 install_shop:
   matrix: *matrix

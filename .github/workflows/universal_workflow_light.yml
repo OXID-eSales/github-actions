@@ -551,18 +551,6 @@ jobs:
           config_idebug: ${{ steps.iltp.outputs.install_config_idebug }}
           debug: ${{ needs.init.outputs.debug }}
 
-      - name: 'Install shop (script)'
-        if: ${{ steps.iltp.outputs.install_method == 'script' && steps.iltp.outputs.install_skip_shop_installation == 'false' }}
-        run: |
-          SCRIPT="${{ steps.iltp.outputs.install_script }}"
-          if [ -f "${SCRIPT}" ]; then
-            chmod a+x "${SCRIPT}"
-            "${SCRIPT}"
-          else
-            echo -e "\033[0;31mCould not finds ${SCRIPT}\033[0m"
-            exit 1
-          fi
-
       - name: 'Debug Install shop (script)'
         if: ${{ steps.iltp.outputs.install_method == 'script' && steps.iltp.outputs.install_skip_shop_installation == 'false' }}
         run: |
@@ -584,11 +572,32 @@ jobs:
             echo -e "\033[0;31mCould not find ${SCRIPT}\033[0m"
             exit 1
           fi
+          if [ -s data/php/logs/error_log.txt ]; then
+            echo -e "\033[0;35mPHP error log\033[0m"
+            cat data/php/logs/error_log.txt
+          fi
           EOF
+
+      - name: 'Install shop (script)'
+        if: ${{ steps.iltp.outputs.install_method == 'script' && steps.iltp.outputs.install_skip_shop_installation == 'false' }}
+        run: |
+          SCRIPT="${{ steps.iltp.outputs.install_script }}"
+          if [ -f "${SCRIPT}" ]; then
+            chmod a+x "${SCRIPT}"
+            "${SCRIPT}"
+          else
+            echo -e "\033[0;31mCould not finds ${SCRIPT}\033[0m"
+            exit 1
+          fi
+          if [ -s data/php/logs/error_log.txt ]; then
+            echo -e "\033[0;35mPHP error log\033[0m"
+            cat data/php/logs/error_log.txt
+          fi
 
       - name: Activate modules
         shell: bash
         run: |
+          # Activate modules
           ${{ needs.init.outputs.debug }}
           if [ -f 'source/bin/oe-console' ]; then
             OE_CONSOLE='bin/oe-console'

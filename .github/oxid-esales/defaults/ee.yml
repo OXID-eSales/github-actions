@@ -70,9 +70,6 @@ install: &install
 
 # BEGIN Deprecated, will be superseded by install:
 prepare_shop: *install
-install_shop:
-  matrix: *matrix
-  git: *git
 
 # See docs/actions/start_shop.md and docs/actions/install_shop.md for more information.
 install_shop:
