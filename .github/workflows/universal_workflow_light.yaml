@@ -572,6 +572,10 @@ jobs:
             echo -e "\033[0;31mCould not find ${SCRIPT}\033[0m"
             exit 1
           fi
+          if [ -s data/php/logs/error_log.txt ]; then
+            echo -e "\033[0;35mPHP error log\033[0m"
+            cat data/php/logs/error_log.txt
+          fi
           EOF
 
       - name: 'Install shop (script)'
@@ -584,6 +588,10 @@ jobs:
           else
             echo -e "\033[0;31mCould not finds ${SCRIPT}\033[0m"
             exit 1
+          fi
+          if [ -s data/php/logs/error_log.txt ]; then
+            echo -e "\033[0;35mPHP error log\033[0m"
+            cat data/php/logs/error_log.txt
           fi
 
       - name: Activate modules
