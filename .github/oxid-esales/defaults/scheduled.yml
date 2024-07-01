@@ -19,9 +19,6 @@ prepare_shop: *install
 
 install_shop_with_modules: *install
 
-prepare_shop: *install
-install_shop_with_modules: *install
-
 sonarcloud:
   target_branch: '{{ .Data.global.git.default_ref }}'
 
