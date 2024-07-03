@@ -14,7 +14,7 @@ global:
   composer: &composer
     dev_ref: &dev_ref dev-b-7.1.x
 
-install: &install
+install_shop_with_modules: &install
   matrix: *matrix
   git: *git
   composer:
@@ -39,8 +39,6 @@ prepare_shop: *install
 install_shop:
   matrix: *matrix
   git: *git
-
-install_shop_with_modules: *install
 
 install_module:
   matrix: *matrix
