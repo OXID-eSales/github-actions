@@ -595,6 +595,7 @@ jobs:
           fi
 
       - name: Activate modules
+        if: ${{ steps.iltp.outputs.install_skip_shop_installation == 'false' }}
         shell: bash
         run: |
           # Activate modules

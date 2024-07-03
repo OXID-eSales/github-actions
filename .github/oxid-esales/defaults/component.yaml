@@ -1,4 +1,5 @@
 install_shop_with_modules:
+  method: legacy
   cache:
     prepared_shop: false
   git:
