@@ -8,6 +8,7 @@ global:
     shop_ref: '{{ .Data.global.git.default_ref }}'
     ref: '{{ .Data.global.git.default_ref }}'
     enterprise_ref: '{{ .Data.global.git.default_ref }}'
+    safe_ref_name: '{{ .Data.global.git.default_ref }}'
   composer: &composer
     ref_name: 'dev-{{ .Data.global.git.default_ref }}'
 

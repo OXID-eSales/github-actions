@@ -4,11 +4,11 @@ install_shop_with_modules:
     prepared_shop: false
   git:
     # Deprecated, remove in v5
-    shop_url: 'https://github.com/{{ .Data.global.repo }}.git'
+    shop_url: 'https://github.com/{{ .Data.install_shop_with_modules.repo }}.git'
     # Deprecated, remove in v5
-    shop_ref: '{{ .Github.RefName }}'
+    shop_ref: '{{ .Data.install_shop_with_modules.git.safe_ref_name }}'
     repository: '{{ .Data.global.repo }}'
-    ref: '{{ .Github.RefName }}'
+    ref: '{{ .Data.install_shop_with_modules.git.safe_ref_name }}'
   composer:
     root_url: ''
     transform: ''
