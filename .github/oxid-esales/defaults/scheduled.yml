@@ -11,13 +11,11 @@ global:
   composer: &composer
     ref_name: 'dev-{{ .Data.global.git.default_ref }}'
 
-install: &install
+install_shop_with_modules: &install
   git: *git
   composer: *composer
 
 prepare_shop: *install
-
-install_shop_with_modules: *install
 
 sonarcloud:
   target_branch: '{{ .Data.global.git.default_ref }}'

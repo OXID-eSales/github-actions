@@ -17,7 +17,7 @@ global:
     enterprise_ref: '{{ .Github.RefName }}'
 
 # See docs/actions/prepare_shop.md for more information.
-install: &install
+install_shop_with_modules: &install
   composer:
     transform: |
       {
@@ -67,8 +67,6 @@ install_shop:
   is_enterprise: *is_enterprise
   cache:
     prefix: &install_shop_prefix 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
-
-install_shop_with_modules: *install
 
 install_module:
   cache:
