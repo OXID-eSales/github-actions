@@ -6,9 +6,9 @@ install_shop_with_modules:
     # Deprecated, remove in v5
     shop_url: 'https://github.com/{{ .Data.global.repo }}.git'
     # Deprecated, remove in v5
-    shop_ref: '{{ .Data.global.git.safe_ref_name }}'
+    shop_ref: '{{ .Github.RefName }}'
     repository: '{{ .Data.global.repo }}'
-    ref: '{{ .Data.global.git.safe_ref_name }}'
+    ref: '{{ .Github.RefName }}'
   composer:
     root_url: ''
     transform: ''
