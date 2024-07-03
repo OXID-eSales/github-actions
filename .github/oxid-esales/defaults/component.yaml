@@ -3,6 +3,7 @@ install_shop_with_modules:
   cache:
     prepared_shop: false
   git:
+    shop_url: '' # Deprecated, line can be deleted in v5
     repository: '{{ .Data.global.repo }}'
     ref: '{{ .Data.global.git.safe_ref_name }}'
   composer:
