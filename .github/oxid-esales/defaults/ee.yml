@@ -66,7 +66,8 @@ install_shop_with_modules: &install
   is_enterprise: *is_enterprise
   cache:
     # Needs to be here as $shop_type is different
-    prefix: 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
+    prepared_shop_prefix: 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
+    prefix: 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
 
 # BEGIN Deprecated, will be superseded by install:
 prepare_shop: *install
