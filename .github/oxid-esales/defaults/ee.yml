@@ -67,7 +67,7 @@ install_shop_with_modules: &install
   cache:
     # Needs to be here as $shop_type is different
     prepared_shop_prefix: 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
-    prefix: 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
+    prefix: &install_shop_prefix 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
 
 # BEGIN Deprecated, will be superseded by install:
 prepare_shop: *install
@@ -77,7 +77,7 @@ install_shop:
   git: *git
   is_enterprise: *is_enterprise
   cache:
-    prefix: &install_shop_prefix 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
+    prefix: *install_shop_prefix
 
 install_module:
   cache:
@@ -140,6 +140,9 @@ runtest:
   additional_options: '--filter "/^((?!(testFrontendVAT)).)*$/" --exclude-group quarantine,varnish,paypal_buyerlogin,paypal_external,paypal_graphql,adminFunctionality,flow_theme'
   coverage:
     path: ''
+
+runscript:
+  load_shop: *install_shop_prefix
 
 sonarcloud:
   matrix:
