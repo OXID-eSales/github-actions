@@ -144,6 +144,9 @@ runtest:
 runscript:
   load_shop: *install_shop_prefix
 
+runslim:
+  load_shop: *install_shop_prefix
+
 sonarcloud:
   matrix:
     testplan: 'skip'
