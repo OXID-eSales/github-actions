@@ -70,6 +70,7 @@ runs:
         mkdir -p source/${{ inputs.path }}/${TESTDIR}/Output source/${{ inputs.path }}/${TESTDIR}/Reports
         echo -e "\033[0;35m###  Run composer ${{ inputs.script }} in ${{ inputs.path }} ###\033[0m"
         docker compose ${{ inputs.container_method }} -T \
+          -e GITHUB_TOKEN=${{ inputs.github_token }} \
           ${{ inputs.container_options }} \
           --workdir '/var/www/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
@@ -100,6 +101,7 @@ runs:
         chmod a+x "source/${{ inputs.path }}/${SCRIPT}"
         echo -e "\033[0;35m###  Run ${SCRIPT} in ${{ inputs.path }} ###\033[0m"
         docker compose ${{ inputs.container_method }} -T \
+          -e GITHUB_TOKEN=${{ inputs.github_token }} \
           ${{ inputs.container_options }} \
           --workdir '/var/www/${{ inputs.path }}' \
           ${{ inputs.container_name }} \
