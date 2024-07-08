@@ -501,7 +501,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: Cache preparedShop on s3
-        if: ${{ steps.iltp.outputs.install_cache_prepared_shop == 'true' && steps.iltp.outputs.use_private_cache == 'true' }}
+        if: ${{ steps.iltp.outputs.install_cache_prepared_shop == 'true' && needs.init.outputs.use_private_cache == 'true' }}
         uses: tespkg/actions-cache/save@v1
         with:
           path: |
@@ -513,7 +513,7 @@ jobs:
           bucket: ${{ steps.iltp.outputs.install_cache_bucket }}
 
       - name: Cache preparedShop on github
-        if: ${{ steps.iltp.outputs.install_cache_prepared_shop == 'true' && steps.iltp.outputs.use_private_cache != 'true'}}
+        if: ${{ steps.iltp.outputs.install_cache_prepared_shop == 'true' && needs.init.outputs.use_private_cache != 'true'}}
         uses: actions/cache/save@v4
         with:
           path: |
@@ -595,6 +595,7 @@ jobs:
           fi
 
       - name: Activate modules
+        if: ${{ steps.iltp.outputs.install_skip_shop_installation == 'false' }}
         shell: bash
         run: |
           # Activate modules
