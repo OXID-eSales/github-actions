@@ -63,8 +63,9 @@ runs:
         if [ ! -d "source/${{ inputs.path }}/${TESTDIR}" ]; then
           TESTDIR='Tests'
           if [ ! -d "source/${{ inputs.path }}/${TESTDIR}" ]; then
-            echo -e "\033[0;31m###  Could not find folder tests or Tests in ${{ inputs.path }} ###\033[0m"
-            exit 1
+            echo -e "\033[0;31m###  Could not find folder tests or Tests in ${{ inputs.path }}, creating it ###\033[0m"
+            TESTDIR='tests'
+            mkdir -p "source/${{ inputs.path }}/${TESTDIR}"
           fi
         fi
         mkdir -p source/${{ inputs.path }}/${TESTDIR}/Output source/${{ inputs.path }}/${TESTDIR}/Reports
@@ -117,8 +118,8 @@ runs:
         if [ ! -d "source/${{ inputs.path }}/${TESTDIR}" ]; then
           TESTDIR='Tests'
           if [ ! -d "source/${{ inputs.path }}/${TESTDIR}" ]; then
-            echo -e "\033[0;31m###  Could not find folder tests or Tests in ${{ inputs.path }} ###\033[0m"
-            exit 1
+            echo -e "\033[0;31m###  Could not find folder tests or Tests in ${{ inputs.path }}, creating it ###\033[0m"
+            TESTDIR='tests'
           fi
         fi
         if [ -s data/php/logs/error_log.txt ]; then
@@ -126,6 +127,7 @@ runs:
           cat data/php/logs/error_log.txt
         fi
         touch data/php/logs/error_log.txt
+        mkdir -p "source/${{ inputs.path }}/${TESTDIR}/Output"
         cp data/php/logs/error_log.txt source/${{ inputs.path }}/${TESTDIR}/Output/
         cp data/mysql/mysql/slow_log* source/${{ inputs.path }}/${TESTDIR}/Output/
         cp data/mysql/mysql/general_log* source/${{ inputs.path }}/${TESTDIR}/Output/
