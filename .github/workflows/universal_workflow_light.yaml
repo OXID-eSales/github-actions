@@ -1010,7 +1010,7 @@ jobs:
           transform: |
             ${{ steps.rt.outputs.runslim_composer_transform }}
           update: ${{ steps.rt.outputs.runslim_composer_update }}
-          update_options: '${{ steps.rt.outputs.runscript_composer_update_options }} -d /var/www/${{ steps.rt.outputs.runscript_path }}'
+          update_options: '${{ steps.rt.outputs.runslim_composer_update_options }} -d /var/www/${{ steps.rt.outputs.runslim_path }}'
           container_name: ${{ steps.rt.outputs.runslim_container_name }}
           container_options: ${{ steps.rt.outputs.runslim_container_options }}
           container_method: 'exec'
