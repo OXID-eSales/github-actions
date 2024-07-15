@@ -1705,7 +1705,7 @@ jobs:
 
       - name: Run actionlint
         id: actionlint
-        uses: raven-actions/actionlint@v1
+        uses: raven-actions/actionlint@v2
 
       - name: actionlint Summary
         if: always()
