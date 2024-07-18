@@ -820,7 +820,8 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Modify composer.json'
-        if: ${{ steps.rt.outputs.runscript_composer_transform != '' && steps.rt.outputs.runscript_composer_early == 'false' }}
+        # Also run this if there is a transformation but composer_early is set to 'skip'
+        if: ${{ steps.rt.outputs.runscript_composer_transform != '' && steps.rt.outputs.runscript_composer_early != 'true' }}
         uses: 'OXID-eSales/github-actions/composer_merge@v4'
         with:
           file: 'source/${{ steps.rt.outputs.runscript_path }}/composer.json'
@@ -836,6 +837,7 @@ jobs:
           github_token: ${{ secrets.enterprise_github_token || github.token }}
 
       - name: Run composer if there is no transform
+        # Only run this if there is no transformation and composer_early is set to 'false'
         if: ${{ steps.rt.outputs.runscript_composer_transform == '' && steps.rt.outputs.runscript_composer_early == 'false' }}
         run: |
           # run composer
