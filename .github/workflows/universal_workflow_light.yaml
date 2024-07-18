@@ -212,7 +212,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           prefix: '${{ steps.post_ltp.outputs.title }}'
           header: true
@@ -220,6 +220,7 @@ jobs:
           priority: '001'
           cached_object: ${{ steps.ltp.outputs.init_cache_name }}
           debug: false
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
     outputs:
       debug: ${{ steps.begin_report.outputs.debug }}
@@ -694,7 +695,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
           priority: '020'
@@ -709,6 +710,7 @@ jobs:
             ${{ steps.iltp.outputs.install_cache_prefix}}_${{steps.iltp.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}
           # yamllint enable rule:line-length
           debug: ${{ inputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
   runscript:
     needs: ['init', 'install']
@@ -753,7 +755,7 @@ jobs:
           yaml: generated_testplan.yaml
           loglevel: info
           logfile: load_testplan_runscript.log
-          token: ${{ secrets.enterprise_github_token }}
+          token: ${{ secrets.enterprise_github_token || github.token }}
 
       - name: Convert variables
         id: rt
@@ -888,7 +890,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
           priority: '100'
@@ -899,6 +901,7 @@ jobs:
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
           debug: ${{ inputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
   runslim:
     needs: ['init', 'install']
@@ -1071,7 +1074,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
           priority: '100'
@@ -1082,6 +1085,7 @@ jobs:
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
           debug: ${{ inputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
   sonarcloud:
     needs: ['init', 'install', 'runscript', 'runslim']
@@ -1165,7 +1169,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
           priority: '240'
@@ -1177,6 +1181,7 @@ jobs:
           testplan: ${{matrix.testplan}}
           status: ${{job.status}}
           debug: ${{ inputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
   yamllint:
     needs: ['init', 'install']
@@ -1197,7 +1202,7 @@ jobs:
 
       - name: 'Write yamllint Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
           priority: '240'
@@ -1209,6 +1214,7 @@ jobs:
           testplan: ''
           status: ${{job.status}}
           debug: false
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
   actionlint:
     needs: ['init', 'install']
@@ -1246,7 +1252,7 @@ jobs:
 
       - name: 'Write actionlint Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: OXID-eSales/github-actions/append_report@v0
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
           priority: '250'
@@ -1258,6 +1264,7 @@ jobs:
           testplan: ''
           status: ${{job.status}}
           debug: false
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
   finish:
     if: ${{ always() && needs.init.outputs.finish_skip != 'true' }}

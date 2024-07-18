@@ -59,6 +59,11 @@ inputs:
     description: 'Enable debugging'
     default: false
     required: false
+  github_token:
+    type: string
+    required: false
+    description: 'Github token to be replaced by a variable in the debug script'
+    default: ''
 
 runs:
   using: "composite"
@@ -122,6 +127,9 @@ runs:
         if [ -f 'debug/debug.sh' ]; then
           sed -e 's/^/  /' debug/debug.sh >>"${DEBUG_FILE}"
           rm debug/debug.sh
+        fi
+        if [ -n "${{ inputs.github_token }}" ]; then
+          sed -e 's|${{ inputs.github_token}}|${DEBUG_GH_TOKEN}|g' -i "${DEBUG_FILE}"
         fi
         cat >>"${DEBUG_FILE}" <<EODS
           end_job "$DEBUG_NAME"

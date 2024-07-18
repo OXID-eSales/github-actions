@@ -73,6 +73,9 @@ runs:
         #!/bin/bash
         set -e
         set -x
+        # Set this to your github token or export this variable before
+        # running the script
+        # DEBUG_GH_TOKEN='<put your own token here>'
 
         function banner() {
           PURPLE=$(echo -e "\033[0;35m")
