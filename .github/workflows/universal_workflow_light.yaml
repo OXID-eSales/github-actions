@@ -212,7 +212,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v0
+        uses: OXID-eSales/github-actions/append_report@v4
         with:
           prefix: '${{ steps.post_ltp.outputs.title }}'
           header: true
@@ -695,7 +695,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v0
+        uses: OXID-eSales/github-actions/append_report@v4
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
           priority: '020'
@@ -892,7 +892,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v0
+        uses: OXID-eSales/github-actions/append_report@v4
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
           priority: '100'
@@ -1076,7 +1076,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v0
+        uses: OXID-eSales/github-actions/append_report@v4
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
           priority: '100'
@@ -1171,7 +1171,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v0
+        uses: OXID-eSales/github-actions/append_report@v4
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
           priority: '240'
@@ -1204,7 +1204,7 @@ jobs:
 
       - name: 'Write yamllint Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v0
+        uses: OXID-eSales/github-actions/append_report@v4
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
           priority: '240'
@@ -1254,7 +1254,7 @@ jobs:
 
       - name: 'Write actionlint Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v0
+        uses: OXID-eSales/github-actions/append_report@v4
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
           priority: '250'
