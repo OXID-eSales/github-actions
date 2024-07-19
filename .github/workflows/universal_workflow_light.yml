@@ -220,6 +220,7 @@ jobs:
           priority: '001'
           cached_object: ${{ steps.ltp.outputs.init_cache_name }}
           debug: false
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
     outputs:
       debug: ${{ steps.begin_report.outputs.debug }}
@@ -709,6 +710,7 @@ jobs:
             ${{ steps.iltp.outputs.install_cache_prefix}}_${{steps.iltp.outputs.global_title}}-PHP${{matrix.php}}-MYSQL${{matrix.mysql}}
           # yamllint enable rule:line-length
           debug: ${{ inputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
   runscript:
     needs: ['init', 'install']
@@ -753,7 +755,7 @@ jobs:
           yaml: generated_testplan.yaml
           loglevel: info
           logfile: load_testplan_runscript.log
-          token: ${{ secrets.enterprise_github_token }}
+          token: ${{ secrets.enterprise_github_token || github.token }}
 
       - name: Convert variables
         id: rt
@@ -818,7 +820,8 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Modify composer.json'
-        if: ${{ steps.rt.outputs.runscript_composer_transform != '' && steps.rt.outputs.runscript_composer_early == 'false' }}
+        # Also run this if there is a transformation but composer_early is set to 'skip'
+        if: ${{ steps.rt.outputs.runscript_composer_transform != '' && steps.rt.outputs.runscript_composer_early != 'true' }}
         uses: 'OXID-eSales/github-actions/composer_merge@v4'
         with:
           file: 'source/${{ steps.rt.outputs.runscript_path }}/composer.json'
@@ -834,6 +837,7 @@ jobs:
           github_token: ${{ secrets.enterprise_github_token || github.token }}
 
       - name: Run composer if there is no transform
+        # Only run this if there is no transformation and composer_early is set to 'false'
         if: ${{ steps.rt.outputs.runscript_composer_transform == '' && steps.rt.outputs.runscript_composer_early == 'false' }}
         run: |
           # run composer
@@ -899,6 +903,7 @@ jobs:
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
           debug: ${{ inputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
   runslim:
     needs: ['init', 'install']
@@ -1082,6 +1087,7 @@ jobs:
           mysql: ${{matrix.mysql}}
           status: ${{job.status}}
           debug: ${{ inputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
   sonarcloud:
     needs: ['init', 'install', 'runscript', 'runslim']
@@ -1177,6 +1183,7 @@ jobs:
           testplan: ${{matrix.testplan}}
           status: ${{job.status}}
           debug: ${{ inputs.debug }}
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
   yamllint:
     needs: ['init', 'install']
@@ -1209,6 +1216,7 @@ jobs:
           testplan: ''
           status: ${{job.status}}
           debug: false
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
   actionlint:
     needs: ['init', 'install']
@@ -1231,7 +1239,7 @@ jobs:
 
       - name: Run actionlint
         id: actionlint
-        uses: raven-actions/actionlint@v1
+        uses: raven-actions/actionlint@v2
 
       - name: actionlint Summary
         if: always()
@@ -1258,6 +1266,7 @@ jobs:
           testplan: ''
           status: ${{job.status}}
           debug: false
+          github_token: ${{ secrets.enterprise_github_token || github.token }}
 
   finish:
     if: ${{ always() && needs.init.outputs.finish_skip != 'true' }}
