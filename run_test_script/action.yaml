@@ -78,6 +78,7 @@ runs:
         docker compose ${{ inputs.container_method }} -T \
           -e GITHUB_TOKEN=${{ inputs.github_token }} \
           ${{ inputs.container_options }} \
+          -e ABSOLUTE_PATH=${{ inputs.path }} \
           --workdir '/var/www/${{ inputs.workdir }}' \
           ${{ inputs.container_name }} \
           composer ${{ inputs.script }}
@@ -109,6 +110,7 @@ runs:
         docker compose ${{ inputs.container_method }} -T \
           -e GITHUB_TOKEN=${{ inputs.github_token }} \
           ${{ inputs.container_options }} \
+          -e ABSOLUTE_PATH=${{ inputs.path }} \
           --workdir '/var/www/${{ inputs.workdir }}' \
           ${{ inputs.container_name }} \
           /var/www/${{ inputs.path }}/${SCRIPT}
