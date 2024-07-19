@@ -778,7 +778,7 @@ jobs:
             cache_bucket \
             composer_file composer_backup composer_transform composer_update composer_update_options composer_early \
             custom_script custom_script_container \
-            path install_options \
+            path workdir install_options \
             output_prefix coverage_prefix; do
             VAR="runscript_${PREFIX}_${KEY}"
             if [[ "${E}" != *"${VAR}"* ]]; then
@@ -864,10 +864,11 @@ jobs:
           token: ${{ github.token }}
 
       - name: 'Run runscript check'
-        uses: 'OXID-eSales/github-actions/run_test_script@v4'
+        uses: 'OXID-eSales/github-actions/run_test_script@v0'
         with:
           script: ${{ steps.rt.outputs.runscript_script }}
           path: ${{ steps.rt.outputs.runscript_path }}
+          workdir: ${{ steps.rt.outputs.runscript_workdir || steps.rt.outputs.runscript_path }}
           run_composer_install: ${{ steps.rt.outputs.runscript_run_composer_install }}
           install_options: ${{ steps.rt.outputs.runscript_install_options }}
           container_name: ${{ steps.rt.outputs.runscript_container_name }}
@@ -971,7 +972,7 @@ jobs:
             cache_bucket \
             composer_file composer_backup composer_transform composer_update composer_update_options composer_early \
             custom_script custom_script_container \
-            path install_options \
+            path workdir install_options \
             output_prefix coverage_prefix; do
             VAR="runslim_${PREFIX}_${KEY}"
             if [[ "${E}" != *"${VAR}"* ]]; then
@@ -1048,10 +1049,11 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
 
       - name: 'Run runslim check'
-        uses: 'OXID-eSales/github-actions/run_test_script@v4'
+        uses: 'OXID-eSales/github-actions/run_test_script@v0'
         with:
           script: ${{ steps.rt.outputs.runslim_script }}
           path: ${{ steps.rt.outputs.runslim_path }}
+          workdir: ${{ steps.rt.outputs.runscript_workdir || steps.rt.outputs.runscript_path }}
           run_composer_install: ${{ steps.rt.outputs.runslim_run_composer_install }}
           install_options: ${{ steps.rt.outputs.runslim_install_options }}
           container_name: ${{ steps.rt.outputs.runslim_container_name }}

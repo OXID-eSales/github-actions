@@ -9,6 +9,11 @@ inputs:
     type: string
     required: true
     description: 'Workdir for the script'
+  workdir:
+    type: string
+    required: false
+    description: 'Workdir for the script'
+    default: ''
   run_composer_install:
     type: boolean
     required: false
@@ -73,7 +78,7 @@ runs:
         docker compose ${{ inputs.container_method }} -T \
           -e GITHUB_TOKEN=${{ inputs.github_token }} \
           ${{ inputs.container_options }} \
-          --workdir '/var/www/${{ inputs.path }}' \
+          --workdir '/var/www/${{ inputs.workdir }}' \
           ${{ inputs.container_name }} \
           composer ${{ inputs.script }}
 
@@ -104,7 +109,7 @@ runs:
         docker compose ${{ inputs.container_method }} -T \
           -e GITHUB_TOKEN=${{ inputs.github_token }} \
           ${{ inputs.container_options }} \
-          --workdir '/var/www/${{ inputs.path }}' \
+          --workdir '/var/www/${{ inputs.workdir }}' \
           ${{ inputs.container_name }} \
           /var/www/${{ inputs.path }}/${SCRIPT}
 

@@ -314,6 +314,10 @@ runscript: &runscript
   # The path pointing to the module relative to source/dev-packages needs to be the same as in install_module
   path: ''
 
+  # The working directory to when executing the script in the docker container. If not set, this
+  # defaults to the value of path
+  # workdir: ''
+
   # Should we run composer install in the workdir?
   run_composer_install: true
 
