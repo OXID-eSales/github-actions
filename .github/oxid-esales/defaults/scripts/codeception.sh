@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 set -x
+SUITE="${0}"
 
 function init() {
     # shellcheck disable=SC2128
