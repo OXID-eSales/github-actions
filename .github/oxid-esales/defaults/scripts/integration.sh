@@ -25,7 +25,7 @@ function init() {
         SUITE="${ABSOLUTE_PATH}/tests/Integration"
     fi
 
-    LOG_FILE="${OUTPUT_DIR}/integration_${SUITE}.txt"
+    LOG_FILE="${OUTPUT_DIR}/phpunit_integration.txt"
     PATTERN_FILE="${SCRIPT_DIR}/integration_failure_pattern.txt"
 
     PHPUNIT="vendor/bin/phpunit"
