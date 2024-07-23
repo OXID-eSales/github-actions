@@ -800,7 +800,7 @@ jobs:
           if [[ "${E}" != *"${VAR}"* ]]; then
             VAR='runscript_workdir'
           fi
-          if [ "$!{VAR}" == '~' ]; then
+          if [ "${!VAR}" == '~' ]; then
             echo "runscript_workdir=${runscript_path}"| tee -a "${GITHUB_OUTPUT}"
           else
             echo "runscript_workdir=${!VAR}"| tee -a "${GITHUB_OUTPUT}"
@@ -1004,7 +1004,7 @@ jobs:
           if [[ "${E}" != *"${VAR}"* ]]; then
             VAR='runslim_workdir'
           fi
-          if [ "$!{VAR}" == '~' ]; then
+          if [ "${!VAR}" == '~' ]; then
             echo "runslim_workdir=${runslim_path}"| tee -a "${GITHUB_OUTPUT}"
           else
             echo "runslim_workdir=${!VAR}"| tee -a "${GITHUB_OUTPUT}"
