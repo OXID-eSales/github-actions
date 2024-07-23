@@ -1073,7 +1073,7 @@ jobs:
         with:
           script: ${{ steps.rt.outputs.runslim_script }}
           path: ${{ steps.rt.outputs.runslim_path }}
-          workdir: ${{ steps.rt.outputs.runscript_workdir }}
+          workdir: ${{ steps.rt.outputs.runslim_workdir }}
           run_composer_install: ${{ steps.rt.outputs.runslim_run_composer_install }}
           install_options: ${{ steps.rt.outputs.runslim_install_options }}
           container_name: ${{ steps.rt.outputs.runslim_container_name }}
