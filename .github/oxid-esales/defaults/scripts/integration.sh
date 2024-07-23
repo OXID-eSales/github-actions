@@ -55,7 +55,6 @@ function init() {
         Script directory: ${SCRIPT_DIR}
         Output directory: ${OUTPUT_DIR}
         Report directory: ${REPORT_DIR}
-        Script directory: ${SCRIPT_DIR}
         Suite: ${SUITE}
         Bootstrap: ${BOOTSTRAP}
         Config: ${XML_FILE}

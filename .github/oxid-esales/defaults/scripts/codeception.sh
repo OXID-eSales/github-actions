@@ -53,7 +53,6 @@ function init() {
         Script directory: ${SCRIPT_DIR}
         Output directory: ${OUTPUT_DIR}
         Report directory: ${REPORT_DIR}
-        Script directory: ${SCRIPT_DIR}
         Selenium host: ${SELENIUM_SERVER_HOST}
         Suite: ${SUITE}
         Codeception: ${CODECEPT}
