@@ -316,7 +316,7 @@ runscript: &runscript
 
   # The working directory to when executing the script in the docker container. If not set, this
   # defaults to the value of path
-  # workdir: ''
+  workdir: '~'
 
   # Should we run composer install in the workdir?
   run_composer_install: true

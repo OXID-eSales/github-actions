@@ -778,7 +778,7 @@ jobs:
             cache_bucket \
             composer_file composer_backup composer_transform composer_update composer_update_options composer_early \
             custom_script custom_script_container \
-            path workdir install_options \
+            path install_options \
             output_prefix coverage_prefix; do
             VAR="runscript_${PREFIX}_${KEY}"
             if [[ "${E}" != *"${VAR}"* ]]; then
@@ -790,10 +790,20 @@ jobs:
           ${!VAR}
           runscript_${KEY}_delimeter
           EOF
-            export "runslim_${KEY}"="${!VAR}"
+            export "runscript_${KEY}"="${!VAR}"
           done
-          if [ "${runslim_composer_early}" == 'false' ]; then
-            echo 'runslim_run_composer_install=true'| tee -a "${GITHUB_OUTPUT}"
+          if [ "${runscript_composer_early}" == 'false' ]; then
+            echo 'runscript_run_composer_install=true'| tee -a "${GITHUB_OUTPUT}"
+          fi
+          # If runscript_workdir is ~, it will be set to the value of runscript_path
+          VAR="runscript_${PREFIX}_workdir"
+          if [[ "${E}" != *"${VAR}"* ]]; then
+            VAR='runscript_workdir'
+          fi
+          if [ "$!{VAR}" == '~' ]; then
+            echo "runscript_workdir=${runscript_path}"| tee -a "${GITHUB_OUTPUT}"
+          else
+            echo "runscript_workdir=${!VAR}"| tee -a "${GITHUB_OUTPUT}"
           fi
           SUFFIX="${PREFIX}_${SCRIPT}-${{ steps.rstn.outputs.matrix_suffix }}"
           echo "runscript_suffix=${SUFFIX}"| \
@@ -972,7 +982,7 @@ jobs:
             cache_bucket \
             composer_file composer_backup composer_transform composer_update composer_update_options composer_early \
             custom_script custom_script_container \
-            path workdir install_options \
+            path install_options \
             output_prefix coverage_prefix; do
             VAR="runslim_${PREFIX}_${KEY}"
             if [[ "${E}" != *"${VAR}"* ]]; then
@@ -988,6 +998,16 @@ jobs:
           done
           if [ "${runslim_composer_early}" == 'false' ]; then
             echo 'runslim_run_composer_install=true'| tee -a "${GITHUB_OUTPUT}"
+          fi
+          # If runslim_workdir is ~, it will be set to the value of runslim_path
+          VAR="runslim_${PREFIX}_workdir"
+          if [[ "${E}" != *"${VAR}"* ]]; then
+            VAR='runslim_workdir'
+          fi
+          if [ "$!{VAR}" == '~' ]; then
+            echo "runslim_workdir=${runslim_path}"| tee -a "${GITHUB_OUTPUT}"
+          else
+            echo "runslim_workdir=${!VAR}"| tee -a "${GITHUB_OUTPUT}"
           fi
           SUFFIX="${PREFIX}_${SCRIPT}-${{ steps.rstn.outputs.matrix_suffix }}"
           echo "runslim_suffix=${SUFFIX}"|sed -E 's#"|,|:|<|>|\||\*|\?|\/|\\#_#g' | tee -a "${GITHUB_OUTPUT}"
