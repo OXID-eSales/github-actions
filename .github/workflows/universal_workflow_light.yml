@@ -400,16 +400,12 @@ jobs:
                 rm .composer_merge.tmp.json
               fi
               echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runslim_${PREFIX}_path, ${E}\033[0m"
-              docker compose ${{ steps.iltp.outputs.install_shop_with_modules_container_method }} -T \
-              ${{ steps.iltp.outputs.install_shop_with_modules_container_options }} \
-                ${{ steps.iltp.outputs.install_shop_with_modules_container_name }} \
-                composer update ${{ steps.iltp.outputs.install_shop_with_modules_composer_update_options}} -d "/var/www/${COMPOSER_PATH}"
+              docker compose ${{ steps.iltp.outputs.install_container_method }} -T \
+              ${{ steps.iltp.outputs.install_container_options }} \
+                ${{ steps.iltp.outputs.install_container_name }} \
+                composer update ${{ steps.iltp.outputs.install_composer_update_options}} -d "/var/www/${COMPOSER_PATH}"
             fi
           done
-          docker compose ${{ steps.iltp.outputs.install_shop_with_modules_container_method }} -T \
-          ${{ steps.iltp.outputs.install_shop_with_modules_container_options }} \
-            ${{ steps.iltp.outputs.install_shop_with_modules_container_name }} \
-            composer update ${{ steps.iltp.outputs.install_shop_with_modules_composer_update_options}}
           rm -rf ./load_testplan
 
       - name: Generate debugging script for running composer for each module
