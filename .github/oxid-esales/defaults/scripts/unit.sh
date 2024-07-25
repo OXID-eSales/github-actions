@@ -14,15 +14,22 @@ function init() {
     else
         ABSOLUTE_PATH="/var/www/${ABSOLUTE_PATH}"
     fi
+    TESTDIR='tests'
+    if [ ! -d "${ABSOLUTE_PATH}/${TESTDIR}" ]; then
+        TESTDIR='Tests'
+        if [ ! -d "${ABSOLUTE_PATH}/${TESTDIR}" ]; then
+            echo -e "\033[0;31m###  Could not find folder tests or Tests in ${ABSOLUTE_PATH} ###\033[0m"
+            exit 1
+        fi
+    fi
+    [[ ! -d "${ABSOLUTE_PATH}/${TESTDIR}/Output" ]] && mkdir "${ABSOLUTE_PATH}/${TESTDIR}/Output"
+    [[ ! -d "${ABSOLUTE_PATH}/${TESTDIR}/Output" ]] && mkdir "${ABSOLUTE_PATH}/${TESTDIR}/Reports"
 
-    [[ ! -d "${ABSOLUTE_PATH}/tests/Output" ]] && mkdir "${ABSOLUTE_PATH}/tests/Output"
-    [[ ! -d "${ABSOLUTE_PATH}/tests/Output" ]] && mkdir "${ABSOLUTE_PATH}/tests/Reports"
-
-    OUTPUT_DIR="${ABSOLUTE_PATH}/tests/Output"
-    REPORT_DIR="${ABSOLUTE_PATH}/tests/Reports"
+    OUTPUT_DIR="${ABSOLUTE_PATH}/${TESTDIR}/Output"
+    REPORT_DIR="${ABSOLUTE_PATH}/${TESTDIR}/Reports"
 
     if [ -z "${SUITE}" ]; then
-        SUITE="${ABSOLUTE_PATH}/tests/Unit"
+        SUITE="${ABSOLUTE_PATH}/${TESTDIR}/Unit"
     fi
 
     LOG_FILE="${OUTPUT_DIR}/phpunit_unit.txt"
@@ -39,7 +46,7 @@ function init() {
 
     BOOTSTRAP="/var/www/source/bootstrap.php"
     if [ ! -f "${BOOTSTRAP}" ]; then
-        BOOTSTRAP="/var/www/vendor/oxid-esales/oxideshop-ce/tests/bootstrap.php"
+        BOOTSTRAP="/var/www/vendor/oxid-esales/oxideshop-ce/${TESTDIR}/bootstrap.php"
         if [ ! -f "${BOOTSTRAP}" ]; then
             echo -e "\033[0;31mCould not find bootstrap.php in /var/www/tests or /var/www/oxid-esales/oxideshop-ce/tests\033[0m"
             find /var/www -iname "bootstrap.php"
@@ -47,7 +54,7 @@ function init() {
         fi
     fi
 
-    XML_FILE="${ABSOLUTE_PATH}/tests/phpunit.xml"
+    XML_FILE="${ABSOLUTE_PATH}/${TESTDIR}/phpunit.xml"
     COVERAGE_FILE="${REPORT_DIR}/coverage_phpunit_unit.xml"
 
     cat <<EOF

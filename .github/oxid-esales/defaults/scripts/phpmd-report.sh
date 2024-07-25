@@ -12,9 +12,16 @@ function init() {
     else
         ABSOLUTE_PATH="/var/www/${ABSOLUTE_PATH}"
     fi
-
-    [[ ! -d "${ABSOLUTE_PATH}/tests/Reports" ]] && mkdir "${ABSOLUTE_PATH}/tests/Reports"
-    REPORT_DIR="${ABSOLUTE_PATH}/tests/Reports"
+    TESTDIR='tests'
+    if [ ! -d "${ABSOLUTE_PATH}/${TESTDIR}" ]; then
+        TESTDIR='Tests'
+        if [ ! -d "${ABSOLUTE_PATH}/${TESTDIR}" ]; then
+            echo -e "\033[0;31m###  Could not find folder tests or Tests in ${ABSOLUTE_PATH} ###\033[0m"
+            exit 1
+        fi
+    fi
+    [[ ! -d "${ABSOLUTE_PATH}/${TESTDIR}/Reports" ]] && mkdir "${ABSOLUTE_PATH}/${TESTDIR}/Reports"
+    REPORT_DIR="${ABSOLUTE_PATH}/${TESTDIR}/Reports"
 
     if [ -x vendor/bin/phpmd ]; then
     PHPMD=vendor/bin/phpmd
@@ -27,7 +34,7 @@ function init() {
         fi
     fi
 
-    XML_FILE="${ABSOLUTE_PATH}/tests/PhpMd/standard.xml"
+    XML_FILE="${ABSOLUTE_PATH}/${TESTDIR}/PhpMd/standard.xml"
     REPORT_FILE="${REPORT_DIR}/phpmd.report.json"
 
     if [ -z "${SOURCE_DIR}" ]; then

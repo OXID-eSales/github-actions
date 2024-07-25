@@ -12,10 +12,17 @@ function init() {
     else
         ABSOLUTE_PATH="/var/www/${ABSOLUTE_PATH}"
     fi
+    TESTDIR='tests'
+    if [ ! -d "${ABSOLUTE_PATH}/${TESTDIR}" ]; then
+        TESTDIR='Tests'
+        if [ ! -d "${ABSOLUTE_PATH}/${TESTDIR}" ]; then
+            echo -e "\033[0;31m###  Could not find folder tests or Tests in ${ABSOLUTE_PATH} ###\033[0m"
+            exit 1
+        fi
+    fi
+    [[ ! -d "${ABSOLUTE_PATH}/${TESTDIR}/Reports" ]] && mkdir "${ABSOLUTE_PATH}/${TESTDIR}/Reports"
 
-    [[ ! -d "${ABSOLUTE_PATH}/tests/Reports" ]] && mkdir "${ABSOLUTE_PATH}/tests/Reports"
-
-    REPORT_DIR="${ABSOLUTE_PATH}/tests/Reports"
+    REPORT_DIR="${ABSOLUTE_PATH}/${TESTDIR}/Reports"
 
     if [ -x vendor/bin/phpcs ]; then
     PHPCS=vendor/bin/phpcs
@@ -28,7 +35,7 @@ function init() {
         fi
     fi
 
-    XML_FILE="${ABSOLUTE_PATH}/tests/phpcs.xml"
+    XML_FILE="${ABSOLUTE_PATH}/${TESTDIR}/phpcs.xml"
     REPORT_FILE="${REPORT_DIR}phpcs.report.json"
     cat <<EOF
         Path: ${ABSOLUTE_PATH}

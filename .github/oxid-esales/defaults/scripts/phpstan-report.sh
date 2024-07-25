@@ -15,10 +15,17 @@ function init() {
     else
         ABSOLUTE_PATH="/var/www/${ABSOLUTE_PATH}"
     fi
+    TESTDIR='tests'
+    if [ ! -d "${ABSOLUTE_PATH}/${TESTDIR}" ]; then
+        TESTDIR='Tests'
+        if [ ! -d "${ABSOLUTE_PATH}/${TESTDIR}" ]; then
+            echo -e "\033[0;31m###  Could not find folder tests or Tests in ${ABSOLUTE_PATH} ###\033[0m"
+            exit 1
+        fi
+    fi
+    [[ ! -d "${ABSOLUTE_PATH}/${TESTDIR}/Reports" ]] && mkdir "${ABSOLUTE_PATH}/${TESTDIR}/Reports"
 
-    [[ ! -d "${ABSOLUTE_PATH}/tests/Reports" ]] && mkdir "${ABSOLUTE_PATH}/tests/Reports"
-
-    REPORT_DIR="${ABSOLUTE_PATH}/tests/Reports"
+    REPORT_DIR="${ABSOLUTE_PATH}/${TESTDIR}/Reports"
 
     if [ -z "${SOURCE_DIR}" ]; then
         SOURCE_DIR='src'
@@ -38,8 +45,8 @@ function init() {
             exit 1
         fi
     fi
-    NEON_FILE="${ABSOLUTE_PATH}/tests/PhpStan/phpstan.neon"
-    REPORT_FILE="${ABSOLUTE_PATH}/tests/Reports/phpstan.report.json"
+    NEON_FILE="${ABSOLUTE_PATH}/${TESTDIR}/PhpStan/phpstan.neon"
+    REPORT_FILE="${ABSOLUTE_PATH}/${TESTDIR}/Reports/phpstan.report.json"
 
     cat <<EOF
         Path: ${ABSOLUTE_PATH}

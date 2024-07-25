@@ -15,12 +15,20 @@ function init() {
     else
         ABSOLUTE_PATH="/var/www/${ABSOLUTE_PATH}"
     fi
+    TESTDIR='tests'
+    if [ ! -d "${ABSOLUTE_PATH}/${TESTDIR}" ]; then
+        TESTDIR='Tests'
+        if [ ! -d "${ABSOLUTE_PATH}/${TESTDIR}" ]; then
+            echo -e "\033[0;31m###  Could not find folder tests or Tests in ${ABSOLUTE_PATH} ###\033[0m"
+            exit 1
+        fi
+    fi
 
-    [[ ! -d "${ABSOLUTE_PATH}/tests/Output" ]] && mkdir "${ABSOLUTE_PATH}/tests/Output"
-    [[ ! -d "${ABSOLUTE_PATH}/tests/Output" ]] && mkdir "${ABSOLUTE_PATH}/tests/Reports"
+    [[ ! -d "${ABSOLUTE_PATH}/${TESTDIR}/Output" ]] && mkdir "${ABSOLUTE_PATH}/${TESTDIR}/Output"
+    [[ ! -d "${ABSOLUTE_PATH}/${TESTDIR}/Output" ]] && mkdir "${ABSOLUTE_PATH}/${TESTDIR}/Reports"
 
-    OUTPUT_DIR="${ABSOLUTE_PATH}/tests/Output"
-    REPORT_DIR="${ABSOLUTE_PATH}/tests/Reports"
+    OUTPUT_DIR="${ABSOLUTE_PATH}/${TESTDIR}/Output"
+    REPORT_DIR="${ABSOLUTE_PATH}/${TESTDIR}/Reports"
 
     if [ -z "${SELENIUM_SERVER_HOST}" ]; then
         SELENIUM_SERVER_HOST='selenium'
@@ -28,10 +36,10 @@ function init() {
 
     if [ -z "${SUITE}" ]; then
         SUITE="Acceptance"
-        if [ ! -d "${ABSOLUTE_PATH}/tests/Codeception/${SUITE}" ]; then
+        if [ ! -d "${ABSOLUTE_PATH}/${TESTDIR}/Codeception/${SUITE}" ]; then
             SUITE="acceptance"
-            if [ ! -d "${ABSOLUTE_PATH}/tests/Codeception/${SUITE}" ]; then
-                echo -e "\033[0;31mCould not find suite Acceptance or acceptance in tests/Codeception\033[0m"
+            if [ ! -d "${ABSOLUTE_PATH}/${TESTDIR}/Codeception/${SUITE}" ]; then
+                echo -e "\033[0;31mCould not find suite Acceptance or acceptance in ${TESTDIR}/Codeception\033[0m"
                 exit 1
             fi
         fi
@@ -81,7 +89,7 @@ wait_for_selenium
 RESULT=$?
 echo "Codecept build exited with error code ${RESULT}"
 "${CODECEPT}" run "${SUITE}" \
-    -c "${ABSOLUTE_PATH}/tests/codeception.yml" \
+    -c "${ABSOLUTE_PATH}/${TESTDIR}/codeception.yml" \
     --ext DotReporter \
     -o "paths: output: ${OUTPUT_DIR}" 2>&1 \
 | tee "${LOG_FILE}"
