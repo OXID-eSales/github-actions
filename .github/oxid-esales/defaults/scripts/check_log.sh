@@ -14,6 +14,11 @@ LOG_FILE="${1}"
 PATTERN_FILE="${2}"
 RESULT=0
 
+if [ ! -e "${LOG_FILE}" ]; then
+    echo -e "\033[0;31mLog file '${LOG_FILE}' does not exist! Seems like no tests have been run!\033[0m"
+    RESULT=1
+fi
+
 if [ ! -s "${LOG_FILE}" ]; then
     echo -e "\033[0;31mLog file '${LOG_FILE}' is empty! Seems like no tests have been run!\033[0m"
     RESULT=1
@@ -37,4 +42,11 @@ while read -r LINE ; do
         fi
     fi
 done <"${PATTERN_FILE}"
+
+if [ -s "/var/sync/logs/error_log.txt" ]; then
+    echo -e "\033[0;31mPHP error log is not empty!\033[0m"
+    cat /var/sync/logs/error_log.txt
+    RESULT=1
+fi
+
 exit ${RESULT}

@@ -175,6 +175,11 @@ inputs:
     required: false
     description: 'secrets.DOCKER_HUB_TOKEN for docker login'
     default: ''
+  copy_script_targets:
+    type: string
+    description: 'Copy the test scripts to these target folders'
+    default: 'tests/scripts'
+    required: false
   debug:
     type: string
     description: 'Appended to debugging scripts'
@@ -496,3 +501,27 @@ runs:
         if [ -f source/vendor/oxid-esales/oxideshop-ce/source/config.inc.php.dist ]; then
           cp source/vendor/oxid-esales/oxideshop-ce/source/config.inc.php.dist source/vendor/oxid-esales/oxideshop-ce/source/config.inc.php
         fi
+
+    - name: 'Copy test scripts'
+      if: ${{ inputs.copy_script_targets != '' }}
+      shell: bash
+      run: |
+        # prepare_shop: Copy tests scripts
+        ${{ inputs.debug }}
+        cat >targets.tmp <<EOF
+        ${{ inputs.copy_script_targets }}
+        EOF
+        sed -e 's|(.*)\r|$1|' -i targets.tmp
+        while read -r TARGET ; do
+          mkdir -p "source/${TARGET}"
+          for FILE in $(find .github/oxid-esales/defaults/scripts -iname "*.sh" -o -iname "*.txt"); do
+            BASE=$(basename "${FILE}")
+            if [ -f "source/${TARGET}/${BASE}" ]; then
+              echo "File 'source/${TARGET}/${BASE}' already exists, skipping copy"
+            else
+              echo "Copying default file '${FILE}' to 'source/${TARGET}'"
+              cp -a "${FILE}" "source/${TARGET}/${BASE}"
+            fi
+          done
+        done <targets.tmp
+        rm targets.tmp
