@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+set -e
 function init() {
     # shellcheck disable=SC2128
     if [[ ${BASH_SOURCE} = */* ]]; then

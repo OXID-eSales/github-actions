@@ -35,7 +35,7 @@ workflow:
   # a matrix of all combinations of these values for testing.
   matrix: &matrix
     # This string contains a json array of php versions to test against.
-    php: &matrix_php '["8.1","8.2"]'
+    php: &matrix_php '["8.2","8.3"]'
 
     # This json array are the mysql versions to test
     mysql: &matrix_mysql '["5.7","8.0.36"]'

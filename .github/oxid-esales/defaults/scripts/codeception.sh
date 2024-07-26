@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-set -x
 SUITE="${1}"
 
 function init() {

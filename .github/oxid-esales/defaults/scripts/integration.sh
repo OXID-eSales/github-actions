@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-set -x
 export XDEBUG_MODE=coverage
 function init() {
     # shellcheck disable=SC2128
