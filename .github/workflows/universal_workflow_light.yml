@@ -337,6 +337,7 @@ jobs:
           composer_update_options: ${{ steps.iltp.outputs.install_composer_update_options}}
           composer_dev_ref: ${{ steps.iltp.outputs.install_composer_dev_ref}}
           enterprise_github_token: ${{ secrets.enterprise_github_token || github.token }}
+          copy_script_targets: ${{ steps.iltp.outputs.install_copy_script_targets }}
           debug: ${{ needs.init.outputs.debug }}
 
       - name: Run composer for each module
@@ -399,16 +400,12 @@ jobs:
                 rm .composer_merge.tmp.json
               fi
               echo -e "\033[0;35mRuning composer install for '${PREFIX}' in '${COMPOSER_PATH}' using 'runslim_${PREFIX}_path, ${E}\033[0m"
-              docker compose ${{ steps.iltp.outputs.install_shop_with_modules_container_method }} -T \
-              ${{ steps.iltp.outputs.install_shop_with_modules_container_options }} \
-                ${{ steps.iltp.outputs.install_shop_with_modules_container_name }} \
-                composer update ${{ steps.iltp.outputs.install_shop_with_modules_composer_update_options}} -d "/var/www/${COMPOSER_PATH}"
+              docker compose ${{ steps.iltp.outputs.install_container_method }} -T \
+              ${{ steps.iltp.outputs.install_container_options }} \
+                ${{ steps.iltp.outputs.install_container_name }} \
+                composer update ${{ steps.iltp.outputs.install_composer_update_options}} -d "/var/www/${COMPOSER_PATH}"
             fi
           done
-          docker compose ${{ steps.iltp.outputs.install_shop_with_modules_container_method }} -T \
-          ${{ steps.iltp.outputs.install_shop_with_modules_container_options }} \
-            ${{ steps.iltp.outputs.install_shop_with_modules_container_name }} \
-            composer update ${{ steps.iltp.outputs.install_shop_with_modules_composer_update_options}}
           rm -rf ./load_testplan
 
       - name: Generate debugging script for running composer for each module
@@ -790,10 +787,20 @@ jobs:
           ${!VAR}
           runscript_${KEY}_delimeter
           EOF
-            export "runslim_${KEY}"="${!VAR}"
+            export "runscript_${KEY}"="${!VAR}"
           done
-          if [ "${runslim_composer_early}" == 'false' ]; then
-            echo 'runslim_run_composer_install=true'| tee -a "${GITHUB_OUTPUT}"
+          if [ "${runscript_composer_early}" == 'false' ]; then
+            echo 'runscript_run_composer_install=true'| tee -a "${GITHUB_OUTPUT}"
+          fi
+          # If runscript_workdir is ~, it will be set to the value of runscript_path
+          VAR="runscript_${PREFIX}_workdir"
+          if [[ "${E}" != *"${VAR}"* ]]; then
+            VAR='runscript_workdir'
+          fi
+          if [ "${!VAR}" == '~' ]; then
+            echo "runscript_workdir=${runscript_path}"| tee -a "${GITHUB_OUTPUT}"
+          else
+            echo "runscript_workdir=${!VAR}"| tee -a "${GITHUB_OUTPUT}"
           fi
           SUFFIX="${PREFIX}_${SCRIPT}-${{ steps.rstn.outputs.matrix_suffix }}"
           echo "runscript_suffix=${SUFFIX}"| \
@@ -868,6 +875,7 @@ jobs:
         with:
           script: ${{ steps.rt.outputs.runscript_script }}
           path: ${{ steps.rt.outputs.runscript_path }}
+          workdir: ${{ steps.rt.outputs.runscript_workdir }}
           run_composer_install: ${{ steps.rt.outputs.runscript_run_composer_install }}
           install_options: ${{ steps.rt.outputs.runscript_install_options }}
           container_name: ${{ steps.rt.outputs.runscript_container_name }}
@@ -988,6 +996,16 @@ jobs:
           if [ "${runslim_composer_early}" == 'false' ]; then
             echo 'runslim_run_composer_install=true'| tee -a "${GITHUB_OUTPUT}"
           fi
+          # If runslim_workdir is ~, it will be set to the value of runslim_path
+          VAR="runslim_${PREFIX}_workdir"
+          if [[ "${E}" != *"${VAR}"* ]]; then
+            VAR='runslim_workdir'
+          fi
+          if [ "${!VAR}" == '~' ]; then
+            echo "runslim_workdir=${runslim_path}"| tee -a "${GITHUB_OUTPUT}"
+          else
+            echo "runslim_workdir=${!VAR}"| tee -a "${GITHUB_OUTPUT}"
+          fi
           SUFFIX="${PREFIX}_${SCRIPT}-${{ steps.rstn.outputs.matrix_suffix }}"
           echo "runslim_suffix=${SUFFIX}"|sed -E 's#"|,|:|<|>|\||\*|\?|\/|\\#_#g' | tee -a "${GITHUB_OUTPUT}"
           echo "runslim_title=${PREFIX}_${SCRIPT}"|sed -E 's#"|,|:|<|>|\||\*|\?|\/|\\#_#g' | tee -a "${GITHUB_OUTPUT}"
@@ -1052,6 +1070,7 @@ jobs:
         with:
           script: ${{ steps.rt.outputs.runslim_script }}
           path: ${{ steps.rt.outputs.runslim_path }}
+          workdir: ${{ steps.rt.outputs.runslim_workdir }}
           run_composer_install: ${{ steps.rt.outputs.runslim_run_composer_install }}
           install_options: ${{ steps.rt.outputs.runslim_install_options }}
           container_name: ${{ steps.rt.outputs.runslim_container_name }}

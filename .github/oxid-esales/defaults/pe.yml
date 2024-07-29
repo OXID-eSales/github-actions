@@ -30,15 +30,15 @@ install_shop_with_modules: &install
             "ddoe/*": "source"
           },
           "require": {
-              "oxid-esales/oxideshop-pe": "{{ .Data.global.composer.dev_ref }}",
-              "oxid-esales/twig-component": "{{ .Data.global.composer.dev_ref }}",
-              "oxid-esales/twig-component-pe": "{{ .Data.global.composer.dev_ref }}",
-              "oxid-esales/twig-admin-theme": "{{ .Data.global.composer.dev_ref }}",
-              "oxid-esales/apex-theme": "{{ .Data.global.composer.dev_ref }}"
+              "oxid-esales/oxideshop-pe": "{{ .Data.global.composer.ref_name }}",
+              "oxid-esales/twig-component": "{{ .Data.global.composer.ref_name }}",
+              "oxid-esales/twig-component-pe": "{{ .Data.global.composer.ref_name }}",
+              "oxid-esales/twig-admin-theme": "{{ .Data.global.composer.ref_name }}",
+              "oxid-esales/apex-theme": "{{ .Data.global.composer.ref_name }}"
           },
           "require-dev": {
-              "oxid-esales/codeception-modules": "{{ .Data.global.composer.dev_ref }}",
-              "oxid-esales/codeception-page-objects": "{{ .Data.global.composer.dev_ref }}"
+              "oxid-esales/codeception-modules": "{{ .Data.global.composer.ref_name }}",
+              "oxid-esales/codeception-page-objects": "{{ .Data.global.composer.ref_name }}"
           },
           "repositories": {
               "oxid-esales/twig-component-pe": {
@@ -108,9 +108,9 @@ runtest:
     transform: |
       {
           "require-dev": {
-              "oxid-esales/testing-library": "{{ .Data.global.composer.dev_ref }}",
-              "oxid-esales/tests-deprecated-ce": "{{ .Data.global.composer.dev_ref }}",
-              "oxid-esales/tests-deprecated-pe": "{{ .Data.global.composer.dev_ref }}",
+              "oxid-esales/testing-library": "{{ .Data.global.composer.ref_name }}",
+              "oxid-esales/tests-deprecated-ce": "{{ .Data.global.composer.ref_name }}",
+              "oxid-esales/tests-deprecated-pe": "{{ .Data.global.composer.ref_name }}",
               "codeception/module-webdriver": "^3.1",
               "phpunit/phpunit": "^9.1.1"
           },

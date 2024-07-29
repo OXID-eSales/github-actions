@@ -201,6 +201,9 @@ install:
   # The path for the script to install the shop
   script: 'source/vendor/oxid-esales/oxideshop-ce/.github/oxid-esales/install.sh'
 
+  # Copy the default test scripts to these target folders (multiline possible, one folder per line)
+  copy_script_targets: tests/scripts
+
 # This step installs the sdk, shop and module(s)
 install_shop_with_modules:
   matrix: *matrix
@@ -313,6 +316,10 @@ runscript: &runscript
 
   # The path pointing to the module relative to source/dev-packages needs to be the same as in install_module
   path: ''
+
+  # The working directory to when executing the script in the docker container. If not set, this
+  # defaults to the value of path
+  workdir: '~'
 
   # Should we run composer install in the workdir?
   run_composer_install: true

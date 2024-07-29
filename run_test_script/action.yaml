@@ -9,6 +9,11 @@ inputs:
     type: string
     required: true
     description: 'Workdir for the script'
+  workdir:
+    type: string
+    required: false
+    description: 'Workdir for the script'
+    default: ''
   run_composer_install:
     type: boolean
     required: false
@@ -73,7 +78,8 @@ runs:
         docker compose ${{ inputs.container_method }} -T \
           -e GITHUB_TOKEN=${{ inputs.github_token }} \
           ${{ inputs.container_options }} \
-          --workdir '/var/www/${{ inputs.path }}' \
+          -e ABSOLUTE_PATH=${{ inputs.path }} \
+          --workdir '/var/www/${{ inputs.workdir }}' \
           ${{ inputs.container_name }} \
           composer ${{ inputs.script }}
 
@@ -96,15 +102,17 @@ runs:
         if [ ! -f "source/${{ inputs.path }}/${SCRIPT}" ]; then
           SCRIPT=$(echo '${{ inputs.script }}'|sed -e "s|^~/|${TESTDIR}/scripts/|")
         fi
-        if [ ! -f "source/${{ inputs.path }}/${SCRIPT}" ]; then
-          echo -e "\033[0;31m###  Could not find source/${{ inputs.path }}/${SCRIPT} ###\033[0m"
+        S=$(echo "${SCRIPT}"|sed -e 's|\s.*||')
+        if [ ! -f "source/${{ inputs.path }}/${S}" ]; then
+          echo -e "\033[0;31m###  Could not find source/${{ inputs.path }}/${S} ###\033[0m"
         fi
-        chmod a+x "source/${{ inputs.path }}/${SCRIPT}"
+        chmod a+x "source/${{ inputs.path }}/${S}"
         echo -e "\033[0;35m###  Run ${SCRIPT} in ${{ inputs.path }} ###\033[0m"
         docker compose ${{ inputs.container_method }} -T \
           -e GITHUB_TOKEN=${{ inputs.github_token }} \
           ${{ inputs.container_options }} \
-          --workdir '/var/www/${{ inputs.path }}' \
+          -e ABSOLUTE_PATH=${{ inputs.path }} \
+          --workdir '/var/www/${{ inputs.workdir }}' \
           ${{ inputs.container_name }} \
           /var/www/${{ inputs.path }}/${SCRIPT}
 
