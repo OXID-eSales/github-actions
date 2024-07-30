@@ -1242,14 +1242,14 @@ jobs:
     if: ${{ always() && needs.init.outputs.actionlint_skip != 'true' }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
-      - name: Install npm on private runner
+      - name: Install software on private runner
         if: ${{ inputs.runs_on != '"ubuntu-latest"'}}
         run: |
           NPM=$(type -p 'npm'||true)
           if [ -z "${NPM}" ]; then
             echo -e "\033[0;35m###  Installing npm ###\033[0m"
             sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update
-            sudo apt-get -qq install npm
+            sudo apt-get -qq install npm shellcheck pipx
           fi
 
       - name: Checkout
