@@ -1242,7 +1242,7 @@ jobs:
     if: ${{ always() && needs.init.outputs.actionlint_skip != 'true' }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
-      - name: Install software on private runner
+      - name: Install npm on private runner
         if: ${{ inputs.runs_on != '"ubuntu-latest"'}}
         run: |
           NPM=$(type -p 'npm'||true)

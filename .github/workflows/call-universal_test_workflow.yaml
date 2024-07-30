@@ -1696,7 +1696,7 @@ jobs:
           if [ -z "${NPM}" ]; then
             echo -e "\033[0;35m###  Installing npm ###\033[0m"
             sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update
-            sudo apt-get -qq install npm
+            sudo apt-get -qq install npm shellcheck pipx
           fi
 
       - name: Checkout
