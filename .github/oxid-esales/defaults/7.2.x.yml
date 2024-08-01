@@ -1,7 +1,7 @@
 workflow:
   matrix: &matrix
     # We only test the latest recommended versions here but both template engines
-    php: &matrix_php '["8.1","8.2"]'
+    php: &matrix_php '["8.2","8.3"]'
     mysql: &matrix_mysql '["5.7","8.0.36"]'
   matrix_slim: &matrix_slim
     php: '["8.2"]'

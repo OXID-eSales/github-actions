@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-set -x
 function init() {
     if [[ ${BASH_SOURCE} = */* ]]; then
         SCRIPT_DIR=${BASH_SOURCE%/*}/

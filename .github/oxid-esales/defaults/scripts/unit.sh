@@ -32,7 +32,7 @@ function init() {
     fi
 
     LOG_FILE="${OUTPUT_DIR}/phpunit_unit.txt"
-    PATTERN_FILE="${SCRIPT_DIR}/unit_failure_pattern.txt"
+    PATTERN_FILE="${SCRIPT_DIR}unit_failure_pattern.txt"
 
     PHPUNIT="vendor/bin/phpunit"
     if [ ! -f "${PHPUNIT}" ]; then
@@ -45,7 +45,7 @@ function init() {
 
     BOOTSTRAP="/var/www/source/bootstrap.php"
     if [ ! -f "${BOOTSTRAP}" ]; then
-        BOOTSTRAP="/var/www/vendor/oxid-esales/oxideshop-ce/${TESTDIR}/bootstrap.php"
+        BOOTSTRAP="/var/www/vendor/oxid-esales/oxideshop-ce/tests/bootstrap.php"
         if [ ! -f "${BOOTSTRAP}" ]; then
             echo -e "\033[0;31mCould not find bootstrap.php in /var/www/tests or /var/www/oxid-esales/oxideshop-ce/tests\033[0m"
             find /var/www -iname "bootstrap.php"
@@ -77,4 +77,4 @@ init
 | tee "${LOG_FILE}"
 RESULT=$?
 echo "phpunit exited with error code ${RESULT}"
-"${SCRIPT_DIR}/check_log.sh" "${LOG_FILE}" "${PATTERN_FILE}"
+"${SCRIPT_DIR}check_log.sh" "${LOG_FILE}" "${PATTERN_FILE}"
