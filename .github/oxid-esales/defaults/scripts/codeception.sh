@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+set -x
 SUITE="${1}"
 
 function init() {
@@ -44,7 +45,7 @@ function init() {
         fi
     fi
     LOG_FILE="${OUTPUT_DIR}/codeception_${SUITE}.txt"
-    PATTERN_FILE="${SCRIPT_DIR}/codeception_failure_pattern.txt"
+    PATTERN_FILE="${SCRIPT_DIR}codeception_failure_pattern.txt"
 
     CODECEPT="vendor/bin/codecept"
     if [ ! -f "${CODECEPT}" ]; then
@@ -84,7 +85,7 @@ function wait_for_selenium() {
 init
 wait_for_selenium
 
-"${CODECEPT}" build -c "${ABSOLUTE_PATH}/tests/codeception.yml"
+"${CODECEPT}" build -c "${ABSOLUTE_PATH}/${TESTDIR}/codeception.yml"
 RESULT=$?
 echo "Codecept build exited with error code ${RESULT}"
 "${CODECEPT}" run "${SUITE}" \
@@ -94,4 +95,4 @@ echo "Codecept build exited with error code ${RESULT}"
 | tee "${LOG_FILE}"
 RESULT=$?
 echo "Codecept run exited with error code ${RESULT}"
-"$SCRIPT_DIR/check_log.sh" "${LOG_FILE}" "${PATTERN_FILE}"
+"${SCRIPT_DIR}check_log.sh" "${LOG_FILE}" "${PATTERN_FILE}"

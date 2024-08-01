@@ -1246,10 +1246,11 @@ jobs:
         if: ${{ inputs.runs_on != '"ubuntu-latest"'}}
         run: |
           NPM=$(type -p 'npm'||true)
-          if [ -z "${NPM}" ]; then
-            echo -e "\033[0;35m###  Installing npm ###\033[0m"
+          PIPX=$(type -p 'pipx'||true)
+          if [ -z "${NPM}" ] || [ -z "${PIPX}" ]; then
+            echo -e "\033[0;35m###  Installing npm, shellcheck, pipx ###\033[0m"
             sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update
-            sudo apt-get -qq install npm
+            sudo apt-get -qq install npm shellcheck pipx python3-venv
           fi
 
       - name: Checkout
