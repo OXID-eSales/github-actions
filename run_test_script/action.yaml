@@ -143,7 +143,7 @@ runs:
         cp data/mysql/mysql/general_log* source/${{ inputs.path }}/${TESTDIR}/Output/
         if [ -f source/source/log/oxideshop.log ]; then
           mkdir -p source/${{ inputs.path }}/${TESTDIR}/Output/source/log
-          cp source/${{ inputs.path }}/${TESTDIR}/Output/ source/${{ inputs.path }}/${TESTDIR}/Output/source/log/
+          cp source/source/log/oxideshop.log source/${{ inputs.path }}/${TESTDIR}/Output/source/log/
         fi
         if [ -f source/vendor/oxid-esales/oxideshop-ce/log/oxideshop.log ]; then
           mkdir -p source/${{ inputs.path }}/${TESTDIR}/Output/source/vendor/oxid-esales/oxideshop-ce/log
