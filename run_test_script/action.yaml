@@ -139,6 +139,14 @@ runs:
         cp data/php/logs/error_log.txt source/${{ inputs.path }}/${TESTDIR}/Output/
         cp data/mysql/mysql/slow_log* source/${{ inputs.path }}/${TESTDIR}/Output/
         cp data/mysql/mysql/general_log* source/${{ inputs.path }}/${TESTDIR}/Output/
+        if [ -f source/source/log/oxideshop.log ]; then
+          mkdir -p source/${{ inputs.path }}/${TESTDIR}/Output/source/log
+          cp source/${{ inputs.path }}/${TESTDIR}/Output/ source/${{ inputs.path }}/${TESTDIR}/Output/source/log/
+        fi
+        if [ -f source/vendor/oxid-esales/oxideshop-ce/log/oxideshop.log ]; then
+          mkdir -p source/${{ inputs.path }}/${TESTDIR}/Output/source/vendor/oxid-esales/oxideshop-ce/log
+          cp source/vendor/oxid-esales/oxideshop-ce/log/oxideshop.log source/${{ inputs.path }}/${TESTDIR}/Output/source/vendor/oxid-esales/oxideshop-ce/log/
+        fi
         docker compose logs --tail=all >source/${{ inputs.path }}/${TESTDIR}/Output/docker-compose.log
         for c in $(docker ps -aq); do
           echo -e "\033[0;35m###  Logs for $c ###\033[0m"
