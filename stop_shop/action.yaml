@@ -10,17 +10,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Output docker logs
-      if: always()
-      shell: bash
-      run: |
-        # stop_shop: Output docker logs if make up failed
-        docker compose logs --tail=all >>docker-compose.log
-        for c in $(docker ps -aq); do
-          echo -e "\033[0;35m###  Logs for $c ###\033[0m"
-          docker logs -n 2000 $c >docker-$c.log
-        done
-
     - name: Stop containers
       if: always()
       shell: bash
