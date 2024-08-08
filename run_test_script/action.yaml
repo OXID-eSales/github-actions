@@ -136,6 +136,8 @@ runs:
         fi
         touch data/php/logs/error_log.txt
         mkdir -p "source/${{ inputs.path }}/${TESTDIR}/Output"
+        cp source/composer.json source/${{ inputs.path }}/${TESTDIR}/Output/
+        cp source/composer.lock source/${{ inputs.path }}/${TESTDIR}/Output/
         cp data/php/logs/error_log.txt source/${{ inputs.path }}/${TESTDIR}/Output/
         cp data/mysql/mysql/slow_log* source/${{ inputs.path }}/${TESTDIR}/Output/
         cp data/mysql/mysql/general_log* source/${{ inputs.path }}/${TESTDIR}/Output/
