@@ -161,3 +161,4 @@ runs:
         name: ${{ inputs.output_artifact }}
         path: |
           source/${{ inputs.path }}/tests/Output/*
+          source/${{ inputs.path }}/Tests/Output/*
