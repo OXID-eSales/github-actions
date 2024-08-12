@@ -97,6 +97,7 @@ runs:
             exit 1
           fi
         fi
+        echo -e "\033[0;35m###  Using ${TESTDIR}/Output to generate the artifact ###\033[0m"
         mkdir -p "source/${{ inputs.path }}/${TESTDIR}/Output" "source/${{ inputs.path }}/${TESTDIR}/Reports"
         SCRIPT=$(echo '${{ inputs.script }}'|sed -e "s|^~/|${TESTDIR}/Scripts/|")
         if [ ! -f "source/${{ inputs.path }}/${SCRIPT}" ]; then
@@ -161,3 +162,4 @@ runs:
         name: ${{ inputs.output_artifact }}
         path: |
           source/${{ inputs.path }}/tests/Output/*
+          source/${{ inputs.path }}/Tests/Output/*
