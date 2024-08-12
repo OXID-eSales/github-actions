@@ -48,10 +48,10 @@ install_module:
 # END Deprecated
 
 runscript:
-  matrix: *matrix_slim
+  matrix: *matrix
 
 runslim:
-  matrix: *matrix
+  matrix: *matrix_slim
 
 phpunit:
   matrix: *matrix
