@@ -1305,7 +1305,7 @@ jobs:
       - actionlint
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     env:
-      SLACK_WEBHOOK: "${{ inputs.custom_slack_channel }} ||${{ secrets.SLACK_WEBHOOK_URL }}"
+      SLACK_WEBHOOK: "${{ inputs.custom_slack_channel || secrets.SLACK_WEBHOOK_URL }}"
     steps:
       - name: 'Generate report'
         id: generate_report
