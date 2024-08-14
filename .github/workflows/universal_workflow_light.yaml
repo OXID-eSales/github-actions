@@ -40,6 +40,11 @@ on:
         description: 'Content of ~/oxid-esales/_custom.yaml'
         default: ''
         required: false
+      custom_slack_channel:
+        type: string
+        description: 'Custom slack channel to override the default'
+        default: ''
+        required: false
 
     secrets:
       DOCKER_HUB_USER:
@@ -1300,7 +1305,7 @@ jobs:
       - actionlint
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     env:
-      SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"
+      SLACK_WEBHOOK: "${{ inputs.custom_slack_channel }} ||${{ secrets.SLACK_WEBHOOK_URL }}"
     steps:
       - name: 'Generate report'
         id: generate_report
