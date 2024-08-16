@@ -1181,7 +1181,7 @@ jobs:
 
       - name: 'SonarCloud Scan'
         if: ${{ env.SONAR_TOKEN != '' }}
-        uses: 'OXID-eSales/github-actions/sonarcloud@v4'
+        uses: 'OXID-eSales/github-actions/sonarcloud@v0'
         with:
           coverage_artifact: 'coverage-reports-*-${{ steps.sonarcloud_testplan_name.outputs.matrix_suffix }}'
           output_artifact: 'coverage-reports-${{ needs.init.outputs.global_title }}'
