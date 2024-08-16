@@ -51,10 +51,3 @@ runs:
         path: ${{ inputs.path }}
         retention-days: 4
         overwrite: true
-
-    - name: 'Remove artifacts'
-      uses: joernott/rm-artifact@v1
-      with:
-        name: '${{ inputs.pattern }}'
-        useGlob: true
-        failOnError: false
