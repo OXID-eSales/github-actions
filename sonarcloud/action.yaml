@@ -112,7 +112,7 @@ runs:
       uses: actions/upload-artifact@v4
       with:
         name: '${{ inputs.output_artifact }}'
-        path: '${{ inputs.coverage_artifact }}'
+        path: 'coverage-reports'
         retention-days: 4
         overwrite: true
 
