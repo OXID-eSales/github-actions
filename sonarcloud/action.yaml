@@ -85,13 +85,14 @@ runs:
       run: |
         # sonarcloud: Fix Paths In Coverage Reports
         ${{ inputs.debug }}
+        find coverage-reports -type f
         COVERAGE_FILES=""
         for FILE in $(find coverage-reports -iname 'coverage*.xml'); do
           echo -e "\033[0;35mFixing paths in ${FILE}\033[0m"
           cp "${FILE}" "${FILE}.orig"
           sed -e 's|${{ inputs.strip_path }}||' -i ${FILE}
           COVERAGE_FILES="${COVERAGE_FILES},${FILE}"
-          diff -y --color=always "${FILE}.orig" "${FILE}" || true
+          # diff -y --color=always "${FILE}.orig" "${FILE}" || true
         done
         # remove leading comma when adding this
         echo "COVERAGE_PARAM=-Dsonar.php.coverage.reportPaths=${COVERAGE_FILES:1}"| tee -a "${GITHUB_ENV}"
@@ -116,12 +117,12 @@ runs:
         retention-days: 4
         overwrite: true
 
-    - name: 'Remove old artifacts'
-      uses: joernott/rm-artifact@v1
-      with:
-        name: '${{ inputs.coverage_artifact }}'
-        useGlob: true
-        failOnError: false
+    # - name: 'Remove old artifacts'
+    #   uses: joernott/rm-artifact@v1
+    #   with:
+    #     name: '${{ inputs.coverage_artifact }}'
+    #     useGlob: true
+    #     failOnError: false
 
     - name: Set target branch
       shell: bash
