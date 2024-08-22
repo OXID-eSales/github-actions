@@ -232,6 +232,8 @@ runs:
 
     - name: Fetch the compilation composer.json
       if: ${{ inputs.compilation_url != '' }}
+      env:
+        enterprise_github_token: '${{ inputs.enterprise_github_token }}'
       shell: bash
       run: |
         # prepare_shop: Fetch the compilation composer.json

@@ -255,7 +255,7 @@ install_shop_with_modules:
     xdebug: 'xdebug.max_nesting_level=1000'
 
   # Space separated list of extra services to add
-  add_services: 'selenium-chrome'
+  add_services: 'selenium-chrome-126'
 
   # Modifying source/source/config.inc.php
   config:
