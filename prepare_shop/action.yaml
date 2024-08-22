@@ -238,8 +238,8 @@ runs:
         ${{ inputs.debug }}
         mkdir -p source
         curl -sSjkLo source/composer.json \
-          -H 'Authorization: token ${{ inputs.enterprise_github_token }}' \
-          -H 'Accept: application/vnd.github.v3.raw' \
+          -H 'Authorization: Bearer ${{ inputs.enterprise_github_token }}' \
+          -H 'Accept: application/vnd.github.raw+json' \
           '${{ inputs.compilation_url }}'
 
     - name: Clone the shop  (${{ inputs.git_shop_ref }})
