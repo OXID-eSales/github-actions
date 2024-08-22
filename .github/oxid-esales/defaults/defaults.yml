@@ -213,7 +213,7 @@ prepare_shop: &prepare_shop
     xdebug: 'xdebug.max_nesting_level=1000'
 
   # Space separated list of extra services to add
-  add_services: 'selenium-chrome'
+  add_services: 'selenium-chrome-126'
 
 # This is the second part of the shop installation. It uses the cached
 # shop from prepare_shop and generates its own cached object used in the
