@@ -30,7 +30,7 @@ fi
 [[ ${RESULT} -gt 0 ]] && exit 1
 
 # shellcheck disable=SC2016
-sed -e 's|(.*)\r|$1|' -i "${PATTERN_FILE}"
+sed -e 's|(.*)\r|$1|' -i.backup "${PATTERN_FILE}"
 while read -r LINE ; do
     if [ -n "${LINE}" ]; then
         if grep -q -E "${LINE}" "${LOG_FILE}"; then

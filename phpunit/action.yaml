@@ -137,7 +137,7 @@ runs:
         cat >failure_pattern.tmp <<EOF
         ${{ inputs.failure_pattern}}
         EOF
-        sed -e 's|(.*)\r|$1|' -i failure_pattern.tmp
+        sed -e 's|(.*)\r|$1|' -i.backup failure_pattern.tmp
         while read -r LINE ; do
           if [ -n "${LINE}" ]; then
             if grep -q -E "${LINE}" "${{ inputs.logfile }}"; then

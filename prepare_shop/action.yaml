@@ -238,7 +238,7 @@ runs:
         ${{ inputs.debug }}
         mkdir -p source
         curl -sSjkLo source/composer.json \
-          -H 'Authorization: Bearer ${{ inputs.enterprise_github_token }}' \
+          -H "Authorization: Bearer ${{ inputs.enterprise_github_token }}" \
           -H 'Accept: application/vnd.github.raw+json' \
           '${{ inputs.compilation_url }}'
 
@@ -476,7 +476,7 @@ runs:
           else
             echo -e "\033[0;35mAllow dev-${{ inputs.github_ref_name }} for oxid-esales requires\033[0m"
             sed -e 's#"oxid-esales/\(.*\)":[[:space:]]*"${{ inputs.composer_dev_ref }}"#"oxid-esales/\1": "dev-${{ inputs.github_ref_name }} || ${{ inputs.composer_dev_ref }}"#' \
-                -i '${{ inputs.composer_file }}'
+                -i.backup '${{ inputs.composer_file }}'
           fi
         fi
         touch module_repositories.json
@@ -514,7 +514,7 @@ runs:
         cat >targets.tmp <<EOF
         ${{ inputs.copy_script_targets }}
         EOF
-        sed -e 's|(.*)\r|$1|' -i targets.tmp
+        sed -e 's|(.*)\r|$1|' -i.backup targets.tmp
         while read -r TARGET ; do
           mkdir -p "source/${TARGET}"
           for FILE in $(find .github/oxid-esales/defaults/scripts -iname "*.sh" -o -iname "*.txt"); do
