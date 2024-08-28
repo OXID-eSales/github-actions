@@ -1597,7 +1597,7 @@ jobs:
           # Update github token
           ${{ inputs.debug }}
           docker compose exec -T \
-            ${{ steps.styles_testplan.outputs.styles_composer_update_options }} \
+            ${{ steps.styles_testplan.outputs.styles_container_options }} \
             ${{ steps.styles_testplan.outputs.styles_container_name }} \
             composer config -g github-oauth.github.com "${{ secrets.enterprise_github_token || github.token }}"
 
