@@ -89,7 +89,7 @@ runs:
         for FILE in $(find coverage-reports -iname 'coverage*.xml'); do
           echo -e "\033[0;35mFixing paths in ${FILE}\033[0m"
           cp "${FILE}" "${FILE}.orig"
-          sed -e 's|${{ inputs.strip_path }}||' -i ${FILE}
+          sed -e 's|${{ inputs.strip_path }}||' -i.backup ${FILE}
           COVERAGE_FILES="${COVERAGE_FILES},${FILE}"
           # diff -y --color=always "${FILE}.orig" "${FILE}" || true
         done
@@ -99,7 +99,7 @@ runs:
         for FILE in $(find coverage-reports -iname 'phpunit*.xml'); do
           echo -e "\033[0;35mFixing paths in ${FILE}\033[0m"
           cp "${FILE}" "${FILE}.orig"
-          sed -e 's|${{ inputs.strip_path }}||' -i ${FILE}
+          sed -e 's|${{ inputs.strip_path }}||' -i.backup ${FILE}
           PHPUNIT_FILES="${PHPUNIT_FILES},${FILE}"
           # diff -y --color=always "${FILE}.orig" "${FILE}" || true
         done
