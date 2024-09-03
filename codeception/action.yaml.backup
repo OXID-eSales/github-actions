@@ -1,0 +1,189 @@
+name: 'codeception'
+description: 'Executes codeception tests in a running shop and uploads the logs and outputs as artifacts'
+inputs:
+  container_name:
+    type: string
+    required: false
+    description: 'Name of the container to run the test in'
+    default: 'php'
+  container_options:
+    type: string
+    required: false
+    description: 'Additional options to pass into the container'
+    default: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex'
+  container_method:
+    type: string
+    required: false
+    description: 'Method to execute the commands inside a container, either "run" or "exec"'
+    default: 'exec'
+  configuration:
+    type: string
+    required: false
+    description: 'Name of the configuration file'
+    default: 'tests/codeception.yml'
+  build:
+    type: boolean
+    required: false
+    description: 'Whether to run the build step before running codeception or not'
+    default: false
+  suite:
+    type: string
+    required: false
+    description: 'Name of the codeception test suite to run'
+    default: 'acceptance,acceptanceAdmin'
+  test:
+    type: string
+    required: false
+    description: 'Name of the test to run'
+    default: ''
+  additional_options:
+    type: string
+    required: false
+    description: 'Optional: Additional options to pass to codeception'
+    default: '--ext DotReporter'
+  build_additional_options:
+    type: string
+    required: false
+    description: 'Optional: Additional options to pass to codecept build'
+    default: ''
+  logfile:
+    type: string
+    required: false
+    description: 'Name of the output logfile'
+    default: 'codeception.txt'
+  output_files:
+    type: string
+    required: false
+    description: 'Output files of the codeception run to put into the output artifact'
+    default: |
+      docker-compose.yml
+      source/composer.json
+      source/composer.lock
+      source/source/config.inc.php
+      source/source/log/oxideshop.log
+      data/php/logs/error_log.txt
+      source/tests/Codeception/_output
+  output_artifact:
+    type: string
+    required: false
+    description: 'Github run artifact to put the output files in'
+    default: 'codeception-artifacts'
+  coverage_path:
+    type: string
+    required: false
+    description: 'Path for the coverage file, do not upload if it is empty'
+    default: ''
+  coverage_artifact:
+    type: string
+    required: false
+    description: 'Github run artifact for the coverage file'
+    default: 'coverage-reports'
+  failure_pattern:
+    type: string
+    required: false
+    description: 'Grep pattern which indicate that the test failed'
+    default: 'fail|\\.\\=\\=|Warning|Notice|Deprecated|Fatal|Error|DID NOT FINISH|Test file ".+" not found|Cannot open file'
+  debug:
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Build Codeception
+      if: ${{ inputs.build == 'true' }}
+      shell: bash
+      run: |
+        # codeception: Build Codeception
+        ${{ inputs.debug }}
+        docker compose exec -T \
+          ${{ inputs.container_name}} \
+          vendor/bin/codecept build \
+          -c ${{ inputs.configuration }} \
+          ${{ inputs.build_additional_options }}
+
+    - name: Run Codeception tests
+      shell: bash
+      run: |
+        # codeception: Run Codeception tests
+        ${{ inputs.debug }}
+        docker compose ${{ inputs.container_method }} -T \
+          ${{ inputs. container_options }} \
+           ${{ inputs.container_name}} \
+           vendor/bin/codecept run ${{ inputs.suite }} ${{ inputs.test }} \
+            -c ${{ inputs.configuration }} \
+            ${{ inputs.additional_options }} \
+            2>&1 | tee ${{ inputs.logfile }} || true
+
+    - name: Upload Codeception Artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.output_artifact }}
+        path: |
+          ${{ inputs.logfile }}
+          ${{ inputs.output_files }}
+          ${{ inputs.coverage_path }}
+        if-no-files-found: ignore
+        retention-days: 4
+
+    - name: Upload Coverage Report
+      if: ${{ always() && inputs.coverage_path != '' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.coverage_artifact }}
+        path: ${{ inputs.coverage_path }}
+        if-no-files-found: ignore
+        retention-days: 4
+
+    - name: Output php error log
+      if: always()
+      shell: bash
+      run: |
+        # codeception: Output php error log
+        ${{ inputs.debug }}
+        if [ -s data/php/logs/error_log.txt ]; then
+          echo -e "\033[0;35mPHP error log\033[0m"
+          cat data/php/logs/error_log.txt
+        fi
+
+    - name: Check results
+      shell: bash
+      run: |
+        # codeception: Check results
+        ${{ inputs.debug }}
+        PURPLE=$(echo -e "\033[0;31m")
+        NOCOLOR=$(echo -e "\033[0m")
+        if [ ! -s "${{ inputs.logfile }}" ]; then
+          cat <<EOF
+        ${PURPLE}###############################################################################
+        Log file is empty! Seems like no tests have been run!
+        ###############################################################################
+        EOF
+          exit 1
+        fi
+        cat >failure_pattern.tmp <<EOF
+        ${{ inputs.failure_pattern}}
+        EOF
+        sed -e 's|(.*)\r|$1|' -i.backup failure_pattern.tmp
+        while read -r LINE ; do
+          if [ -n "${LINE}" ]; then
+            if grep -q -E "${LINE}" "${{ inputs.logfile }}"; then
+              echo -e "\033[0;31m codeception test failed matching pattern ${LINE}"
+              grep -E "${LINE}" "${{ inputs.logfile }}"
+              exit 1
+            else
+                echo -e "\033[0;32m codeception test passed matching pattern ${LINE}"
+            fi
+          fi
+        done <failure_pattern.tmp
+        if [[ -n "${{ inputs.coverage_path }}" && ! -s "${{ inputs.coverage_path }}" ]]; then
+          cat <<EOF
+        ${PURPLE}###############################################################################
+        "${{ inputs.coverage_path }}" is empty!
+        ###############################################################################
+        EOF
+          exit 1
+        fi

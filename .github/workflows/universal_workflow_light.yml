@@ -1179,6 +1179,15 @@ jobs:
           ref: '${{ steps.sonarcloud_testplan.outputs.sonarcloud_git_ref }}'
           token: ${{ secrets.enterprise_github_token || github.token }}
 
+      - name: Login to Docker Hub
+        env:
+          DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
+        if: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_docker_login == 'true' && env.DOCKER_HUB_USER != '' }}
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USER }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
       - name: 'SonarCloud Scan'
         if: ${{ env.SONAR_TOKEN != '' }}
         uses: 'OXID-eSales/github-actions/sonarcloud@v4'

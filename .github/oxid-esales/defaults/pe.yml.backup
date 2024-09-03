@@ -1,0 +1,139 @@
+# This config overrides defaults.yml to set the necessary settings for
+# enterprise edition.
+# You also need to make sure that the following secrets are defined:
+# - CACHE_ENDPOINT
+# - CACHE_ACCESS_KEY
+# - CACHE_SECRET_KEY
+# - enterprise_github_token
+
+global:
+  # {{ $shop_type := "pe" }}$shop_type: {{ printf "%q" $shop_type }}
+  is_enterprise: &is_enterprise true
+
+  git: &git
+    # Using the stable branch for the ce shop here, and .Github.RefName refers to
+    # the ee shop commit/tag/branch
+    shop_ref: &git_shop_ref '{{ .Data.global.git.default_ref }}'
+    enterprise_ref: '{{ .Github.RefName }}'
+
+# See docs/actions/prepare_shop.md for more information.
+install_shop_with_modules: &install
+  composer:
+    transform: |
+      {
+          "config": {
+              "github-protocols": ["https"]
+          },
+          "preferred-install": {
+            "oxid-esales/*": "source",
+            "oxid-professional-services/*": "source",
+            "ddoe/*": "source"
+          },
+          "require": {
+              "oxid-esales/oxideshop-pe": "{{ .Data.global.composer.ref_name }}",
+              "oxid-esales/twig-component": "{{ .Data.global.composer.ref_name }}",
+              "oxid-esales/twig-component-pe": "{{ .Data.global.composer.ref_name }}",
+              "oxid-esales/twig-admin-theme": "{{ .Data.global.composer.ref_name }}",
+              "oxid-esales/apex-theme": "{{ .Data.global.composer.ref_name }}"
+          },
+          "require-dev": {
+              "oxid-esales/codeception-modules": "{{ .Data.global.composer.ref_name }}",
+              "oxid-esales/codeception-page-objects": "{{ .Data.global.composer.ref_name }}"
+          },
+          "repositories": {
+              "oxid-esales/twig-component-pe": {
+                  "type": "git",
+                  "url": "https://github.com/OXID-eSales/twig-component-pe.git"
+              },
+              "oxid-esales/oxideshop-pe": {
+                  "type": "git",
+                  "url": "https://github.com/OXID-eSales/oxideshop_pe.git"
+              }
+          }
+      }
+
+  git: *git
+  is_enterprise: *is_enterprise
+  cache:
+    # Needs to be here as $shop_type is different
+    prepared_shop_prefix: 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
+    prefix: &install_shop_prefix 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
+
+# BEGIN Deprecated, will be superseded by install:
+prepare_shop: *install
+
+# See docs/actions/start_shop.md and docs/actions/install_shop.md for more information.
+install_shop:
+  git: *git
+  is_enterprise: *is_enterprise
+  cache:
+    prefix: *install_shop_prefix
+
+install_module:
+  cache:
+    # Need to set this as we don't install a module. When installing a module:
+    # 'moduleInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
+    prefix: *install_shop_prefix
+  load_shop: *install_shop_prefix
+# END Deprecated
+
+phpunit:
+  load_shop: *install_shop_prefix
+
+codeception:
+  load_shop: *install_shop_prefix
+  container:
+    options: '-e SELENIUM_SERVER_HOST=selenium -e BROWSER_NAME=chrome -e THEME_ID=apex'
+    method: &selenium_container_method 'run'
+  configuration: 'vendor/oxid-esales/oxideshop-pe/Tests/codeception.yml'
+  additional_options: ''
+  output:
+    files: |
+      docker-compose.yml
+      source/composer.json
+      source/composer.lock
+      source/source/config.inc.php
+      source/source/log/oxideshop.log
+      data/php/logs/error_log.txt
+      source/vendor/oxid-esales/oxideshop-pe/Tests/Codeception/_output
+  coverage:
+    path: ''
+
+runtest:
+  load_shop: *install_shop_prefix
+  container:
+    options: '-e ACTIVE_THEME=apex'
+    method: 'run'
+  composer:
+    transform: |
+      {
+          "require-dev": {
+              "oxid-esales/testing-library": "{{ .Data.global.composer.ref_name }}",
+              "oxid-esales/tests-deprecated-ce": "{{ .Data.global.composer.ref_name }}",
+              "oxid-esales/tests-deprecated-pe": "{{ .Data.global.composer.ref_name }}",
+              "codeception/module-webdriver": "^3.1",
+              "phpunit/phpunit": "^9.1.1"
+          },
+              "oxid-esales/tests-deprecated-pe": {
+                  "type": "git",
+                  "url": "https://github.com/OXID-eSales/tests-deprecated-pe.git"
+              }
+          }
+      }
+  # yamllint disable-line rule:line-length
+  additional_options: '--filter "/^((?!(testFrontendVAT)).)*$/" --exclude-group quarantine,varnish,paypal_buyerlogin,paypal_external,paypal_graphql,adminFunctionality,flow_theme'
+  coverage:
+    path: ''
+
+runscript:
+  load_shop: *install_shop_prefix
+
+runslim:
+  load_shop: *install_shop_prefix
+
+sonarcloud:
+  matrix:
+    testplan: 'skip'
+
+phpcs_tests:
+  filter: '^\./source/(Internal|vendor/oxid-esales/oxideshop-pe/Internal)/.*\.php$'
