@@ -116,9 +116,9 @@ jobs:
           if [ '${{ github.event_name }}' == 'pull_request' ]; then
             REF=$(echo '{{ .Github.HeadRef }}'|sed -e 's|/refs/heads/||')
             # This is the git ref name
-            sed -e "s|safe_ref_name:.*|safe_ref_name: ${REF}|" -i '${{ inputs.plan_folder }}/defaults/defaults_light.yaml'
+            sed -e "s|safe_ref_name:.*|safe_ref_name: ${REF}|" -i.backup '${{ inputs.plan_folder }}/defaults/defaults_light.yaml'
             # This is the same for composer but with an added dev- prefix
-            sed -e "s|ref_name: dev-.*|ref_name: dev-${REF}|" -i '${{ inputs.plan_folder }}/defaults/defaults_light.yaml'
+            sed -e "s|ref_name: dev-.*|ref_name: dev-${REF}|" -i.backup '${{ inputs.plan_folder }}/defaults/defaults_light.yaml'
           fi
 
           TESTPLAN=$(echo "${{ inputs.testplan }}"|sed -e 's|~|${{ inputs.plan_folder }}|g')

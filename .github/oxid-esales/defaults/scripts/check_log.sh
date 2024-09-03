@@ -30,7 +30,7 @@ fi
 [[ ${RESULT} -gt 0 ]] && exit 1
 
 # shellcheck disable=SC2016
-sed -e 's|(.*)\r|$1|' -i "${PATTERN_FILE}"
+sed -e 's|(.*)\r|$1|' -i.backup "${PATTERN_FILE}"
 while read -r LINE ; do
     if [ -n "${LINE}" ]; then
         if grep -q -E "${LINE}" "${LOG_FILE}"; then
@@ -38,7 +38,7 @@ while read -r LINE ; do
             grep -E "${LINE}" "${LOG_FILE}"
             RESULT=1
         else
-            echo -e "\033[0;32m Log dioes not contain matching pattern ${LINE}"
+            echo -e "\033[0;32m Log does not contain matching pattern ${LINE}"
         fi
     fi
 done <"${PATTERN_FILE}"

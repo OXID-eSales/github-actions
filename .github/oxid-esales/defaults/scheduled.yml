@@ -12,6 +12,10 @@ global:
   composer: &composer
     ref_name: 'dev-{{ .Data.global.git.default_ref }}'
 
+init:
+  cache:
+    name: '{{ .Github.EventName }}-{{ .Data.global.git.default_ref }}-testplan-{{ .Env.GITHUB_REPOSITORY_ID }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
+
 install_shop_with_modules: &install
   git: *git
   composer: *composer
