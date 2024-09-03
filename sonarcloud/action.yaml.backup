@@ -1,0 +1,170 @@
+name: 'sonarcloud'
+description: 'Runs sonarcloud in the given container'
+inputs:
+  coverage_artifact:
+    type: string
+    required: false
+    description: 'Name of the artifact containing the coverage reports'
+    default: 'coverage-reports'
+  strip_path:
+    type: string
+    required: false
+    description: 'What should be stripped from the absolute path in the coverage files'
+    default: '/var/www/'
+  target_branch:
+    type: string
+    required: false
+    description: 'Target branch for the scan'
+    default: 'b-8.0.x'
+  github_ref_name:
+    type: string
+    required: true
+    description: 'Github reference for the scan'
+  sonarcloud_organization:
+    type: string
+    required: false
+    description: 'Name of the organization in sonarcloud'
+    default: 'oxid-esales'
+  sonarcloud_project_key:
+    type: string
+    required: false
+    description: 'Project key in sonarcloud'
+    default: 'OXID-eSales_oxideshop_ce'
+  sonarcloud_project_name:
+    type: string
+    required: false
+    description: 'Project name in sonarcloud'
+    default: 'oxideshop_ce'
+  sonarcloud_parameters:
+    type: string
+    required: false
+    description: 'Parameters passed to the scanner'
+    default: |
+      -Dsonar.language=php
+      -Dsonar.sources=source
+      -Dsonar.tests=tests
+      -Dsonar.cpd.php.minimumTokens=25
+      -Dsonar.cpd.php.minimumLines=5
+  sonar_token:
+    type: string
+    required: true
+    description: 'Token for Sonarcloud'
+  github_token:
+    type: string
+    required: true
+    description: 'Token for Sonarcloud github access'
+  output_files:
+    type: string
+    required: false
+    description: 'sonarcloud output and test settings'
+    default: |
+      tests/*
+  output_artifact:
+    type: string
+    required: false
+    description: 'Github run artifact for the sonarcloud output'
+    default: 'sonarcloud-artifacts'
+  debug:
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: 'Download artifacts'
+      uses: actions/download-artifact@v4
+      with:
+        pattern: '${{ inputs.coverage_artifact }}'
+        merge-multiple: true
+        path: coverage-reports
+
+    - name: Fix Paths In Coverage Reports
+      shell: bash
+      run: |
+        # sonarcloud: Fix Paths In Coverage Reports
+        ${{ inputs.debug }}
+        COVERAGE_FILES=""
+        for FILE in $(find coverage-reports -iname 'coverage*.xml'); do
+          echo -e "\033[0;35mFixing paths in ${FILE}\033[0m"
+          cp "${FILE}" "${FILE}.orig"
+          sed -e 's|${{ inputs.strip_path }}||' -i.backup ${FILE}
+          COVERAGE_FILES="${COVERAGE_FILES},${FILE}"
+          # diff -y --color=always "${FILE}.orig" "${FILE}" || true
+        done
+        # remove leading comma when adding this
+        echo "COVERAGE_PARAM=-Dsonar.php.coverage.reportPaths=${COVERAGE_FILES:1}"| tee -a "${GITHUB_ENV}"
+        PHPUNIT_FILES=""
+        for FILE in $(find coverage-reports -iname 'phpunit*.xml'); do
+          echo -e "\033[0;35mFixing paths in ${FILE}\033[0m"
+          cp "${FILE}" "${FILE}.orig"
+          sed -e 's|${{ inputs.strip_path }}||' -i.backup ${FILE}
+          PHPUNIT_FILES="${PHPUNIT_FILES},${FILE}"
+          # diff -y --color=always "${FILE}.orig" "${FILE}" || true
+        done
+        # remove leading comma when adding this
+        if [ -n "${PHPUNIT_FILES:1}" ]; then
+          echo "PHPUNIT_PARAM=-Dsonar.php.tests.reportPath=${PHPUNIT_FILES:1}"| tee -a "${GITHUB_ENV}"
+        fi
+
+    - name: Upload consolidated artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: '${{ inputs.output_artifact }}'
+        path: 'coverage-reports'
+        retention-days: 4
+        overwrite: true
+
+    - name: 'Remove old artifacts'
+      uses: joernott/rm-artifact@v1
+      with:
+        name: '${{ inputs.coverage_artifact }}'
+        useGlob: true
+        failOnError: false
+
+    - name: Set target branch
+      shell: bash
+      run: |
+        # sonarcloud: Set target branch
+        ${{ inputs.debug }}
+        TARGET_BRANCH_PARAM="-Dsonar.branch.target=${{ inputs.target_branch }}"
+        if [ "${{ github.ref_name}}" == "${{ github.event.repository.default_branch }}" ]; then
+          TARGET_BRANCH_PARAM=""
+        fi
+        echo "TARGET_BRANCH_PARAM=$TARGET_PRANCH_PARAM" >> $GITHUB_ENV
+
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        SONAR_TOKEN: ${{ inputs.sonar_token }}
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+      with:
+        args: >
+          -Dsonar.organization=${{ inputs.sonarcloud_organization }}
+          -Dsonar.projectKey=${{ inputs.sonarcloud_project_key }}
+          -Dsonar.projectName=${{ inputs.sonarcloud_project_name }}
+          -Dsonar.branch.name=${{ inputs.github_ref_name }}
+          ${{ env.COVERAGE_PARAM }}
+          ${{ env.PHPUNIT_PARAM }}
+          ${{ inputs.sonarcloud_parameters }}
+          ${{ env.TARGET_BRANCH_PARAM }}
+
+    - name: Debug Sonarcloud scan
+      if: ${{ inputs.debug != '' }}
+      shell: bash
+      run: |
+        # sonarcloud: Debug sonarcloud Scan (simulated)
+        cat >debug/debug.sh <<EODS
+          banner "sonarcloud: Debug sonarcloud Scan (simulated)"
+          cat <<'EOF'
+          # would call sonarsource/sonarcloud-github-action@master
+          -Dsonar.organization=${{ inputs.sonarcloud_organization }}
+          -Dsonar.projectKey=${{ inputs.sonarcloud_project_key }}
+          -Dsonar.projectName=${{ inputs.sonarcloud_project_name }}
+          -Dsonar.branch.name=${{ inputs.github_ref_name }}
+          -Dsonar.php.coverage.reportPaths=${{ env.COVERAGE_FILES }}
+          ${{ inputs.sonarcloud_parameters }}
+          ${{ env.TARGET_BRANCH_PARAM }}
+          EOF
+        EODS

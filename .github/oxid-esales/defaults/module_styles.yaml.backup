@@ -1,0 +1,20 @@
+phpmd:
+  # This is the name of the report and code artifact, you need to override it if you want
+  # to generate reports for multiple modules in one workflow
+  title: '{{ .Data.install_module.package_name }}'
+
+  composer:
+    file: 'vendor/{{ .Data.install_module.package_name }}/composer.json'
+
+  # Name of the source folder, relative to the path above. That is source for the shop
+  # and src for modules.
+  source_folder: 'vendor/{{ .Data.install_module.package_name }}/src'
+
+  # This is the folder we store the reports in (relative to /var/www in the container)
+  reports_path: 'reports'
+
+  # Path to the phpmd configuration file
+  config: 'vendor/{{ .Data.install_module.package_name }}/tests/PhpMd/standard.xml'
+
+  # If set to true, the report will run an additional composer phpmd to output into the github actions log
+  verbose: false

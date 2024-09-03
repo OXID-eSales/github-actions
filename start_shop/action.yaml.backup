@@ -1,0 +1,155 @@
+name: 'start_shop'
+description: 'Fetches a shop from cache and starts it'
+inputs:
+  cached_shop:
+    type: string
+    required: true
+    description: 'Name of the cached object from prepare_shop/install_shop'
+  cache_bucket:
+    type: string
+    required: false
+    description: 'Name of the local s3 cache bucket'
+    default: 'oxideshop-ee'
+  cache_endpoint:
+    type: string
+    required: false
+    description: 'secrets.CACHE_ENDPOINT for actions-cache'
+    default: ''
+  cache_access_key:
+    type: string
+    required: false
+    description: 'secrets.CACHE_ACCESS_KEY for actions-cache'
+    default: ''
+  cache_secret_key:
+    type: string
+    required: false
+    description: 'secrets.CACHE_SECRET_KEY  for actions-cache'
+    default: ''
+  docker_login:
+    type: boolean
+    required: false
+    description: 'should we log in to docker'
+    default: true
+  docker_user:
+    type: string
+    required: false
+    description: 'secrets.DOCKER_HUB_USER for docker login'
+    default: ''
+  docker_token:
+    type: string
+    required: false
+    description: 'secrets.DOCKER_HUB_TOKEN for docker login'
+    default: ''
+  wait_for_selenium:
+    type: boolean
+    required: false
+    description: 'Set to true if you want to wait for selenium to be ready'
+    default: false
+  container_name:
+    type: string
+    required: false
+    description: 'Name of the container to run the wait command in'
+    default: 'php'
+  debug:
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Load cached shop from cache
+      id: load_installed_shop
+      uses: tespkg/actions-cache/restore@v1
+      with:
+        path: |
+          ./*
+        key: ${{ inputs.cached_shop }}
+        restore-keys: |
+          ${{ inputs.cached_shop }}
+        endpoint: ${{ inputs.cache_endpoint }}
+        accessKey: ${{ inputs.cache_access_key }}
+        secretKey: ${{ inputs.cache_secret_key }}
+        bucket: ${{ inputs.cache_bucket }}
+
+    - name: Confirm restore
+      shell: bash
+      run: |
+        # start_shop: Confirm restore
+        if [ "${{ steps.load_installed_shop.outputs.cache-hit }}" != "true" ]; then
+          echo -e "\033[0;31m### Load ${{ inputs.cached_shop }} from cache: FAIL\033[0m"
+          exit 1
+        else
+          echo -e "\033[0;32m### Load ${{ inputs.cached_shop }} from cache: SUCCESS\033[0m"
+        fi
+
+    - name: Debug load cached shop
+      if: ${{ inputs.debug != '' }}
+      shell: bash
+      run: |
+        # start_shop: Debug load cached shop
+        echo "restore_cache '${{ inputs.cached_shop }}'" >debug/debug.sh
+
+    - name: Login to Docker Hub
+      if: ${{ inputs.docker_login == 'true' && inputs.docker_user != '' }}
+      uses: docker/login-action@v3
+      with:
+        username: ${{ inputs.docker_user }}
+        password: ${{ inputs.docker_token }}
+
+    - name: Warn on missing docker credentials
+      if: ${{ inputs.docker_login == 'true' && inputs.docker_user == '' }}
+      shell: bash
+      run: |
+        # prepare_shop: Warn on missing docker credentials
+        MSG="Please set the repository secrets DOCKER_HUB_USER and DOCKER_HUB_TOKEN to avoid running into docker.io rate limiting"
+        echo "::warning title=Missing secrets::${MSG}"
+
+    - name: Start containers
+      shell: bash
+      run: |
+        # start_shop: Start containers
+        ${{ inputs.debug }}
+        echo -e "\033[0;35m### Starting containers\033[0m"
+        make up
+
+    - name: Output docker logs if make up failed
+      if: failure()
+      shell: bash
+      run: |
+        # start_shop: Output docker logs if make up failed
+        echo -e "\033[0;31m### Starting containers failed\033[0m"
+        cat docker-compose.yml
+        docker compose logs --tail=all
+        for c in $(docker ps -aq); do
+          echo "*** Logs for $c ***"
+          docker logs -n 200 $c
+        done
+
+    - name: Wait for selenium
+      if: ${{ inputs.wait_for_selenium == 'true' }}
+      shell: bash
+      run: |
+        # start_shop: Wait for selenium
+        ${{ inputs.debug }}
+        cat >source/wait_for_selenium.sh <<'EOF'
+        #!/bin/bash
+        set +e
+        sleep 2
+        I=60
+        until  [ $I -le 0 ]; do
+          curl -sSjkL http://selenium:4444/wd/hub/status |grep '"ready": true' && break
+          echo "."
+          sleep 1
+          ((I--))
+        done
+        set -e
+        curl -sSjkL http://selenium:4444/wd/hub/status
+        EOF
+        sed -e 's|^ *||' -i.backup source/wait_for_selenium.sh
+        chmod 0755 source/wait_for_selenium.sh
+        docker compose exec -T \
+          ${{ inputs.container_name}} \
+          /var/www/wait_for_selenium.sh
+        rm source/wait_for_selenium.sh

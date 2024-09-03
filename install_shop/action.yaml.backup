@@ -1,0 +1,103 @@
+name: 'install_shop'
+description: 'Fetches the prepared shop from cache and installs it'
+inputs:
+  container_name:
+    type: string
+    required: false
+    description: 'Name of the container to run the test in'
+    default: 'php'
+  container_options:
+    type: string
+    required: false
+    description: 'Additional options to pass into the container'
+    default: ''
+  container_method:
+    type: string
+    required: false
+    description: 'Method to execute the commands inside a container, either "run" or "exec"'
+    default: 'exec'
+  is_enterprise:
+    type: boolean
+    required: false
+    default: false
+  config_idebug:
+    type: boolean
+    required: false
+    default: false
+  debug:
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
+    required: false
+runs:
+  using: "composite"
+  steps:
+    - name: Locate Console
+      shell: bash
+      run: |
+        # install_shop: Locate Console
+        cd source
+        if [ -f 'bin/oe-console' ]; then
+          OE_CONSOLE='bin/oe-console'
+        else
+          if [ -f 'vendor/bin/oe-console' ]; then
+            OE_CONSOLE='vendor/bin/oe-console'
+          else
+            echo -e "\033[0;31mCan't find oe-console in bin or vendor/bin!\033[0m"
+            exit 1
+          fi
+        fi
+        echo "OE_CONSOLE=${OE_CONSOLE}"|tee -a "${GITHUB_ENV}"
+
+    - name: Run Install Shop
+      shell: bash
+      run: |
+        # install_shop: Run Install Shop
+        ${{ inputs.debug }}
+        docker compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container_name }} \
+          ${{ env.OE_CONSOLE }} oe:setup:shop \
+          --db-host mysql \
+          --db-port 3306 \
+          --db-name example \
+          --db-user root \
+          --db-password root \
+          --shop-url http://localhost.local/ \
+          --shop-directory /var/www/source \
+          --compile-directory /var/www/source/tmp
+
+    - name: Activate iDebug
+      if: ${{ inputs.config_idebug == 'true' }}
+      shell: bash
+      run: |
+        # install_shop: Activate iDebug
+        ${{ inputs.debug }}
+        if [ -f source/source/config.inc.php ]; then
+          perl -pi -e 's#iDebug = 0;#iDebug = -1;#g;' source/source/config.inc.php
+        fi
+        if [ -f source/vendor/oxid-esales/oxideshop-ce/source/config.inc.php ]; then
+          perl -pi -e 's#iDebug = 0;#iDebug = -1;#g;' source/vendor/oxid-esales/oxideshop-ce/source/config.inc.php
+        fi
+
+    - name: Activate theme
+      if: ${{ inputs.is_enterprise == 'true' }}
+      shell: bash
+      run: |
+        # install_shop: Activate theme
+        ${{ inputs.debug }}
+        docker compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container_name }} \
+          ${{ env.OE_CONSOLE }} oe:theme:activate apex
+
+    - name: Output php error log
+      if: always()
+      shell: bash
+      run: |
+        # install_shop: Output php error log
+        ${{ inputs.debug }}
+        if [ -s data/php/logs/error_log.txt ]; then
+          echo -e "\033[0;35mPHP error log\033[0m"
+          cat data/php/logs/error_log.txt
+        fi
