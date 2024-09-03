@@ -1,0 +1,112 @@
+name: dispatch_release
+# Create a new release of the github-actions module
+
+# yamllint disable-line rule:truthy
+on:
+  workflow_dispatch:
+    inputs:
+      feature_branch:
+        type: string
+        required: false
+        description: 'Name of the feature branch, if empty, use the current branch'
+        default: ''
+      major:
+        type: string
+        required: true
+        description: 'Major version number (X.?.?)'
+      minor:
+        type: string
+        required: true
+        description: 'Minor version number (?.X.?)'
+      patch:
+        type: string
+        required: true
+        description: 'Patch version number (?.?.X)'
+      reviewer:
+        type: choice
+        required: true
+        description: 'who should review the PR'
+        options:
+          - joernott
+          - snehasreeramini
+
+jobs:
+  prepare_release:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: 'Get branch'
+        id: branch
+        run: |
+          # Get branch
+          BRANCH='${{ inputs.feature_branch }}'
+          if [ -z "${BRANCH}" ]; then
+            BRANCH="${GITHUB_REF}"
+          fi
+          echo "branch=${BRANCH}" >>"${GITHUB_OUTPUT}"
+
+      - name: 'Checkout repo'
+        uses: actions/checkout@v4
+        with:
+          repository: 'OXID-eSales/github-actions'
+          ref: '${{ steps.branch.outputs.branch }}'
+          path: 'github-actions'
+          fetch-depth: 0
+
+      - name: Validate version
+        run: |
+          # Validate version
+          cd github-actions
+          CHECK=$(git tag --list|grep "v${{inputs.major}}.${{inputs.minor}}.${{inputs.patch}}"||true)
+          if [ -n "${CHECK}" ]; then
+            cat <<EOF
+          *******************************************************************
+          * Tag v${{inputs.major}}.${{inputs.minor}}.${{inputs.patch}} already exists. Aborting
+          *******************************************************************
+          EOF
+            exit 1
+          fi
+
+      - name: 'Create release'
+        run: |
+          # Merge main branch
+          cd github-actions
+          git config --global user.email "no-reply@oxid-esales.com"
+          git config --global user.name "${{ github.actor }}"
+          git checkout main
+          git pull
+          git checkout '${{ steps.branch.outputs.branch }}'
+          git merge main
+          STATUS=$(git status -s)
+          if [ -n "${STATUS}" ]; then
+            git add --all
+            git commit -m "Merge main"
+          fi
+          FILES=$(find . -iname '*.yml' -o -name "*.yaml")
+          for FILE in ${FILES}; do
+          sed -E 's|OXID-eSales/github-actions/(.*)@v([0-9][0-9]*)|OXID-eSales/github-actions/\1@v${{ inputs.major}}|g' \
+              -i.backup "${FILE}"
+          done
+          STATUS=$(git status -s)
+          if [ -n "${STATUS}" ]; then
+            git add --all
+            git commit -m "Update versions"
+          fi
+          git checkout main
+          git merge '${{ steps.branch.outputs.branch }}'
+
+      - name: Generate a token
+        id: generate_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.ACTIONS_RELEASE_APP_ID }}
+          private-key: ${{ secrets.ACTIONS_RELEASE_APP_PRIVATE_KEY }}
+
+      - name: Create branch and Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ steps.generate_token.outputs.token }}
+          path: 'github-actions'
+          branch: 'release_${{inputs.major}}_${{inputs.minor}}_${{inputs.patch}}'
+          assignees: '${{inputs.reviewer}}'
+          reviewers: '${{inputs.reviewer}}'
+          title: 'Update github-actions to ${{inputs.major}}.${{inputs.minor}}.${{inputs.patch}}'

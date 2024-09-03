@@ -1,0 +1,166 @@
+name: 'append_report'
+description: 'Adds report and status snippets to the testplan artifact'
+inputs:
+  prefix:
+    type: string
+    required: true
+    description: 'Prefix for the testplan artifact name'
+  header:
+    type: boolean
+    required: false
+    description: 'Do we need to write the phase header instead of a normal line'
+    default: false
+  priority:
+    type: string
+    required: false
+    description: 'Priority helps with sorting phases and table content by becoming part of the file names in the artifact'
+    default: '000'
+  phase:
+    type: string
+    required: true
+    description: 'Which phase are we in'
+  job:
+    type: string
+    required: false
+    description: 'Which job are we running'
+    default: '-'
+  title:
+    type: string
+    required: false
+    description: 'Title of the job'
+    default: 'default'
+  php:
+    type: string
+    required: false
+    description: 'PHP version for this matrix run'
+    default: '0'
+  mysql:
+    type: string
+    required: false
+    description: 'MySQL version for this matrix run'
+    default: '0'
+  testplan:
+    type: string
+    required: false
+    description: 'Testplan for this matrix run'
+    default: 'none'
+  status:
+    type: string
+    required: false
+    description: 'Testplan for this matrix run'
+    default: 'skipped'
+  cached_object:
+    type: string
+    required: false
+    description: 'Name of the cached_object for this step'
+    default: 'skipped'
+  debug:
+    type: boolean
+    description: 'Enable debugging'
+    default: false
+    required: false
+  github_token:
+    type: string
+    required: false
+    description: 'Github token to be replaced by a variable in the debug script'
+    default: ''
+
+runs:
+  using: "composite"
+  steps:
+    - name: 'Write Phase header'
+      if: ${{ inputs.header == 'true' }}
+      shell: bash
+      run: |
+        # append_report: Write Phase header
+        mkdir -p reports job_status slack_reports
+        cat <<EOF >reports/${{inputs.priority}}-${{ inputs.phase }}_header.md
+        ## ${{ inputs.phase }} phase
+        |Job |Title|PHP|MySQL|Testplan|Status|
+        |:---|:----|--:|----:|:-------|:-----|
+        EOF
+
+    - name: 'Write summary'
+      if: ${{ inputs.header == 'false' }}
+      shell: bash
+      run: |
+        # append_report: Write summary
+        REPORT_FILE='reports/${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}.md'
+        STATUS_FILE='job_status/${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}.txt'
+        CACHE_FILE='caches/${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}.txt'
+        PLAN_FILE='generated_testplan-${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}.yaml'
+        SKIPPED_ICON='![Skipped](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/26aa.png)'
+        SUCCESS_ICON='![Success](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/2705.png)'
+        CANCELLED_ICON='![Cancelled](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-large/26ab.png)'
+        FAILURE_ICON='![Failure](https://a.slack-edge.com/production-standard-emoji-assets/14.0/google-medium/274c.png)'
+        JOB_STATUS='${{inputs.status}}'
+        JOB_ICON="${JOB_STATUS^^}_ICON"
+        if [[ '${{inputs.testplan}}' =~ ^http.* ]]; then
+          BASE=$(echo '${{inputs.testplan}}'| sed -E 's|.+/(.*)$|\1|')
+          TP="[${BASE}](${{inputs.testplan}})"
+        else
+          TP="${{inputs.testplan}}"
+        fi
+        mkdir -p reports job_status caches
+        echo "|${{inputs.job}}|${{inputs.title}}|${{inputs.php}}|${{inputs.mysql}}|${TP}|${!JOB_ICON} ${JOB_STATUS}|" >"${REPORT_FILE}"
+        echo "${JOB_STATUS}" >"${STATUS_FILE}"
+        echo "${{inputs.cached_object}}" >"${CACHE_FILE}"
+        if [ -f 'generated_testplan.yaml' ]; then
+          mv generated_testplan.yaml "${PLAN_FILE}"
+        fi
+
+    - name: Handle debug script
+      if: ${{ inputs.debug == 'true' }}
+      shell: bash
+      run: |
+        # append_report: Handle debug script
+        DEBUG_DIR="debug-PHP${{inputs.php}}_MYSQL${{inputs.mysql}}"
+        DEBUG_NAME="debug_${{inputs.priority}}_${{inputs.phase}}_${{inputs.job}}_${{inputs.title}}"
+        DEBUG_FILE="${DEBUG_DIR}/${DEBUG_NAME}.sh"
+        mkdir -p "${DEBUG_DIR}"
+        cat >"${DEBUG_FILE}" <<EODS
+
+        function ${DEBUG_NAME}() {
+          banner "Starting job ${DEBUG_NAME}"
+          start_job
+        EODS
+        if [ -f 'debug/debug.sh' ]; then
+          sed -e 's/^/  /' debug/debug.sh >>"${DEBUG_FILE}"
+          rm debug/debug.sh
+        fi
+        if [ -n "${{ inputs.github_token }}" ]; then
+          sed -e 's|${{ inputs.github_token}}|${DEBUG_GH_TOKEN}|g' -i.backup "${DEBUG_FILE}"
+        fi
+        cat >>"${DEBUG_FILE}" <<EODS
+          end_job "$DEBUG_NAME"
+        }
+        EODS
+
+    - name: 'Generate safe title'
+      id: safe_title
+      if: always()
+      shell: bash
+      run: |
+        # append_report: Generate safe title
+        MATRIX='PHP${{inputs.php}}_MYSQL${{inputs.mysql}}'
+        TITLE=$( \
+          echo "testplan-${{inputs.prefix}}-${{inputs.priority}}-${{inputs.phase}}-${{inputs.job}}-${{inputs.title}}-${MATRIX}" \
+          | sed -e 's#/|\s##g' \
+        )
+        echo "title=${TITLE}" >>"${GITHUB_OUTPUT}"
+
+    - name: Upload Artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: '${{ steps.safe_title.outputs.title }}'
+        path: |
+          load_testplan*.log
+          job_status/*.txt
+          reports/*.md
+          slack_reports/*.md
+          caches/*.txt
+          generated_testplan-*.yaml
+          debug-*/*.sh
+        if-no-files-found: ignore
+        retention-days: 1

@@ -1,0 +1,170 @@
+name: 'phpmd'
+description: 'Run phpmd'
+inputs:
+  title:
+    type: string
+    required: false
+    default: 'shop'
+    description: 'Name of the report without the suffix'
+  source_path:
+    type: string
+    required: false
+    default: 'source'
+    description: 'Folder to run phpmd in'
+  report_path:
+    type: string
+    required: false
+    default: 'reports'
+    description: 'Folder to save the report to'
+  config:
+    type: string
+    required: false
+    default: 'tests/PhpMd/standard.xml'
+    description: 'Folder to save the report to'
+  baseline_file:
+    type: string
+    required: false
+    default: 'tests/PhpMd/phpmd.baseline.xml'
+    description: 'Path to a baseline file'
+  additional_options:
+    type: string
+    required: false
+    default: ''
+    description: 'Additional options to pass to phpmd'
+  verbose:
+    type: boolean
+    required: false
+    default: false
+    description: 'Show the PHPMD report in the job console too'
+  generate_baseline:
+    type: boolean
+    required: false
+    default: false
+    description: 'Generate a baseline file'
+  container_name:
+    type: string
+    required: false
+    description: 'Name of the container to run the test in'
+    default: 'php'
+  container_options:
+    type: string
+    required: false
+    description: 'Additional options to pass into the container'
+    default: ''
+  container_method:
+    type: string
+    required: false
+    description: 'Method to execute the commands inside a container, either "run" or "exec"'
+    default: 'exec'
+  output_artifact:
+    type: string
+    required: false
+    description: 'Github run artifact for the styles output'
+    default: 'phpmd'
+  failure_pattern:
+    type: string
+    required: false
+    description: 'Grep pattern which indicate that the test failed'
+    default: |
+      "warnings":
+      "violations":
+      "errors":
+  debug:
+    type: string
+    description: 'Appended to debugging scripts'
+    default: ''
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run PHP Mess Detector
+      id: phpmd
+      continue-on-error: true
+      shell: bash
+      run: |
+        # phpmd: Run PHP Mess Detector
+        ${{ inputs.debug }}
+        mkdir -p "source/${{inputs.report_path}}"
+
+        echo -e "\033[0;35m###  Generate phpmd-report in ${{ inputs.source_path }} ###\033[0m"
+        set +e
+        docker compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container_name }} \
+          vendor/bin/phpmd /var/www/${{ inputs.source_path }} json /var/www/${{ inputs.config }} \
+          ${{ inputs.additional_options }} \
+          --reportfile '/var/www/${{ inputs.report_path }}/phpmd-${{ inputs.title }}.json'
+        echo "result=$?" >"${GITHUB_OUTPUT}"
+        set -e
+
+        if [ '${{ inputs.generate_baseline }}' == 'true' ]; then
+          echo -e "\033[0;35m###  Generate phpmd baseline for ${{ inputs.source_path }} ###\033[0m"
+          docker compose ${{ inputs.container_method }} -T \
+            ${{ inputs.container_options }} \
+            ${{ inputs.container_name }} \
+            vendor/bin/phpmd /var/www/${{ inputs.source_path }} json /var/www/${{ inputs.config }} \
+            ${{ inputs.additional_options }} \
+            --generate-baseline --baseline-file '/var/www/${{ inputs.report_path }}/phpmd.baseline.xml' || true
+        fi
+
+        if [ '${{inputs.verbose}}' == 'true' ]; then
+          echo -e "\033[0;35m###  Run phpmd in ${{ inputs.source_path }} ###\033[0m"
+          set +e
+          docker compose ${{ inputs.container_method }} -T \
+            ${{ inputs.container_options }} \
+            ${{ inputs.container_name }} \
+            vendor/bin/phpmd /var/www/${{ inputs.source_path }} ansi /var/www/${{ inputs.config }} \
+            ${{ inputs.additional_options }} \
+          | tee -a source/${{inputs.report_path}}/phpmd-${{ inputs.title }}.txt || true
+          set -e
+        fi
+
+        if [ -s data/php/logs/error_log.txt ]; then
+          echo -e "\033[0;35mPHP error log\033[0m"
+          cat data/php/logs/error_log.txt | tee -a ${{inputs.report_path}}/php_error_log-${{ inputs.title }}.txt
+        fi
+
+    - name: Upload artifact
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.output_artifact }}
+        path: |
+          source/${{ inputs.report_path }}*
+
+    - name: Check results
+      shell: bash
+      run: |
+        # phpmd: Check results
+        ${{ inputs.debug }}
+        FILE='source/${{inputs.report_path }}/phpmd-${{ inputs.title }}.json'
+        RESULT=0
+        if [ ${{ steps.phpmd.outputs.result }} -eq 0 ]; then
+          echo -e "\033[0;32m phpmd exited with error code 0"
+        else
+          echo -e "\033[0;31m phpmd exited with error code ${{ steps.phpmd.outputs.result }}"
+          RESULT=1
+          if [ ! -s "${FILE}" ]; then
+            echo -e "\033[0;31m ${FILE} is empty!"
+          fi
+        fi
+        if [ -s data/php/logs/error_log.txt ]; then
+          echo -e "\033[0;31m php error log is not empty!"
+          RESULT=1
+        fi
+        cat >failure_pattern.tmp <<EOF
+        ${{ inputs.failure_pattern}}
+        EOF
+        sed -e 's|(.*)\r|$1|' -i.backup failure_pattern.tmp
+        while read -r LINE ; do
+          if [ -n "${LINE}" ]; then
+            if grep -q -E "${LINE}" "${FILE}"; then
+              echo -e "\033[0;31m phpmd failed matching pattern ${LINE}"
+              RESULT=1
+            else
+              echo -e "\033[0;32m phpmd passed matching pattern ${LINE}"
+            fi
+          fi
+        done <failure_pattern.tmp
+        exit ${RESULT}
