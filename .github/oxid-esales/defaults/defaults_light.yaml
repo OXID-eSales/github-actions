@@ -70,6 +70,9 @@ global:
   # {{ $shop_type := "ce" }}$shop_type: {{ printf "%q" $shop_type }}
 
   # Repository related settings
+  # As this is only used in the install job now, this whole section will be
+  # moved there in v5 and no longer be aliased
+
   git: &git
     # URL for the docker-eshop sdk repository to clone
     # Deprecated, remove in v5
@@ -81,12 +84,22 @@ global:
     sdk_ref: &git_sdk_ref 'master'
 
     # URL for the oxidshop_ce repository
+    # This is deprecated and will be superseded by "repository" as we use
+    # this for checking out the root composer.json and not necessarily a shop
     shop_url: &git_shop_url 'https://github.com/OXID-eSales/oxideshop_ce.git'
 
     # Branch, tag or hash of the commit to check out
+    # This is deprecated and will be superseded by "ref" in v5
     shop_ref: &git_shop_ref '{{ .Github.RefName }}'
 
-    # URL for the oxidshop_pe repository
+    # Name of the repository containing the root composer.json
+    # This can be used for private repositories as you can't use composer.root_url
+    repository: 'OXID-eSales/oxideshop_ce'
+
+    # Branch to use for the repository containing the root url
+    ref: '{{ .Github.RefName }}'
+
+    # URL for the oxidshop_ee repository
     enterprise_url: 'https://github.com/OXID-eSales/oxideshop_ee.git'
 
     # Branch to check out for the enterprise repos
