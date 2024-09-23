@@ -49,8 +49,8 @@ workflow:
     script: 'skip'
 
   # How many matrix tests should run in parallel. When running on our private runners, we need to
-  # reduce this to get consistent test results
-  max_parallel: &max_parallel 4
+  # reduce this to get consistent test results. Use the nutanix.yaml template for this.
+  max_parallel: &max_parallel 64
 
 # Global settings used in the actual steps in the jobs
 global:
@@ -72,46 +72,6 @@ global:
   # Repository related settings
   # As this is only used in the install job now, this whole section will be
   # moved there in v5 and no longer be aliased
-
-  git: &git
-    # URL for the docker-eshop sdk repository to clone
-    # Deprecated, remove in v5
-    sdk_url: &git_sdk_url 'https://github.com/OXID-eSales/docker-eshop-sdk.git'
-    # Name of the repository containing the oxideshop sdk
-    sdk_repository: &git_sdk_repository 'OXID-eSales/docker-eshop-sdk'
-
-    # Branch to check out for the SDK
-    sdk_ref: &git_sdk_ref 'master'
-
-    # URL for the oxidshop_ce repository
-    # This is deprecated and will be superseded by "repository" as we use
-    # this for checking out the root composer.json and not necessarily a shop
-    shop_url: &git_shop_url 'https://github.com/OXID-eSales/oxideshop_ce.git'
-
-    # Branch, tag or hash of the commit to check out
-    # This is deprecated and will be superseded by "ref" in v5
-    shop_ref: &git_shop_ref '{{ .Github.RefName }}'
-
-    # Name of the repository containing the root composer.json
-    # This can be used for private repositories as you can't use composer.root_url
-    repository: 'OXID-eSales/oxideshop_ce'
-
-    # Branch to use for the repository containing the root url
-    ref: '{{ .Github.RefName }}'
-
-    # URL for the oxidshop_ee repository
-    enterprise_url: 'https://github.com/OXID-eSales/oxideshop_ee.git'
-
-    # Branch to check out for the enterprise repos
-    enterprise_ref: &git_enterprise_ref 'b-8.0.x'
-
-    # Branch to check out for modules/plugins etc
-    default_ref: &default_ref 'b-8.0.x'
-
-    # This definition can be used instead of {{ .Github.RefName }}. In case
-    # of a pull request, the ref name is something like merge/42 which confuses
-    # composer. In the workflow, we then replace this with a working reference
-    safe_ref_name: '{{ .Github.RefName }}'
 
   # When running on a self hosted runner with access to a local s3 cache:
   # Set the following secrets:
@@ -203,29 +163,56 @@ global:
 # The init phase handles loading the testplans and creating report artifacts for the run
 init:
   cache:
-    bucket: *cache_bucket
+    <<: *cache
     name: '{{ .Github.EventName }}-{{ .Github.RefName }}-testplan-{{ .Env.GITHUB_REPOSITORY_ID }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
 
 # This step installs the sdk, shop and module(s)
 install:
-  # This can be either 'legacy' or 'script'
-  method: 'legacy'
+  matrix: *matrix
+  max_parallel: *max_parallel
+  docker_login: *docker_login
 
   # The path for the script to install the shop
   script: 'source/vendor/oxid-esales/oxideshop-ce/.github/oxid-esales/install.sh'
 
+  git: &git
+    # Name of the repository containing the oxideshop sdk
+    sdk_repository: &git_sdk_repository 'OXID-eSales/docker-eshop-sdk'
+
+    # Branch to check out for the SDK
+    sdk_ref: &git_sdk_ref 'master'
+
+    # Name of the repository containing the root composer.json
+    # This can be used for private repositories as you can't use composer.root_url
+    repository: '{{ .Github.Repository }}'
+
+    # Branch to use for the repository containing the root url
+    ref: '{{ .Github.RefName }}'
+
+    # URL for the oxidshop_ee repository
+    enterprise_url: 'https://github.com/OXID-eSales/oxideshop_ee.git'
+
+    # Branch to check out for the enterprise repos
+    enterprise_ref: &git_enterprise_ref 'b-8.0.x'
+
+    # Branch to check out for modules/plugins etc
+    default_ref: &default_ref 'b-8.0.x'
+
+    # This definition can be used instead of {{ .Github.RefName }}. In case
+    # of a pull request, the ref name is something like merge/42 which confuses
+    # composer. In the workflow, we then replace this with a working reference
+    safe_ref_name: '{{ .Github.RefName }}'
+
   # Copy the default test scripts to these target folders (multiline possible, one folder per line)
   copy_script_targets: tests/scripts
 
-# This step installs the sdk, shop and module(s)
-install_shop_with_modules:
-  matrix: *matrix
-  max_parallel: *max_parallel
-  docker_login: *docker_login
   container: *container
-  git: *git
+
+  # Space separated list of extra services to add
+  add_services: 'selenium-chrome-126'
 
   cache:
+    <<: *cache
     bucket: *cache_bucket
     # Name of the complete cached shop installation
     prefix: &install_shop_prefix 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
@@ -238,8 +225,10 @@ install_shop_with_modules:
 
   composer:
     <<: *composer
+
     # This is a composer template we're transforming into whatever we need
-    root_url: 'https://raw.githubusercontent.com/OXID-eSales/docker-eshop-sdk-recipe-parts/master/bases/composer.json.base'
+    root_url: 'https://raw.githubusercontent.com/OXID-eSales/docker-eshop-sdk-recipes/master/parts/bases/composer.json.base'
+
     # This is the default transformation
     transform: |
       {
@@ -259,6 +248,9 @@ install_shop_with_modules:
     # The default is to run them just before running the tests only for that instance and module
     early: false
 
+  # Activate these modules with oe-console oe:module:activate
+  activate_modules: ''
+
   # These modify php "custom.ini"
   custom_ini:
     # Error reporting settings
@@ -267,13 +259,11 @@ install_shop_with_modules:
     # xdebug settings for php custom.ini
     xdebug: 'xdebug.max_nesting_level=1000'
 
-  # Space separated list of extra services to add
-  add_services: 'selenium-chrome-126'
-
   # Modifying source/source/config.inc.php
   config:
     # Set iDebug in source/source/config.inc.php
     idebug: false
+
   # Run custom script outside the container
   custom_script: ''
 
@@ -282,6 +272,7 @@ install_shop_with_modules:
 
   # Skip the shop installation logic (not needed for components)
   skip_shop_installation: false
+
   # Exporting an artifact with Configuration files for the shop setup
   output:
     files: |
@@ -295,17 +286,22 @@ install_shop_with_modules:
       data/mysql/mysql/slow_log*
       data/mysql/mysql/general_log*
       files.txt
+
     # The configuration file name is dynamic, the matrix variables will be appended
     artifact_prefix: 'shop-setup'
 
 runscript: &runscript
   matrix:
     <<: *matrix
+
     # This needs to be set in the workflow config
     script: 'skip'
-  max_parallel: 64
+
+  max_parallel: *max_parallel
+
   # When looping over multiple modules, title must be set for every element
   title: 'runscript'
+
   # You need to specify the script name
   script: ''
   # Name of the binary running the test scripts
@@ -313,8 +309,12 @@ runscript: &runscript
   docker_login: *docker_login
   load_shop: *install_shop_prefix
   container: *container
-  cache:
-    bucket: *cache_bucket
+  cache: *cache
+
+  # The path pointing to the module relative to source/dev-packages needs to be the same as in install_module
+  path: ''
+
+  # These modifications are used to modify composer.json in the folder defined by 'path'
   composer:
     early: *early
     file: 'source/dev-packages/test-module/composer.json'
@@ -323,14 +323,11 @@ runscript: &runscript
     update: true
     update_options: '--no-interaction'
 
-  # Run custom script outside the container'
+  # Run custom script outside the container
   custom_script: ''
 
   # Run custom script inside the container like 'bin/oe-console oe:b2b:installdemodata --shop-id=1'
   custom_script_container: ''
-
-  # The path pointing to the module relative to source/dev-packages needs to be the same as in install_module
-  path: ''
 
   # The working directory to when executing the script in the docker container. If not set, this
   # defaults to the value of path
@@ -400,7 +397,7 @@ sonarcloud:
     -Dsonar.sources=source \
     -Dsonar.tests=tests
 
-# yamllint validates the github actions/testplan yaml files
+# yamllint validates the GitHub actions/testplan yaml files
 yamllint:
   # Skip this part of the test run
   skip: false
@@ -423,7 +420,7 @@ yamllint:
   # Space separated list of files or directories
   file_or_dir: '.github'
 
-# actionlint validates the github actions workflows (not actions)
+# actionlint validates the GitHub actions workflows (not actions)
 actionlint:
   # Skip this part of the test run
   skip: false
