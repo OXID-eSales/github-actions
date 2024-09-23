@@ -1,11 +1,18 @@
 # slack_status
-Facilitates sending messages to a slack channel. Using this action, you don't need to worry about gathering the
-overall status across multiple jobs or properly formatting the json payload. The overall status is the highest
-status of any of the jobs using the order skipped > success > cancelled > failure.
 
-# Inputs:
+**Discontinued in v5:**
+
+Facilitates sending messages to a slack channel. Using this action, you don't
+need to worry about gathering the overall status across multiple jobs or
+properly formatting the json payload. The overall status is the highest status
+of any of the jobs using the order skipped \> success \> cancelled \> failure.
+
+This action is no longer needed as the generate_report action now generates its own slack message.
+
+## Inputs
+
 **slack_webhook:** *required*, *no default*  
-URL for the channel web hook, see https://api.slack.com/apps/A04CAPK58G0/incoming-webhooks?.
+URL for the channel web hook, see [https://api.slack.com/apps/A04CAPK58G0/incoming-webhooks?].
 
 **title:** *required*, *no default*  
 Title for the message, an emoji in front and the overall status at the end will be added
@@ -30,3 +37,7 @@ for the results of another job. Don't forget to add that job to "needs" for the 
 
 **debug:** *not required*, *default:* false  
 Set to true to generate a debugging script.
+
+## Outputs
+
+None.

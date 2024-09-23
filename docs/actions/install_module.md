@@ -1,7 +1,13 @@
 # install_module
+
+**Discontinued in v5:**
+
 Fetches the module and installs it.
 
-## inputs
+This action has been replaced by the *composer.transform* functionality using composer to install everything at once.
+
+## Inputs
+
 **container_name:** *not required*, *default:*  php  
 Name of the container to run the test in.
 
@@ -20,7 +26,7 @@ Ids of the module.
 **module_path:** *not required*, *default:* test-module  
 Path for the checkout and url.
 
-**activate:** *required*, *no default*   
+**activate:** *required*, *no default*  
 List of module_ids to activate.
 
 **git_module_url:** *required*, *no default*  
@@ -47,6 +53,7 @@ and will be hidden by GitHub.
 **debug:** *not required*, *default:* false  
 Set to true to generate a debugging script.
 
-## outputs
+## Outputs
+
 **installed_shop_with_module:**  
 Name of the cached shop installation

@@ -1,9 +1,11 @@
-# run_custom_scripts_
+# run_custom_scripts
+
 Runs custom scripts defined in the test plans. The contents of custom_script is
 executed in the workdir and the contents of custom_script_container is executed
 in the specified container
 
-## Inputs:
+## Inputs
+
 **container_name:** *not required*, *default:*  php  
 Name of the container to run the test in.
 
@@ -22,5 +24,6 @@ Name of the test or folder to run.
 **debug:** *not required*, *default:* false  
 Set to true to generate a debugging script.
 
-## Outputs:
-none
+## Outputs
+
+None.

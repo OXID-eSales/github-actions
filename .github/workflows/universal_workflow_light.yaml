@@ -19,7 +19,7 @@ on:
         type: string
         description: 'Which ref do we want to use for the plan defaults'
         required: false
-        default: 'v3'
+        default: 'v5'
       plan_folder:
         type: string
         description: 'Folder containing the test plans'
@@ -73,7 +73,7 @@ on:
         # description: Webhook for posting to SLACK
       SLACK_SCHEDULED_WEBHOOK_URL:
         required: false
-        # description: Webhook for posting to SLACK
+        # description: Alternative webhook for posting to SLACK
 
 jobs:
   init:

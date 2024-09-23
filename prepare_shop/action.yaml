@@ -29,7 +29,7 @@ inputs:
   compilation_url:
     type: string
     required: false
-    description: 'URL for downloading the base compilation url'
+    description: 'URL for downloading a basic composer.json template'
     default: ''
   git_repository:
     type: string
@@ -117,7 +117,7 @@ inputs:
     description: 'Should we create a backup for composer.json'
     default: true
   composer_update:
-    type: string
+    type: boolean
     required: false
     description: 'Run composer update after transform'
     default: true
@@ -162,10 +162,6 @@ inputs:
     default: ''
     required: false
 
-outputs:
-  prepared_shop:
-    description: 'Name of the cached shop setup'
-    value: ${{ steps.init.outputs.prepared_shop }}
 runs:
   using: "composite"
   steps:

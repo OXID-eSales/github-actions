@@ -1,7 +1,13 @@
 # phpunit
+
+**Discontinued in v5:**
+
 Executes phpunit tests in a running container and uploads the logs as artefacts.
 
-## Inputs:
+This has been replaced by using the run_test_script action executing a test script either provided in composer.json or the tests/scripts folder of the repository.
+
+## Inputs
+
 **container_name:** *not required*, *default:*  php  
 Name of the container to run the test in.
 
@@ -41,5 +47,6 @@ Grep pattern which indicate that the test failed.
 **debug:** *not required*, *default:* false  
 Set to true to generate a debugging script.
 
-## Outputs:
-none
+## Outputs
+
+None.

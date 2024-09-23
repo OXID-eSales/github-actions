@@ -1,7 +1,9 @@
 # sonarcloud
+
 Runs sonarcloud in the given container
 
-## inputs
+## Inputs
+
 **container_name:** *not required*, *default:*  php  
 Name of the container to run the test in.
 
@@ -58,5 +60,6 @@ Github run artifact to put the output files in.
 **debug:** *not required*, *default:* false  
 Set to true to generate a debugging script.
 
-## outputs
+## Outputs
+
 None.
