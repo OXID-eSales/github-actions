@@ -11,7 +11,7 @@ and phpmd.
 **testplan:** *required*, *no default:*  
 A file name or URL for a test plan yaml file containing all the variables
 needed for building the shop and running the tests. See
-tests/github_actions/defaults/defaults.yml for a documented set of defaults.
+tests/github_actions/defaults/defaults.yaml for a documented set of defaults.
 
 **runs_on:** *not required*, *default:* ubuntu-latest  
 Runner for this workflow

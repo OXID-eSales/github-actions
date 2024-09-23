@@ -1,11 +1,13 @@
 # run_test_script
+
 Runs a script defined in a composer.json or availabe as a batch file in tests/Scripts.
 
-## Inputs:
+## Inputs
+
 **script:** *required*, *no default:*  
 Name of the script to run. If the name starts with ~/, this input is interpreted as
 the name of a script located in test/Scripts. If not, it is assumed to be defined in
-composer.json and will be run as composer <script>
+composer.json and will be run as composer \<script\>
 
 **path:** *required*, *no default:*  
 Workdir for the script.
@@ -34,5 +36,6 @@ Github run artifact for the output.
 **debug:** *not required*, *default:* false  
 Set to true to generate a debugging script.
 
-## Outputs:
-none
+## Outputs
+
+None.

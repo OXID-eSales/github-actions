@@ -1,9 +1,16 @@
 # cleanup_workspace
+
+**Discontinued in v5:**
+
 This action cleans the runner workspace, optionally kills running docker
 containers and removes finished docker containers and unused images. The
 behaviour can be controlled by its inputs.
 
+It was never really necessary as each job starts with a clean ephemeral worker.
+Thus, it has ben discontinued in version 5.
+
 ## Inputs
+
 **clean_workspace:** *not required*, *default:* true  
 The action removes all files and directories in the workspace by default.
 Set to false to skip this step.
@@ -18,3 +25,7 @@ images. Set to false if you still need to access them.
 
 **debug:** *not required*, *default:* false  
 Set to true to generate a debugging script.
+
+## Outputs
+
+None.
