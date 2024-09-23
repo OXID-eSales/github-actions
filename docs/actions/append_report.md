@@ -15,6 +15,7 @@ Priority helps with sorting phases and table content by becoming part of the fil
 
 **phase:** *required*, *no default:*  
 The phase, for which we generate the report. Currently, there are three phases:
+
 - install
 - test
 - report
