@@ -3,27 +3,23 @@
 # to github limitations on scheduled events
 
 global:
-  title: '{{ .Github.EventName }}-{{ .Data.global.git.default_ref }}'
-  git: &git
-    shop_ref: '{{ .Data.global.git.default_ref }}'
-    ref: '{{ .Data.global.git.default_ref }}'
-    enterprise_ref: '{{ .Data.global.git.default_ref }}'
-    safe_ref_name: '{{ .Data.global.git.default_ref }}'
+  title: '{{ .Github.EventName }}-{{ .Data.install.git.default_ref }}'
   composer: &composer
-    ref_name: 'dev-{{ .Data.global.git.default_ref }}'
+    ref_name: 'dev-{{ .Data.install.git.default_ref }}'
 
 init:
   cache:
-    name: '{{ .Github.EventName }}-{{ .Data.global.git.default_ref }}-testplan-{{ .Env.GITHUB_REPOSITORY_ID }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
+    name: '{{ .Github.EventName }}-{{ .Data.install.git.default_ref }}-testplan-{{ .Env.GITHUB_REPOSITORY_ID }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
 
-install_shop_with_modules: &install
-  git: *git
+install:
+  git:
+    ref: '{{ .Data.install.git.default_ref }}'
+    enterprise_ref: '{{ .Data.install.git.default_ref }}'
+    safe_ref_name: '{{ .Data.install.git.default_ref }}'
   composer: *composer
 
-prepare_shop: *install
-
 sonarcloud:
-  target_branch: '{{ .Data.global.git.default_ref }}'
+  target_branch: '{{ .Data.install.git.default_ref }}'
 
 finish:
-  slack_title: '{{ .Github.Workflow }} ({{ .Data.global.git.default_ref }}) on {{ .Github.Repository }} by {{ .Github.Actor }}'
+  slack_title: '{{ .Github.Workflow }} ({{ .Data.install.git.default_ref }}) on {{ .Github.Repository }} by {{ .Github.Actor }}'

@@ -1,4 +1,4 @@
-install_shop_with_modules:
+install:
   cache:
     prepared_shop: false
   composer:
@@ -10,32 +10,31 @@ install_shop_with_modules:
             "ddoe/*": "source"
           },
           "require": {
-              "oxid-esales/oxideshop-ce": "{{ .Data.global.composer.dev_ref }}",
-              "oxid-esales/twig-component": "{{ .Data.global.composer.dev_ref }}",
-              "oxid-esales/twig-admin-theme": "{{ .Data.global.composer.dev_ref }}",
-              "oxid-esales/apex-theme": "{{ .Data.global.composer.dev_ref }}",
-              "{{ .Data.global.org }}/{{ .Data.global.name }}": "{{ .Data.global.composer.ref_name }}"
+              "oxid-esales/oxideshop-ce": "{{ .Data.install.composer.dev_ref }}",
+              "oxid-esales/twig-component": "{{ .Data.install.composer.dev_ref }}",
+              "oxid-esales/twig-admin-theme": "{{ .Data.install.composer.dev_ref }}",
+              "oxid-esales/apex-theme": "{{ .Data.install.composer.dev_ref }}",
+              "{{ .Data.custom.org }}/{{ .Data.custom.name }}": "{{ .Data.install.composer.ref_name }}"
           },
           "repositories": {
-            "{{ .Data.global.org }}/{{ .Data.global.name }}": {
+            "{{ .Data.custom.org }}/{{ .Data.custom.name }}": {
               "type": "git",
-              "url": "https://github.com/{{ .Data.global.repo }}.git"
+              "url": "https://github.com/{{ .Github.Repository }}.git"
             }
           }
       }
-  custom_script_container: |
-    vendor/bin/oe-console oe:module:activate "{{ .Data.global.ids }}"
-    {{ .Data.install_shop_with_modules.custom_script_container }}
+
+  activate_modules: {{ .Data.custom.ids }}
 
 runscript: &runscript
   module:
-    path: 'vendor/{{ .Data.global.org}}/{{ .Data.global.name }}'
+    path: 'vendor/{{ .Data.custom.org}}/{{ .Data.custom.name }}'
 
 runslim:
   <<: *runscript
 
 sonarcloud:
-  strip_path: '/var/www/vendor/{{ .Data.global.org}}/{{ .Data.global.name }}/'
+  strip_path: '/var/www/vendor/{{ .Data.custom.org}}/{{ .Data.custom.name }}/'
   parameters: |
     -Dsonar.language=php \
     -Dsonar.scm.provider=git \
@@ -43,4 +42,4 @@ sonarcloud:
     -Dsonar.tests=tests
 
 finish:
-  slack_title: '{{ print .Data.global.name }} ({{ .Data.global.git.shop_ref }}) by {{ .Github.Actor }}'
+  slack_title: '{{ print .Github.Repository }} ({{ .Data.install.git.ref }}) by {{ .Github.Actor }}'

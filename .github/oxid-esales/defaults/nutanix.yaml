@@ -1,0 +1,16 @@
+# This file contains settings to optimize performance on our private
+# cloud on the nutanix cluster
+
+workflow:
+  # Limit the amount of parallel jobs to avoid slowing down everything
+  # due to swapping / high iops
+  max_parallel: &max_parallel 2
+
+install:
+  max_parallel: *max_parallel
+
+runscript: &runscript
+  max_parallel: *max_parallel
+
+runslim: &runscript
+  max_parallel: *max_parallel
