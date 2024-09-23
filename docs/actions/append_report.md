@@ -1,9 +1,11 @@
 # append_report
+
 This action adds report and job_status snippets to the testplan artifact.
 These are used in the finish action to create the slack notification and the
 report on the action summary page.
 
 ## Inputs
+
 **header:** *not required*, *default:* false  
 If set to "true", a report header for the phase will be generated instead of a
 line in the respective table.
@@ -37,3 +39,7 @@ The job status for this matrix instance.
 
 **debug:** *not required*, *default:* false  
 Set to true to generate a debugging script.
+
+## Outputs
+
+None.

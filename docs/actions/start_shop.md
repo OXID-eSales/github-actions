@@ -1,4 +1,5 @@
 # start_shop
+
 Fetches a shop installation identified by the input "cached_shop" from cache and starts it.
 By providing cache_bucket, cache_endpoint etc, a local s3 cache is used. Otherwise, it falls
 back to the regular Github cache. If the cached shop can't be loaded, the action fails.
@@ -6,7 +7,8 @@ back to the regular Github cache. If the cached shop can't be loaded, the action
 After loading the installation from cache, trhe containers are started, using "make up".
 If starting the containers failed, the docker-compose.yml and the container logs are printed
 
-# Inputs:
+# Inputs
+
 **cached_shop:** *required*, *no default*  
 Name of the cached object from [prepare_shop](prepare_shop.md)/[install_shop](install_shop.md).
 
@@ -45,3 +47,7 @@ Name of the container to run the wait command in.
 
 **debug:** *not required*, *default:* false  
 Set to true to generate a debugging script.
+
+## Outputs
+
+None.

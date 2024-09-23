@@ -1,7 +1,9 @@
 # build_docker
+
 This action is used to checkout docker repo and login into dockerhub then build and push docker images.
 
 ## Inputs
+
 **dockerhub_username** *required*, *default:* true
 Dockerhub username is required to login into Dockerhub.
 
@@ -19,3 +21,7 @@ build_args are required for matrix versions,There are different build_args for p
 
 **debug:** *not required*, *default:* false  
 Set to true to generate a debugging script.
+
+## Outputs
+
+None.

@@ -1,7 +1,9 @@
 # clean_cache
+
 This action installs githubcli,s3cmd and cleans the cached github objects,s3 cache. 
 
 ## Inputs
+
 **cache_bucket:** *not required*, *default:* 'oxidshop_ee'  
 If set, the local s3 cache is used instead of githubs cache to speed things up on
 private runners. If the bucket can't be reached, the GitHub cache is used.
@@ -23,3 +25,7 @@ List of objects to delete.
 
 **debug:** *not required*, *default:* false  
 Set to true to generate a debugging script.
+
+## Outputs
+
+None.

@@ -1,5 +1,7 @@
 # install_shop
 
+**Discontinued in v5:**
+
 This action first runs oe-console oe:setup:shop, configuring the shop to use
 the mysql database in  the mysql container, <http://localhost.local> as shop URL, /var/www/source
 as shop-directory and /var/www/source/tmp as compile-directory.
@@ -9,6 +11,8 @@ If "is_enterprise" is set to true, oe-console is used to activate the Apex theme
 
 Then, the containers are being stopped and the configuration files are exported as artifact before
 caching the shop installation. The action returns the installed shop name as output "installed_shop".
+
+This is replaced by the composer.transform functionality using composer to install everything at once.
 
 ## Inputs
 

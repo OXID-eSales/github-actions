@@ -1,7 +1,13 @@
 # phpmd
+
+**Discontinued in v5:**
+
 Runs phpmd reports and creates an artifact for this
 
-## Inputs:
+This has been replaced by using the run_test_script action executing a test script either provided in composer.json or the tests/scripts folder of the repository.
+
+## Inputs
+
 **title:** *not required*, *default:* shop_ce  
 Title used in the file names for the phpmd reports. Set to module ids for a module.
 
@@ -46,5 +52,6 @@ Grep pattern which indicate that the test failed.
 **debug:** *not required*, *default:* ''  
 Code snippet to generate the debugging code
 
-## Outputs:
-none
+## Outputs
+
+None.
