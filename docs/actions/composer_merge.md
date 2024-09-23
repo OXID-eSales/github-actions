@@ -1,8 +1,10 @@
 # composer_merge
+
 This action takes a json code snippet and merges it with a given composer.json
 using the load_testplan action.
 
-## Inputs:
+## Inputs
+
 **file:** *required*, *no default*  
 Path of the composer.json to modify.
 
@@ -34,3 +36,7 @@ Set to true to generate a debugging script.
 
 **github_token:** *not required*, *default:* ''  
 Token to set for github authentication.
+
+## Outputs
+
+None.
