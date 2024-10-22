@@ -24,7 +24,7 @@ install:
           }
       }
 
-  activate_modules: {{ .Data.custom.ids }}
+  activate_modules: '{{ .Data.custom.ids }}'
 
 runscript: &runscript
   module:
