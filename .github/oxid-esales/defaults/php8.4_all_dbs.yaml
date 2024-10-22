@@ -10,4 +10,3 @@ sonarcloud:
   matrix:
     php: '["8.4"]'
     mysql: '[ "mysql-8.0" ]'
-
