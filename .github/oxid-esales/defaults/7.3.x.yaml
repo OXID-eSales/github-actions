@@ -1,0 +1,44 @@
+workflow:
+  matrix: &matrix
+    php: &matrix_php '["8.2","8.3"]'
+    mysql: &matrix_mysql '["mysql-5.7","mysql-8.0.36","mariadb-11"]'
+  matrix_slim: &matrix_slim
+    php: '["8.2"]'
+    mysql: '["8.0.36"]'
+
+global:
+  composer:
+    dev_ref: &dev_ref dev-b-7.3.x
+
+install_shop_with_modules: &install
+  matrix: *matrix
+  git:
+    default_ref: &default_ref 'b-7.3.x'
+    enterprise_ref: 'b-7.3.x'
+  composer:
+    dev_ref: *dev_ref
+    transform: |
+      {
+          "preferred-install": {
+            "oxid-esales/*": "source",
+            "oxid-professional-services/*": "source",
+            "ddoe/*": "source"
+          },
+          "require": {
+              "oxid-esales/twig-component": "dev-b-7.3.x",
+              "oxid-esales/twig-admin-theme": "dev-b-7.3.x",
+              "oxid-esales/apex-theme": "dev-b-7.3.x"
+          }
+      }
+
+runscript:
+  matrix: *matrix
+
+runslim:
+  matrix: *matrix_slim
+
+sonarcloud:
+  matrix: *matrix_slim
+
+finish:
+  matrix: *matrix
