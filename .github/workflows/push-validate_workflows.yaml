@@ -114,7 +114,6 @@ jobs:
       - init
       - yamllint
       - actionlint
-      - matchingyaml
     runs-on: 'ubuntu-latest'
     env:
       SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"
