@@ -594,9 +594,9 @@ sonarcloud:
   project_name: 'oxideshop_ce'
   # Parameters passed to the scanner
   parameters: |
-    -Dsonar.language=php
-    -Dsonar.scm.provider=git
-    -Dsonar.sources=source
+    -Dsonar.language=php \
+    -Dsonar.scm.provider=git \
+    -Dsonar.sources=source \
     -Dsonar.tests=tests
 
   # DEPRECATED: (we use a separate config for this now) for the internal run, leave the project key empty if you don't have a need
@@ -604,9 +604,9 @@ sonarcloud:
   internal_project_key: 'OXID-eSales_oxideshop_ce_internal'
   internal_project_name: 'oxideshop_ce_internal'
   internal_parameters: |
-    -Dsonar.language=php
-    -Dsonar.scm.provider=git
-    -Dsonar.sources=source/Internal
+    -Dsonar.language=php \
+    -Dsonar.scm.provider=git \
+    -Dsonar.sources=source/Internal \
     -Dsonar.tests=tests
 
 # See docs/actions/start_shop.md and docs/actions/phpcs.md for more information.

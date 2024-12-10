@@ -40,10 +40,10 @@ inputs:
     required: false
     description: 'Parameters passed to the scanner'
     default: |
-      -Dsonar.language=php
-      -Dsonar.sources=source
-      -Dsonar.tests=tests
-      -Dsonar.cpd.php.minimumTokens=25
+      -Dsonar.language=php \
+      -Dsonar.sources=source \
+      -Dsonar.tests=tests \
+      -Dsonar.cpd.php.minimumTokens=25 \
       -Dsonar.cpd.php.minimumLines=5
   sonar_token:
     type: string

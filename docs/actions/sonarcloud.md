@@ -33,12 +33,12 @@ Project key in sonarcloud.
 Project name in sonarcloud.
 
 **sonarcloud_parameters:** *not required*, *default:*  
-    - -Dsonar.language=php
-    - -Dsonar.sources=source
-    - -Dsonar.tests=tests
-    - -Dsonar.sourceEncoding=UTF-8
-    - -Dsonar.php.coverage.reportPaths=tests/coverage.xml
-    - -Dsonar.cpd.php.minimumTokens=25
+    - -Dsonar.language=php \
+    - -Dsonar.sources=source \
+    - -Dsonar.tests=tests \
+    - -Dsonar.sourceEncoding=UTF-8 \
+    - -Dsonar.php.coverage.reportPaths=tests/coverage.xml \
+    - -Dsonar.cpd.php.minimumTokens=25 \
     - -Dsonar.cpd.php.minimumLines=5  
 Parameters passed to the scanner.
 

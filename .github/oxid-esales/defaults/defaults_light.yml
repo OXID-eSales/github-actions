@@ -393,9 +393,9 @@ sonarcloud:
   project_name: 'oxideshop_ce'
   # Parameters passed to the scanner
   parameters: |
-    -Dsonar.language=php
-    -Dsonar.scm.provider=git
-    -Dsonar.sources=source
+    -Dsonar.language=php \
+    -Dsonar.scm.provider=git \
+    -Dsonar.sources=source \
     -Dsonar.tests=tests
 
 # yamllint validates the github actions/testplan yaml files
