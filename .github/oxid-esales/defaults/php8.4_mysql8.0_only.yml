@@ -1,6 +1,6 @@
 prepare_shop:
   matrix: &matrix
-    php: '["8.4-rc"]'
+    php: '["8.4"]'
     mysql: '["8.0.36"]'
 
 install_shop:
