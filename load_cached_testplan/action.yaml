@@ -1,6 +1,10 @@
 name: 'load_cached_testplan'
 description: 'Fetches the testplan and sets environment variables for it'
 inputs:
+  runs_on:
+    type: string
+    description: 'JSON string/array describing the runner'
+    required: true
   php:
     type: string
     required: false
@@ -68,8 +72,9 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Load cached testplan
-      id: load_testplan_cache
+    - name: Load cached testplan from S3
+      if: ${{ inputs.runs_on != '"ubuntu-latest"'}}
+      id: load_testplan_cache_s3
       uses: tespkg/actions-cache/restore@v1
       with:
         path: |
@@ -80,12 +85,19 @@ runs:
         accessKey: ${{ inputs.cache_access_key }}
         secretKey: ${{ inputs.cache_secret_key }}
         bucket: ${{ inputs.cache_bucket }}
-
+    - name: Load cached testplan from Github
+      if: ${{ inputs.runs_on == '"ubuntu-latest"'}}
+      id: load_testplan_cache_gh
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          ${{ inputs.plan_folder}}/*
+        key: ${{ inputs.cache_name }}
     - name: Confirm successful restore
       shell: bash
       run: |
         # load_cached_testplan: Confirm successful restore
-        if [ "${{ steps.load_testplan_cache.outputs.cache-hit }}" != "true" ]; then
+        if [ "${{ steps.load_installed_shop_s3.outputs.cache-hit }}" != "true" && "${{ steps.load_installed_shop_gh.outputs.cache-hit }}" != "true" ]; then
           echo -e "\033[0;31m### Failed to load ${{ inputs.cache_name }} from cache\033[0m"
           exit 1
         fi

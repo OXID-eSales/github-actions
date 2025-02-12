@@ -285,6 +285,7 @@ jobs:
         id: itn
         uses: OXID-eSales/github-actions/load_cached_testplan@v4
         with:
+          runs_on: ${{ inputs.runs_on }}
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
           prefix: '${{ needs.init.outputs.global_title }}'
@@ -736,6 +737,7 @@ jobs:
         id: rstn
         uses: OXID-eSales/github-actions/load_cached_testplan@v4
         with:
+          runs_on: ${{ inputs.runs_on }}
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
           prefix: '${{ needs.init.outputs.global_title }}'
@@ -823,6 +825,7 @@ jobs:
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v4'
         with:
+          runs_on: ${{ inputs.runs_on }}
           cached_shop: '${{ steps.rt.outputs.runscript_load_shop}}_${{ steps.rstn.outputs.matrix_suffix }}'
           cache_bucket: ${{ steps.rt.outputs.runscript_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
@@ -940,6 +943,7 @@ jobs:
         id: rstn
         uses: OXID-eSales/github-actions/load_cached_testplan@v4
         with:
+          runs_on: ${{ inputs.runs_on }}
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
           prefix: '${{ needs.init.outputs.global_title }}'
@@ -1021,6 +1025,7 @@ jobs:
       - name: 'Start shop'
         uses: 'OXID-eSales/github-actions/start_shop@v4'
         with:
+          runs_on: ${{ inputs.runs_on }}
           cached_shop: '${{ steps.rt.outputs.runslim_load_shop}}_${{ steps.rstn.outputs.matrix_suffix }}'
           cache_bucket: ${{ steps.rt.outputs.runslim_cache_bucket }}
           cache_endpoint: ${{ secrets.CACHE_ENDPOINT }}
@@ -1144,6 +1149,7 @@ jobs:
         if: ${{ env.SONAR_TOKEN != '' }}
         uses: OXID-eSales/github-actions/load_cached_testplan@v4
         with:
+          runs_on: ${{ inputs.runs_on }}
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
           prefix: '${{ needs.init.outputs.global_title }}'

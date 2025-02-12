@@ -1,6 +1,10 @@
 name: 'start_shop'
 description: 'Fetches a shop from cache and starts it'
 inputs:
+  runs_on:
+    type: string
+    description: 'JSON string/array describing the runner'
+    required: true
   cached_shop:
     type: string
     required: true
@@ -59,8 +63,9 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Load cached shop from cache
-      id: load_installed_shop
+    - name: Load cached shop from S3
+      if: ${{ inputs.runs_on != '"ubuntu-latest"'}}
+      id: load_installed_shop_s3
       uses: tespkg/actions-cache/restore@v1
       with:
         path: |
@@ -73,11 +78,20 @@ runs:
         secretKey: ${{ inputs.cache_secret_key }}
         bucket: ${{ inputs.cache_bucket }}
 
+    - name: Load cached testplan from Github
+      if: ${{ inputs.runs_on == '"ubuntu-latest"'}}
+      id: load_installed_shop_gh
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          ./*
+        key: ${{ inputs.cached_shop }}
+
     - name: Confirm restore
       shell: bash
       run: |
         # start_shop: Confirm restore
-        if [ "${{ steps.load_installed_shop.outputs.cache-hit }}" != "true" ]; then
+        if [ "${{ steps.load_installed_shop_s3.outputs.cache-hit }}" != "true" && "${{ steps.load_installed_shop_gh.outputs.cache-hit }}" != "true" ]; then
           echo -e "\033[0;31m### Load ${{ inputs.cached_shop }} from cache: FAIL\033[0m"
           exit 1
         else
