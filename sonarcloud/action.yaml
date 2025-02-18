@@ -135,7 +135,7 @@ runs:
         echo "TARGET_BRANCH_PARAM=$TARGET_PRANCH_PARAM" >> $GITHUB_ENV
 
     - name: SonarCloud Scan
-      uses: sonarsource/sonarcloud-github-action@master
+      uses: SonarSource/sonarqube-scan-action@v4
       env:
         SONAR_TOKEN: ${{ inputs.sonar_token }}
         GITHUB_TOKEN: ${{ inputs.github_token }}
@@ -158,7 +158,7 @@ runs:
         cat >debug/debug.sh <<EODS
           banner "sonarcloud: Debug sonarcloud Scan (simulated)"
           cat <<'EOF'
-          # would call sonarsource/sonarcloud-github-action@master
+          # would call SonarSource/sonarqube-scan-action@v4
           -Dsonar.organization=${{ inputs.sonarcloud_organization }}
           -Dsonar.projectKey=${{ inputs.sonarcloud_project_key }}
           -Dsonar.projectName=${{ inputs.sonarcloud_project_name }}
