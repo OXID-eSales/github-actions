@@ -25,10 +25,10 @@ on:
       reviewer:
         type: choice
         required: true
-        description: 'who should review the PR'
+        description: 'Who should review the PR'
         options:
+          - kenariosz
           - joernott
-          - snehasreeramini
 
 jobs:
   prepare_release:
