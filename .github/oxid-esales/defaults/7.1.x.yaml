@@ -9,6 +9,7 @@ global:
   git: &git
     default_ref: &default_ref 'b-7.1.x'
     enterprise_ref: 'b-7.1.x'
+    sdk_ref: &git_sdk_ref 'master'
 
   composer: &composer
     dev_ref: &dev_ref dev-b-7.1.x

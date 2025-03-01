@@ -81,7 +81,7 @@ global:
     sdk_repository: &git_sdk_repository 'OXID-eSales/docker-eshop-sdk'
 
     # Branch to check out for the SDK
-    sdk_ref: &git_sdk_ref 'master'
+    sdk_ref: &git_sdk_ref 'b-8.0.x'
 
     # URL for the oxidshop_ce repository
     # This is deprecated and will be superseded by "repository" as we use
