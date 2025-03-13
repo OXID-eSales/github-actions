@@ -5,7 +5,7 @@ workflow:
     mysql: &matrix_mysql '["mysql-5.7","mysql-8.0.36","mariadb-11"]'
   matrix_slim: &matrix_slim
     php: '["8.2"]'
-    mysql: '["8.0.36"]'
+    mysql: '["mysql-8.0.36"]'
 global:
   git: &git
     default_ref: &default_ref 'b-7.3.x'
