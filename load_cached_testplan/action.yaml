@@ -97,7 +97,7 @@ runs:
       shell: bash
       run: |
         # load_cached_testplan: Confirm successful restore
-        if [[ "${{ steps.load_installed_shop_s3.outputs.cache-hit }}" != "true" && "${{ steps.load_installed_shop_gh.outputs.cache-hit }}" != "true" ]]; then
+        if [[ "${{ steps.load_testplan_cache_s3.outputs.cache-hit }}" != "true" && "${{ steps.load_testplan_cache_gh.outputs.cache-hit }}" != "true" ]]; then
           echo -e "\033[0;31m### Failed to load ${{ inputs.cache_name }} from cache\033[0m"
           exit 1
         fi
