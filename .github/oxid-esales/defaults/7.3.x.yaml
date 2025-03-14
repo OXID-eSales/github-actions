@@ -1,18 +1,19 @@
 workflow:
   matrix: &matrix
-    php: &matrix_php '["8.2","8.3"]'
-    mysql: &matrix_mysql '["mysql-5.7","mysql-8.0.36","mariadb-11"]'
+    php: '["8.2","8.3"]'
+    mysql: '["mysql-5.7","mysql-8.0.36","mariadb-11"]'
   matrix_slim: &matrix_slim
     php: '["8.2"]'
     mysql: '["mysql-8.0.36"]'
+
 global:
   composer:
     dev_ref: &dev_ref dev-b-7.3.x
 
-install_shop_with_modules: &install
+install:
   matrix: *matrix
   git:
-    default_ref: &default_ref 'b-7.3.x'
+    default_ref: 'b-7.3.x'
     enterprise_ref: 'b-7.3.x'
   composer:
     dev_ref: *dev_ref

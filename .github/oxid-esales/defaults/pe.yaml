@@ -13,7 +13,7 @@ global:
 # See docs/actions/prepare_shop.md for more information.
 install:
   git:
-    ref: &git_shop_ref '{{ .Data.install.git.default_ref }}'
+    ref: '{{ .Data.install.git.default_ref }}'
     enterprise_ref: '{{ .Github.RefName }}'
 
   composer:

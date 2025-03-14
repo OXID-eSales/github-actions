@@ -1,5 +1,5 @@
 install: &install
-  matrix: &matrix
+  matrix:
     php: '["8.4"]'
     mysql: '["mariadb-10"]'
 
