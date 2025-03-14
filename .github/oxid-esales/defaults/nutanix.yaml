@@ -9,8 +9,8 @@ workflow:
 install:
   max_parallel: *max_parallel
 
-runscript: &runscript
+runscript:
   max_parallel: *max_parallel
 
-runslim: &runscript
+runslim:
   max_parallel: *max_parallel

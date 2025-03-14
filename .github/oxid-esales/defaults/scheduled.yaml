@@ -1,6 +1,6 @@
 # This overrides the default shop settings for scheduled workflows testing
 # 7.0.x and 7.1.x because they can only be started from 8.0.x due
-# to github limitations on scheduled events
+# to GitHub limitations on scheduled events
 
 global:
   title: '{{ .Github.EventName }}-{{ .Data.install.git.default_ref }}'
