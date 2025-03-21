@@ -74,6 +74,15 @@ on:
       SLACK_SCHEDULED_WEBHOOK_URL:
         required: false
         # description: Webhook for posting to SLACK
+      BASIC_GIT:
+        required: false
+        # description: external git vendor
+      BASIC_GIT_USERNAME:
+        required: false
+        # description: external git username
+      BASIC_GIT_PASSWORD:
+        required: false
+        # description: external git password
 
 jobs:
   init:
@@ -314,7 +323,7 @@ jobs:
 
       - name: 'Prepare Shop'
         id: prepare_shop
-        uses: 'OXID-eSales/github-actions/prepare_shop@v4'
+        uses: 'OXID-eSales/github-actions/prepare_shop@v0.d3colab'
         with:
           container_name: ${{ steps.iltp.outputs.install_container_name }}
           container_options: ${{ steps.iltp.outputs.install_container_options }}
@@ -346,6 +355,9 @@ jobs:
           composer_update_options: ${{ steps.iltp.outputs.install_composer_update_options}}
           composer_dev_ref: ${{ steps.iltp.outputs.install_composer_dev_ref}}
           enterprise_github_token: ${{ secrets.enterprise_github_token || github.token }}
+          basic_git: ${{ secrets.BASIC_GIT }}
+          basic_git_username: ${{ secrets.BASIC_GIT_USERNAME }}
+          basic_git_password: ${{ secrets.BASIC_GIT_PASSWORD }}
           copy_script_targets: ${{ steps.iltp.outputs.install_copy_script_targets }}
           debug: ${{ needs.init.outputs.debug }}
 
@@ -864,6 +876,11 @@ jobs:
             ${{ steps.rt.outputs.runscript_container_options }} \
             ${{ steps.rt.outputs.runscript_container_name }} \
             composer config -g github-oauth.github.com "${{ secrets.enterprise_github_token || github.token }}"
+          # basic  auth
+          docker compose exec -T \
+            ${{ steps.rt.outputs.runscript_container_options }} \
+            ${{ steps.rt.outputs.runscript_container_name }} \
+            composer config -g http-basic.git.${{ inputs.basic_git }} "${{ inputs.basic_git_username }}" "${{ inputs.basic_git_password }}"      
           docker compose exec -T \
             ${{ steps.rt.outputs.runscript_container_options }} \
             ${{ steps.rt.outputs.runscript_container_name }} \

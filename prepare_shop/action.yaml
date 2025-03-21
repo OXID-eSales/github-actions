@@ -160,6 +160,21 @@ inputs:
     required: false
     description: 'OAuth token to access enterprise repos'
     default: ''
+  basic_git:
+    type: string
+    required: false
+    description: 'secrets.BASIC_GIT for 3rd party git login'
+    default: true
+  basic_git_username:
+    type: string
+    required: false
+    description: 'secrets.BASIC_GIT_USERNAME for 3rd party git login'
+    default: ''
+  basic_git_password:
+    type: string
+    required: false
+    description: 'secrets.BASIC_GIT_PASSWORD for 3rd party git login'
+    default: ''
   docker_login:
     type: boolean
     required: false
@@ -418,6 +433,18 @@ runs:
           ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
+
+    - name: Configure external git repository
+      #if: ${{ inputs.basic_git != '' }}
+      if: always()
+      shell: bash
+      run: |
+        # prepare_shop: Configure external git repository
+        ${{ inputs.debug }}
+        docker compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container_name}} \
+          composer config -g http-basic.git.${{ inputs.basic_git }} "${{ inputs.basic_git_username }}" "${{ inputs.basic_git_password }}"    
 
     - name: 'Modify composer.json'
       if: ${{ inputs.composer_transform != '' }}
