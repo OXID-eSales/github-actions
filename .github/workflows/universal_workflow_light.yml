@@ -74,6 +74,12 @@ on:
       SLACK_SCHEDULED_WEBHOOK_URL:
         required: false
         # description: Webhook for posting to SLACK
+      D3_USERNAME:
+        # description: 'user for the docker login'
+        required: false
+      D3_PASSWORD:
+        # description: 'Token for the docker login'
+        required: false
 
 jobs:
   init:
