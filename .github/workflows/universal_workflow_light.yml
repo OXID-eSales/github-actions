@@ -880,7 +880,7 @@ jobs:
           docker compose exec -T \
             ${{ steps.rt.outputs.runscript_container_options }} \
             ${{ steps.rt.outputs.runscript_container_name }} \
-            composer config -g http-basic.git.${{ inputs.basic_git }} "${{ inputs.basic_git_username }}" "${{ inputs.basic_git_password }}"      
+            composer config -g http-basic.git.${{ inputs.basic_git }} "${{ inputs.basic_git_username }}" "${{ inputs.basic_git_password }}"
           docker compose exec -T \
             ${{ steps.rt.outputs.runscript_container_options }} \
             ${{ steps.rt.outputs.runscript_container_name }} \
