@@ -40,11 +40,6 @@ on:
         description: 'Content of ~/oxid-esales/_custom.yaml'
         default: ''
         required: false
-      use_scheduled_slack_channel:
-        type: boolean
-        description: 'Use alternative slack channel'
-        default: false
-        required: false
 
     secrets:
       DOCKER_HUB_USER:
@@ -71,9 +66,6 @@ on:
       SLACK_WEBHOOK_URL:
         required: false
         # description: Webhook for posting to SLACK
-      SLACK_SCHEDULED_WEBHOOK_URL:
-        required: false
-        # description: Alternative webhook for posting to SLACK
 
 jobs:
   init:
@@ -1277,21 +1269,12 @@ jobs:
       - actionlint
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
-      - name: Choose Slack channel
-        id: slack
-        shell: bash
-        run: |
-          if [ "${{ inputs.use_scheduled_slack_channel }}" == "false" ]; then
-            echo "webhook=${{ secrets.SLACK_WEBHOOK_URL }}" >>"${GITHUB_OUTPUT}"
-          else
-            echo "webhook=${{ secrets.SLACK_SCHEDULED_WEBHOOK_URL }}" >>"${GITHUB_OUTPUT}"
-          fi
       - name: 'Generate report'
         id: generate_report
         uses: 'OXID-eSales/github-actions/generate_report@v0'
         with:
           prefix: '${{ needs.init.outputs.global_title }}'
-          slack_webhook: ${{ steps.slack.outputs.webhook }}
+          slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           title: '${{ needs.init.outputs.finish_slack_title }}'
           compact: '${{ needs.init.outputs.finish_slack_compact }}'
           debug: ${{ inputs.debug }}
