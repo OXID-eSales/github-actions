@@ -134,7 +134,7 @@ global:
     name: &container_name 'php'
 
     # Additional options passed to docker compose when running tests in
-    # the the container
+    # the container
     options: &container_options ''
 
     # Method to execute the commands inside a container.
@@ -308,6 +308,8 @@ runscript: &runscript
   title: 'runscript'
   # You need to specify the script name
   script: ''
+  # Name of the binary running the test scripts
+  script_runner: 'composer'
   docker_login: *docker_login
   load_shop: *install_shop_prefix
   container: *container
