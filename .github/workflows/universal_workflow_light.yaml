@@ -882,7 +882,7 @@ jobs:
           token: ${{ github.token }}
 
       - name: 'Run runscript check'
-        uses: 'OXID-eSales/github-actions/run_test_script@v0'
+        uses: 'OXID-eSales/github-actions/run_test_script@v4'
         with:
           script_runner: ${{ steps.rt.outputs.runscript_script_runner }}
           script: ${{ steps.rt.outputs.runscript_script }}
