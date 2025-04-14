@@ -1,6 +1,11 @@
 name: 'run_test_script'
 description: 'Configures styles'
 inputs:
+  script_runner:
+    type: string
+    required: true
+    description: 'Name of the script runner in the container to use'
+    default: 'composer'
   script:
     type: string
     required: true
@@ -58,11 +63,11 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Run composer script
+    - name: Run ${{ inputs.script_runner }} script ${{ inputs.script }}
       if: ${{ ! startsWith(inputs.script, '~/') }}
       shell: bash
       run: |
-        # run_test_script: Run composer script ${{ inputs.script }}
+        # run_test_script: Run ${{ inputs.script_runner }} script ${{ inputs.script }}
         ${{ inputs.debug }}
         TESTDIR='tests'
         if [ ! -d "source/${{ inputs.path }}/${TESTDIR}" ]; then
@@ -74,14 +79,14 @@ runs:
           fi
         fi
         mkdir -p source/${{ inputs.path }}/${TESTDIR}/Output source/${{ inputs.path }}/${TESTDIR}/Reports
-        echo -e "\033[0;35m###  Run composer ${{ inputs.script }} in ${{ inputs.path }} ###\033[0m"
+        echo -e "\033[0;35m###  Run ${{ inputs.script }} with script runner ${{ inputs.script_runner }} in ${{ inputs.path }} ###\033[0m"
         docker compose ${{ inputs.container_method }} -T \
           -e GITHUB_TOKEN=${{ inputs.github_token }} \
           ${{ inputs.container_options }} \
           -e ABSOLUTE_PATH=${{ inputs.path }} \
           --workdir '/var/www/${{ inputs.workdir }}' \
           ${{ inputs.container_name }} \
-          composer ${{ inputs.script }}
+          ${{ inputs.script_runner }} ${{ inputs.script }}
 
     - name: Run shell script
       if: ${{ startsWith(inputs.script, '~/' ) }}

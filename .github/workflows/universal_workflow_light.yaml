@@ -173,8 +173,8 @@ jobs:
         if: ${{ inputs.runs_on != '"ubuntu-latest"'}}
         shell: bash
         run: |
-            sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update
-            sudo apt-get -qq install python3-yaml
+          sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update
+          sudo apt-get -qq install python3-yaml
 
       - name: Obfuscate _custom yaml
         if: always()
@@ -784,7 +784,7 @@ jobs:
             container_name container_options container_method \
             cache_bucket \
             composer_file composer_backup composer_transform composer_update composer_update_options composer_early \
-            custom_script custom_script_container \
+            custom_script custom_script_container script_runner \
             path install_options \
             output_prefix coverage_prefix; do
             VAR="runscript_${PREFIX}_${KEY}"
@@ -884,6 +884,7 @@ jobs:
       - name: 'Run runscript check'
         uses: 'OXID-eSales/github-actions/run_test_script@v4'
         with:
+          script_runner: ${{ steps.rt.outputs.runscript_script_runner }}
           script: ${{ steps.rt.outputs.runscript_script }}
           path: ${{ steps.rt.outputs.runscript_path }}
           workdir: ${{ steps.rt.outputs.runscript_workdir }}
