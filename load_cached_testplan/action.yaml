@@ -107,12 +107,11 @@ runs:
       shell: bash
       run: |
         # load_cached_testplan: Get testplan name
-        DEFAULT_TESTPLAN=$(echo '${{ inputs.root_testplan }}'|sed -e 's|,${{ inputs.plan_folder }}/defaults/_rename.yaml||')
+        DEFAULT_TESTPLAN='${{ inputs.root_testplan }}'
         MATRIX_TESTPLAN=$(echo "${{ inputs.matrix_testplan }}"|sed -e 's|~|${{ inputs.plan_folder }}|g')
-        # ToDo: Remove the ,${{ inputs.plan_folder }}/defaults/_rename.yaml when releasing v5
         if [[ '${{ inputs.matrix_testplan}}' == '-' || -z '${{ inputs.matrix_testplan}}' ]]; then
           echo "testplan=${{ inputs.root_testplan }}" | tee -a "${GITHUB_OUTPUT}"
         else
-          echo "testplan=${DEFAULT_TESTPLAN},${MATRIX_TESTPLAN},${{ inputs.plan_folder }}/defaults/_rename.yaml" | tee -a "${GITHUB_OUTPUT}"
+          echo "testplan=${DEFAULT_TESTPLAN},${MATRIX_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
         fi
         echo "matrix_suffix=${{inputs.prefix}}-PHP${{inputs.php}}-MYSQL${{inputs.mysql}}" | tee -a "${GITHUB_OUTPUT}"
