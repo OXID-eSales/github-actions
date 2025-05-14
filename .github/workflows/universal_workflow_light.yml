@@ -281,6 +281,14 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
 
     steps:
+      - name: Install make and tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential
+
+      - name: Check make
+        run: which make || echo "make NOT installed"
+
       - name: Load cached testplan
         id: itn
         uses: OXID-eSales/github-actions/load_cached_testplan@v4
