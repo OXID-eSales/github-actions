@@ -87,6 +87,14 @@ jobs:
           path: 'defaults'
           sparse-checkout: '${{ inputs.default_plan_folder }}'
 
+      - name: Install make and tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential
+
+      - name: Check make
+        run: which make || echo "make NOT installed"
+
       - name: 'Checkout testplans'
         uses: actions/checkout@v4
         with:
