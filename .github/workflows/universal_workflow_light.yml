@@ -178,7 +178,7 @@ jobs:
 
       - name: Obfuscate _custom yaml
         if: always()
-        shell: python
+        shell: python3 {0}
         run: |
           import yaml
 
