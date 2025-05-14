@@ -855,7 +855,7 @@ jobs:
             tee -a "${GITHUB_OUTPUT}"
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v4'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           runs_on: ${{ inputs.runs_on }}
           cached_shop: '${{ steps.rt.outputs.runscript_load_shop}}_${{ steps.rstn.outputs.matrix_suffix }}'
@@ -1056,7 +1056,7 @@ jobs:
           echo "runslim_title=${PREFIX}_${SCRIPT}"|sed -E 's#"|,|:|<|>|\||\*|\?|\/|\\#_#g' | tee -a "${GITHUB_OUTPUT}"
 
       - name: 'Start shop'
-        uses: 'OXID-eSales/github-actions/start_shop@v4'
+        uses: 'OXID-eSales/github-actions/start_shop@v0'
         with:
           runs_on: ${{ inputs.runs_on }}
           cached_shop: '${{ steps.rt.outputs.runslim_load_shop}}_${{ steps.rstn.outputs.matrix_suffix }}'
