@@ -263,6 +263,7 @@ jobs:
       yamllint_rules: ${{ steps.ltp.outputs.yamllint_rules }}
       # actionlint variables
       actionlint_skip: ${{ steps.ltp.outputs.actionlint_skip }}
+      actionlint_custom_config: ${{ steps.ltp.outputs.actionlint_custom_config }}
       # finish variables
       finish_matrix_mysql: ${{ steps.ltp.outputs.finish_matrix_mysql }}
       finish_matrix_php: ${{ steps.ltp.outputs.finish_matrix_php }}
@@ -1281,9 +1282,19 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
+      - name: 'Generate custom config'
+        id: generate_custom_config
+        run: |
+          cat >'${{ inputs.plan_folder }}/actionlint.yaml' <<'EOF'
+          # Generated from init outputs actionlint_custom_config
+          ${{ needs.init.outputs.actionlint_custom_config }}
+          EOF
+
       - name: Run actionlint
         id: actionlint
         uses: raven-actions/actionlint@v2
+        with:
+          flags: "-config-file '${{ inputs.plan_folder }}/actionlint.yaml'"
 
       - name: actionlint Summary
         if: always()
