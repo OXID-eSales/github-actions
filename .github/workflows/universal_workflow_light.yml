@@ -200,6 +200,14 @@ jobs:
               with open('${{ inputs.plan_folder }}/_custom.yml', 'w') as file:
                   yaml.dump(data, file)
 
+      - name: 'Generate custom config'
+        id: generate_custom_config
+        run: |
+          cat >'${{ inputs.plan_folder }}/actionlint.yaml' <<'EOF'
+          # Generated from init outputs actionlint_custom_config
+          {{ .Data.actionlint.custom_config }}
+          EOF
+
       - name: 'Create first testplan archive'
         if: always()
         id: begin_report
@@ -216,6 +224,7 @@ jobs:
             generated_output.txt
             generated_env.txt
             load_testplan_init.log
+            ${{ inputs.plan_folder}}/actionlint.yaml
           debug: ${{ inputs.debug }}
 
       - name: 'Write Report'
@@ -263,6 +272,7 @@ jobs:
       yamllint_rules: ${{ steps.ltp.outputs.yamllint_rules }}
       # actionlint variables
       actionlint_skip: ${{ steps.ltp.outputs.actionlint_skip }}
+      actionlint_custom_config: ${{ steps.ltp.outputs.actionlint_custom_config }}
       # finish variables
       finish_matrix_mysql: ${{ steps.ltp.outputs.finish_matrix_mysql }}
       finish_matrix_php: ${{ steps.ltp.outputs.finish_matrix_php }}
@@ -649,6 +659,7 @@ jobs:
             files.txt
             generated_testplan.yaml
             load_testplan_install.log
+            ${{ inputs.plan_folder}}/actionlint.yaml
             ${{ env.ARTIFACT_PATHS }}
 
       - name: Run custom scripts
@@ -1281,9 +1292,19 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
+#      - name: 'Generate custom config'
+#        id: generate_custom_config
+#        run: |
+#          cat >'${{ inputs.plan_folder }}/actionlint.yaml' <<'EOF'
+#          # Generated from init outputs actionlint_custom_config
+#          ${{ needs.init.outputs.actionlint_custom_config }}
+#          EOF
+
       - name: Run actionlint
         id: actionlint
         uses: raven-actions/actionlint@v2
+        with:
+          flags: "-config-file './actionlint.yaml'"
 
       - name: actionlint Summary
         if: always()
