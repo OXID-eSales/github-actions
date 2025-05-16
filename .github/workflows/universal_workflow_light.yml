@@ -224,7 +224,7 @@ jobs:
             generated_output.txt
             generated_env.txt
             load_testplan_init.log
-            actionlint.yaml
+            ${{ inputs.plan_folder}}/actionlint.yaml
           debug: ${{ inputs.debug }}
 
       - name: 'Write Report'
@@ -659,6 +659,7 @@ jobs:
             files.txt
             generated_testplan.yaml
             load_testplan_install.log
+            ${{ inputs.plan_folder}}/actionlint.yaml
             ${{ env.ARTIFACT_PATHS }}
 
       - name: Run custom scripts
@@ -1291,13 +1292,13 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
-      - name: 'Generate custom config'
-        id: generate_custom_config
-        run: |
-          cat >'${{ inputs.plan_folder }}/actionlint.yaml' <<'EOF'
-          # Generated from init outputs actionlint_custom_config
-          ${{ needs.init.outputs.actionlint_custom_config }}
-          EOF
+#      - name: 'Generate custom config'
+#        id: generate_custom_config
+#        run: |
+#          cat >'${{ inputs.plan_folder }}/actionlint.yaml' <<'EOF'
+#          # Generated from init outputs actionlint_custom_config
+#          ${{ needs.init.outputs.actionlint_custom_config }}
+#          EOF
 
       - name: Run actionlint
         id: actionlint
