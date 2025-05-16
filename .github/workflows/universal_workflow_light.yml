@@ -200,6 +200,14 @@ jobs:
               with open('${{ inputs.plan_folder }}/_custom.yml', 'w') as file:
                   yaml.dump(data, file)
 
+      - name: 'Generate custom config'
+        id: generate_custom_config
+        run: |
+          cat >'${{ inputs.plan_folder }}/actionlint.yaml' <<'EOF'
+          # Generated from init outputs actionlint_custom_config
+          ${{ steps.ltp.outputs.actionlint_custom_config }}
+          EOF
+
       - name: 'Create first testplan archive'
         if: always()
         id: begin_report
@@ -216,6 +224,7 @@ jobs:
             generated_output.txt
             generated_env.txt
             load_testplan_init.log
+            actionlint.yaml
           debug: ${{ inputs.debug }}
 
       - name: 'Write Report'
