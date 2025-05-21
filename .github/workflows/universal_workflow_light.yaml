@@ -273,6 +273,8 @@ jobs:
       # actionlint variables
       actionlint_skip: ${{ steps.ltp.outputs.actionlint_skip }}
       actionlint_custom_config: ${{ steps.ltp.outputs.actionlint_custom_config }}
+      actionlint_output_artifact_prefix: ${{ steps.ltp.outputs.actionlint_output_artifact_prefix }}
+      actionlint_output_path: ${{ steps.ltp.outputs.actionlint_output_path }}
       # finish variables
       finish_matrix_mysql: ${{ steps.ltp.outputs.finish_matrix_mysql }}
       finish_matrix_php: ${{ steps.ltp.outputs.finish_matrix_php }}
@@ -1277,45 +1279,12 @@ jobs:
     if: ${{ always() && needs.init.outputs.actionlint_skip != 'true' }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
-      - name: Install npm on private runner
-        if: ${{ inputs.runs_on != '"ubuntu-latest"'}}
-        run: |
-          NPM=$(type -p 'npm'||true)
-          PIPX=$(type -p 'pipx'||true)
-          if [ -z "${NPM}" ] || [ -z "${PIPX}" ]; then
-            echo -e "\033[0;35m###  Installing npm, shellcheck, pipx ###\033[0m"
-            sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update
-            sudo apt-get -qq install npm shellcheck pipx python3-venv
-          fi
-
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@v4
-
-#      - name: 'Generate custom config'
-#        id: generate_custom_config
-#        run: |
-#          cat >'${{ inputs.plan_folder }}/actionlint.yaml' <<'EOF'
-#          # Generated from init outputs actionlint_custom_config
-#          ${{ needs.init.outputs.actionlint_custom_config }}
-#          EOF
-
-      - name: Run actionlint
-        id: actionlint
-        uses: raven-actions/actionlint@v2
+      - name: 'Run actionlint'
+        uses: 'OXID-eSales/github-actions/actionlint@v0'
         with:
-          flags: "-config-file './actionlint.yaml'"
-
-      - name: actionlint Summary
-        if: always()
-        run: |
-          echo "Used actionlint version ${{ steps.actionlint.outputs.version-semver }}"
-          echo "Used actionlint release ${{ steps.actionlint.outputs.version-tag }}"
-          echo "actionlint ended with ${{ steps.actionlint.outputs.exit-code }} exit code"
-          echo "actionlint ended because '${{ steps.actionlint.outputs.exit-message }}'"
-          echo "actionlint found ${{ steps.actionlint.outputs.total-errors }} errors"
-          echo "actionlint checked ${{ steps.actionlint.outputs.total-files }} files"
-          echo "actionlint cache used: ${{ steps.actionlint.outputs.cache-hit }}"
+          custom_config: ${{ needs.init.outputs.actionlint_custom_config }}
+          output_artifact_prefix: ${{ needs.init.outputs.actionlint_output_artifact_prefix }}
+          output_path: ${{ needs.init.outputs.actionlint_output_path }}
 
       - name: 'Write actionlint Report'
         if: always()

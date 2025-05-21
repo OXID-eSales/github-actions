@@ -432,6 +432,10 @@ actionlint:
     self-hosted-runner:
       labels:
         - arc-runner-set
+  output:
+    artifact_prefix: 'actionlint'
+    path: |
+      .actionlint.yaml
 
 # This is the final cleanup at the end
 finish:
