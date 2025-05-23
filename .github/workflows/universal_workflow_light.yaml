@@ -169,13 +169,6 @@ jobs:
             ${{ inputs.plan_folder }}/*
           key: '${{ steps.ltp.outputs.init_cache_name }}'
 
-      - name: Install missing python3-yaml on private runners
-        if: ${{ inputs.runs_on != '"ubuntu-latest"'}}
-        shell: bash
-        run: |
-          sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update
-          sudo apt-get -qq install python3-yaml
-
       - name: Obfuscate _custom yaml
         if: always()
         shell: python
@@ -200,6 +193,14 @@ jobs:
               with open('${{ inputs.plan_folder }}/_custom.yml', 'w') as file:
                   yaml.dump(data, file)
 
+      - name: 'Generate custom config'
+        id: generate_custom_config
+        run: |
+          cat >'${{ inputs.plan_folder }}/actionlint.yaml' <<'EOF'
+          # Generated from init outputs actionlint_custom_config
+          {{ .Data.actionlint.custom_config }}
+          EOF
+
       - name: 'Create first testplan archive'
         if: always()
         id: begin_report
@@ -216,6 +217,7 @@ jobs:
             generated_output.txt
             generated_env.txt
             load_testplan_init.log
+            ${{ inputs.plan_folder}}/actionlint.yaml
           debug: ${{ inputs.debug }}
 
       - name: 'Write Report'
@@ -263,6 +265,9 @@ jobs:
       yamllint_rules: ${{ steps.ltp.outputs.yamllint_rules }}
       # actionlint variables
       actionlint_skip: ${{ steps.ltp.outputs.actionlint_skip }}
+      actionlint_custom_config: ${{ steps.ltp.outputs.actionlint_custom_config }}
+      actionlint_output_artifact_prefix: ${{ steps.ltp.outputs.actionlint_output_artifact_prefix }}
+      actionlint_output_path: ${{ steps.ltp.outputs.actionlint_output_path }}
       # finish variables
       finish_matrix_mysql: ${{ steps.ltp.outputs.finish_matrix_mysql }}
       finish_matrix_php: ${{ steps.ltp.outputs.finish_matrix_php }}
@@ -649,6 +654,7 @@ jobs:
             files.txt
             generated_testplan.yaml
             load_testplan_install.log
+            ${{ inputs.plan_folder}}/actionlint.yaml
             ${{ env.ARTIFACT_PATHS }}
 
       - name: Run custom scripts
@@ -1266,35 +1272,12 @@ jobs:
     if: ${{ always() && needs.init.outputs.actionlint_skip != 'true' }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
-      - name: Install npm on private runner
-        if: ${{ inputs.runs_on != '"ubuntu-latest"'}}
-        run: |
-          NPM=$(type -p 'npm'||true)
-          PIPX=$(type -p 'pipx'||true)
-          if [ -z "${NPM}" ] || [ -z "${PIPX}" ]; then
-            echo -e "\033[0;35m###  Installing npm, shellcheck, pipx ###\033[0m"
-            sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update
-            sudo apt-get -qq install npm shellcheck pipx python3-venv
-          fi
-
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@v4
-
-      - name: Run actionlint
-        id: actionlint
-        uses: raven-actions/actionlint@v2
-
-      - name: actionlint Summary
-        if: always()
-        run: |
-          echo "Used actionlint version ${{ steps.actionlint.outputs.version-semver }}"
-          echo "Used actionlint release ${{ steps.actionlint.outputs.version-tag }}"
-          echo "actionlint ended with ${{ steps.actionlint.outputs.exit-code }} exit code"
-          echo "actionlint ended because '${{ steps.actionlint.outputs.exit-message }}'"
-          echo "actionlint found ${{ steps.actionlint.outputs.total-errors }} errors"
-          echo "actionlint checked ${{ steps.actionlint.outputs.total-files }} files"
-          echo "actionlint cache used: ${{ steps.actionlint.outputs.cache-hit }}"
+      - name: 'Run actionlint'
+        uses: 'OXID-eSales/github-actions/actionlint@v4'
+        with:
+          custom_config: ${{ needs.init.outputs.actionlint_custom_config }}
+          output_artifact_prefix: ${{ needs.init.outputs.actionlint_output_artifact_prefix }}
+          output_path: ${{ needs.init.outputs.actionlint_output_path }}
 
       - name: 'Write actionlint Report'
         if: always()

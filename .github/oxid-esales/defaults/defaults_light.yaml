@@ -427,6 +427,15 @@ yamllint:
 actionlint:
   # Skip this part of the test run
   skip: false
+  # Add custom configuration
+  custom_config: |
+    self-hosted-runner:
+      labels:
+        - arc-runner-set
+  output:
+    artifact_prefix: 'actionlint'
+    path: |
+      .actionlint.yaml
 
 # This is the final cleanup at the end
 finish:

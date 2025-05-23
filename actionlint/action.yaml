@@ -1,0 +1,85 @@
+name: 'actionlint'
+description: 'Fetches a shop from cache and starts it'
+inputs:
+  config_file:
+    type: string
+    description: 'Name of the config file'
+    required: false
+    default: '.actionlint.yaml'
+  custom_config:
+    type: string
+    description: 'Custom configuration to the linter'
+    required: true
+  output_artifact_prefix:
+    type: string
+    required: false
+    description: 'Github run artifact for the output'
+    default: 'actionlint'
+  output_path:
+    type: string
+    required: false
+    description: 'List of the additional files to upload to the artifacts'
+    default: ''
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout
+      id: checkout
+      uses: actions/checkout@v4
+
+    - name: 'Generate custom config'
+      id: generate_custom_config
+      shell: bash
+      run: |
+        if [ ! -f ${{ inputs.config_file }} ]; then
+          echo "Creating ${{ inputs.config_file }}..."
+          cat <<EOF > "${{ inputs.config_file }}"
+        ${{ inputs.custom_config }}
+        EOF
+        else
+          echo "${{ inputs.config_file }} already exists"
+        fi
+
+    - name: Debug workspace contents
+      shell: bash
+      run: |
+        echo "Current workspace:"
+        pwd
+        find . -type f
+
+    - name: Run actionlint
+      id: actionlint
+      uses: raven-actions/actionlint@v2
+      with:
+        flags: "-config-file ${{ inputs.config_file }}"
+
+    - name: actionlint Summary
+      if: always()
+      shell: bash
+      run: |
+        echo "Used actionlint version ${{ steps.actionlint.outputs.version-semver }}"
+        echo "Used actionlint release ${{ steps.actionlint.outputs.version-tag }}"
+        echo "actionlint ended with ${{ steps.actionlint.outputs.exit-code }} exit code"
+        echo "actionlint ended because '${{ steps.actionlint.outputs.exit-message }}'"
+        echo "actionlint found ${{ steps.actionlint.outputs.total-errors }} errors"
+        echo "actionlint checked ${{ steps.actionlint.outputs.total-files }} files"
+        echo "actionlint cache used: ${{ steps.actionlint.outputs.cache-hit }}"
+        echo "Custom config value: ${{ inputs.custom_config }}"
+
+    - name: Debug workspace contents
+      shell: bash
+      run: |
+        echo "Current workspace:"
+        pwd
+        find . -type f
+
+    - name: Upload artifact
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.output_artifact_prefix }}
+        include-hidden-files: true
+        path: |
+          ${{ inputs.config_file }}
+          ${{ inputs.output_path }}
