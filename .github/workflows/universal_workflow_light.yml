@@ -1273,7 +1273,7 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Run actionlint'
-        uses: 'OXID-eSales/github-actions/actionlint@v0'
+        uses: 'OXID-eSales/github-actions/actionlint@v4'
         with:
           custom_config: ${{ needs.init.outputs.actionlint_custom_config }}
           output_artifact_prefix: ${{ needs.init.outputs.actionlint_output_artifact_prefix }}
