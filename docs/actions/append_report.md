@@ -1,7 +1,7 @@
 # append_report
 
 This action adds report and job_status snippets to the testplan artifact.
-These are used in the finish action to create the slack notification and the
+These are used in the finish action to create the Slack notification and the
 report on the action summary page.
 
 ## Inputs
@@ -21,10 +21,10 @@ The phase, for which we generate the report. Currently, there are three phases:
 - report
 
 **job:** *not required*, *default:* -  
-The name of the job, e.g, "phpunit", "codeception" etc.
+The name of the job, e.g. "phpunit", "codeception" etc.
 
 **title:** *not required*, *default:* -  
-The title of the current matrix run. This is usually defined in the job specific testplan, e.g, "unit_tests", "integration_tests" or "shop_setup".
+The title of the current matrix run. This is usually defined in the job-specific testplan, e.g. "unit_tests", "integration_tests" or "shop_setup".
 
 **php:** *not required*, *default:* -  
 The PHP version for this matrix combination.

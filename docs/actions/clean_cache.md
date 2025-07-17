@@ -1,6 +1,6 @@
 # clean_cache
 
-This action installs githubcli,s3cmd and cleans the cached github objects,s3 cache. 
+This action installs githubcli, s3cmd and cleans the cached github objects,s3 cache. 
 
 ## Inputs
 
