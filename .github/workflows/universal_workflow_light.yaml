@@ -1,4 +1,4 @@
-name: universal_workflow_light
+name: 'universal_workflow_light'
 # This workflow loads a base testplan, creates cached shop instances and runs
 # phpunit, codeception and runtest based tests as well as code scans
 # and sonarcloud reports
@@ -72,7 +72,7 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Checkout testplan defaults'
-        uses: actions/checkout@v4
+        uses: 'actions/checkout@v4'
         with:
           repository: 'OXID-eSales/github-actions'
           ref: '${{ inputs.defaults }}'
@@ -80,7 +80,7 @@ jobs:
           sparse-checkout: '${{ inputs.default_plan_folder }}'
 
       - name: 'Checkout testplans'
-        uses: actions/checkout@v4
+        uses: 'actions/checkout@v4'
         with:
           sparse-checkout: |
             ${{ inputs.plan_folder}}
@@ -138,9 +138,9 @@ jobs:
             sed -e 's#\-\-*#-#' -e 's#\_\_*#_#g'| \
             tee -a "${GITHUB_OUTPUT}"
 
-      - name: Cache testplan on S3
+      - name: 'Cache testplan on S3'
         if: ${{ inputs.runs_on != '"ubuntu-latest"'}}
-        uses: tespkg/actions-cache/save@v1
+        uses: 'tespkg/actions-cache/save@v1'
         with:
           path: |
             ${{ inputs.plan_folder }}/*
@@ -150,15 +150,15 @@ jobs:
           secretKey: ${{ secrets.CACHE_SECRET_KEY }}
           bucket: ${{ steps.ltp.outputs.init_cache_bucket }}
 
-      - name: Cache testplan on Github
+      - name: 'Cache testplan on Github'
         if: ${{ inputs.runs_on == '"ubuntu-latest"'}}
-        uses: actions/cache/save@v4
+        uses: 'actions/cache/save@v4'
         with:
           path: |
             ${{ inputs.plan_folder }}/*
           key: '${{ steps.ltp.outputs.init_cache_name }}'
 
-      - name: Obfuscate _custom yaml
+      - name: 'Obfuscate _custom yaml'
         if: always()
         shell: python
         run: |
@@ -185,7 +185,7 @@ jobs:
       - name: 'Create first testplan archive'
         if: always()
         id: begin_report
-        uses: OXID-eSales/github-actions/begin_report@v0
+        uses: 'OXID-eSales/github-actions/begin_report@v0'
         with:
           title: ${{ steps.ltp.outputs.finish_slack_title }}
           prefix: '${{ steps.post_ltp.outputs.title }}'
@@ -266,9 +266,9 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
 
     steps:
-      - name: Load cached testplan
+      - name: 'Load cached testplan'
         id: itn
-        uses: OXID-eSales/github-actions/load_cached_testplan@v0
+        uses: 'OXID-eSales/github-actions/load_cached_testplan@v0'
         with:
           runs_on: ${{ inputs.runs_on }}
           php: ${{ matrix.php }}
@@ -328,7 +328,7 @@ jobs:
           copy_script_targets: ${{ steps.iltp.outputs.install_copy_script_targets }}
           debug: ${{ needs.init.outputs.debug }}
 
-      - name: Run composer for each module
+      - name: 'Run composer for each module'
         shell: bash
         run: |
           git clone --depth=1 --quiet --branch v1 https://github.com/joernott/load_testplan.git load_testplan
@@ -396,7 +396,7 @@ jobs:
           done
           rm -rf ./load_testplan
 
-      - name: Generate debugging script for running composer for each module
+      - name: 'Generate debugging script for running composer for each module'
         if: ${{ inputs.debug == true }}
         shell: bash
         run: |
@@ -486,9 +486,9 @@ jobs:
         with:
           debug: ${{ needs.init.outputs.debug }}
 
-      - name: Cache preparedShop on s3
+      - name: 'Cache preparedShop on s3'
         if: ${{ steps.iltp.outputs.install_cache_prepared_shop == 'true' && needs.init.outputs.use_private_cache == 'true' }}
-        uses: tespkg/actions-cache/save@v1
+        uses: 'tespkg/actions-cache/save@v1'
         with:
           path: |
             ./*
@@ -498,15 +498,15 @@ jobs:
           secretKey: ${{ secrets.CACHE_SECRET_KEY }}
           bucket: ${{ steps.iltp.outputs.install_cache_bucket }}
 
-      - name: Cache preparedShop on github
+      - name: 'Cache preparedShop on github'
         if: ${{ steps.iltp.outputs.install_cache_prepared_shop == 'true' && needs.init.outputs.use_private_cache != 'true'}}
-        uses: actions/cache/save@v4
+        uses: 'actions/cache/save@v4'
         with:
           path: |
             ./*
           key: '${{ steps.iltp.outputs.install_cache_prepared_shop_prefix }}_${{steps.itn.outputs.matrix_suffix}}'
 
-      - name: Debug cache preparedShop
+      - name: 'Debug cache preparedShop'
         if: ${{ steps.iltp.outputs.install_cache_prepared_shop == 'true' }}
         shell: bash
         run: |
@@ -569,7 +569,7 @@ jobs:
             cat data/php/logs/error_log.txt
           fi
 
-      - name: Activate modules
+      - name: 'Activate modules'
         if: ${{ steps.iltp.outputs.install_skip_shop_installation == 'false' }}
         shell: bash
         run: |
@@ -594,7 +594,7 @@ jobs:
               ${OE_CONSOLE} oe:module:activate "${MODULE}"
           done
 
-      - name: Write files list
+      - name: 'Write files list'
         if: always()
         shell: bash
         run: |
@@ -607,9 +607,9 @@ jobs:
             echo EOF
           } >> "${GITHUB_ENV}"
 
-      - name: Upload configuration artifacts
+      - name: 'Upload configuration artifacts'
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: 'actions/upload-artifact@v4'
         with:
           name: '${{ steps.iltp.outputs.install_output_artifact_prefix }}-${{steps.itn.outputs.matrix_suffix}}'
           path: |-
@@ -619,7 +619,7 @@ jobs:
             load_testplan_install.log
             ${{ env.ARTIFACT_PATHS }}
 
-      - name: Run custom scripts
+      - name: 'Run custom scripts'
         # yamllint disable-line rule:line-length
         if: ${{ steps.iltp.outputs.install_custom_script != '' || steps.iltp.outputs.install_custom_script_container != '' }}
         uses: 'OXID-eSales/github-actions/run_custom_scripts@v0'
@@ -637,7 +637,7 @@ jobs:
         with:
           debug: ${{ needs.init.outputs.debug }}
 
-      - name: Debug cache current installation
+      - name: 'Debug cache current installation'
         if: ${{ inputs.debug }}
         shell: bash
         run: |
@@ -647,9 +647,9 @@ jobs:
           CACHE_NAME="${{ steps.iltp.outputs.install_cache_prefix}}_${{steps.iltp.outputs.global_title}}-${MATRIX}"
           echo "write_cache '${CACHE_NAME}' ./* .env .env.dist .gitignore .git" >>debug/debug.sh
 
-      - name: Cache current installation on s3
+      - name: 'Cache current installation on s3'
         if: ${{ needs.init.outputs.use_private_cache == 'true' }}
-        uses: tespkg/actions-cache/save@v1
+        uses: 'tespkg/actions-cache/save@v1'
         with:
           path: |
             ./*
@@ -659,9 +659,9 @@ jobs:
           secretKey: ${{ secrets.CACHE_SECRET_KEY }}
           bucket: ${{ steps.iltp.outputs.install_cache_bucket }}
 
-      - name: Cache current installation on github
+      - name: 'Cache current installation on github'
         if: ${{ needs.init.outputs.use_private_cache != 'true' }}
-        uses: actions/cache/save@v4
+        uses: 'actions/cache/save@v4'
         with:
           path: |
             ./*
@@ -701,7 +701,7 @@ jobs:
       MATRIX_PHP: ${{ matrix.php }}
       MATRIX_MYSQL: ${{ matrix.mysql }}
     steps:
-      - name: Load cached testplan
+      - name: 'Load cached testplan'
         id: rstn
         uses: 'OXID-eSales/github-actions/load_cached_testplan@v0'
         with:
@@ -732,7 +732,7 @@ jobs:
           logfile: load_testplan_runscript.log
           token: ${{ secrets.enterprise_github_token || github.token }}
 
-      - name: Convert variables
+      - name: 'Convert variables'
         id: rt
         shell: bash
         run: |
@@ -822,7 +822,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
           github_token: ${{ secrets.enterprise_github_token || github.token }}
 
-      - name: Run composer if there is no transform
+      - name: 'Run composer if there is no transform'
         # Only run this if there is no transformation and composer_early is set to 'false'
         if: ${{ steps.rt.outputs.runscript_composer_transform == '' && steps.rt.outputs.runscript_composer_early == 'false' }}
         run: |
@@ -837,7 +837,7 @@ jobs:
             ${{ steps.rt.outputs.runscript_container_name }} \
             composer update --no-interaction -d "/var/www/${{ steps.rt.outputs.runscript_path }}"
 
-      - name: Run custom scripts
+      - name: 'Run custom scripts'
         if: ${{ steps.rt.outputs.runscript_custom_script != '' || steps.rt.outputs.runscript_custom_script_container != '' }}
         uses: 'OXID-eSales/github-actions/run_custom_scripts@v0'
         with:
@@ -865,9 +865,9 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
           github_token: ${{ secrets.enterprise_github_token || github.token }}
 
-      - name: Upload coverage report
+      - name: 'Upload coverage report'
         if: ${{ always() && steps.rt.outputs.runscript_coverage_prefix != '' }}
-        uses: actions/upload-artifact@v4
+        uses: 'actions/upload-artifact@v4'
         with:
           name: ${{ steps.rt.outputs.runscript_coverage_prefix}}-${{steps.rt.outputs.runscript_suffix }}
           path: source/${{ steps.rt.outputs.runscript_path }}/tests/Reports/*
@@ -908,7 +908,7 @@ jobs:
       MATRIX_PHP: ${{ matrix.php }}
       MATRIX_MYSQL: ${{ matrix.mysql }}
     steps:
-      - name: Load cached testplan
+      - name: 'Load cached testplan'
         id: rstn
         uses: 'OXID-eSales/github-actions/load_cached_testplan@v0'
         with:
@@ -939,7 +939,7 @@ jobs:
           logfile: load_testplan_runslim.log
           token: ${{ secrets.enterprise_github_token }}
 
-      - name: Convert variables
+      - name: 'Convert variables'
         id: rt
         shell: bash
         run: |
@@ -1022,7 +1022,7 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
           github_token: ${{ secrets.enterprise_github_token || github.token }}
 
-      - name: Run composer if there is no transform
+      - name: 'Run composer if there is no transform'
         if: ${{ steps.rt.outputs.runslim_composer_transform == '' && steps.rt.outputs.runslim_composer_early == 'false' }}
         run: |
           # run composer
@@ -1036,7 +1036,7 @@ jobs:
             ${{ steps.rt.outputs.runslim_container_name }} \
             composer update --no-interaction -d "/var/www/${{ steps.rt.outputs.runslim_path }}"
 
-      - name: Run custom scripts
+      - name: 'Run custom scripts'
         if: ${{ steps.rt.outputs.runslim_custom_script != '' || steps.rt.outputs.runslim_custom_script_container != '' }}
         uses: 'OXID-eSales/github-actions/run_custom_scripts@v0'
         with:
@@ -1062,9 +1062,9 @@ jobs:
           debug: ${{ needs.init.outputs.debug }}
           github_token: ${{ secrets.enterprise_github_token || github.token }}
 
-      - name: Upload coverage report
+      - name: 'Upload coverage report'
         if: ${{ always() && steps.rt.outputs.runslim_coverage_prefix != '' }}
-        uses: actions/upload-artifact@v4
+        uses: 'actions/upload-artifact@v4'
         with:
           name: ${{ steps.rt.outputs.runslim_coverage_prefix}}-${{steps.rt.outputs.runslim_suffix }}
           path: source/${{ steps.rt.outputs.runslim_path }}/tests/Reports/*
@@ -1108,12 +1108,12 @@ jobs:
       MATRIX_TESTPLAN: ${{ matrix.testplan }}
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     steps:
-      - name: Warn if sonarcloud secret is missing
+      - name: 'Warn if sonarcloud secret is missing'
         if: ${{ env.SONAR_TOKEN == '' }}
         run: |
           echo "::warning title=Missing secrets::Please set the repository secrets SONAR_TOKEN to run sonarcloud scans"
 
-      - name: Load cached testplan
+      - name: 'Load cached testplan'
         id: sonarcloud_testplan_name
         if: ${{ env.SONAR_TOKEN != '' }}
         uses: 'OXID-eSales/github-actions/load_cached_testplan@v0'
@@ -1145,20 +1145,20 @@ jobs:
           logfile: load_testplan_sonarcloud.log
           token: ${{ secrets.enterprise_github_token }}
 
-      - name: Checkout shop
+      - name: 'Checkout shop'
         if: ${{ env.SONAR_TOKEN != '' }}
-        uses: actions/checkout@v4
+        uses: 'actions/checkout@v4'
         with:
           fetch-depth: 0
           repository: '${{ steps.sonarcloud_testplan.outputs.sonarcloud_git_repository }}'
           ref: '${{ steps.sonarcloud_testplan.outputs.sonarcloud_git_ref }}'
           token: ${{ secrets.enterprise_github_token || github.token }}
 
-      - name: Login to Docker Hub
+      - name: 'Login to Docker Hub'
         env:
           DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
         if: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_docker_login == 'true' && env.DOCKER_HUB_USER != '' }}
-        uses: docker/login-action@v3
+        uses: 'docker/login-action@v3'
         with:
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
@@ -1201,13 +1201,13 @@ jobs:
     if: ${{ always() && needs.init.outputs.yamllint_skip != 'true' }}
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
-      - name: Checkout
+      - name: 'Checkout'
         id: checkout
-        uses: actions/checkout@v4
+        uses: 'actions/checkout@v4'
 
-      - name: Lint yaml files
+      - name: 'Lint yaml files'
         id: yamllint
-        uses: OXID-eSales/github-actions/yamllint@v0
+        uses: 'OXID-eSales/github-actions/yamllint@v0'
         with:
           file_or_dir: ${{ needs.init.outputs.yamllint_file_or_dir }}
           config_data: ${{ needs.init.outputs.yamllint_rules }}
@@ -1280,7 +1280,7 @@ jobs:
           debug: ${{ inputs.debug }}
 
       - name: 'Checkout the repo for cleanup'
-        uses: actions/checkout@v4
+        uses: 'actions/checkout@v4'
         with:
           path: repo
 

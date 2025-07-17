@@ -4,6 +4,7 @@ install: &install
     mysql: '["mariadb-11"]'
 
 runscript: *install
+
 runslim: *install
 
 sonarcloud:

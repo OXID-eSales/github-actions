@@ -1,5 +1,7 @@
 name: 'load_cached_testplan'
+
 description: 'Fetches the testplan and sets environment variables for it'
+
 inputs:
   runs_on:
     type: string
@@ -60,6 +62,7 @@ inputs:
     description: 'Appended to debugging scripts'
     default: ''
     required: false
+
 outputs:
   # workflow variables
   testplan:
@@ -72,10 +75,10 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Load cached testplan from S3
+    - name: 'Load cached testplan from S3'
       if: ${{ inputs.runs_on != '"ubuntu-latest"'}}
       id: load_testplan_cache_s3
-      uses: tespkg/actions-cache/restore@v1
+      uses: 'tespkg/actions-cache/restore@v1'
       with:
         path: |
           ${{ inputs.plan_folder}}/*
@@ -85,15 +88,17 @@ runs:
         accessKey: ${{ inputs.cache_access_key }}
         secretKey: ${{ inputs.cache_secret_key }}
         bucket: ${{ inputs.cache_bucket }}
-    - name: Load cached testplan from Github
+
+    - name: 'Load cached testplan from Github'
       if: ${{ inputs.runs_on == '"ubuntu-latest"'}}
       id: load_testplan_cache_gh
-      uses: actions/cache/restore@v4
+      uses: 'actions/cache/restore@v4'
       with:
         path: |
           ${{ inputs.plan_folder}}/*
         key: ${{ inputs.cache_name }}
-    - name: Confirm successful restore
+
+    - name: 'Confirm successful restore'
       shell: bash
       run: |
         # load_cached_testplan: Confirm successful restore

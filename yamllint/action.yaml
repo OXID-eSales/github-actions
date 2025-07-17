@@ -1,5 +1,7 @@
 name: 'YAML Lint'
+
 description: 'Validate YAML syntax'
+
 author: 'ibiqlik'
 
 inputs:

@@ -1,4 +1,4 @@
-name: push-validate_workflows
+name: 'push-validate_workflows'
 # Validates workflow files on push
 # yamllint disable-line rule:truthy
 on:
@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: 'Write Report Header'
         if: always()
-        uses: OXID-eSales/github-actions/begin_report@v4
+        uses: 'OXID-eSales/github-actions/begin_report@v4'
         with:
           prefix: 'validate'
           title: 'Workflow validation on ${{ github.repository }} by ${{ github.actor }}'
@@ -23,7 +23,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: 'OXID-eSales/github-actions/append_report@v4'
         with:
           prefix: 'validate'
           header: true
@@ -34,13 +34,13 @@ jobs:
   yamllint:
     runs-on: 'ubuntu-latest'
     steps:
-      - name: Checkout
+      - name: 'Checkout'
         id: checkout
-        uses: actions/checkout@v4
+        uses: 'actions/checkout@v4'
 
-      - name: Lint yaml files
+      - name: 'Lint yaml files'
         id: yamllint
-        uses: oxid-esales/github-actions/yamllint@v4
+        uses: 'OXID-eSales/github-actions/yamllint@v4'
         with:
           format: 'github'
           config_data: |
@@ -58,7 +58,7 @@ jobs:
 
       - name: 'Write yamllint Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: 'OXID-eSales/github-actions/append_report@v4'
         with:
           prefix: 'validate'
           priority: '010'
@@ -74,15 +74,15 @@ jobs:
   actionlint:
     runs-on: 'ubuntu-latest'
     steps:
-      - name: Checkout
+      - name: 'Checkout'
         id: checkout
-        uses: actions/checkout@v4
+        uses: 'actions/checkout@v4'
 
-      - name: Run actionlint
+      - name: 'Run actionlint'
         id: actionlint
-        uses: raven-actions/actionlint@v2
+        uses: 'raven-actions/actionlint@v2'
 
-      - name: actionlint Summary
+      - name: 'actionlint Summary'
         if: always()
         run: |
           echo "Used actionlint version ${{ steps.actionlint.outputs.version-semver }}"
@@ -95,7 +95,7 @@ jobs:
 
       - name: 'Write actionlint Report'
         if: always()
-        uses: OXID-eSales/github-actions/append_report@v4
+        uses: 'OXID-eSales/github-actions/append_report@v4'
         with:
           prefix: 'validate'
           priority: '020'

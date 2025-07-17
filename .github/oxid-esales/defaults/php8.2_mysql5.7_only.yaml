@@ -1,8 +1,10 @@
 install: &install
   matrix:
     php: '["8.2"]'
-    mysql: '["5.7"]'
+    mysql: '["mysql-5.7"]'
 
 runscript: *install
+
 runslim: *install
+
 sonarcloud: *install

@@ -1,5 +1,7 @@
 name: 'clean_cache'
+
 description: 'clean the cache'
+
 inputs:
   cache_endpoint:
     type: string
@@ -34,7 +36,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Install gh-actions-cache and configure s3cmd
+    - name: 'Install gh-actions-cache and configure s3cmd'
       shell: bash
       run: |
         # clean_cache: Install gh-actions-cache and configure s3cmd
@@ -53,7 +55,7 @@ runs:
           chmod 0600 /home/runner/.s3cfg
         fi
 
-    - name: Cleanup cached github objects
+    - name: 'Cleanup cached github objects'
       shell: bash
       run: |
         # clean_cache: Cleanup cached github objects
@@ -72,7 +74,7 @@ runs:
           done
         fi
 
-    - name: Clear s3 cache
+    - name: 'Clear s3 cache'
       if: ${{ inputs.runs_on != '"ubuntu-latest"' }}
       shell: bash
       run: |

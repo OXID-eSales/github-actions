@@ -4,5 +4,7 @@ install: &install
     mysql: '["mysql-8"]'
 
 runscript: *install
+
 runslim: *install
+
 sonarcloud: *install

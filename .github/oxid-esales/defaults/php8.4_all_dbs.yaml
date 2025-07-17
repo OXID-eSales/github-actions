@@ -1,12 +1,13 @@
 install: &install
   matrix:
     php: '["8.4"]'
-    mysql: '[ "mysql-5.7", "mysql-8.0", "mysql-8", "mysql-9", "mariadb-10", "mariadb-11" ]'
+    mysql: '["mysql-5.7", "mysql-8.0.36", "mysql-8.4", "mysql-8", "mysql-9", "mariadb-10", "mariadb-11"]'
 
 runscript: *install
+
 runslim: *install
 
 sonarcloud:
   matrix:
     php: '["8.4"]'
-    mysql: '[ "mysql-8.0" ]'
+    mysql: '["mysql-8.0.36"]'

@@ -1,5 +1,7 @@
 name: 'actionlint'
+
 description: 'Fetches a shop from cache and starts it'
+
 inputs:
   config_file:
     type: string
@@ -24,9 +26,9 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Checkout
+    - name: 'Checkout'
       id: checkout
-      uses: actions/checkout@v4
+      uses: 'actions/checkout@v4'
 
     - name: 'Generate custom config'
       id: generate_custom_config
@@ -41,20 +43,20 @@ runs:
           echo "${{ inputs.config_file }} already exists"
         fi
 
-    - name: Debug workspace contents
+    - name: 'Debug workspace contents'
       shell: bash
       run: |
         echo "Current workspace:"
         pwd
         find . -type f
 
-    - name: Run actionlint
+    - name: 'Run actionlint'
       id: actionlint
-      uses: raven-actions/actionlint@v2
+      uses: 'raven-actions/actionlint@v2'
       with:
         flags: "-config-file ${{ inputs.config_file }}"
 
-    - name: actionlint Summary
+    - name: 'actionlint Summary'
       if: always()
       shell: bash
       run: |
@@ -67,18 +69,18 @@ runs:
         echo "actionlint cache used: ${{ steps.actionlint.outputs.cache-hit }}"
         echo "Custom config value: ${{ inputs.custom_config }}"
 
-    - name: Debug workspace contents
+    - name: 'Debug workspace contents'
       shell: bash
       run: |
         echo "Current workspace:"
         pwd
         find . -type f
 
-    - name: Upload artifact
+    - name: 'Upload artifact'
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: 'actions/upload-artifact@v4'
       with:
-        name: ${{ inputs.output_artifact_prefix }}
+        name: '${{ inputs.output_artifact_prefix }}'
         include-hidden-files: true
         path: |
           ${{ inputs.config_file }}

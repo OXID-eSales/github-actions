@@ -1,11 +1,11 @@
 # Purpose
 # =======
 # This file defines the default settings for the test workflow. It contains all
-# variables. The variables can then be overridden in more specific yaml files
+# variables. The variables can then be overridden in more specific YAML files
 # to run different test scenarios.
 #
 # Variables used in multiple steps will be defined in the "workflow" and "global"
-# sections and we use anchors to reference them in the specific sections. We use
+# sections, and we use anchors to reference them in the specific sections. We use
 # yamllint to validate the files, make sure to add linter exceptions, when you
 # break the rules.
 #
@@ -15,36 +15,36 @@
 # Sections
 # ========
 # The yaml hierarchy will be flattened to simple key=value settings. The
-# various levels of the yaml file here will become prefixes to the variable
+# various levels of the YAML file here will become prefixes to the variable
 # names. For each step of the testplan, we use a section to have the
 # variables for that step contain the same prefix.
 #
 # The "workflow" section contains global definitions of matrix variables and
-# settings used in the "strategy" parts of a job. They have anchors and every
-# specific job has its own variables which reference these anchors if no
-# job specific exceptions are needed.
+# settings used in the "strategy" parts of a job. They have anchors, and every
+# specific job has its own variables which reference these anchors if no job-specific
+# exceptions are needed.
 #
 # The "global" section is much the same. The variables here are defaults with
 # anchors which will be used inside the steps of the various other sections.
 #
 
-# Global settings for a jobs strategy setting
+# Global settings for jobs strategy setting
 workflow:
 
   # The variables "php" and "mysql" in the "matrix" subsection are used to run
   # a matrix of all combinations of these values for testing.
   matrix: &matrix
-    # This string contains a json array of php versions to test against.
+    # This string contains a JSON array of php versions to test against.
     php: '["8.2","8.3"]'
 
-    # This string contains a json array of mysql versions to test
-    mysql: '["5.7","8.0.36"]'
+    # This string contains a JSON array of mysql versions to test
+    mysql: '["mysql-5.7","mysql-8.0.36"]'
 
-  # This matrix definition is used, when we only want one analysis done
+  # This matrix definition is used when we only want one analysis done.
   # It covers the recommended combination of PHP and MySQL
   matrix_slim: &matrix_slim
     php: '["8.2"]'
-    mysql: '["8.0.36"]'
+    mysql: '["mysql-8.0.36"]'
     testplan: 'skip'
     script: 'skip'
 
@@ -55,7 +55,7 @@ workflow:
 # Global settings used in the actual steps in the jobs
 global:
   # The title of the workflow is used to distinguish multiple runs of the workflow triggered
-  # from one single trigger, e.g. a scheduled run
+  # from one single trigger, e.g., a scheduled run
   title: '{{ .Github.EventName }}-{{ .Github.RefName }}'
 
   # This action can be used on the community edition (ce) and enterprise
@@ -105,7 +105,7 @@ global:
   # These defaults are used when running the composer_configure and
   # composer_require actions
   composer: &composer
-    # This is just a definition we can apply in later configs
+    # This is just a definition we can apply in later configs.
     # It will be overwritten by the 7.0.x and 7.1.x templates
     # and can be used by referencing .Data.global.composer.dev_ref
     dev_ref: dev-b-8.0.x
@@ -119,7 +119,7 @@ global:
     # Do not use this with oxideshop-ce
     early: &early false
 
-    # Use these settings below to merge a json configuration with an existing
+    # Use these settings below to merge a JSON configuration with an existing
     # composer.json
 
     # Path to the composer.json folder on the runner (source/composer.json,
@@ -129,17 +129,17 @@ global:
     # Should a backup of the original composer.json be created?
     backup: true
 
-    # Merge this json data with composer.json. If this is empty,
+    # Merge this JSON data with composer.json. If this is empty,
     # no transformation will be applied
     transform: ''
 
-    # Should we run composer update
+    # Should we run composer update?
     update: true
 
     # Options for composer update
     update_options: '--no-interaction'
 
-  # This grep pattern is applied to the generated phpunit, codeception and runtest log file. If we have
+  # This grep pattern is applied to the generated phpunit, Codeception, and runtest log file. If we have
   # a hit matching the pattern below, the step will fail.
   failure_pattern: |
     fail
@@ -182,7 +182,7 @@ install:
     # Branch to check out for the SDK
     sdk_ref: 'master'
 
-    # Name of the repository containing the root composer.json
+    # The name of the repository containing the root composer.json
     # This can be used for private repositories as you can't use composer.root_url
     repository: '{{ .Github.Repository }}'
 
@@ -195,7 +195,7 @@ install:
     # Branch to check out for the enterprise repos
     enterprise_ref: 'b-8.0.x'
 
-    # Branch to check out for modules/plugins etc
+    # Branch to check out for modules/plugins etc.
     default_ref: 'b-8.0.x'
 
     # This definition can be used instead of {{ .Github.RefName }}. In case
@@ -208,7 +208,7 @@ install:
 
   container: *container
 
-  # Space separated list of extra services to add
+  # Space separated the list of extra services to add
   add_services: 'selenium-chrome-126'
 
   cache:
@@ -232,16 +232,16 @@ install:
     # This is the default transformation
     transform: |
       {
-          "preferred-install": {
-            "oxid-esales/*": "source",
-            "oxid-professional-services/*": "source",
-            "ddoe/*": "source"
-          },
-          "require": {
-              "oxid-esales/twig-component": "dev-b-8.0.x",
-              "oxid-esales/twig-admin-theme": "dev-b-8.0.x",
-              "oxid-esales/apex-theme": "dev-b-8.0.x"
-          }
+        "preferred-install": {
+          "oxid-esales/*": "source",
+          "oxid-professional-services/*": "source",
+          "ddoe/*": "source"
+        },
+        "require": {
+          "oxid-esales/twig-component": "dev-b-8.0.x",
+          "oxid-esales/twig-admin-theme": "dev-b-8.0.x",
+          "oxid-esales/apex-theme": "dev-b-8.0.x"
+        }
       }
 
     # Should we run composer install in the "install" job (true) or only when running tests.
@@ -265,7 +265,7 @@ install:
     # Set iDebug in source/source/config.inc.php
     idebug: false
 
-  # Run custom script outside the container
+  # Run a custom script outside the container
   custom_script: ''
 
   # Run custom script inside the container like 'bin/oe-console oe:setup:demodata'
@@ -324,7 +324,7 @@ runscript: &runscript
     update: true
     update_options: '--no-interaction'
 
-  # Run custom script outside the container
+  # Run a custom script outside the container
   custom_script: ''
 
   # Run custom script inside the container like 'bin/oe-console oe:b2b:installdemodata --shop-id=1'
@@ -356,7 +356,7 @@ sonarcloud:
   # We only run sonarcloud for one of the matrix combinations of PHP/MySQL
   matrix:
     php: '["8.1"]'
-    mysql: '["5.7"]'
+    mysql: '["mysql-5.7"]'
     testplan: '["-"]'
 
   # There is only one matrix combination
@@ -398,7 +398,7 @@ sonarcloud:
     -Dsonar.sources=source \
     -Dsonar.tests=tests
 
-# yamllint validates the GitHub actions/testplan yaml files
+# yamllint validates the GitHub actions/testplan YAML files
 yamllint:
   # Skip this part of the test run
   skip: false

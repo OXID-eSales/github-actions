@@ -4,26 +4,25 @@ install:
   composer:
     transform: |
       {
-          "preferred-install": {
-            "oxid-esales/*": "source",
-            "oxid-professional-services/*": "source",
-            "ddoe/*": "source"
-          },
-          "require": {
-              "oxid-esales/oxideshop-ce": "{{ .Data.install.composer.dev_ref }}",
-              "oxid-esales/twig-component": "{{ .Data.install.composer.dev_ref }}",
-              "oxid-esales/twig-admin-theme": "{{ .Data.install.composer.dev_ref }}",
-              "oxid-esales/apex-theme": "{{ .Data.install.composer.dev_ref }}",
-              "{{ .Data.custom.org }}/{{ .Data.custom.name }}": "{{ .Data.install.composer.ref_name }}"
-          },
-          "repositories": {
-            "{{ .Data.custom.org }}/{{ .Data.custom.name }}": {
-              "type": "git",
-              "url": "https://github.com/{{ .Github.Repository }}.git"
-            }
+        "preferred-install": {
+          "oxid-esales/*": "source",
+          "oxid-professional-services/*": "source",
+          "ddoe/*": "source"
+        },
+        "require": {
+          "oxid-esales/oxideshop-ce": "{{ .Data.install.composer.dev_ref }}",
+          "oxid-esales/twig-component": "{{ .Data.install.composer.dev_ref }}",
+          "oxid-esales/twig-admin-theme": "{{ .Data.install.composer.dev_ref }}",
+          "oxid-esales/apex-theme": "{{ .Data.install.composer.dev_ref }}",
+          "{{ .Data.custom.org }}/{{ .Data.custom.name }}": "{{ .Data.install.composer.ref_name }}"
+        },
+        "repositories": {
+          "{{ .Data.custom.org }}/{{ .Data.custom.name }}": {
+            "type": "git",
+            "url": "https://github.com/{{ .Github.Repository }}.git"
           }
+        }
       }
-
   activate_modules: '{{ .Data.custom.ids }}'
 
 runscript: &runscript

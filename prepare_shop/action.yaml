@@ -1,5 +1,7 @@
 name: 'prepare_shop'
+
 description: 'Prepares the shop and creates a cache for it'
+
 inputs:
   container_name:
     type: string
@@ -165,7 +167,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Clone testing environment master
+    - name: 'Clone testing environment master'
       if: ${{ inputs.git_sdk_repository != '' }}
       shell: bash
       run: |
@@ -182,7 +184,7 @@ runs:
         git checkout --progress --force $(echo $BRANCH|head -1)
         ${{ inputs.debug }}
 
-    - name: Fetch the compilation composer.json
+    - name: 'Fetch the compilation composer.json'
       if: ${{ inputs.compilation_url != '' }}
       shell: bash
       run: |
@@ -194,7 +196,7 @@ runs:
           -H 'Accept: application/vnd.github.raw+json' \
           '${{ inputs.compilation_url }}'
 
-    - name: Clone ${{ inputs.git_repository }} (${{ inputs.git_ref }})
+    - name: 'Clone ${{ inputs.git_repository }} (${{ inputs.git_ref }})'
       if: ${{ inputs.compilation_url == '' && inputs.github_event_name != 'pull_request' }}
       shell: bash
       run: |
@@ -227,7 +229,7 @@ runs:
         echo -e "\033[0;35m###  Cloning ${REF} ###\033[0m"
         git clone --depth 2 "${URL}" --branch "${REF}" --single-branch source
 
-    - name: PR-Clone ${{ inputs.git_repository }} (${{ inputs.git_ref }})
+    - name: 'PR-Clone ${{ inputs.git_repository }} (${{ inputs.git_ref }})'
       if: ${{ inputs.compilation_url == '' && inputs.github_event_name == 'pull_request' }}
       shell: bash
       run: |
@@ -244,7 +246,7 @@ runs:
         git -C source fetch origin refs/pull/${{ inputs.github_event_number }}/head:pr_${{ inputs.github_event_number }}
         git -C source checkout pr_${{ inputs.github_event_number }}
 
-    - name: Prepare container configuration
+    - name: 'Prepare container configuration'
       shell: bash
       run: |
         # prepare_shop: Prepare container configuration
@@ -277,14 +279,14 @@ runs:
             -e 's#/var/www/#/var/www/source/#g;'\
             containers/httpd/project.conf
 
-    - name: Login to Docker Hub
+    - name: 'Login to Docker Hub'
       if: ${{ inputs.docker_login == 'true' && inputs.docker_user != '' }}
-      uses: docker/login-action@v3
+      uses: 'docker/login-action@v3'
       with:
         username: ${{ inputs.docker_user }}
         password: ${{ inputs.docker_token }}
 
-    - name: Warn on missing docker credentials
+    - name: 'Warn on missing docker credentials'
       if: ${{ inputs.docker_login == 'true' && inputs.docker_user == '' }}
       shell: bash
       run: |
@@ -292,7 +294,7 @@ runs:
         MSG="Please set the repository secrets DOCKER_HUB_USER and DOCKER_HUB_TOKEN to avoid running into docker.io rate limiting"
         echo "::warning title=Missing secrets::${MSG}"
 
-    - name: Start containers
+    - name: 'Start containers'
       id: start
       shell: bash
       run: |
@@ -301,7 +303,7 @@ runs:
         make up
         docker compose ps --all
 
-    - name: Output docker logs if make up failed
+    - name: 'Output docker logs if make up failed'
       if: ${{ always() && steps.start.outcome != 'success' }}
       shell: bash
       run: |
@@ -315,7 +317,7 @@ runs:
           docker logs -n 200 $c
         done
 
-    - name: Configure enterprise token
+    - name: 'Configure enterprise token'
       if: ${{ inputs.enterprise_github_token != '' }}
       shell: bash
       run: |
@@ -342,7 +344,7 @@ runs:
         debug: ${{ inputs.debug }}
 
     # yamllint disable rule:line-length
-    - name: Modify composer.json to allow the same feature-branch
+    - name: 'Modify composer.json to allow the same feature-branch'
       if: ${{ inputs.github_event_name != 'pull_request' }}
       shell: bash
       run: |
@@ -360,7 +362,7 @@ runs:
         fi
     # yamllint enable rule:line-length
 
-    - name: Install dependencies
+    - name: 'Install dependencies'
       shell: bash
       if: ${{ inputs.composer_update == 'true' }}
       run: |
@@ -371,7 +373,7 @@ runs:
           ${{ inputs.container_name }} \
           composer update --no-interaction
 
-    - name: Setup config inc file
+    - name: 'Setup config inc file'
       shell: bash
       run: |
         # prepare_shop: Setup config inc file

@@ -4,5 +4,7 @@ install: &install
     mysql: '["mysql-9"]'
 
 runscript: *install
+
 runslim: *install
+
 sonarcloud: *install
