@@ -1,6 +1,6 @@
 # stop_shop
 
-Stops the running docker compose instance.
+Stop the running docker compose instance.
 
 ## Inputs
 

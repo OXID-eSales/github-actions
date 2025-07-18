@@ -1,20 +1,23 @@
 # prepare_shop
 
 This action checks out the SDK. It then creates a composer.json based on a template
-or contained in a given repository. In a pull request event, the base ref is checked out and the given PR is merged into it.
+or contained in a given repository. In a pull request event, the base ref is checked
+out and the given PR is merged into it.
 
-The action uses the Makefile fo the SDK to start the containers and composer to install the packages.
+The action uses the Makefile for the SDK to start the containers and composer to
+install the packages.
 
 ## Inputs
 
-**container_name:** *not required*, *default:*  php  
+**container_name:** *not required*, *default:* php  
 Name of the container to run the test in.
 
-**container_options:** *not required*, *default:*  ''
+**container_options:** *not required*, *default:* ''
 Additional options to pass into the container.
 
 **container_method:** *not required*, *default*: 'exec'  
-Whether we use exec to run the command in the existing php container or run to spin up a new one.
+Whether we use exec to run the command in the existing php container or run to
+spin up a new one.
 
 **git_sdk_repository:** *not required*, *default:* 'OXID-eSales/docker-eshop-sdk'  
 URL for the docker-eshop sdk repository to clone.
@@ -32,27 +35,29 @@ Organisation/Repository containing the root composer.json if not using compilati
 Branch, tag or hash of the commit to check out.
 
 **github_event_name:** *not required*, *default:* ''  
-Name of the github event (usually github.event_name), used to handle pull requests.
+Name of the GitHub event (usually github.event_name), used to handle pull requests.
 
 **github_event_number:** *not required*, *default:* ''  
-Number of the github event (usually github.event_number), used to handle pull requests.
+Number of the GitHub event (usually github.event_number), used to handle pull requests.
 
 **github_base_ref:** *not required*, *default:* ''  
-Base reference (usually github.base_ref) for testing the github pull request.
+Base reference (usually github.base_ref) for testing the GitHub pull request.
 
 **github_sha:** *required*, *no default:*  
 github.sha is used in generating the cache id. This must be provided here.
 
-**github_run_number:** *not required*, *default:*  0  
-github.run_number and github.run_attempts are used in generating the cache id. They should be provided if available.
+**github_run_number:** *not required*, *default:* 0  
+github.run_number and github.run_attempts are used in generating the cache id.
+They should be provided if available.
 
-**github_run_attempt:** *not required*, *default:*  0  
-github.run_number and github.run_attempts are used in generating the cache id. They should be provided if available.
+**github_run_attempt:** *not required*, *default:* 0  
+github.run_number and github.run_attempts are used in generating the cache id.
+They should be provided if available.
 
-**php:** *not required*, *default:*  '8.2'  
+**php:** *not required*, *default:* '8.2'  
 Version of PHP for this instance.
 
-**mysql:** *not required*, *default:*  '8.0'  
+**mysql:** *not required*, *default:* 'mysql-8.0.36'  
 Version of MySQL for this instance.
 
 **custom_ini_error_reporting:** *not required*, *default:* E_ALL & ~E_DEPRECATED & ~E_NOTICE & ~E_WARNING    
@@ -77,26 +82,25 @@ Should we create a backup for composer.json?
 Run composer update after transform.
 
 **composer_update_options:** *not required*, *default:* '--no-interaction'  
-Options to pass along to composer during install.
+Options to pass along to composer during installation.
 
 **composer_dev_ref:** *not required*, *default:* 'dev-b-8.0.x'  
 Development package reference.
 
 **enterprise_github_token:** *not required*, *default:* ''  
-OAuth token to access enterprise repos. It is required when is_enterprise is
-set to 'true'. This should be populated with ${{ secrets.enterprise_github_token }}
-and will be hidden by GitHub.
+OAuth token to access enterprise repos. This should be populated with
+\${{ secrets.enterprise_github_token }} and will be hidden by GitHub.
 
 **docker_login:** *not required*, *default:* true  
-Shold we log in to docker?
+Should we log in to docker?
 
 **docker_user:** *not required*, *default:* ''  
 Needed for docker login.
-Populate with ${{ secrets.DOCKER_HUB_USER }}, its content will be hidden by GitHub.
+Populate with \${{ secrets.DOCKER_HUB_USER }}, GitHub will hide its content.
 
 **docker_token:** *not required*, *default:* ''  
 Needed for docker login.
-Populate with ${{ secrets.DOCKER_HUB_TOKEN }}, its content will be hidden by GitHub.
+Populate with \${{ secrets.DOCKER_HUB_TOKEN }}, GitHub will hide its content.
 
 **copy_script_targets:** *not required*, *default:* 'tests/scripts'  
 Copy the test scripts to these target folders.

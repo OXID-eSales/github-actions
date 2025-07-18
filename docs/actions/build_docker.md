@@ -11,13 +11,14 @@ Dockerhub username is required to login into Dockerhub.
 Dockerhub password is required to login into Dockerhub.
 
 **image_name** *required*, *default:* true
-Image name is required to build and push perticular image.
+Image name is required to build and push a particular image.
 
 **tags** *required*, *default:* true
-Tags are required for version of the image
+Tags are required for a version of the image
 
 **build_args** *required*, *default:* true
-build_args are required for matrix versions,There are different build_args for php image.
+build_args are required for matrix versions, there are different build_args for
+php image versions.
 
 **debug:** *not required*, *default:* false  
 Set to true to generate a debugging script.

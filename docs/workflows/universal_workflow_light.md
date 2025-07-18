@@ -1,9 +1,9 @@
 # universal_workflow_light
 
-This workflow replaces the [call-universal_test_workflow](call-universal_test_workflow.md).
+This workflow replaces the `call-universal_test_workflow.md`.
 It builds a test environment based on the docker-eshop-sdk and installs a php application by
  either creating a composer.json or checking out a repository containing one. The workflow
- is configured by a lot of variables provided by merging multiple test plans (yaml files).
+ is configured by a lot of variables provided by merging multiple test plans (YAML files).
 
 It runs test scripts either provided in composer.json or test scripts provided by the installed
 packages. These tests are executed on a matrix of different PHP and MySQL versions.
@@ -11,7 +11,7 @@ packages. These tests are executed on a matrix of different PHP and MySQL versio
 ## Inputs
 
 **testplan:** *required*, *no default*  
-A file name or URL for a test plan yaml file containing all the variables
+A file name or URL for a test plan YAML file containing all the variables
 needed for building the shop and running the tests. See
 tests/github_actions/defaults/defaults_light.yaml for a documented set of defaults.
 
@@ -32,11 +32,11 @@ Enable the generation of debugging code contained in the testplan artifact. The 
 debugging scripts can be run locally.
 
 **custom_testplan_yaml:** *not required*, *default:* ''  
-This allows for dynamic passing of yaml code containing variables. The provided multiline string
+This allows for dynamic passing of YAML code containing variables. The provided multiline string
 will be stored in {plan_folder}/custom.yaml and can be used in the testplan argument as ~/_custom.yaml.
 
 **use_scheduled_slack_channel:** *not required*, *default:* true  
-If this is set to true and the secret SLACK_SCHEDULED_WEBHOOK_URL is provided, the slack notification is sent to the channel specified by SLACK_SCHEDULED_WEBHOOK_URL instead of the channel specified by SLACK_WEBHOOK_URL.
+If this is set to true and the secret SLACK_SCHEDULED_WEBHOOK_URL is provided, the Slack notification is sent to the channel specified by SLACK_SCHEDULED_WEBHOOK_URL instead of the channel specified by SLACK_WEBHOOK_URL.
 
 ## Secrets
 
@@ -62,7 +62,7 @@ OAuth token to access enterprise repos when building the enterprise edition
 Token to submit sonarcloud reports to their website
 
 **SLACK_WEBHOOK_URL:**  
-URL for the slack API to send reports to.
+URL for the Slack API to send reports to.
 
 **SLACK_WEBHOOK_URL:**  
-URL for the slack API to send reports to if the input use_scheduled_slack_channel is set to true.
+URL for the Slack API to send reports to if the input use_scheduled_slack_channel is set to true.

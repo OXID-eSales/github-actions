@@ -6,16 +6,11 @@
 # - CACHE_SECRET_KEY
 # - enterprise_github_token
 
-global:
-  # {{ $shop_type := "ee" }}$shop_type: {{ printf "%q" $shop_type }}
-  is_enterprise: &is_enterprise true
-
 # See docs/actions/prepare_shop.md for more information.
 install:
   git:
     ref: '{{ .Data.install.git.default_ref }}'
     enterprise_ref: '{{ .Github.RefName }}'
-
   composer:
     transform: |
       {
@@ -59,12 +54,9 @@ install:
           }
         }
       }
-
-  is_enterprise: *is_enterprise
   cache:
-    # Needs to be here as $shop_type is different
-    prepared_shop_prefix: 'preparedShop-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
-    prefix: &install_shop_prefix 'shopInstallation-{{ $shop_type }}-{{ .Github.SHA }}-{{ .Github.RunID }}'
+    prepared_shop_prefix: 'preparedShop-ee-{{ .Github.SHA }}-{{ .Github.RunID }}'
+    prefix: &install_shop_prefix 'shopInstallation-ee-{{ .Github.SHA }}-{{ .Github.RunID }}'
 
 runscript:
   load_shop: *install_shop_prefix

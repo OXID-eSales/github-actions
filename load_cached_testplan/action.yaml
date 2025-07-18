@@ -16,7 +16,7 @@ inputs:
     type: string
     required: false
     description: 'Version of MySQL for this instance'
-    default: '8.0'
+    default: 'mysql-8.0.36'
   prefix:
     type: string
     required: true

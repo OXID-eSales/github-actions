@@ -9,7 +9,7 @@ with upload-artifact in version 3.
 
 **target:** *required*, *no default*  
 This is the name of the final consolidated artifact. If it already exists, it will
-be downlaoded, then deleted and in the end recreated.
+be downloaded, then deleted and in the end recreated.
 
 **pattern:** *required*, *no default:  
 Pattern of artifact names to download.

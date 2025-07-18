@@ -3,6 +3,7 @@ install:
   cache:
     prepared_shop: false
   git:
+    repository: '{{ .Data.global.repo }}'
     ref: '{{ .Data.install.git.safe_ref_name }}'
   composer:
     root_url: ''
@@ -14,19 +15,9 @@ runscript: &runscript
     path: ''
   deprecated:
     path: ''
-    composer:
-      transform: |
-        {
-          "require-dev": {
-            "oxid-esales/testing-library": "{{ .Data.global.composer.dev_ref }}",
-            "oxid-esales/tests-deprecated-ce": "{{ .Data.global.composer.dev_ref }}",
-            "codeception/module-webdriver": "^3.1",
-            "phpunit/phpunit": "^9.1.1"
-          }
-        }
 
 runslim:
   <<: *runscript
 
 finish:
-  slack_title: '{{ .Github.Repository }} ({{ .Github.Ref }}) by {{ .Github.Actor }}'
+  slack_title: '{{ .Github.Repository }} ({{ .Data.install.git.safe_ref_name }}) by {{ .Github.Actor }}'
