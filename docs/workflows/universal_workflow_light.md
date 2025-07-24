@@ -33,7 +33,7 @@ debugging scripts can be run locally.
 
 **custom_testplan_yaml:** *not required*, *default:* ''  
 This allows for dynamic passing of YAML code containing variables. The provided multiline string
-will be stored in {plan_folder}/custom.yaml and can be used in the testplan argument as ~/_custom.yaml.
+will be stored in {plan_folder}/_custom.yaml and can be used in the testplan argument as ~/_custom.yaml.
 
 **use_scheduled_slack_channel:** *not required*, *default:* true  
 If this is set to true and the secret SLACK_SCHEDULED_WEBHOOK_URL is provided, the Slack notification is sent to the channel specified by SLACK_SCHEDULED_WEBHOOK_URL instead of the channel specified by SLACK_WEBHOOK_URL.

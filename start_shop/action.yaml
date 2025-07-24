@@ -80,7 +80,7 @@ runs:
         secretKey: ${{ inputs.cache_secret_key }}
         bucket: ${{ inputs.cache_bucket }}
 
-    - name: 'Load cached testplan from Github'
+    - name: 'Load cached testplan from GitHub'
       if: ${{ inputs.runs_on == '"ubuntu-latest"'}}
       id: load_installed_shop_gh
       uses: 'actions/cache/restore@v4'

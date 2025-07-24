@@ -1,6 +1,6 @@
 name: 'run_test_script'
 
-description: 'Configures styles'
+description: 'Run a script defined in a composer.json or available as a batch file in tests/Scripts.'
 
 inputs:
   script_runner:
@@ -49,7 +49,7 @@ inputs:
   output_artifact:
     type: string
     required: false
-    description: 'Github run artifact for the output'
+    description: 'GitHub run artifact for the output'
     default: 'run_test_script'
   debug:
     type: string
@@ -58,7 +58,7 @@ inputs:
     required: false
   github_token:
     type: string
-    description: 'Github token for composer'
+    description: 'GitHub token for composer'
     default: ''
     required: false
 

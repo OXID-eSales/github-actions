@@ -64,7 +64,7 @@ inputs:
   github_token:
     type: string
     required: false
-    description: 'Github token to be replaced by a variable in the debug script'
+    description: 'GitHub token to be replaced by a variable in the debug script'
     default: ''
 
 runs:

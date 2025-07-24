@@ -9,7 +9,7 @@ in the specified container
 **container_name:** *not required*, *default:* php  
 Name of the container to run the test in.
 
-**container_options:** *not required*, *default:* ''  
+**container_options:** *not required*, *default:* `''`  
 Options to pass to the container start.
 
 **container_method:** *not required*, *default*: 'exec'  
@@ -19,7 +19,7 @@ spin up a new one.
 **custom_script:** *not required*, *default*: ''  
 Script to run in the work directory.
 
-**custom_script_container:** *not required*, *default:* ''  
+**custom_script_container:** *not required*, *default:* `''`  
 Name of the test or folder to run.
 
 **debug:** *not required*, *default:* false  

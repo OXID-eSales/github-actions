@@ -1,11 +1,17 @@
 # Overview
 
-This repository contains re-usable GitHub workflows and actions for the OXID-eSales repositories.
+This repository contains re-usable GitHub workflows and actions for the
+OXID-eSales repositories.
 
 ## Workflows
 
-- [universal_workflow_light](docs/workflows/universal_workflow_light.md): This configurable workflow relies
-on test and install scripts provided in the respective repositories.
+- [dispatch-release](docs/workflows/dispatch-release.md): This workflow prepares a github-actions-release
+- [merge-release](docs/workflows/merge-release.md): This workflow updates the tags after merging a release
+branch into main
+- [push-validate_workflows](docs/workflows/push-validate_workflows.md): Validates the workflow and YAML files after a
+push
+- [universal_workflow_light](docs/workflows/universal_workflow_light.md): This configurable workflow relies on test and
+install scripts provided in the respective repositories.
 
 ## Actions
 
@@ -20,10 +26,14 @@ on test and install scripts provided in the respective repositories.
   - [composer_merge](docs/actions/composer_merge.md) merges a JSON string with composer.json.
   - [consolidate_artifacts](docs/actions/consolidate_artifacts.md) consolidates multiple artifacts into one.
   - [start_shop](docs/actions/start_shop.md) fetches a shop from cache and starts it.
-  - [stop_shop](docs/actions/stop_shop.md) stops a running shop
+  - [stop_shop](docs/actions/stop_shop.md) stops a running shop.
+  - [load_cached_testplan](docs/actions/load_cached_testplan.md) loads the cached
+    test plan directory during the init job.
 - Setup actions
   - [prepare_shop](docs/actions/prepare_shop.md) prepares the shop and creates a cache for it.
 - Test actions
+  - [actionlint](docs/actions/actionlint.md) runs actionlint in the repository.
   - [run_test_script](docs/actions/run_test_script.md) runs a script defined in a composer.json or in a
     shell script in tests/Scripts.
-  - [sonarcloud](docs/actions/sonarcloud.md) runs sonarcloud over the given installation
+  - [sonarcloud](docs/actions/sonarcloud.md) runs SonarCloud over the given installation.
+  - [yamllint](docs/actions/yamllint.md) runs yamllint in the repository.

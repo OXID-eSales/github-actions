@@ -233,7 +233,7 @@ runs:
       if: ${{ inputs.compilation_url == '' && inputs.github_event_name == 'pull_request' }}
       shell: bash
       run: |
-        # prepare_shop: Clone the shop ${{ inputs.git_repository }} (${{ inputs.git_ref }})
+        # prepare_shop: PR-Clone ${{ inputs.git_repository }} (${{ inputs.git_ref }})
         ${{ inputs.debug }}
         echo -e "\033[0;35mHandling the pull request\033[0m"
         if [ -n "${{ inputs.enterprise_github_token }}" ]; then

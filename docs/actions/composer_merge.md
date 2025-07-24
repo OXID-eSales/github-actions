@@ -10,7 +10,7 @@ Path of the composer.json to modify.
 
 **backup:** *not required*, *true*  
 This allows for creation of a backup of the composer.json, adding the suffix
-.bak. Setting this to false disables the backup generation.
+.bak. Setting this to false disables backup generation.
 
 **transform:** *required*, *no default*:  
 This multiline string must contain a valid JSON object which will be merged
@@ -34,7 +34,7 @@ Whether we use exec to run the command in the existing php container or run to s
 **debug:** *not required*, *default:* false  
 Set to true to generate a debugging script.
 
-**github_token:** *not required*, *default:* ''  
+**github_token:** *not required*, *default:* `''`  
 Token to set for GitHub authentication.
 
 ## Outputs

@@ -21,7 +21,7 @@ inputs:
   github_ref_name:
     type: string
     required: true
-    description: 'Github reference for the scan'
+    description: 'GitHub reference for the scan'
   sonarcloud_organization:
     type: string
     required: false
@@ -64,7 +64,7 @@ inputs:
   output_artifact:
     type: string
     required: false
-    description: 'Github run artifact for the sonarcloud output'
+    description: 'GitHub run artifact for the sonarcloud output'
     default: 'sonarcloud-artifacts'
   debug:
     type: string

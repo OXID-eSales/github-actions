@@ -11,7 +11,8 @@ If set to "true", a report header for the phase will be generated instead of a
 line in the respective table.
 
 **priority:** *not required*, *default:* 000  
-Priority helps with sorting phases and table content by becoming part of the file names in the artifact.
+Priority helps with sorting phases and table content by becoming part of the
+file names in the artifact.
 
 **phase:** *required*, *no default:*  
 The phase, for which we generate the report. Currently, there are three phases:
@@ -24,7 +25,8 @@ The phase, for which we generate the report. Currently, there are three phases:
 The name of the job, e.g., "phpunit", "codeception", etc.
 
 **title:** *not required*, *default:* -  
-The title of the current matrix run. This is usually defined in the job-specific testplan, e.g., "unit_tests", "integration_tests", or "shop_setup".
+The title of the current matrix run. This is usually defined in the job-specific
+testplan, e.g., "unit_tests", "integration_tests", or "shop_setup".
 
 **php:** *not required*, *default:* -  
 The PHP version for this matrix combination.

@@ -1,6 +1,6 @@
 name: 'actionlint'
 
-description: 'Fetches a shop from cache and starts it'
+description: 'Static analyzer for GitHub Actions workflow files'
 
 inputs:
   config_file:
@@ -12,10 +12,10 @@ inputs:
     type: string
     description: 'Custom configuration to the linter'
     required: true
-  output_artifact_prefix:
+  output_artifact:
     type: string
     required: false
-    description: 'Github run artifact for the output'
+    description: 'GitHub run artifact for the output'
     default: 'actionlint'
   output_path:
     type: string
@@ -80,7 +80,7 @@ runs:
       if: always()
       uses: 'actions/upload-artifact@v4'
       with:
-        name: '${{ inputs.output_artifact_prefix }}'
+        name: '${{ inputs.output_artifact }}'
         include-hidden-files: true
         path: |
           ${{ inputs.config_file }}

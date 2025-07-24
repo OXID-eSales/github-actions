@@ -28,7 +28,6 @@
 # anchors which will be used inside the steps of the various other sections.
 #
 
-# Global settings for jobs strategy setting
 workflow:
 
   # The variables "php" and "mysql" in the "matrix" subsection are used to run
@@ -297,7 +296,7 @@ runscript: &runscript
   container: *container
   cache: *cache
 
-  # The path pointing to the module relative to source/dev-packages needs to be the same as in install_module
+  # The path pointing to the module relative to source (/var/www).
   path: ''
 
   # These modifications are used to modify composer.json in the folder defined by 'path'
@@ -369,7 +368,7 @@ sonarcloud:
 
   # Part of the absolute path to strip from the paths inside the coverage.xml,
   # This ist /var/www/ (note the trailing slash) for the shop and should be set to
-  # /var/www/dev-packages/<module_ids>/ for modules
+  # /var/www/vendor/<organization>/<package> for modules and components
   strip_path: '/var/www/'
 
   # Sonarcloud settings, get them from https://sonarcloud.io/organizations/oxid-esales/projects
