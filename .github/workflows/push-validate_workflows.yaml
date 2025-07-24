@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: 'Write Report Header'
         if: always()
-        uses: 'OXID-eSales/github-actions/begin_report@v4'
+        uses: 'OXID-eSales/github-actions/begin_report@v5'
         with:
           prefix: 'validate'
           title: 'Workflow validation on ${{ github.repository }} by ${{ github.actor }}'
@@ -23,7 +23,7 @@ jobs:
 
       - name: 'Write Report'
         if: always()
-        uses: 'OXID-eSales/github-actions/append_report@v4'
+        uses: 'OXID-eSales/github-actions/append_report@v5'
         with:
           prefix: 'validate'
           header: true
@@ -40,7 +40,7 @@ jobs:
 
       - name: 'Lint yaml files'
         id: yamllint
-        uses: 'OXID-eSales/github-actions/yamllint@v4'
+        uses: 'OXID-eSales/github-actions/yamllint@v5'
         with:
           format: 'github'
           config_data: |
@@ -58,7 +58,7 @@ jobs:
 
       - name: 'Write yamllint Report'
         if: always()
-        uses: 'OXID-eSales/github-actions/append_report@v4'
+        uses: 'OXID-eSales/github-actions/append_report@v5'
         with:
           prefix: 'validate'
           priority: '010'
@@ -95,7 +95,7 @@ jobs:
 
       - name: 'Write actionlint Report'
         if: always()
-        uses: 'OXID-eSales/github-actions/append_report@v4'
+        uses: 'OXID-eSales/github-actions/append_report@v5'
         with:
           prefix: 'validate'
           priority: '020'
@@ -119,7 +119,7 @@ jobs:
       SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"
     steps:
       - name: 'Output report'
-        uses: 'OXID-eSales/github-actions/generate_report@v4'
+        uses: 'OXID-eSales/github-actions/generate_report@v5'
         with:
           prefix: 'validate'
           slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}

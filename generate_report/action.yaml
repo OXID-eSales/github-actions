@@ -38,7 +38,7 @@ runs:
   using: "composite"
   steps:
     - name: 'Consolidate testplan artifacts'
-      uses: 'OXID-eSales/github-actions/consolidate_artifacts@v0'
+      uses: 'OXID-eSales/github-actions/consolidate_artifacts@v5'
       with:
         target: 'testplan-${{inputs.prefix}}'
         pattern: 'testplan-${{inputs.prefix}}-*'
@@ -227,7 +227,7 @@ runs:
         SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
     - name: 'Update testplan artifacts'
-      uses: 'OXID-eSales/github-actions/consolidate_artifacts@v0'
+      uses: 'OXID-eSales/github-actions/consolidate_artifacts@v5'
       with:
         target: 'testplan-${{inputs.prefix}}'
         pattern: 'testplan-${{inputs.prefix}}-*'
