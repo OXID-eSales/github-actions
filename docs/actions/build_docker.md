@@ -1,6 +1,7 @@
 # build_docker
 
-This action is used to checkout docker repo and login into dockerhub then build and push docker images.
+This action is used to checkout docker repo and login into dockerhub then build
+and push docker images.
 
 ## Inputs
 

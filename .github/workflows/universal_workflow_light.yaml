@@ -1238,7 +1238,7 @@ jobs:
         uses: 'OXID-eSales/github-actions/actionlint@v4'
         with:
           custom_config: ${{ needs.init.outputs.actionlint_custom_config }}
-          output_artifact_prefix: ${{ needs.init.outputs.actionlint_output_artifact_prefix }}-${{ needs.init.outputs.global_title }}
+          output_artifact: ${{ needs.init.outputs.actionlint_output_artifact_prefix }}-${{ needs.init.outputs.global_title }}
           output_path: ${{ needs.init.outputs.actionlint_output_path }}
 
       - name: 'Write actionlint Report'

@@ -1,8 +1,8 @@
 # prepare_shop
 
-This action checks out the SDK. It then creates a composer.json based on a template
-or contained in a given repository. In a pull request event, the base ref is checked
-out and the given PR is merged into it.
+This action checks out the SDK. It then creates a composer.json based on a
+template or contained in a given repository. In a pull request event, the base
+ref is checked out and the given PR is merged into it.
 
 The action uses the Makefile for the SDK to start the containers and composer to
 install the packages.

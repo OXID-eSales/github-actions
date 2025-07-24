@@ -1,13 +1,14 @@
 # run_test_script
 
-Run a script defined in a composer.json or available as a batch file in tests/Scripts.
+Run a script defined in a composer.json or available as a batch file in
+`tests/Scripts`.
 
 ## Inputs
 
 **script:** *required*, *no default:*  
-Name of the script to run. If the name starts with ~/, this input is interpreted as
-the name of a script located in test/Scripts. If not, it is assumed to be defined in
-composer.json and will be run as composer \<script\>
+Name of the script to run. If the name starts with ~/, this input is interpreted
+as the name of a script located in test/Scripts. If not, it is assumed to be
+defined in `composer.json` and will be run as composer \<script\>
 
 **path:** *required*, *no default:*  
 Workdir for the script.
