@@ -1,5 +1,7 @@
 name: 'sonarcloud'
+
 description: 'Runs sonarcloud in the given container'
+
 inputs:
   coverage_artifact:
     type: string
@@ -19,7 +21,7 @@ inputs:
   github_ref_name:
     type: string
     required: true
-    description: 'Github reference for the scan'
+    description: 'GitHub reference for the scan'
   sonarcloud_organization:
     type: string
     required: false
@@ -62,7 +64,7 @@ inputs:
   output_artifact:
     type: string
     required: false
-    description: 'Github run artifact for the sonarcloud output'
+    description: 'GitHub run artifact for the sonarcloud output'
     default: 'sonarcloud-artifacts'
   debug:
     type: string
@@ -74,13 +76,13 @@ runs:
   using: "composite"
   steps:
     - name: 'Download artifacts'
-      uses: actions/download-artifact@v4
+      uses: 'actions/download-artifact@v4'
       with:
         pattern: '${{ inputs.coverage_artifact }}'
         merge-multiple: true
         path: coverage-reports
 
-    - name: Fix Paths In Coverage Reports
+    - name: 'Fix Paths In Coverage Reports'
       shell: bash
       run: |
         # sonarcloud: Fix Paths In Coverage Reports
@@ -108,8 +110,8 @@ runs:
           echo "PHPUNIT_PARAM=-Dsonar.php.tests.reportPath=${PHPUNIT_FILES:1}"| tee -a "${GITHUB_ENV}"
         fi
 
-    - name: Upload consolidated artifact
-      uses: actions/upload-artifact@v4
+    - name: 'Upload consolidated artifact'
+      uses: 'actions/upload-artifact@v4'
       with:
         name: '${{ inputs.output_artifact }}'
         path: 'coverage-reports'
@@ -117,13 +119,13 @@ runs:
         overwrite: true
 
     - name: 'Remove old artifacts'
-      uses: joernott/rm-artifact@v1
+      uses: 'joernott/rm-artifact@v1'
       with:
         name: '${{ inputs.coverage_artifact }}'
         useGlob: true
         failOnError: false
 
-    - name: Set target branch
+    - name: 'Set target branch'
       shell: bash
       run: |
         # sonarcloud: Set target branch
@@ -134,8 +136,8 @@ runs:
         fi
         echo "TARGET_BRANCH_PARAM=$TARGET_PRANCH_PARAM" >> $GITHUB_ENV
 
-    - name: SonarCloud Scan
-      uses: SonarSource/sonarqube-scan-action@v4
+    - name: 'SonarCloud Scan'
+      uses: 'SonarSource/sonarqube-scan-action@v4'
       env:
         SONAR_TOKEN: ${{ inputs.sonar_token }}
         GITHUB_TOKEN: ${{ inputs.github_token }}
@@ -150,7 +152,7 @@ runs:
           ${{ inputs.sonarcloud_parameters }}
           ${{ env.TARGET_BRANCH_PARAM }}
 
-    - name: Debug Sonarcloud scan
+    - name: 'Debug Sonarcloud scan'
       if: ${{ inputs.debug != '' }}
       shell: bash
       run: |

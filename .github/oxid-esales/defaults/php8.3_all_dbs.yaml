@@ -1,51 +1,13 @@
-prepare_shop:
-  matrix: &matrix
+install: &install
+  matrix:
     php: '["8.3"]'
-    mysql: '[ "mysql-5.7", "mysql-8.0", "mysql-8", "mysql-9", "mariadb-10", "mariadb-11" ]'
+    mysql: '["mysql-5.7", "mysql-8.0.36", "mysql-8", "mysql-9", "mariadb-10", "mariadb-11"]'
 
-install_shop:
-  matrix: *matrix
-  max_parallel: 1
+runscript: *install
 
-install_module:
-  matrix: *matrix
-  max_parallel: 1
-
-install_shop_with_modules:
-  matrix: *matrix
-  max_parallel: 1
-
-runscript:
-  matrix: *matrix
-
-runslim:
-  matrix: *matrix
-
-phpunit:
-  matrix: *matrix
-
-codeception:
-  matrix: *matrix
-
-runtest:
-  matrix: *matrix
+runslim: *install
 
 sonarcloud:
-  matrix: *matrix
-  max_parallel: 1
-
-phpcs_tests:
-  matrix: *matrix
-  max_parallel: 1
-
-phpmd:
-  matrix: *matrix
-  max_parallel: 1
-
-phpstan:
-  matrix: *matrix
-  max_parallel: 1
-
-styles:
-  matrix: *matrix
-  max_parallel: 1
+  matrix:
+    php: '["8.3"]'
+    mysql: '["mysql-8.0.36"]'

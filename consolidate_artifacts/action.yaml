@@ -1,5 +1,7 @@
 name: 'consolidate_artifacts'
+
 description: 'Consolidate multiple artifacts into one'
+
 inputs:
   target:
     type: string
@@ -18,21 +20,21 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Check if previous consolidated artifact exists
+    - name: 'Check if previous consolidated artifact exists'
       id: check_consolidated
-      uses: LIT-Protocol/artifact-exists-action@v0
+      uses: 'LIT-Protocol/artifact-exists-action@v0'
       with:
         name: '${{ inputs.target }}'
 
     - name: 'Download consolidated artifact'
       if: ${{ steps.check_consolidated.outputs.exists == 'true' }}
-      uses: actions/download-artifact@v4
+      uses: 'actions/download-artifact@v4'
       with:
         name: '${{ inputs.target }}'
         path: ${{ inputs.path }}
 
     - name: 'Download artifacts'
-      uses: actions/download-artifact@v4
+      uses: 'actions/download-artifact@v4'
       with:
         pattern: '${{ inputs.pattern }}'
         merge-multiple: true
@@ -40,12 +42,12 @@ runs:
 
     - name: 'Delete old consolidated artifact'
       if: ${{ steps.check_consolidated.outputs.exists == 'true' }}
-      uses: joernott/rm-artifact@v1
+      uses: 'joernott/rm-artifact@v1'
       with:
         name: '${{ inputs.target }}'
 
-    - name: Upload consolidated artifact
-      uses: actions/upload-artifact@v4
+    - name: 'Upload consolidated artifact'
+      uses: 'actions/upload-artifact@v4'
       with:
         name: '${{ inputs.target }}'
         path: ${{ inputs.path }}

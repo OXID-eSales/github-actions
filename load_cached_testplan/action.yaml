@@ -1,5 +1,7 @@
 name: 'load_cached_testplan'
+
 description: 'Fetches the testplan and sets environment variables for it'
+
 inputs:
   runs_on:
     type: string
@@ -14,7 +16,7 @@ inputs:
     type: string
     required: false
     description: 'Version of MySQL for this instance'
-    default: '8.0'
+    default: 'mysql-8.0.36'
   prefix:
     type: string
     required: true
@@ -60,6 +62,7 @@ inputs:
     description: 'Appended to debugging scripts'
     default: ''
     required: false
+
 outputs:
   # workflow variables
   testplan:
@@ -72,10 +75,10 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Load cached testplan from S3
+    - name: 'Load cached testplan from S3'
       if: ${{ inputs.runs_on != '"ubuntu-latest"'}}
       id: load_testplan_cache_s3
-      uses: tespkg/actions-cache/restore@v1
+      uses: 'tespkg/actions-cache/restore@v1'
       with:
         path: |
           ${{ inputs.plan_folder}}/*
@@ -85,15 +88,17 @@ runs:
         accessKey: ${{ inputs.cache_access_key }}
         secretKey: ${{ inputs.cache_secret_key }}
         bucket: ${{ inputs.cache_bucket }}
-    - name: Load cached testplan from Github
+
+    - name: 'Load cached testplan from GitHub'
       if: ${{ inputs.runs_on == '"ubuntu-latest"'}}
       id: load_testplan_cache_gh
-      uses: actions/cache/restore@v4
+      uses: 'actions/cache/restore@v4'
       with:
         path: |
           ${{ inputs.plan_folder}}/*
         key: ${{ inputs.cache_name }}
-    - name: Confirm successful restore
+
+    - name: 'Confirm successful restore'
       shell: bash
       run: |
         # load_cached_testplan: Confirm successful restore
@@ -107,12 +112,11 @@ runs:
       shell: bash
       run: |
         # load_cached_testplan: Get testplan name
-        DEFAULT_TESTPLAN=$(echo '${{ inputs.root_testplan }}'|sed -e 's|,${{ inputs.plan_folder }}/defaults/_rename.yaml||')
+        DEFAULT_TESTPLAN='${{ inputs.root_testplan }}'
         MATRIX_TESTPLAN=$(echo "${{ inputs.matrix_testplan }}"|sed -e 's|~|${{ inputs.plan_folder }}|g')
-        # ToDo: Remove the ,${{ inputs.plan_folder }}/defaults/_rename.yaml when releasing v5
         if [[ '${{ inputs.matrix_testplan}}' == '-' || -z '${{ inputs.matrix_testplan}}' ]]; then
           echo "testplan=${{ inputs.root_testplan }}" | tee -a "${GITHUB_OUTPUT}"
         else
-          echo "testplan=${DEFAULT_TESTPLAN},${MATRIX_TESTPLAN},${{ inputs.plan_folder }}/defaults/_rename.yaml" | tee -a "${GITHUB_OUTPUT}"
+          echo "testplan=${DEFAULT_TESTPLAN},${MATRIX_TESTPLAN}" | tee -a "${GITHUB_OUTPUT}"
         fi
         echo "matrix_suffix=${{inputs.prefix}}-PHP${{inputs.php}}-MYSQL${{inputs.mysql}}" | tee -a "${GITHUB_OUTPUT}"

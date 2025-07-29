@@ -1,5 +1,4 @@
-name: merge_release
-# Create a new release of the github-actions module
+name: 'merge_release'
 
 # yamllint disable-line rule:truthy
 on:
@@ -36,7 +35,7 @@ jobs:
 
       - name: 'Checkout repo'
         if: ${{ steps.data.outputs.skip != 'true' }}
-        uses: actions/checkout@v4
+        uses: 'actions/checkout@v4'
         with:
           repository: 'OXID-eSales/github-actions'
           ref: 'main'
@@ -68,7 +67,7 @@ jobs:
           git tag -a v${{steps.data.outputs.major}} -m "Release v${VERSION}"
           git push --tags
 
-      - uses: ncipollo/release-action@v1
+      - uses: 'ncipollo/release-action@v1'
         if: ${{ steps.data.outputs.skip != 'true' }}
         with:
           token: ${{github.token}}

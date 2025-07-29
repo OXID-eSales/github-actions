@@ -1,5 +1,4 @@
-name: dispatch_release
-# Create a new release of the github-actions module
+name: 'dispatch_release'
 
 # yamllint disable-line rule:truthy
 on:
@@ -45,14 +44,14 @@ jobs:
           echo "branch=${BRANCH}" >>"${GITHUB_OUTPUT}"
 
       - name: 'Checkout repo'
-        uses: actions/checkout@v4
+        uses: 'actions/checkout@v4'
         with:
           repository: 'OXID-eSales/github-actions'
           ref: '${{ steps.branch.outputs.branch }}'
           path: 'github-actions'
           fetch-depth: 0
 
-      - name: Validate version
+      - name: 'Validate version'
         run: |
           # Validate version
           cd github-actions
@@ -95,15 +94,15 @@ jobs:
           git checkout main
           git merge '${{ steps.branch.outputs.branch }}'
 
-      - name: Generate a token
+      - name: 'Generate a token'
         id: generate_token
-        uses: actions/create-github-app-token@v2
+        uses: 'actions/create-github-app-token@v2'
         with:
           app-id: ${{ secrets.ACTIONS_RELEASE_APP_ID }}
           private-key: ${{ secrets.ACTIONS_RELEASE_APP_PRIVATE_KEY }}
 
-      - name: Create branch and Pull Request
-        uses: peter-evans/create-pull-request@v7
+      - name: 'Create branch and Pull Request'
+        uses: 'peter-evans/create-pull-request@v7'
         with:
           token: ${{ steps.generate_token.outputs.token }}
           path: 'github-actions'

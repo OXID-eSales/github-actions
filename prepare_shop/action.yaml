@@ -1,5 +1,7 @@
 name: 'prepare_shop'
+
 description: 'Prepares the shop and creates a cache for it'
+
 inputs:
   container_name:
     type: string
@@ -16,12 +18,6 @@ inputs:
     required: false
     description: 'Method to execute the commands inside a container, either "run" or "exec"'
     default: 'exec'
-  # Deprecated, use git_sdk_repository instead. This will be removed in in v5
-  git_sdk_url:
-    type: string
-    required: false
-    description: 'URL for the docker-eshop sdk repo to clone'
-    default: 'https://github.com/OXID-eSales/docker-eshop-sdk.git'
   git_sdk_repository:
     type: string
     required: false
@@ -35,19 +31,7 @@ inputs:
   compilation_url:
     type: string
     required: false
-    description: 'URL for downloading the base compilation url'
-    default: ''
-  # Deprecated, use git_repository instead. This will be removed in in v5
-  git_shop_url:
-    type: string
-    required: false
-    description: 'URL for the oxidshop_ce repository'
-    default: 'https://github.com/OXID-eSales/oxideshop_ce.git'
-  # Deprecated, use git_ref instead. This will be removed in in v5
-  git_shop_ref:
-    type: string
-    required: false
-    description: 'Branch, tag or hash of the commit to check out'
+    description: 'URL for downloading a basic composer.json template'
     default: ''
   git_repository:
     type: string
@@ -58,12 +42,6 @@ inputs:
     type: string
     required: false
     description: 'Branch, tag or hash of the commit to check out'
-    default: ''
-  # Deprecated, use composer.transform to add the enterprise ref. This will be removed in in v5
-  git_enterprise_ref:
-    type: string
-    required: false
-    description: 'Branch to check out for the enterprise repos'
     default: ''
   github_event_name:
     type: string
@@ -109,7 +87,7 @@ inputs:
     type: string
     required: false
     description: 'Version of MySQL for this instance'
-    default: '8.0'
+    default: 'mysql-8.0.36'
   custom_ini_error_reporting:
     type: string
     required: false
@@ -141,7 +119,7 @@ inputs:
     description: 'Should we create a backup for composer.json'
     default: true
   composer_update:
-    type: string
+    type: boolean
     required: false
     description: 'Run composer update after transform'
     default: true
@@ -186,34 +164,10 @@ inputs:
     default: ''
     required: false
 
-outputs:
-  prepared_shop:
-    description: 'Name of the cached shop setup'
-    value: ${{ steps.init.outputs.prepared_shop }}
 runs:
   using: "composite"
   steps:
-    - name: Clone testing environment master DEPRECATED
-      # Remove this whole step in v5
-      if: ${{ inputs.git_sdk_repository == '' }}
-      shell: bash
-      run: |
-        # prepare_shop: Clone testing environment master
-        echo -e "\e[0;32m git_sdk_url is deprecated, switch to git_sdk_repository"
-        echo "::warning file=${{ github.workflow_ref}},title=Deprecation warning::git_sdk_url is deprecated, switch to git_sdk_repository"
-        REF='${{ inputs.git_sdk_ref }}'
-        git init
-        git config advice.detachedHead false
-        git remote add origin ${{ inputs.git_sdk_url }}
-        git -c protocol.version=2 fetch \
-          --no-tags --prune --no-recurse-submodules \
-          --filter=blob:none --depth=1 \
-          origin +refs/heads/${{ inputs.git_sdk_ref }}*:refs/remotes/origin/${REF}* +refs/tags/${REF}*:refs/tags/${REF}*
-        BRANCH=$(git branch --list --remote origin/${REF};git tag --list ${REF})
-        git checkout --progress --force $(echo $BRANCH|head -1)
-        ${{ inputs.debug }}
-
-    - name: Clone testing environment master
+    - name: 'Clone testing environment master'
       if: ${{ inputs.git_sdk_repository != '' }}
       shell: bash
       run: |
@@ -230,7 +184,7 @@ runs:
         git checkout --progress --force $(echo $BRANCH|head -1)
         ${{ inputs.debug }}
 
-    - name: Fetch the compilation composer.json
+    - name: 'Fetch the compilation composer.json'
       if: ${{ inputs.compilation_url != '' }}
       shell: bash
       run: |
@@ -242,11 +196,11 @@ runs:
           -H 'Accept: application/vnd.github.raw+json' \
           '${{ inputs.compilation_url }}'
 
-    - name: Clone the shop  (${{ inputs.git_shop_ref }})
-      if: ${{ inputs.compilation_url == '' && (inputs.github_event_name != 'pull_request' || ( github.repository != 'OXID-eSales/oxideshop_ce')) }}
+    - name: 'Clone ${{ inputs.git_repository }} (${{ inputs.git_ref }})'
+      if: ${{ inputs.compilation_url == '' && inputs.github_event_name != 'pull_request' }}
       shell: bash
       run: |
-        # prepare_shop: Clone the shop
+        # prepare_shop: Clone ${{ inputs.git_repository }} (${{ inputs.git_ref }})
         ${{ inputs.debug }}
         if [ '${{ inputs.git_repository }}' != '' ]; then
           if [ -n "${{ inputs.enterprise_github_token }}" ]; then
@@ -275,73 +229,28 @@ runs:
         echo -e "\033[0;35m###  Cloning ${REF} ###\033[0m"
         git clone --depth 2 "${URL}" --branch "${REF}" --single-branch source
 
-    - name: Clone the shop (PR ${{ inputs.github_event_number }})
-      if: ${{ inputs.compilation_url == '' && (inputs.github_event_name == 'pull_request' && github.repository == 'OXID-eSales/oxideshop_ce') }}
+    - name: 'PR-Clone ${{ inputs.git_repository }} (${{ inputs.git_ref }})'
+      if: ${{ inputs.compilation_url == '' && inputs.github_event_name == 'pull_request' }}
       shell: bash
       run: |
-        # prepare_shop: Clone the shop (PR)
+        # prepare_shop: PR-Clone ${{ inputs.git_repository }} (${{ inputs.git_ref }})
         ${{ inputs.debug }}
         echo -e "\033[0;35mHandling the pull request\033[0m"
-        if [ '${{ inputs.git_repository }}' != '' ]; then
-          if [ -n "${{ inputs.enterprise_github_token }}" ]; then
-            URL="https://oxidci:${{ inputs.enterprise_github_token }}@github.com/${{ inputs.git_repository }}.git"
-          else
-            URL="https://github.com/${{ inputs.git_repository }}.git"
-          fi
+        if [ -n "${{ inputs.enterprise_github_token }}" ]; then
+          URL="https://oxidci:${{ inputs.enterprise_github_token }}@github.com/${{ inputs.git_repository }}.git"
         else
-          # Deprecated for v5 Remove this else part and eliminate the if construct
-          echo -e "\e[0;32m git_shop_url is deprecated, switch to git_repository"
-          echo "::warning file=${{ github.workflow_ref}},title=Deprecation warning::git_shop_url is deprecated, switch to git_repository"
-          URL="${{ inputs.git_shop_url }}"
-          if [ -n "${{ inputs.enterprise_github_token }}" ]; then
-            REPO=$(echo '${{ inputs.git_shop_url }}'|sed -e 's|.*github.com/||')
-            URL="https://oxidci:${{ inputs.enterprise_github_token }}@github.com/${REPO}"
-          fi
+          URL="https://github.com/${{ inputs.git_repository }}.git"
         fi
         echo -e "\033[0;35m###  Cloning ${{ inputs.github_base_ref }} and merging head:pr_${{ inputs.github_event_number }} ###\033[0m"
         git clone --depth 2 "${URL}" --branch ${{ inputs.github_base_ref }} --single-branch source
         git -C source fetch origin refs/pull/${{ inputs.github_event_number }}/head:pr_${{ inputs.github_event_number }}
         git -C source checkout pr_${{ inputs.github_event_number }}
 
-    - name: Clone the ee shop (PR)
-      id: clone_ee_pr
-      # Deprecated for v5: This whole block should go away when using the new light workflow
-      if: ${{ inputs.github_event_name == 'pull_request' && github.repository == 'OXID-eSales/oxideshop_ee' }}
-      shell: bash
-      run: |
-        # prepare_shop: Clone the ee shop (PR)
-        AUTH="oxidci:${{ inputs.enterprise_github_token || github.token }}"
-        echo -e "\033[0;35mHandling the pull request for the EE shop\033[0m"
-        mkdir -p source/dev-packages
-        echo -e "\033[0;35m###  Cloning ${{ inputs.github_base_ref }} and merging head:pr_${{ inputs.github_event_number }} ###\033[0m"
-        git clone --depth 2 \
-          https://${AUTH}@github.com/OXID-eSales/oxideshop_ee.git \
-          --branch ${{ inputs.github_base_ref }} \
-          --single-branch 'source/dev-packages/oxideshop_ee'
-        git -C 'source/dev-packages/oxideshop_ee' fetch origin \
-          refs/pull/${{ github.event.number }}/head:pr_${{ github.event.number }}
-        git -C 'source/dev-packages/oxideshop_ee' checkout pr_${{ github.event.number }}
-        echo "module_ref=pr_${{ github.event.number }}" >>"${GITHUB_OUTPUT}"
-        cat >>debug/debug.sh <<'EODS'
-          banner "Checkout module"
-          # Note: we use ssh here, the workflow uses https and the runtime token or enterprise token
-          echo -e "\033[0;35mHandling the pull request for the EE shop\033[0m"
-          git clone --depth 2 \
-            git@github.com:OXID-eSales/oxideshop_ee.git \
-            --branch ${{ inputs.github_base_ref }} \
-            --single-branch 'source/dev-packages/oxideshop_ee'
-          git -C 'source/dev-packages/oxideshop_ee' fetch origin \
-            refs/pull/${{ github.event.number }}/head:pr_${{ github.event.number }}
-          git -C 'source/dev-packages/oxideshop_ee' checkout pr_${{ github.event.number }}
-        EODS
-
-    - name: Prepare container configuration
+    - name: 'Prepare container configuration'
       shell: bash
       run: |
         # prepare_shop: Prepare container configuration
         ${{ inputs.debug }}
-        # Deprecated in v5: The mkdir is no longer needed
-        mkdir -p source/dev-packages
         make setup
         make addbasicservices
 
@@ -370,23 +279,23 @@ runs:
             -e 's#/var/www/#/var/www/source/#g;'\
             containers/httpd/project.conf
 
-    - name: Login to Docker Hub
+    - name: 'Login to Docker Hub'
       if: ${{ inputs.docker_login == 'true' && inputs.docker_user != '' }}
-      uses: docker/login-action@v3
+      uses: 'docker/login-action@v3'
       with:
         username: ${{ inputs.docker_user }}
         password: ${{ inputs.docker_token }}
 
-    - name: Warn on missing docker credentials
+    - name: 'Warn on missing docker credentials'
       if: ${{ inputs.docker_login == 'true' && inputs.docker_user == '' }}
       shell: bash
       run: |
         # prepare_shop: Warn on missing docker credentials
-        # yamllint disable-line rule:line-length
         MSG="Please set the repository secrets DOCKER_HUB_USER and DOCKER_HUB_TOKEN to avoid running into docker.io rate limiting"
         echo "::warning title=Missing secrets::${MSG}"
 
-    - name: Start containers
+    - name: 'Start containers'
+      id: start
       shell: bash
       run: |
         # prepare_shop: Start containers
@@ -394,8 +303,8 @@ runs:
         make up
         docker compose ps --all
 
-    - name: Output docker logs if make up failed
-      if: always()
+    - name: 'Output docker logs if make up failed'
+      if: ${{ always() && steps.start.outcome != 'success' }}
       shell: bash
       run: |
         # prepare_shop: Output docker logs if make up failed
@@ -408,7 +317,7 @@ runs:
           docker logs -n 200 $c
         done
 
-    - name: Configure enterprise token
+    - name: 'Configure enterprise token'
       if: ${{ inputs.enterprise_github_token != '' }}
       shell: bash
       run: |
@@ -421,7 +330,7 @@ runs:
 
     - name: 'Modify composer.json'
       if: ${{ inputs.composer_transform != '' }}
-      uses: 'OXID-eSales/github-actions/composer_merge@v4'
+      uses: 'OXID-eSales/github-actions/composer_merge@v5'
       with:
         file: '${{ inputs.composer_file }}'
         backup: true
@@ -434,36 +343,8 @@ runs:
         container_method: 'exec'
         debug: ${{ inputs.debug }}
 
-    - name: 'Modify composer.json for EE shop PR'
-      if: ${{ inputs.github_event_name == 'pull_request' && github.repository == 'OXID-eSales/oxideshop_ee' }}
-      # Deprecated for v5: This should be handled differently in the light workflow
-      uses: 'OXID-eSales/github-actions/composer_merge@v4'
-      with:
-        file: '${{ inputs.composer_file }}'
-        backup: true
-        transform: |
-          {
-            "require": {
-              "oxid-esales/oxideshop-ee": "dev-${{ steps.clone_ee_pr.outputs.module_ref }}"
-            },
-            "repositories": {
-                "oxid-esales/oxideshop-ee": {
-                     "type": "path",
-                      "url": "./dev-packages/oxideshop_ee",
-                      "options": {
-                          "symlink": true
-                      }
-                }
-            }
-          }
-        update: false
-        container_name: ${{ inputs.container_name }}
-        container_options: ${{ inputs.container_options }}
-        container_method: 'exec'
-        debug: ${{ inputs.debug }}
-
     # yamllint disable rule:line-length
-    - name: Modify composer.json to allow the same feature-branch
+    - name: 'Modify composer.json to allow the same feature-branch'
       if: ${{ inputs.github_event_name != 'pull_request' }}
       shell: bash
       run: |
@@ -479,10 +360,9 @@ runs:
                 -i.backup '${{ inputs.composer_file }}'
           fi
         fi
-        touch module_repositories.json
     # yamllint enable rule:line-length
 
-    - name: Install dependencies
+    - name: 'Install dependencies'
       shell: bash
       if: ${{ inputs.composer_update == 'true' }}
       run: |
@@ -493,7 +373,7 @@ runs:
           ${{ inputs.container_name }} \
           composer update --no-interaction
 
-    - name: Setup config inc file
+    - name: 'Setup config inc file'
       shell: bash
       run: |
         # prepare_shop: Setup config inc file

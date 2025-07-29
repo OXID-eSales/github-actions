@@ -1,5 +1,7 @@
 name: 'begin_report'
+
 description: 'Creates the initial markdown headers for the reports'
+
 inputs:
   prefix:
     type: string
@@ -38,10 +40,12 @@ inputs:
     description: 'Enable debugging'
     default: false
     required: false
+
 outputs:
   debug:
     description: 'Debug scriptlet'
     value: ${{ steps.debug.outputs.debug }}
+
 runs:
   using: "composite"
   steps:
@@ -60,7 +64,8 @@ runs:
 
         EOF
         echo -n '${{inputs.title}} (<${{ inputs.job }}|Summary>) ' >compact_slack_report.md
-    - name: Start debug script
+
+    - name: 'Start debug script'
       id: debug
       shell: bash
       run: |
@@ -149,7 +154,7 @@ runs:
         EODS
         fi
 
-    - name: Debug debug
+    - name: 'Debug debug'
       shell: bash
       run: |
         # begin_report: Debug debug
@@ -169,9 +174,9 @@ runs:
         )
         echo "title=${TITLE}" >>"${GITHUB_OUTPUT}"
 
-    - name: Upload Artifacts
+    - name: 'Upload Artifacts'
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: 'actions/upload-artifact@v4'
       with:
         name: 'testplan-${{inputs.prefix}}-000_header'
         path: |

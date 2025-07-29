@@ -1,5 +1,7 @@
 name: 'append_report'
+
 description: 'Adds report and status snippets to the testplan artifact'
+
 inputs:
   prefix:
     type: string
@@ -62,7 +64,7 @@ inputs:
   github_token:
     type: string
     required: false
-    description: 'Github token to be replaced by a variable in the debug script'
+    description: 'GitHub token to be replaced by a variable in the debug script'
     default: ''
 
 runs:
@@ -109,7 +111,7 @@ runs:
           mv generated_testplan.yaml "${PLAN_FILE}"
         fi
 
-    - name: Handle debug script
+    - name: 'Handle debug script'
       if: ${{ inputs.debug == 'true' }}
       shell: bash
       run: |
@@ -149,9 +151,9 @@ runs:
         )
         echo "title=${TITLE}" >>"${GITHUB_OUTPUT}"
 
-    - name: Upload Artifacts
+    - name: 'Upload Artifacts'
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: 'actions/upload-artifact@v4'
       with:
         name: '${{ steps.safe_title.outputs.title }}'
         path: |

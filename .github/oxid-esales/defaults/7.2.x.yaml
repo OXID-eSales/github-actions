@@ -1,52 +1,35 @@
 workflow:
   matrix: &matrix
-    # We only test the latest recommended versions here but both template engines
-    php: &matrix_php '["8.2","8.3"]'
-    mysql: &matrix_mysql '["5.7","8.0.36"]'
+    php: '["8.2","8.3"]'
+    mysql: '["mysql-5.7","mysql-8.0.36"]'
   matrix_slim: &matrix_slim
     php: '["8.2"]'
-    mysql: '["8.0.36"]'
-global:
-  git: &git
-    default_ref: &default_ref 'b-7.2.x'
-    enterprise_ref: 'b-7.2.x'
+    mysql: '["mysql-8.0.36"]'
 
-  composer: &composer
+global:
+  composer:
     dev_ref: &dev_ref dev-b-7.2.x
 
-install_shop_with_modules: &install
+install:
   matrix: *matrix
-  git: *git
+  git:
+    default_ref: 'b-7.2.x'
+    enterprise_ref: 'b-7.2.x'
   composer:
     dev_ref: *dev_ref
     transform: |
       {
-          "preferred-install": {
-            "oxid-esales/*": "source",
-            "oxid-professional-services/*": "source",
-            "ddoe/*": "source"
-          },
-          "require": {
-              "oxid-esales/twig-component": "dev-b-7.2.x",
-              "oxid-esales/twig-admin-theme": "dev-b-7.2.x",
-              "oxid-esales/apex-theme": "dev-b-7.2.x"
-          }
+        "preferred-install": {
+          "oxid-esales/*": "source",
+          "oxid-professional-services/*": "source",
+          "ddoe/*": "source"
+        },
+        "require": {
+          "oxid-esales/twig-component": "dev-b-7.2.x",
+          "oxid-esales/twig-admin-theme": "dev-b-7.2.x",
+          "oxid-esales/apex-theme": "dev-b-7.2.x"
+        }
       }
-
-# BEGIN Deprecated, will be superseded by install:
-prepare_shop: *install
-
-install_shop:
-  matrix: *matrix
-  git: *git
-
-install_module:
-  matrix: *matrix
-  git:
-    module:
-      ref: *default_ref
-  composer: *composer
-# END Deprecated
 
 runscript:
   matrix: *matrix
@@ -54,41 +37,8 @@ runscript:
 runslim:
   matrix: *matrix_slim
 
-phpunit:
-  matrix: *matrix
-
-codeception:
-  matrix: *matrix
-  composer: *composer
-
-runtest:
-  matrix: *matrix
-  composer:
-    transform: |
-      {
-          "require-dev": {
-              "oxid-esales/tests-deprecated-ce": "dev-b-7.2.x",
-              "codeception/module-webdriver": "^3.1",
-              "phpunit/phpunit": "^9.1.1"
-          }
-      }
-
-
 sonarcloud:
   matrix: *matrix_slim
-
-phpcs_tests:
-  matrix: *matrix_slim
-
-phpmd:
-  matrix: *matrix_slim
-
-phpstan:
-  matrix: *matrix_slim
-
-styles:
-  matrix: *matrix_slim
-  composer: *composer
 
 finish:
   matrix: *matrix

@@ -1,5 +1,7 @@
 name: 'run_custom_scripts'
+
 description: 'Runs user defined scripts'
+
 inputs:
   container_name:
     type: string
@@ -36,10 +38,11 @@ inputs:
     description: 'If set, this will expose a GITHUB_TOKEN variable'
     default: ''
     required: false
+
 runs:
   using: "composite"
   steps:
-    - name: Run custom script
+    - name: 'Run custom script'
       if: ${{ inputs.custom_script != ''}}
       shell: bash
       run: |
@@ -50,7 +53,7 @@ runs:
         fi
         ${{ inputs.custom_script }}
 
-    - name: Run custom script inside the container
+    - name: 'Run custom script inside the container'
       if: ${{ inputs.custom_script_container != ''}}
       shell: bash
       run: |

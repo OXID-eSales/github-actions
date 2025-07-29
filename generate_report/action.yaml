@@ -1,5 +1,7 @@
 name: 'generate_report'
+
 description: 'Appends data to the job_status'
+
 inputs:
   prefix:
     type: string
@@ -36,7 +38,7 @@ runs:
   using: "composite"
   steps:
     - name: 'Consolidate testplan artifacts'
-      uses: 'OXID-eSales/github-actions/consolidate_artifacts@v4'
+      uses: 'OXID-eSales/github-actions/consolidate_artifacts@v5'
       with:
         target: 'testplan-${{inputs.prefix}}'
         pattern: 'testplan-${{inputs.prefix}}-*'
@@ -177,6 +179,7 @@ runs:
         }
         EOF
         fi
+
     - name: 'Generate cache objects list'
       id: cache_list
       shell: bash
@@ -191,7 +194,7 @@ runs:
           echo "cache_objects=" | tee -a "${GITHUB_OUTPUT}"
         fi
 
-    - name: Generate debug script
+    - name: 'Generate debug script'
       if: ${{ inputs.debug == 'true' }}
       shell: bash
       run: |
@@ -214,9 +217,9 @@ runs:
           chmod 0755 "${SCRIPT}.sh"
         done
 
-    - name: Send custom JSON data to Slack workflow
+    - name: 'Send custom JSON data to Slack workflow'
       if: ${{ inputs.slack_webhook != '' }}
-      uses: slackapi/slack-github-action@v1
+      uses: 'slackapi/slack-github-action@v1'
       with:
         payload-file-path: 'slack.json'
       env:
@@ -224,7 +227,7 @@ runs:
         SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
     - name: 'Update testplan artifacts'
-      uses: 'OXID-eSales/github-actions/consolidate_artifacts@v4'
+      uses: 'OXID-eSales/github-actions/consolidate_artifacts@v5'
       with:
         target: 'testplan-${{inputs.prefix}}'
         pattern: 'testplan-${{inputs.prefix}}-*'

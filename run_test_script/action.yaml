@@ -1,5 +1,7 @@
 name: 'run_test_script'
-description: 'Configures styles'
+
+description: 'Run a script defined in a composer.json or available as a batch file in tests/Scripts.'
+
 inputs:
   script_runner:
     type: string
@@ -47,7 +49,7 @@ inputs:
   output_artifact:
     type: string
     required: false
-    description: 'Github run artifact for the output'
+    description: 'GitHub run artifact for the output'
     default: 'run_test_script'
   debug:
     type: string
@@ -56,14 +58,14 @@ inputs:
     required: false
   github_token:
     type: string
-    description: 'Github token for composer'
+    description: 'GitHub token for composer'
     default: ''
     required: false
 
 runs:
   using: "composite"
   steps:
-    - name: Run ${{ inputs.script_runner }} script ${{ inputs.script }}
+    - name: 'Run ${{ inputs.script_runner }} script ${{ inputs.script }}'
       if: ${{ ! startsWith(inputs.script, '~/') }}
       shell: bash
       run: |
@@ -88,7 +90,7 @@ runs:
           ${{ inputs.container_name }} \
           ${{ inputs.script_runner }} ${{ inputs.script }}
 
-    - name: Run shell script
+    - name: 'Run shell script'
       if: ${{ startsWith(inputs.script, '~/' ) }}
       shell: bash
       run: |
@@ -122,7 +124,7 @@ runs:
           ${{ inputs.container_name }} \
           /var/www/${{ inputs.path }}/${SCRIPT}
 
-    - name: Output php error log
+    - name: 'Output php error log'
       if: always()
       shell: bash
       run: |
@@ -160,11 +162,11 @@ runs:
           docker logs -n 2000 $c &>source/${{ inputs.path }}/${TESTDIR}/Output/docker-$c.log
         done
 
-    - name: Upload artifact
+    - name: 'Upload artifact'
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: 'actions/upload-artifact@v4'
       with:
-        name: ${{ inputs.output_artifact }}
+        name: '${{ inputs.output_artifact }}'
         path: |
           source/${{ inputs.path }}/tests/Output/*
           source/${{ inputs.path }}/Tests/Output/*

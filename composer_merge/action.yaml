@@ -1,5 +1,7 @@
 name: 'composer_merge'
+
 description: 'This action merges json code into an existing composer.json'
+
 inputs:
   file:
     type: string
@@ -46,14 +48,14 @@ inputs:
     required: false
   github_token:
     type: string
-    description: 'Github token for composer'
+    description: 'GitHub token for composer'
     default: ''
     required: false
 
 runs:
   using: "composite"
   steps:
-    - name: Configure enterprise token
+    - name: 'Configure enterprise token'
       if: ${{ inputs.github_token != '' }}
       shell: bash
       run: |
@@ -64,7 +66,7 @@ runs:
           ${{ inputs.container_name}} \
           composer config -g github-oauth.github.com "${{ inputs.github_token }}"
 
-    - name: Create files
+    - name: 'Create files'
       shell: bash
       run: |
         # composer_merge: Create files
@@ -79,13 +81,14 @@ runs:
         echo -e "\033[0;35m### JSON to merge\033[0m"
         cat .composer_merge.tmp.json
 
-    - name: Merge files
+    - name: 'Merge files'
       uses: 'joernott/load_testplan@v1'
       with:
         files: '${{ inputs.file }},.composer_merge.tmp.json'
         input_type: 'json'
         json: '${{ inputs.file }}'
-    - name: Debug merge
+
+    - name: 'Debug merge'
       if: ${{ inputs.debug != '' }}
       shell: bash
       run: |
@@ -98,7 +101,7 @@ runs:
         cat '${{ inputs.file }}' >>debug/debug.sh
         echo -e "\nEOF" >>debug/debug.sh
 
-    - name: Cleanup
+    - name: 'Cleanup'
       shell: bash
       run: |
         # composer_merge: Cleanup

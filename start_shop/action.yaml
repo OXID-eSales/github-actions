@@ -1,5 +1,7 @@
 name: 'start_shop'
+
 description: 'Fetches a shop from cache and starts it'
+
 inputs:
   runs_on:
     type: string
@@ -63,10 +65,10 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Load cached shop from S3
+    - name: 'Load cached shop from S3'
       if: ${{ inputs.runs_on != '"ubuntu-latest"'}}
       id: load_installed_shop_s3
-      uses: tespkg/actions-cache/restore@v1
+      uses: 'tespkg/actions-cache/restore@v1'
       with:
         path: |
           ./*
@@ -78,16 +80,16 @@ runs:
         secretKey: ${{ inputs.cache_secret_key }}
         bucket: ${{ inputs.cache_bucket }}
 
-    - name: Load cached testplan from Github
+    - name: 'Load cached testplan from GitHub'
       if: ${{ inputs.runs_on == '"ubuntu-latest"'}}
       id: load_installed_shop_gh
-      uses: actions/cache/restore@v4
+      uses: 'actions/cache/restore@v4'
       with:
         path: |
           ./*
         key: ${{ inputs.cached_shop }}
 
-    - name: Confirm restore
+    - name: 'Confirm restore'
       shell: bash
       run: |
         # start_shop: Confirm restore
@@ -98,21 +100,21 @@ runs:
           echo -e "\033[0;32m### Load ${{ inputs.cached_shop }} from cache: SUCCESS\033[0m"
         fi
 
-    - name: Debug load cached shop
+    - name: 'Debug load cached shop'
       if: ${{ inputs.debug != '' }}
       shell: bash
       run: |
         # start_shop: Debug load cached shop
         echo "restore_cache '${{ inputs.cached_shop }}'" >debug/debug.sh
 
-    - name: Login to Docker Hub
+    - name: 'Login to Docker Hub'
       if: ${{ inputs.docker_login == 'true' && inputs.docker_user != '' }}
-      uses: docker/login-action@v3
+      uses: 'docker/login-action@v3'
       with:
         username: ${{ inputs.docker_user }}
         password: ${{ inputs.docker_token }}
 
-    - name: Warn on missing docker credentials
+    - name: 'Warn on missing docker credentials'
       if: ${{ inputs.docker_login == 'true' && inputs.docker_user == '' }}
       shell: bash
       run: |
@@ -120,7 +122,7 @@ runs:
         MSG="Please set the repository secrets DOCKER_HUB_USER and DOCKER_HUB_TOKEN to avoid running into docker.io rate limiting"
         echo "::warning title=Missing secrets::${MSG}"
 
-    - name: Start containers
+    - name: 'Start containers'
       shell: bash
       run: |
         # start_shop: Start containers
@@ -128,7 +130,7 @@ runs:
         echo -e "\033[0;35m### Starting containers\033[0m"
         make up
 
-    - name: Output docker logs if make up failed
+    - name: 'Output docker logs if make up failed'
       if: failure()
       shell: bash
       run: |
@@ -141,7 +143,7 @@ runs:
           docker logs -n 200 $c
         done
 
-    - name: Wait for selenium
+    - name: 'Wait for selenium'
       if: ${{ inputs.wait_for_selenium == 'true' }}
       shell: bash
       run: |
