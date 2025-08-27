@@ -90,7 +90,7 @@ global:
   # composer_require actions
   composer: &composer
     # This is just a definition we can apply in later configs.
-    # It will be overwritten by the 7.0.x and 7.1.x templates
+    # It will be overwritten by templates like 7.0.x or 7.1.x
     # and can be used by referencing .Data.global.composer.dev_ref
     dev_ref: dev-b-8.0.x
 
