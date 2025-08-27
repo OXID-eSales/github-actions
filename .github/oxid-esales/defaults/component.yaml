@@ -3,7 +3,6 @@ install:
   cache:
     prepared_shop: false
   git:
-    repository: '{{ .Data.global.repo }}'
     ref: '{{ .Data.install.git.safe_ref_name }}'
   composer:
     root_url: ''
