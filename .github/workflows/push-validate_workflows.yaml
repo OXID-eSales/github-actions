@@ -36,7 +36,7 @@ jobs:
     steps:
       - name: 'Checkout'
         id: checkout
-        uses: 'actions/checkout@v4'
+        uses: 'actions/checkout@v5'
 
       - name: 'Lint yaml files'
         id: yamllint
@@ -76,7 +76,7 @@ jobs:
     steps:
       - name: 'Checkout'
         id: checkout
-        uses: 'actions/checkout@v4'
+        uses: 'actions/checkout@v5'
 
       - name: 'Run actionlint'
         id: actionlint
