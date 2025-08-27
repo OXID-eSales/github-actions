@@ -202,30 +202,12 @@ runs:
       run: |
         # prepare_shop: Clone ${{ inputs.git_repository }} (${{ inputs.git_ref }})
         ${{ inputs.debug }}
-        if [ '${{ inputs.git_repository }}' != '' ]; then
-          if [ -n "${{ inputs.enterprise_github_token }}" ]; then
-            URL="https://oxidci:${{ inputs.enterprise_github_token }}@github.com/${{ inputs.git_repository }}.git"
-          else
-            URL="https://github.com/${{ inputs.git_repository }}.git"
-          fi
+        if [ -n "${{ inputs.enterprise_github_token }}" ]; then
+          URL="https://oxidci:${{ inputs.enterprise_github_token }}@github.com/${{ inputs.git_repository }}.git"
         else
-          # Deprecated for v5 Remove this else part and eliminate the if construct
-          echo -e "\e[0;32m git_shop_url is deprecated, switch to git_repository"
-          echo "::warning file=${{ github.workflow_ref}},title=Deprecation warning::git_shop_url is deprecated, switch to git_repository"
-          URL="${{ inputs.git_shop_url }}"
-          if [ -n "${{ inputs.enterprise_github_token }}" ]; then
-            REPO=$(echo '${{ inputs.git_shop_url }}'|sed -e 's|.*github.com/||')
-            URL="https://oxidci:${{ inputs.enterprise_github_token }}@github.com/${REPO}"
-          fi
+          URL="https://github.com/${{ inputs.git_repository }}.git"
         fi
-        if [ '${{ inputs.git_ref }}'  != '' ]; then
-          REF='${{ inputs.git_ref }}'
-        else
-          # Deprecated for v5 Remove this else part and eliminate the if construct
-          echo -e "\e[0;32m git_shop_url is deprecated, switch to git_repository"
-          echo "::warning file=${{ github.workflow_ref}},title=Deprecation warning::git_shop_url is deprecated, switch to git_repository"
-          REF='${{ inputs.git_shop_ref }}'
-        fi
+        REF='${{ inputs.git_ref }}'
         echo -e "\033[0;35m###  Cloning ${REF} ###\033[0m"
         git clone --depth 2 "${URL}" --branch "${REF}" --single-branch source
 
