@@ -23,15 +23,15 @@ install:
           "ddoe/*": "source"
         },
         "require": {
-          "oxid-esales/oxideshop-pe": "{{ .Data.global.composer.ref_name }}",
-          "oxid-esales/twig-component": "{{ .Data.global.composer.ref_name }}",
-          "oxid-esales/twig-component-pe": "{{ .Data.global.composer.ref_name }}",
-          "oxid-esales/twig-admin-theme": "{{ .Data.global.composer.ref_name }}",
-          "oxid-esales/apex-theme": "{{ .Data.global.composer.ref_name }}"
+          "oxid-esales/oxideshop-pe": "{{ .Data.install.composer.ref_name }}",
+          "oxid-esales/twig-component": "{{ .Data.install.composer.ref_name }}",
+          "oxid-esales/twig-component-pe": "{{ .Data.install.composer.ref_name }}",
+          "oxid-esales/twig-admin-theme": "{{ .Data.install.composer.ref_name }}",
+          "oxid-esales/apex-theme": "{{ .Data.install.composer.ref_name }}"
         },
         "require-dev": {
-          "oxid-esales/codeception-modules": "{{ .Data.global.composer.ref_name }}",
-          "oxid-esales/codeception-page-objects": "{{ .Data.global.composer.ref_name }}"
+          "oxid-esales/codeception-modules": "{{ .Data.install.composer.ref_name }}",
+          "oxid-esales/codeception-page-objects": "{{ .Data.install.composer.ref_name }}"
         },
         "repositories": {
           "oxid-esales/twig-component-pe": {
