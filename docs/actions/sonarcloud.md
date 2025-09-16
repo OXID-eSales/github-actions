@@ -47,6 +47,10 @@ Output files of the sonarcloud run to put into the output artifact.
 **output_artifact:** *not required*, *default:* 'sonarcloud-artifacts'  
 GitHub run artifact to put the output files in.
 
+**run_cleanup:** *not required*, *default:* true
+Whether to clean up coverage artifacts after processing. Set to false for
+parallel jobs to prevent race conditions.
+
 **debug:** *not required*, *default:* ''  
 Set to true to generate a debugging script.
 

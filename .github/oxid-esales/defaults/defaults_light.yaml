@@ -365,6 +365,8 @@ sonarcloud:
   coverage:
     prefix: coverage-report
   target_branch: b-8.0.x
+  # Whether to clean up artifacts after processing
+  run_cleanup: true
 
   # Part of the absolute path to strip from the paths inside the coverage.xml,
   # This ist /var/www/ (note the trailing slash) for the shop and should be set to
