@@ -96,9 +96,7 @@ runs:
           # diff -y --color=always "${FILE}.orig" "${FILE}" || true
         done
         # remove leading comma when adding this
-        if [ -n "${COVERAGE_FILES:1}" ]; then
-          echo "COVERAGE_PARAM=-Dsonar.php.coverage.reportPaths=${COVERAGE_FILES:1}"| tee -a "${GITHUB_ENV}"
-        fi
+        echo "COVERAGE_PARAM=-Dsonar.php.coverage.reportPaths=${COVERAGE_FILES:1}"| tee -a "${GITHUB_ENV}"
         PHPUNIT_FILES=""
         for FILE in $(find coverage-reports -iname 'phpunit*.xml'); do
           echo -e "\033[0;35mFixing paths in ${FILE}\033[0m"
@@ -123,6 +121,10 @@ runs:
         if [ -n "${PHPSTAN_FILES:1}" ]; then
           echo "PHPSTAN_PARAM=-Dsonar.php.phpstan.reportPaths=${PHPSTAN_FILES:1}"| tee -a "${GITHUB_ENV}"
         fi
+        if [ -z "${COVERAGE_FILES:1}${PHPUNIT_FILES:1}${PHPSTAN_FILES:1}" ]; then
+          echo -e "\033[0;31m### No input files found for SonarCloud ###\033[0m"
+          exit 1
+        fi
 
     - name: 'Upload consolidated artifact'
       uses: 'actions/upload-artifact@v4'
@@ -145,7 +147,7 @@ runs:
         # sonarcloud: Set target branch
         ${{ inputs.debug }}
         TARGET_BRANCH_PARAM="-Dsonar.branch.target=${{ inputs.target_branch }}"
-        if [ "${{ github.ref_name}}" == "${{ github.event.repository.default_branch }}" ]; then
+        if [ "${{ github.ref_name }}" == "${{ github.event.repository.default_branch }}" ]; then
           TARGET_BRANCH_PARAM=""
         fi
         echo "TARGET_BRANCH_PARAM=$TARGET_BRANCH_PARAM" >> $GITHUB_ENV
