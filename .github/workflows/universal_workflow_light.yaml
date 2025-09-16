@@ -1179,6 +1179,7 @@ jobs:
           sonar_token: ${{ secrets.SONAR_TOKEN }}
           github_token: ${{ github.token }}
           debug: ${{ needs.init.outputs.debug }}
+          run_cleanup: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_run_cleanup }}
 
       - name: 'Write Report'
         if: always()

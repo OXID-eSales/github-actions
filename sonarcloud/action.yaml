@@ -66,6 +66,11 @@ inputs:
     required: false
     description: 'GitHub run artifact for the sonarcloud output'
     default: 'sonarcloud-artifacts'
+  run_cleanup:
+    type: boolean
+    required: false
+    description: 'Whether to clean up coverage artifacts after processing'
+    default: true
   debug:
     type: string
     description: 'Appended to debugging scripts'
@@ -135,6 +140,7 @@ runs:
         overwrite: true
 
     - name: 'Remove old artifacts'
+      if: ${{ inputs.run_cleanup == 'true' }}
       uses: 'joernott/rm-artifact@v1'
       with:
         name: '${{ inputs.coverage_artifact }}'
