@@ -34,16 +34,16 @@ workflow:
   # a matrix of all combinations of these values for testing.
   matrix: &matrix
     # This string contains a JSON array of php versions to test against.
-    php: '["8.2","8.3"]'
+    php: '["8.3","8.4"]'
 
     # This string contains a JSON array of mysql versions to test
-    mysql: '["mysql-5.7","mysql-8.0.36"]'
+    mysql: '["mysql-8.0.36","mysql-8.4"]'
 
   # This matrix definition is used when we only want one analysis done.
   # It covers the recommended combination of PHP and MySQL
   matrix_slim: &matrix_slim
-    php: '["8.2"]'
-    mysql: '["mysql-8.0.36"]'
+    php: '["8.4"]'
+    mysql: '["mysql-8.4"]'
     testplan: 'skip'
     script: 'skip'
 
