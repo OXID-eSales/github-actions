@@ -166,7 +166,7 @@ runs:
         cat >debug/debug.sh <<EODS
           banner "sonarcloud: Debug sonarcloud Scan (simulated)"
           cat <<'EOF'
-          # would call SonarSource/sonarqube-scan-action@v5
+          # would call SonarSource/sonarqube-scan-action@v6
           -Dsonar.organization=${{ inputs.sonarcloud_organization }}
           -Dsonar.projectKey=${{ inputs.sonarcloud_project_key }}
           -Dsonar.projectName=${{ inputs.sonarcloud_project_name }}
@@ -180,7 +180,7 @@ runs:
         EODS
 
     - name: 'SonarCloud Scan'
-      uses: 'SonarSource/sonarqube-scan-action@v5'
+      uses: 'SonarSource/sonarqube-scan-action@v6'
       env:
         SONAR_TOKEN: ${{ inputs.sonar_token }}
         GITHUB_TOKEN: ${{ inputs.github_token }}
