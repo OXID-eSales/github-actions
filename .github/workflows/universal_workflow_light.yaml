@@ -152,7 +152,7 @@ jobs:
 
       - name: 'Cache testplan on Github'
         if: ${{ inputs.runs_on == '"ubuntu-latest"'}}
-        uses: 'actions/cache/save@v4'
+        uses: 'actions/cache/save@v5'
         with:
           path: |
             ${{ inputs.plan_folder }}/*
@@ -500,7 +500,7 @@ jobs:
 
       - name: 'Cache preparedShop on github'
         if: ${{ steps.iltp.outputs.install_cache_prepared_shop == 'true' && needs.init.outputs.use_private_cache != 'true'}}
-        uses: 'actions/cache/save@v4'
+        uses: 'actions/cache/save@v5'
         with:
           path: |
             ./*
@@ -661,7 +661,7 @@ jobs:
 
       - name: 'Cache current installation on github'
         if: ${{ needs.init.outputs.use_private_cache != 'true' }}
-        uses: 'actions/cache/save@v4'
+        uses: 'actions/cache/save@v5'
         with:
           path: |
             ./*
