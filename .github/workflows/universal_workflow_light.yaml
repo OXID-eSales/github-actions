@@ -609,7 +609,7 @@ jobs:
 
       - name: 'Upload configuration artifacts'
         if: always()
-        uses: 'actions/upload-artifact@v4'
+        uses: 'actions/upload-artifact@v6'
         with:
           name: '${{ steps.iltp.outputs.install_output_artifact_prefix }}-${{steps.itn.outputs.matrix_suffix}}'
           path: |-
@@ -867,7 +867,7 @@ jobs:
 
       - name: 'Upload coverage report'
         if: ${{ always() && steps.rt.outputs.runscript_coverage_prefix != '' }}
-        uses: 'actions/upload-artifact@v4'
+        uses: 'actions/upload-artifact@v6'
         with:
           name: ${{ steps.rt.outputs.runscript_coverage_prefix}}-${{steps.rt.outputs.runscript_suffix }}
           path: source/${{ steps.rt.outputs.runscript_path }}/tests/Reports/*
@@ -1064,7 +1064,7 @@ jobs:
 
       - name: 'Upload coverage report'
         if: ${{ always() && steps.rt.outputs.runslim_coverage_prefix != '' }}
-        uses: 'actions/upload-artifact@v4'
+        uses: 'actions/upload-artifact@v6'
         with:
           name: ${{ steps.rt.outputs.runslim_coverage_prefix}}-${{steps.rt.outputs.runslim_suffix }}
           path: source/${{ steps.rt.outputs.runslim_path }}/tests/Reports/*
