@@ -138,6 +138,11 @@ inputs:
     required: false
     description: 'OAuth token to access enterprise repos'
     default: ''
+  composer_version:
+    type: string
+    required: false
+    description: 'Composer version (e.g., 2.8.12). Empty = use docker image default'
+    default: ''
   docker_login:
     type: boolean
     required: false
@@ -309,6 +314,19 @@ runs:
           ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
+
+    - name: 'Set Composer version'
+      if: ${{ inputs.composer_version != '' }}
+      shell: bash
+      run: |
+        # prepare_shop: Set Composer version
+        ${{ inputs.debug }}
+        echo -e "\033[0;35mSetting Composer to version ${{ inputs.composer_version }}\033[0m"
+        docker compose ${{ inputs.container_method }} -T \
+          -u root \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container_name }} \
+          composer self-update ${{ inputs.composer_version }}
 
     - name: 'Modify composer.json'
       if: ${{ inputs.composer_transform != '' }}
