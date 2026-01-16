@@ -324,6 +324,7 @@ jobs:
           composer_update: ${{ steps.iltp.outputs.install_composer_update}}
           composer_update_options: ${{ steps.iltp.outputs.install_composer_update_options}}
           composer_dev_ref: ${{ steps.iltp.outputs.install_composer_dev_ref}}
+          composer_version: ${{ steps.iltp.outputs.install_composer_version }}
           enterprise_github_token: ${{ secrets.enterprise_github_token || github.token }}
           copy_script_targets: ${{ steps.iltp.outputs.install_copy_script_targets }}
           debug: ${{ needs.init.outputs.debug }}

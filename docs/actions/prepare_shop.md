@@ -91,6 +91,11 @@ Options to pass along to composer during installation.
 **composer_dev_ref:** *not required*, *default:* 'dev-b-8.0.x'  
 Development package reference.
 
+**composer_version:** *not required*, *default:* `''`  
+Composer version (e.g., '2.8.12'). When specified, runs `composer self-update`
+to set the desired version before any composer commands. Leave empty to use the
+default version from the Docker image.
+
 **enterprise_github_token:** *not required*, *default:* `''`  
 OAuth token to access enterprise repos. This should be populated with
 \${{ secrets.enterprise_github_token }} and will be hidden by GitHub.

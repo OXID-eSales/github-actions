@@ -123,6 +123,9 @@ global:
     # Options for composer update
     update_options: '--no-interaction'
 
+    # Composer version (e.g., 2.8.12). Empty = use docker image default
+    version: ''
+
   # This grep pattern is applied to the generated phpunit, Codeception, and runtest log file. If we have
   # a hit matching the pattern below, the step will fail.
   failure_pattern: |
