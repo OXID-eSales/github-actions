@@ -299,7 +299,7 @@ jobs:
 
       - name: 'Prepare Shop'
         id: prepare_shop
-        uses: 'OXID-eSales/github-actions/prepare_shop@v0'
+        uses: 'OXID-eSales/github-actions/prepare_shop@v5'
         with:
           container_name: ${{ steps.iltp.outputs.install_container_name }}
           container_options: ${{ steps.iltp.outputs.install_container_options }}
