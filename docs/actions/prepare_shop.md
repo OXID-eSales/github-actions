@@ -57,7 +57,7 @@ They should be provided if available.
 github.run_number and github.run_attempts are used in generating the cache id.
 They should be provided if available.
 
-**php:** *not required*, *default:* '8.2'  
+**php:** *not required*, *default:* '8.5'  
 Version of PHP for this instance.
 
 **mysql:** *not required*, *default:* 'mysql-8.0.36'  

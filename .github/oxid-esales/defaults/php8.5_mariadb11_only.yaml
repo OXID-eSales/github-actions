@@ -1,0 +1,10 @@
+install: &install
+  matrix:
+    php: '["8.5"]'
+    mysql: '["mariadb-11"]'
+
+runscript: *install
+
+runslim: *install
+
+sonarcloud: *install

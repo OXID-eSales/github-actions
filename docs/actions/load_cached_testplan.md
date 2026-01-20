@@ -7,7 +7,7 @@ Fetches the testplan and sets environment variables accordingly.
 **runs_on** *required*  
 JSON string or array describing the runner.
 
-**php** *optional*, *default:* `8.2`  
+**php** *optional*, *default:* `8.5`  
 Version of PHP for this instance.
 
 **mysql** *optional*, *default:* `mysql-8.0.36`  

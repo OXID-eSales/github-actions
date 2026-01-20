@@ -34,7 +34,7 @@ workflow:
   # a matrix of all combinations of these values for testing.
   matrix: &matrix
     # This string contains a JSON array of php versions to test against.
-    php: '["8.3","8.4"]'
+    php: '["8.4","8.5"]'
 
     # This string contains a JSON array of mysql versions to test
     mysql: '["mysql-8.0.36","mysql-8.4"]'
@@ -42,7 +42,7 @@ workflow:
   # This matrix definition is used when we only want one analysis done.
   # It covers the recommended combination of PHP and MySQL
   matrix_slim: &matrix_slim
-    php: '["8.4"]'
+    php: '["8.5"]'
     mysql: '["mysql-8.4"]'
     testplan: 'skip'
     script: 'skip'
@@ -342,8 +342,8 @@ runslim:
 sonarcloud:
   # We only run sonarcloud for one of the matrix combinations of PHP/MySQL
   matrix:
-    php: '["8.1"]'
-    mysql: '["mysql-5.7"]'
+    php: '["8.5"]'
+    mysql: '["mysql-8.4"]'
     testplan: '["-"]'
 
   # There is only one matrix combination
