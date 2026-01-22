@@ -72,7 +72,7 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Checkout testplan defaults'
-        uses: 'actions/checkout@v5'
+        uses: 'actions/checkout@v6'
         with:
           repository: 'OXID-eSales/github-actions'
           ref: '${{ inputs.defaults }}'
@@ -80,7 +80,7 @@ jobs:
           sparse-checkout: '${{ inputs.default_plan_folder }}'
 
       - name: 'Checkout testplans'
-        uses: 'actions/checkout@v5'
+        uses: 'actions/checkout@v6'
         with:
           sparse-checkout: |
             ${{ inputs.plan_folder}}
@@ -152,7 +152,7 @@ jobs:
 
       - name: 'Cache testplan on Github'
         if: ${{ inputs.runs_on == '"ubuntu-latest"'}}
-        uses: 'actions/cache/save@v4'
+        uses: 'actions/cache/save@v5'
         with:
           path: |
             ${{ inputs.plan_folder }}/*
@@ -501,7 +501,7 @@ jobs:
 
       - name: 'Cache preparedShop on github'
         if: ${{ steps.iltp.outputs.install_cache_prepared_shop == 'true' && needs.init.outputs.use_private_cache != 'true'}}
-        uses: 'actions/cache/save@v4'
+        uses: 'actions/cache/save@v5'
         with:
           path: |
             ./*
@@ -610,7 +610,7 @@ jobs:
 
       - name: 'Upload configuration artifacts'
         if: always()
-        uses: 'actions/upload-artifact@v4'
+        uses: 'actions/upload-artifact@v6'
         with:
           name: '${{ steps.iltp.outputs.install_output_artifact_prefix }}-${{steps.itn.outputs.matrix_suffix}}'
           path: |-
@@ -662,7 +662,7 @@ jobs:
 
       - name: 'Cache current installation on github'
         if: ${{ needs.init.outputs.use_private_cache != 'true' }}
-        uses: 'actions/cache/save@v4'
+        uses: 'actions/cache/save@v5'
         with:
           path: |
             ./*
@@ -868,7 +868,7 @@ jobs:
 
       - name: 'Upload coverage report'
         if: ${{ always() && steps.rt.outputs.runscript_coverage_prefix != '' }}
-        uses: 'actions/upload-artifact@v4'
+        uses: 'actions/upload-artifact@v6'
         with:
           name: ${{ steps.rt.outputs.runscript_coverage_prefix}}-${{steps.rt.outputs.runscript_suffix }}
           path: source/${{ steps.rt.outputs.runscript_path }}/tests/Reports/*
@@ -1065,7 +1065,7 @@ jobs:
 
       - name: 'Upload coverage report'
         if: ${{ always() && steps.rt.outputs.runslim_coverage_prefix != '' }}
-        uses: 'actions/upload-artifact@v4'
+        uses: 'actions/upload-artifact@v6'
         with:
           name: ${{ steps.rt.outputs.runslim_coverage_prefix}}-${{steps.rt.outputs.runslim_suffix }}
           path: source/${{ steps.rt.outputs.runslim_path }}/tests/Reports/*
@@ -1148,7 +1148,7 @@ jobs:
 
       - name: 'Checkout shop'
         if: ${{ env.SONAR_TOKEN != '' }}
-        uses: 'actions/checkout@v5'
+        uses: 'actions/checkout@v6'
         with:
           fetch-depth: 0
           repository: '${{ steps.sonarcloud_testplan.outputs.sonarcloud_git_repository }}'
@@ -1205,7 +1205,7 @@ jobs:
     steps:
       - name: 'Checkout'
         id: checkout
-        uses: 'actions/checkout@v5'
+        uses: 'actions/checkout@v6'
 
       - name: 'Lint yaml files'
         id: yamllint
@@ -1282,7 +1282,7 @@ jobs:
           debug: ${{ inputs.debug }}
 
       - name: 'Checkout the repo for cleanup'
-        uses: 'actions/checkout@v5'
+        uses: 'actions/checkout@v6'
         with:
           path: repo
 
