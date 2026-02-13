@@ -1,0 +1,13 @@
+install: &install
+  matrix:
+    php: '["8.2","8.4"]'
+    mysql: '["mariadb-11"]'
+
+runscript: *install
+
+runslim: *install
+
+sonarcloud:
+  matrix:
+    php: '["8.4"]'
+    mysql: '["mariadb-11"]'
