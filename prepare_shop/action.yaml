@@ -78,6 +78,21 @@ inputs:
     required: false
     description: 'Current branch (github.ref_name) for modifying composer.json'
     default: ''
+  external_git_host:
+    type: string
+    required: false
+    description: 'Full hostname of external private git server (e.g. git.company.com) for HTTP basic authentication'
+    default: ''
+  external_git_username:
+    type: string
+    required: false
+    description: 'external_git_username for 3rd party git login'
+    default: ''
+  external_git_password:
+    type: string
+    required: false
+    description: 'external_git_password for 3rd party git login'
+    default: ''
   php:
     type: string
     required: false
@@ -314,6 +329,17 @@ runs:
           ${{ inputs.container_options }} \
           ${{ inputs.container_name}} \
           composer config -g github-oauth.github.com "${{ inputs.enterprise_github_token }}"
+
+    - name: Configure external git repository
+      if: ${{ inputs.external_git_host != '' }}
+      shell: bash
+      run: |
+        # prepare_shop: Configure external git repository
+        ${{ inputs.debug }}
+        docker compose ${{ inputs.container_method }} -T \
+          ${{ inputs.container_options }} \
+          ${{ inputs.container_name}} \
+          composer config -g http-basic.${{ inputs.external_git_host }} "${{ inputs.external_git_username }}" "${{ inputs.external_git_password }}"
 
     - name: 'Set Composer version'
       if: ${{ inputs.composer_version != '' }}
