@@ -111,6 +111,19 @@ Populate with \${{ secrets.DOCKER_HUB_USER }}, GitHub will hide its content.
 Needed for docker login.
 Populate with \${{ secrets.DOCKER_HUB_TOKEN }}, GitHub will hide its content.
 
+**external_git_host:** *not required*, *default:* `''`  
+Hostname of an external private git server requiring HTTP basic authentication (e.g. `git.company.com`).
+When set, configures composer with the provided credentials for this host before running `composer update`.
+Populate with \${{ secrets.EXTERNAL_GIT_HOST }}, GitHub will hide its content.
+
+**external_git_username:** *not required*, *default:* `''`  
+Username for HTTP basic authentication on the external git host.
+Populate with \${{ secrets.EXTERNAL_GIT_USERNAME }}, GitHub will hide its content.
+
+**external_git_password:** *not required*, *default:* `''`  
+Password or token for HTTP basic authentication on the external git host.
+Populate with \${{ secrets.EXTERNAL_GIT_PASSWORD }}, GitHub will hide its content.
+
 **copy_script_targets:** *not required*, *default:* 'tests/scripts'  
 Copy the test scripts to these target folders.
 
