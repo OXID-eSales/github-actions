@@ -35,9 +35,6 @@ debugging scripts can be run locally.
 This allows for dynamic passing of YAML code containing variables. The provided multiline string
 will be stored in {plan_folder}/_custom.yaml and can be used in the testplan argument as ~/_custom.yaml.
 
-**use_scheduled_slack_channel:** *not required*, *default:* true  
-If this is set to true and the secret SLACK_SCHEDULED_WEBHOOK_URL is provided, the Slack notification is sent to the channel specified by SLACK_SCHEDULED_WEBHOOK_URL instead of the channel specified by SLACK_WEBHOOK_URL.
-
 ## Secrets
 
 **DOCKER_HUB_USER:**  
@@ -64,5 +61,13 @@ Token to submit sonarcloud reports to their website
 **SLACK_WEBHOOK_URL:**  
 URL for the Slack API to send reports to.
 
-**SLACK_WEBHOOK_URL:**  
-URL for the Slack API to send reports to if the input use_scheduled_slack_channel is set to true.
+**EXTERNAL_GIT_HOST:**
+Hostname of an external private git server requiring HTTP basic authentication. When set, composer is
+configured with the provided credentials for this host during shop installation and before each composer
+run in the `runscript` and `runslim` jobs (credentials are re-applied as containers start fresh from cache).
+
+**EXTERNAL_GIT_USERNAME:**
+Username for HTTP basic authentication on the external git host.
+
+**EXTERNAL_GIT_PASSWORD:**
+Password or token for HTTP basic authentication on the external git host.

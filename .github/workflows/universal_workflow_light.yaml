@@ -66,6 +66,15 @@ on:
       SLACK_WEBHOOK_URL:
         required: false
         # description: Webhook for posting to SLACK
+      EXTERNAL_GIT_HOST:
+        required: false
+        # description: external git host
+      EXTERNAL_GIT_USERNAME:
+        required: false
+        # description: external git username
+      EXTERNAL_GIT_PASSWORD:
+        required: false
+        # description: external git password
 
 jobs:
   init:
@@ -313,6 +322,9 @@ jobs:
           git_ref: ${{ steps.iltp.outputs.install_git_ref }}
           compilation_url: ${{ steps.iltp.outputs.install_composer_root_url }}
           github_ref_name: ${{ github.ref_name }}
+          external_git_host: ${{ secrets.EXTERNAL_GIT_HOST }}
+          external_git_username: ${{ secrets.EXTERNAL_GIT_USERNAME }}
+          external_git_password: ${{ secrets.EXTERNAL_GIT_PASSWORD }}
           php: ${{ matrix.php }}
           mysql: ${{ matrix.mysql }}
           custom_ini_error_reporting: ${{ steps.iltp.outputs.install_custom_ini_error_reporting }}
@@ -827,12 +839,20 @@ jobs:
         # Only run this if there is no transformation and composer_early is set to 'false'
         if: ${{ steps.rt.outputs.runscript_composer_transform == '' && steps.rt.outputs.runscript_composer_early == 'false' }}
         run: |
-          # run composer
+          # set oauth
           ${{ inputs.debug }}
           docker compose exec -T \
             ${{ steps.rt.outputs.runscript_container_options }} \
             ${{ steps.rt.outputs.runscript_container_name }} \
             composer config -g github-oauth.github.com "${{ secrets.enterprise_github_token || github.token }}"
+          # set http-basic
+          if [ -n "${{ secrets.EXTERNAL_GIT_HOST }}" ]; then
+            docker compose exec -T \
+              ${{ steps.rt.outputs.runscript_container_options }} \
+              ${{ steps.rt.outputs.runscript_container_name }} \
+              composer config -g http-basic.${{ secrets.EXTERNAL_GIT_HOST }} "${{ secrets.EXTERNAL_GIT_USERNAME }}" "${{ secrets.EXTERNAL_GIT_PASSWORD }}"
+          fi
+          #run composer
           docker compose exec -T \
             ${{ steps.rt.outputs.runscript_container_options }} \
             ${{ steps.rt.outputs.runscript_container_name }} \
@@ -1032,6 +1052,13 @@ jobs:
             ${{ steps.rt.outputs.runslim_container_options }} \
             ${{ steps.rt.outputs.runslim_container_name }} \
             composer config -g github-oauth.github.com "${{ secrets.enterprise_github_token || github.token }}"
+          # set http-basic
+          if [ -n "${{ secrets.EXTERNAL_GIT_HOST }}" ]; then
+            docker compose exec -T \
+              ${{ steps.rt.outputs.runslim_container_options }} \
+              ${{ steps.rt.outputs.runslim_container_name }} \
+              composer config -g http-basic.${{ secrets.EXTERNAL_GIT_HOST }} "${{ secrets.EXTERNAL_GIT_USERNAME }}" "${{ secrets.EXTERNAL_GIT_PASSWORD }}"
+          fi
           docker compose exec -T \
             ${{ steps.rt.outputs.runslim_container_options }} \
             ${{ steps.rt.outputs.runslim_container_name }} \
