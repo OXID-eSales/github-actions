@@ -27,4 +27,15 @@ updates:
       - "/stop_shop"
       - "/yamllint"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "monday"
+    cooldown:
+      semver-major-days: 7
+    groups:
+      major-updates:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        update-types:
+          - "major"
+        group-by: dependency-name
