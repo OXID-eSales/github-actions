@@ -132,7 +132,7 @@ runs:
         fi
 
     - name: 'Upload consolidated artifact'
-      uses: 'actions/upload-artifact@v4'
+      uses: 'actions/upload-artifact@v7'
       with:
         name: '${{ inputs.output_artifact }}'
         path: 'coverage-reports'
@@ -166,7 +166,7 @@ runs:
         cat >debug/debug.sh <<EODS
           banner "sonarcloud: Debug sonarcloud Scan (simulated)"
           cat <<'EOF'
-          # would call SonarSource/sonarqube-scan-action@v6
+          # would call SonarSource/sonarqube-scan-action@v7
           -Dsonar.organization=${{ inputs.sonarcloud_organization }}
           -Dsonar.projectKey=${{ inputs.sonarcloud_project_key }}
           -Dsonar.projectName=${{ inputs.sonarcloud_project_name }}
@@ -180,7 +180,7 @@ runs:
         EODS
 
     - name: 'SonarCloud Scan'
-      uses: 'SonarSource/sonarqube-scan-action@v6'
+      uses: 'SonarSource/sonarqube-scan-action@v7'
       env:
         SONAR_TOKEN: ${{ inputs.sonar_token }}
         GITHUB_TOKEN: ${{ inputs.github_token }}

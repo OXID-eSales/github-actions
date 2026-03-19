@@ -47,7 +47,7 @@ runs:
         name: '${{ inputs.target }}'
 
     - name: 'Upload consolidated artifact'
-      uses: 'actions/upload-artifact@v4'
+      uses: 'actions/upload-artifact@v7'
       with:
         name: '${{ inputs.target }}'
         path: ${{ inputs.path }}

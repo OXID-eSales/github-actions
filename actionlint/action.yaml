@@ -28,7 +28,7 @@ runs:
   steps:
     - name: 'Checkout'
       id: checkout
-      uses: 'actions/checkout@v4'
+      uses: 'actions/checkout@v6'
 
     - name: 'Generate custom config'
       id: generate_custom_config
@@ -78,7 +78,7 @@ runs:
 
     - name: 'Upload artifact'
       if: always()
-      uses: 'actions/upload-artifact@v4'
+      uses: 'actions/upload-artifact@v7'
       with:
         name: '${{ inputs.output_artifact }}'
         include-hidden-files: true
