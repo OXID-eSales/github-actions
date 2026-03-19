@@ -39,3 +39,7 @@ updates:
         update-types:
           - "major"
         group-by: dependency-name
+    ignore:
+      # v2 is a full API rewrite with multiple breaking changes, not ready
+      - dependency-name: "slackapi/slack-github-action"
+        update-types: ["version-update:semver-major"]
