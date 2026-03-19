@@ -8,6 +8,23 @@ updates:
 
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
-    directory: "/"
+    directories:
+      - "/"
+      - "/actionlint"
+      - "/append_report"
+      - "/begin_report"
+      - "/build_docker"
+      - "/clean_cache"
+      - "/composer_merge"
+      - "/consolidate_artifacts"
+      - "/generate_report"
+      - "/load_cached_testplan"
+      - "/prepare_shop"
+      - "/run_custom_scripts"
+      - "/run_test_script"
+      - "/sonarcloud"
+      - "/start_shop"
+      - "/stop_shop"
+      - "/yamllint"
     schedule:
       interval: "daily"
