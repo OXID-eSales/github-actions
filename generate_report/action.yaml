@@ -222,9 +222,8 @@ runs:
       uses: 'slackapi/slack-github-action@v2'
       with:
         method: incoming-webhook
+        token: ${{ inputs.slack_webhook }}
         payload-file-path: 'slack.json'
-      env:
-        SLACK_WEBHOOK_URL: ${{ inputs.slack_webhook }}
 
     - name: 'Update testplan artifacts'
       uses: 'OXID-eSales/github-actions/consolidate_artifacts@v5'
