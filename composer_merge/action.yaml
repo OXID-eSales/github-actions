@@ -85,7 +85,7 @@ runs:
       uses: 'joernott/load_testplan@v1'
       env:
         # TODO: Remove once load_testplan is updated upstream (joernott/load_testplan PR pending)
-        ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       with:
         files: '${{ inputs.file }},.composer_merge.tmp.json'
         input_type: 'json'
