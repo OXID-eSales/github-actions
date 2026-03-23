@@ -126,7 +126,7 @@ jobs:
 
       - name: 'Load Testplan'
         id: ltp
-        uses: 'joernott/load_testplan@v1'
+        uses: 'joernott/load_testplan@v2.0.0'
         with:
           files: '${{ steps.consolidate_plans.outputs.testplan }}'
           set_output: true
@@ -295,7 +295,7 @@ jobs:
 
       - name: 'Load Testplan'
         id: iltp
-        uses: 'joernott/load_testplan@v1'
+        uses: 'joernott/load_testplan@v2.0.0'
         with:
           files: '${{steps.itn.outputs.testplan}}'
           set_output: true
@@ -344,7 +344,7 @@ jobs:
       - name: 'Run composer for each module'
         shell: bash
         run: |
-          git clone --depth=1 --quiet --branch v1 https://github.com/joernott/load_testplan.git load_testplan
+          git clone --depth=1 --quiet --branch v2.0.0 https://github.com/joernott/load_testplan.git load_testplan
           LOAD_TESTPLAN=$(find ./load_testplan -iname 'main-linux-amd64-*')
           chmod a+x "${LOAD_TESTPLAN}"
           PREFIXES=$(echo '${{steps.iltp.outputs.runscript_matrix_script}}'|tr ',' '\n'|tr -d '[]" '|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
@@ -622,7 +622,7 @@ jobs:
 
       - name: 'Upload configuration artifacts'
         if: always()
-        uses: 'actions/upload-artifact@v6'
+        uses: 'actions/upload-artifact@v7'
         with:
           name: '${{ steps.iltp.outputs.install_output_artifact_prefix }}-${{steps.itn.outputs.matrix_suffix}}'
           path: |-
@@ -734,7 +734,7 @@ jobs:
 
       - name: 'Load Testplan'
         id: rsltp
-        uses: 'joernott/load_testplan@v1'
+        uses: 'joernott/load_testplan@v2.0.0'
         with:
           files: '${{steps.rstn.outputs.testplan}}'
           set_output: true
@@ -888,7 +888,7 @@ jobs:
 
       - name: 'Upload coverage report'
         if: ${{ always() && steps.rt.outputs.runscript_coverage_prefix != '' }}
-        uses: 'actions/upload-artifact@v6'
+        uses: 'actions/upload-artifact@v7'
         with:
           name: ${{ steps.rt.outputs.runscript_coverage_prefix}}-${{steps.rt.outputs.runscript_suffix }}
           path: source/${{ steps.rt.outputs.runscript_path }}/tests/Reports/*
@@ -949,7 +949,7 @@ jobs:
 
       - name: 'Load Testplan'
         id: rsltp
-        uses: 'joernott/load_testplan@v1'
+        uses: 'joernott/load_testplan@v2.0.0'
         with:
           files: '${{steps.rstn.outputs.testplan}}'
           set_output: true
@@ -1092,7 +1092,7 @@ jobs:
 
       - name: 'Upload coverage report'
         if: ${{ always() && steps.rt.outputs.runslim_coverage_prefix != '' }}
-        uses: 'actions/upload-artifact@v6'
+        uses: 'actions/upload-artifact@v7'
         with:
           name: ${{ steps.rt.outputs.runslim_coverage_prefix}}-${{steps.rt.outputs.runslim_suffix }}
           path: source/${{ steps.rt.outputs.runslim_path }}/tests/Reports/*
@@ -1163,7 +1163,7 @@ jobs:
       - name: 'Load Testplan'
         id: sonarcloud_testplan
         if: ${{ env.SONAR_TOKEN != '' }}
-        uses: 'joernott/load_testplan@v1'
+        uses: 'joernott/load_testplan@v2.0.0'
         with:
           files: '${{steps.sonarcloud_testplan_name.outputs.testplan}}'
           set_output: true
@@ -1186,7 +1186,7 @@ jobs:
         env:
           DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
         if: ${{ steps.sonarcloud_testplan.outputs.sonarcloud_docker_login == 'true' && env.DOCKER_HUB_USER != '' }}
-        uses: 'docker/login-action@v3'
+        uses: 'docker/login-action@v4'
         with:
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}

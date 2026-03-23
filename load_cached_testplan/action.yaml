@@ -92,7 +92,7 @@ runs:
     - name: 'Load cached testplan from GitHub'
       if: ${{ inputs.runs_on == '"ubuntu-latest"'}}
       id: load_testplan_cache_gh
-      uses: 'actions/cache/restore@v4'
+      uses: 'actions/cache/restore@v5'
       with:
         path: |
           ${{ inputs.plan_folder}}/*

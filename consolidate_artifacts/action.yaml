@@ -28,13 +28,13 @@ runs:
 
     - name: 'Download consolidated artifact'
       if: ${{ steps.check_consolidated.outputs.exists == 'true' }}
-      uses: 'actions/download-artifact@v4'
+      uses: 'actions/download-artifact@v8'
       with:
         name: '${{ inputs.target }}'
         path: ${{ inputs.path }}
 
     - name: 'Download artifacts'
-      uses: 'actions/download-artifact@v4'
+      uses: 'actions/download-artifact@v8'
       with:
         pattern: '${{ inputs.pattern }}'
         merge-multiple: true
@@ -47,7 +47,7 @@ runs:
         name: '${{ inputs.target }}'
 
     - name: 'Upload consolidated artifact'
-      uses: 'actions/upload-artifact@v4'
+      uses: 'actions/upload-artifact@v7'
       with:
         name: '${{ inputs.target }}'
         path: ${{ inputs.path }}

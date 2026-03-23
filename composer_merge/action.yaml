@@ -82,7 +82,7 @@ runs:
         cat .composer_merge.tmp.json
 
     - name: 'Merge files'
-      uses: 'joernott/load_testplan@v1'
+      uses: 'joernott/load_testplan@v2.0.0'
       with:
         files: '${{ inputs.file }},.composer_merge.tmp.json'
         input_type: 'json'

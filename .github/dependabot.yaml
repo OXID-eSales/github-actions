@@ -8,6 +8,38 @@ updates:
 
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
-    directory: "/"
+    directories:
+      - "/"
+      - "/actionlint"
+      - "/append_report"
+      - "/begin_report"
+      - "/build_docker"
+      - "/clean_cache"
+      - "/composer_merge"
+      - "/consolidate_artifacts"
+      - "/generate_report"
+      - "/load_cached_testplan"
+      - "/prepare_shop"
+      - "/run_custom_scripts"
+      - "/run_test_script"
+      - "/sonarcloud"
+      - "/start_shop"
+      - "/stop_shop"
+      - "/yamllint"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "monday"
+    cooldown:
+      semver-major-days: 7
+    groups:
+      major-updates:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        update-types:
+          - "major"
+        group-by: dependency-name
+    ignore:
+      # v2 is a full API rewrite with multiple breaking changes, not ready
+      - dependency-name: "slackapi/slack-github-action"
+        update-types: ["version-update:semver-major"]
