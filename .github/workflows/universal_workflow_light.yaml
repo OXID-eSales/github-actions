@@ -126,7 +126,7 @@ jobs:
 
       - name: 'Load Testplan'
         id: ltp
-        uses: 'joernott/load_testplan@v1'
+        uses: 'joernott/load_testplan@v2.0.0'
         with:
           files: '${{ steps.consolidate_plans.outputs.testplan }}'
           set_output: true
@@ -295,7 +295,7 @@ jobs:
 
       - name: 'Load Testplan'
         id: iltp
-        uses: 'joernott/load_testplan@v1'
+        uses: 'joernott/load_testplan@v2.0.0'
         with:
           files: '${{steps.itn.outputs.testplan}}'
           set_output: true
@@ -344,7 +344,7 @@ jobs:
       - name: 'Run composer for each module'
         shell: bash
         run: |
-          git clone --depth=1 --quiet --branch v1 https://github.com/joernott/load_testplan.git load_testplan
+          git clone --depth=1 --quiet --branch v2.0.0 https://github.com/joernott/load_testplan.git load_testplan
           LOAD_TESTPLAN=$(find ./load_testplan -iname 'main-linux-amd64-*')
           chmod a+x "${LOAD_TESTPLAN}"
           PREFIXES=$(echo '${{steps.iltp.outputs.runscript_matrix_script}}'|tr ',' '\n'|tr -d '[]" '|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
@@ -734,7 +734,7 @@ jobs:
 
       - name: 'Load Testplan'
         id: rsltp
-        uses: 'joernott/load_testplan@v1'
+        uses: 'joernott/load_testplan@v2.0.0'
         with:
           files: '${{steps.rstn.outputs.testplan}}'
           set_output: true
@@ -949,7 +949,7 @@ jobs:
 
       - name: 'Load Testplan'
         id: rsltp
-        uses: 'joernott/load_testplan@v1'
+        uses: 'joernott/load_testplan@v2.0.0'
         with:
           files: '${{steps.rstn.outputs.testplan}}'
           set_output: true
@@ -1163,7 +1163,7 @@ jobs:
       - name: 'Load Testplan'
         id: sonarcloud_testplan
         if: ${{ env.SONAR_TOKEN != '' }}
-        uses: 'joernott/load_testplan@v1'
+        uses: 'joernott/load_testplan@v2.0.0'
         with:
           files: '${{steps.sonarcloud_testplan_name.outputs.testplan}}'
           set_output: true
