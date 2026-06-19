@@ -81,7 +81,7 @@ jobs:
     runs-on: ${{ fromJSON(inputs.runs_on) }}
     steps:
       - name: 'Checkout testplan defaults'
-        uses: 'actions/checkout@v6'
+        uses: 'actions/checkout@v7'
         with:
           repository: 'OXID-eSales/github-actions'
           ref: '${{ inputs.defaults }}'
@@ -89,7 +89,7 @@ jobs:
           sparse-checkout: '${{ inputs.default_plan_folder }}'
 
       - name: 'Checkout testplans'
-        uses: 'actions/checkout@v6'
+        uses: 'actions/checkout@v7'
         with:
           sparse-checkout: |
             ${{ inputs.plan_folder}}
@@ -1175,7 +1175,7 @@ jobs:
 
       - name: 'Checkout shop'
         if: ${{ env.SONAR_TOKEN != '' }}
-        uses: 'actions/checkout@v6'
+        uses: 'actions/checkout@v7'
         with:
           fetch-depth: 0
           repository: '${{ steps.sonarcloud_testplan.outputs.sonarcloud_git_repository }}'
@@ -1232,7 +1232,7 @@ jobs:
     steps:
       - name: 'Checkout'
         id: checkout
-        uses: 'actions/checkout@v6'
+        uses: 'actions/checkout@v7'
 
       - name: 'Lint yaml files'
         id: yamllint
@@ -1309,7 +1309,7 @@ jobs:
           debug: ${{ inputs.debug }}
 
       - name: 'Checkout the repo for cleanup'
-        uses: 'actions/checkout@v6'
+        uses: 'actions/checkout@v7'
         with:
           path: repo
 
