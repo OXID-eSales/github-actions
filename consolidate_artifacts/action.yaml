@@ -42,7 +42,7 @@ runs:
 
     - name: 'Delete old consolidated artifact'
       if: ${{ steps.check_consolidated.outputs.exists == 'true' }}
-      uses: 'joernott/rm-artifact@v1'
+      uses: 'joernott/rm-artifact@v2'
       with:
         name: '${{ inputs.target }}'
 
