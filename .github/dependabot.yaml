@@ -29,8 +29,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-    cooldown:
-      semver-major-days: 7
+      time: "06:00"
+      timezone: "Europe/Berlin"
     groups:
       major-updates:
         applies-to: version-updates
