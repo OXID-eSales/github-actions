@@ -28,7 +28,7 @@ runs:
   steps:
     - name: 'Checkout'
       id: checkout
-      uses: 'actions/checkout@v6'
+      uses: 'actions/checkout@v7'
 
     - name: 'Generate custom config'
       id: generate_custom_config
