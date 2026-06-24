@@ -141,7 +141,7 @@ runs:
 
     - name: 'Remove old artifacts'
       if: ${{ inputs.run_cleanup == 'true' }}
-      uses: 'joernott/rm-artifact@v1'
+      uses: 'joernott/rm-artifact@v2'
       with:
         name: '${{ inputs.coverage_artifact }}'
         useGlob: true
