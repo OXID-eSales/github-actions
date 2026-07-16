@@ -26,8 +26,7 @@ on:
         required: true
         description: 'Who should review the PR'
         options:
-          - kenariosz
-          - joernott
+          - daveoxs
 
 jobs:
   prepare_release:
