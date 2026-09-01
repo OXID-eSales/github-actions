@@ -25,6 +25,7 @@ install scripts provided in the respective repositories.
   - [clean_cache](docs/actions/clean_cache.md) is used at the end of a successful workflow to clean up the cached objects
   - [composer_merge](docs/actions/composer_merge.md) merges a JSON string with composer.json.
   - [consolidate_artifacts](docs/actions/consolidate_artifacts.md) consolidates multiple artifacts into one.
+  - [generate_sbom](docs/actions/generate_sbom.md) generates a CycloneDX SBOM of a Composer project's production dependencies.
   - [start_shop](docs/actions/start_shop.md) fetches a shop from cache and starts it.
   - [stop_shop](docs/actions/stop_shop.md) stops a running shop.
   - [load_cached_testplan](docs/actions/load_cached_testplan.md) loads the cached
