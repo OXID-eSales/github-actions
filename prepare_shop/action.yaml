@@ -195,7 +195,12 @@ runs:
         REF='${{ inputs.git_sdk_ref }}'
         git init
         git config advice.detachedHead false
-        git remote add origin https://github.com/${{ inputs.git_sdk_repository }}.git
+        if [ -n "${{ inputs.enterprise_github_token }}" ]; then
+          URL="https://oxidci:${{ inputs.enterprise_github_token }}@github.com/${{ inputs.git_sdk_repository }}.git"
+        else
+          URL="https://github.com/${{ inputs.git_sdk_repository }}.git"
+        fi
+        git remote add origin "${URL}"
         git -c protocol.version=2 fetch \
           --no-tags --prune --no-recurse-submodules \
           --filter=blob:none --depth=1 \
