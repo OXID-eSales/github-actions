@@ -1,0 +1,10 @@
+# actionlint validates action inputs against a bundled schema snapshot.
+# The snapshot in the pinned actionlint version predates the app-id -> client-id
+# rename in actions/create-github-app-token, so it wrongly flags client-id as
+# unknown and app-id as required. The live action supports client-id (app-id is
+# deprecated). Remove this ignore once actionlint's bundled data catches up.
+paths:
+  .github/workflows/dispatch-release.yaml:
+    ignore:
+      - 'input "client-id" is not defined in action "actions/create-github-app-token'
+      - 'missing input "app-id" which is required by action "actions/create-github-app-token'
