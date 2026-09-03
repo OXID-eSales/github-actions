@@ -308,7 +308,7 @@ jobs:
 
       - name: 'Prepare Shop'
         id: prepare_shop
-        uses: 'OXID-eSales/github-actions/prepare_shop@v5'
+        uses: 'OXID-eSales/github-actions/prepare_shop@v0'
         with:
           container_name: ${{ steps.iltp.outputs.install_container_name }}
           container_options: ${{ steps.iltp.outputs.install_container_options }}
@@ -343,8 +343,10 @@ jobs:
 
       - name: 'Run composer for each module'
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          git clone --depth=1 --quiet --branch v2.0.0 https://github.com/joernott/load_testplan.git load_testplan
+          git clone --depth=1 --quiet --branch v2.0.0 "https://x-access-token:${GH_TOKEN}@github.com/joernott/load_testplan.git" load_testplan
           LOAD_TESTPLAN=$(find ./load_testplan -iname 'main-linux-amd64-*')
           chmod a+x "${LOAD_TESTPLAN}"
           PREFIXES=$(echo '${{steps.iltp.outputs.runscript_matrix_script}}'|tr ',' '\n'|tr -d '[]" '|sed -e 's|-|_|g' -e 's|:.*||'|sort|uniq)
