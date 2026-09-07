@@ -1,0 +1,61 @@
+name: 'generate_sbom'
+
+description: 'Generate a CycloneDX SBOM (production dependencies) for a Composer project'
+
+inputs:
+  working_directory:
+    type: string
+    required: false
+    description: 'Composer project to scan (directory containing composer.json)'
+    default: '.'
+  spec_version:
+    type: string
+    required: false
+    description: 'CycloneDX spec version (BSI TR-03183-2 wants >= 1.4)'
+    default: '1.4'
+  output_format:
+    type: string
+    required: false
+    description: 'SBOM output format: JSON or XML'
+    default: 'JSON'
+  output_file:
+    type: string
+    required: false
+    description: 'SBOM file name, written inside working_directory'
+    default: 'sbom.json'
+
+outputs:
+  sbom_path:
+    description: 'Path to the generated SBOM file'
+    value: ${{ steps.generate.outputs.path }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Install the SBOM plugin globally'
+      shell: bash
+      run: |
+        # generate_sbom: Install the SBOM plugin globally
+        composer global config allow-plugins.cyclonedx/cyclonedx-php-composer true
+        composer global require cyclonedx/cyclonedx-php-composer --no-interaction
+
+    - name: 'Resolve production dependencies'
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      run: |
+        # generate_sbom: Resolve production dependencies
+        composer update --no-dev --no-scripts --no-plugins --ignore-platform-reqs --no-interaction
+
+    - name: 'Generate SBOM'
+      id: generate
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      run: |
+        # generate_sbom: Generate SBOM
+        composer CycloneDX:make-sbom \
+          --output-format='${{ inputs.output_format }}' \
+          --output-file='${{ inputs.output_file }}' \
+          --spec-version='${{ inputs.spec_version }}' \
+          --omit=dev \
+          --no-interaction
+        echo "path=${{ inputs.working_directory }}/${{ inputs.output_file }}" >> "$GITHUB_OUTPUT"
