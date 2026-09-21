@@ -75,7 +75,7 @@ runs:
         fi
 
     - name: 'Clear s3 cache'
-      if: ${{ inputs.runs_on != '"ubuntu-latest"' }}
+      if: ${{ inputs.runs_on != '"ubuntu-26.04"' }}
       shell: bash
       run: |
         # clean_cache: Clear s3 cache

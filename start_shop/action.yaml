@@ -66,7 +66,7 @@ runs:
   using: "composite"
   steps:
     - name: 'Load cached shop from S3'
-      if: ${{ inputs.runs_on != '"ubuntu-latest"'}}
+      if: ${{ inputs.runs_on != '"ubuntu-26.04"'}}
       id: load_installed_shop_s3
       uses: 'tespkg/actions-cache/restore@v1'
       with:
@@ -81,7 +81,7 @@ runs:
         bucket: ${{ inputs.cache_bucket }}
 
     - name: 'Load cached testplan from GitHub'
-      if: ${{ inputs.runs_on == '"ubuntu-latest"'}}
+      if: ${{ inputs.runs_on == '"ubuntu-26.04"'}}
       id: load_installed_shop_gh
       uses: 'actions/cache/restore@v6'
       with:

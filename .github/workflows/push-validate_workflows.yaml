@@ -8,7 +8,7 @@ on:
 
 jobs:
   init:
-    runs-on: 'ubuntu-latest'
+    runs-on: 'ubuntu-26.04'
     steps:
       - name: 'Write Report Header'
         if: always()
@@ -32,7 +32,7 @@ jobs:
           debug: false
 
   yamllint:
-    runs-on: 'ubuntu-latest'
+    runs-on: 'ubuntu-26.04'
     steps:
       - name: 'Checkout'
         id: checkout
@@ -72,7 +72,7 @@ jobs:
           debug: false
 
   actionlint:
-    runs-on: 'ubuntu-latest'
+    runs-on: 'ubuntu-26.04'
     steps:
       - name: 'Checkout'
         id: checkout
@@ -114,7 +114,7 @@ jobs:
       - init
       - yamllint
       - actionlint
-    runs-on: 'ubuntu-latest'
+    runs-on: 'ubuntu-26.04'
     env:
       SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK_URL }}"
     steps:
